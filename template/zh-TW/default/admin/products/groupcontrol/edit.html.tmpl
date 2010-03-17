@@ -1,0 +1,311 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Joel Peshkin <bugreport@peshkin.net>
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+[% title = BLOCK %]
+    編輯 [% product.name FILTER html %] 的群組控管
+[% END %]
+[% PROCESS global/header.html.tmpl
+   title = title
+%]
+
+<form method="post" action="editproducts.cgi">
+  <input type="hidden" name="action" value="updategroupcontrols">
+  <input type="hidden" name="product" value="[% product.name FILTER html %]">
+  <input type="hidden" name="token" value="[% token FILTER html %]">
+  <input type="hidden" name="classification"
+         value="[% classification.name FILTER html %]">
+
+  <table id="form" cellspacing="0" cellpadding="4" border="1">
+    <tr bgcolor="#6666ff">
+      <th>群組</th>
+      <th>ENTRY</th>
+      <th>成員控管</th>
+      <th>其他控管</th>
+      <th>CANEDIT</th>
+      <th>editcomponents</th>
+      <th>canconfirm</th>
+      <th>editbugs</th>
+      <th>[% terms.Bugs %]</th>
+    </tr>
+    [% FOREACH group = groups %]
+      [% IF group.isactive == 0 AND group.bugcount > 0 %]
+        <tr bgcolor="#bbbbbb">
+          <td>
+            [% group.name FILTER html %]
+          </td>
+          <td align="center" colspan=7>
+            停用
+          </td>
+          <td>
+            [% group.bugcount %]
+          </td>
+        <tr>
+      [% ELSIF group.isactive != 0 %]
+        <tr>
+          <td>
+            [% group.name FILTER html %]
+          </td>
+          <td>
+            <input type=checkbox value=1 name=entry_[% group.id %]
+            [% " checked=\"checked\"" IF group.entry %]>
+          </td>
+          <td>
+            <select name="membercontrol_[% group.id %]">
+              <option value=[% const.CONTROLMAPNA %]
+                [% " selected=\"selected\""
+                  IF group.membercontrol == const.CONTROLMAPNA %]
+                >不適用 (NA)
+              </option>
+              <option value=[% const.CONTROLMAPSHOWN %]
+                [% " selected=\"selected\""
+                  IF group.membercontrol == const.CONTROLMAPSHOWN %]
+                >顯示 (SHOWN)
+              </option>
+              <option value=[% const.CONTROLMAPDEFAULT %]
+                [% " selected=\"selected\""
+                  IF group.membercontrol == const.CONTROLMAPDEFAULT %]
+                >預設 (DEFAULT)
+              </option>
+              <option value=[% const.CONTROLMAPMANDATORY %]
+                [% " selected=\"selected\""
+                  IF group.membercontrol == const.CONTROLMAPMANDATORY %]
+                >強制 (MANDATORY)
+              </option>
+            </select>
+          </td>
+          <td>
+            <select name="othercontrol_[% group.id %]">
+              <option value=[% const.CONTROLMAPNA %]
+                [% " selected=\"selected\""
+                  IF group.othercontrol == const.CONTROLMAPNA %]
+                >不適用 (NA)
+              </option>
+              <option value=[% const.CONTROLMAPSHOWN %]
+                [% " selected=\"selected\""
+                  IF group.othercontrol == const.CONTROLMAPSHOWN %]
+                >顯示 (SHOWN)
+              </option>
+              <option value=[% const.CONTROLMAPDEFAULT %]
+                [% " selected=\"selected\""
+                  IF group.othercontrol == const.CONTROLMAPDEFAULT %]
+                >預設 (DEFAULT)
+              </option>
+              <option value=[% const.CONTROLMAPMANDATORY %]
+                [% " selected=\"selected\""
+                  IF group.othercontrol == const.CONTROLMAPMANDATORY %]
+                >強制 (MANDATORY)
+              </option>
+            </select>
+          </td>
+          <td>
+            <input type=checkbox value=1 name=canedit_[% group.id %]
+            [% " checked=\"checked\"" IF group.canedit %]>
+          </td>
+          <td>
+            <input type=checkbox value=1 name=editcomponents_[% group.id %]
+            [% " checked=\"checked\"" IF group.editcomponents %]>
+          </td>
+          <td>
+            <input type=checkbox value=1 name=canconfirm_[% group.id %]
+            [% " checked=\"checked\"" IF group.canconfirm %]>
+          </td>
+          <td>
+            <input type=checkbox value=1 name=editbugs_[% group.id %]
+            [% " checked=\"checked\"" IF group.editbugs %]>
+          </td>
+          <td>
+            [% group.bugcount %]
+          </td>
+        </tr>
+      [% END %]
+    [% END %]
+
+  </table>
+  <br>
+  <input type=submit name="submit" value="送出">
+  <br>
+</form>
+
+
+<p>
+  這些設定控制此項產品和群組的關係。
+</p>
+<p>
+  <b>ENTRY</b><br>
+  只要任何群組勾選 'ENTRY' 選項，此項產品將會限制屬於已勾選 'ENTRY' 選項的群組成員才能回報 [% terms.bug %] 。
+</p>
+<p>
+  <b>CANEDIT</b><br>
+  只要任何群組勾選 'CANEDIT' 選項，此項產品將會對所有不屬於已勾選 'CANEDIT' 群組的成員顯示為唯讀。<br>
+  <em>只有</em>屬於已勾選 'CANEDIT' 群組的成員才能夠編輯。這是對使用者是否可以編輯 [% terms.bug %] 的進一步限制。
+</p>
+<p>
+  下列設定讓你<b>以產品為單位</b>選擇權限。<br>
+  這對於給予特定使用者特定產品的特定權限較為方便，而無需給予足以影響所有產品的權限：
+</p>
+<p>
+  <b>editcomponents</b><br>
+  任何勾選 'editcomponents' 選項的群組成員，均可對此項產品的所有方面進行設定，包括子產品、里程碑及版本。
+</p>
+<p>
+  <b>canconfirm</b><br>
+  任何勾選 'canconfirm' 選項的群組成員，均可以對此項產品中的 [% terms.bugs %] 進行確認。
+</p>
+<p>
+  <b>editbugs</b><br>
+  任何勾選 'editbugs' 選項的群組成員，均可以對此項產品中 [% terms.bugs %] 的所有欄位進行編輯。
+</p>
+<p>
+  <b>成員控管</b>和<b>其他控管</b>的欄位，將會依下列定義，指定哪些 [% terms.bugs %] 屬於此項產品。
+</p>
+
+<table border=1>
+  <tr>
+    <th>
+      成員控管
+    </th>
+    <th>
+      其他控管
+    </th>
+    <th>
+      解釋
+    </th>
+  </tr>
+  <tr>
+    <td>
+      不適用
+    </td>
+    <td>
+      不適用
+    </td>
+    <td>
+      此產品中的 [% terms.Bugs %] 將不會和此群組產生任何關連。
+    </td>
+  </tr>
+  <tr>
+    <td>
+      顯示
+    </td>
+    <td>
+      不適用
+    </td>
+    <td>
+      此產品中的 [% terms.Bugs %] 將會限制僅供此群組使用。此群組的成員才能夠將
+      [% terms.bugs %] 放至群組中。
+    </td>
+  </tr>
+  <tr>
+    <td>
+      顯示
+    </td>
+    <td>
+      顯示
+    </td>
+    <td>
+      任何擁有編輯 [% terms.bug %] 權限的人均可以將此產品中的 [% terms.Bugs %]
+      放至此群組中，即使他們並非此群組的成員。
+    </td>
+  </tr>
+  <tr>
+    <td>
+      顯示
+    </td>
+    <td>
+      預設
+    </td>
+    <td>
+      任何擁有編輯 [% terms.bug %] 權限的人均可以將此產品中的 [% terms.Bugs %]
+      放至此群組中，即使他們並非此群組的成員。預設非此群組的成員會將
+      [% terms.bugs %] 放至此群組中。
+    </td>
+  </tr>
+  <tr>
+    <td>
+      顯示
+    </td>
+    <td>
+      強制
+    </td>
+    <td>
+      此產品中的 [% terms.Bugs %] 將會限制僅供此群組使用。此群組的成員才能夠將
+      [% terms.bugs %] 放至群組中。非此群組的成員一開始在此產品中回報[% terms.abug %]時，會強制將
+      [% terms.bugs %] 放至此群組中。
+    </td>
+  </tr>
+  <tr>
+    <td>
+      預設
+    </td>
+    <td>
+      不適用
+    </td>
+    <td>
+      此產品中的 [% terms.Bugs %] 將會限制僅供此群組使用，並預設將 [% terms.bugs %]
+      放至此群組中。此群組的成員才能夠將 [% terms.bugs %] 放至群組中。
+    </td>
+  </tr>
+  <tr>
+    <td>
+      預設
+    </td>
+    <td>
+      預設
+    </td>
+    <td>
+      此產品中的 [% terms.Bugs %] 將會限制僅供此群組使用，並預設將 [% terms.bugs %]
+      放至此群組中。此群組的成員才能夠將 [% terms.bugs %]
+      放至群組中。非此群組的成員可以選擇將 [% terms.bugs %] 放至此群組中。預設為放至此群組中。
+    </td>
+  </tr>
+  <tr>
+    <td>
+      預設
+    </td>
+    <td>
+      強制
+    </td>
+    <td>
+      此產品中的 [% terms.Bugs %] 將會限制僅供此群組使用，並預設將 [% terms.bugs %]
+      放至此群組中。此群組的成員才能夠將 [% terms.bugs %]
+      放至群組中。非此群組的成員一開始在此產品中回報[% terms.abug %]時，會強制將
+      [% terms.bugs %] 放至此群組中。
+    </td>
+  </tr>
+  <tr>
+    <td>
+      強制
+    </td>
+    <td>
+      強制
+    </td>
+    <td>
+      此產品中的 [% terms.Bugs %] 被強制限制在此群組中。使用者沒得選。
+    </td>
+  </tr>
+</table>
+<p>
+  請注意：上表已經描述<b>成員控管</b>和<b>其他控管</b>欄位設定值的所有允許的組合。<br>
+  嘗試送出並未列於上表的組合〔例如：強制 (MANDATORY) / 不適用 (NA) 、預設 (DEFAULT) /
+  顯示 (SHOWN) 等等〕將會產生錯誤訊息。
+</p>
+[% PROCESS global/footer.html.tmpl %]
+

@@ -1,0 +1,70 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Gervase Markham <gerv@gerv.net>
+  #%]
+
+[%# INTERFACE:
+  # This template has no interface. It's a list of the available report
+  # types in Bugzilla.
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+[% PROCESS global/header.html.tmpl
+  title = "報告及圖表產生器"
+  doc_section = "reporting.html"
+%]
+
+<p>
+  [% terms.Bugzilla %] 允許你以多種方式瀏覽及追蹤 [% terms.bug %] 資料庫的狀態。
+</p>
+
+<h2>目前狀態</h2>
+
+<ul>
+  <li>
+    <strong><a href="query.cgi">搜尋</a></strong> - 列出一組 [% terms.bugs %] 。
+  </li>
+  <li>
+    <strong>
+      <a href="query.cgi?format=report-table">表格式報告</a>
+    </strong> - 以 HTML 或 CSV 格式，產生一、二或三度空間的 [% terms.bug %] 數目表格。
+  </li>
+  <li>
+    <strong>
+      <a href="query.cgi?format=report-graph">圖形式報告</a>
+    </strong> - 折線圖、長條圖及圓餅圖。
+  </li>
+</ul>
+
+<h2>過去的變更</h2>
+
+<ul>
+  <li>
+    <strong><a href="reports.cgi">舊的圖表</a></strong> -
+    以資料庫中每一個產品為單位，繪出時間、 [% terms.bugs %] 的狀態和／或解決方案。
+  </li>
+  [% IF user.in_group(Param("chartgroup")) %]
+    <li>
+      <strong><a href="chart.cgi">新的圖表</a></strong> -
+      以時間為單位，繪出任何搜尋。功能更為強大。
+    </li>
+  [% END %]
+</ul>
+
+[% PROCESS global/footer.html.tmpl %]

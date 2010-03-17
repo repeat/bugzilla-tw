@@ -1,0 +1,143 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Myk Melez <myk@mozilla.org>
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+[% PROCESS "global/js-products.html.tmpl" %]
+
+[% PROCESS global/header.html.tmpl
+  title = '管理旗標類型'
+  style = "
+    table#flag_types_bugs tr th,
+    table#flag_types_attachments tr th { text-align: left; }
+    .inactive { color: #787878; }
+    .multiplicable { display: block; }
+  "
+  onload="var f = document.forms[0]; selectProduct(f.product, f.component, null, null, '__全部__');"
+  javascript_urls=["js/productform.js"]
+  doc_section = "flags-overview.html#flag-types"
+%]
+
+<p>
+  旗標是用來識別 [% terms.bug %] 或附件是否已被同意或被拒絕某些狀態的一種標記。在使用者介面中，旗標以名稱和狀態符號顯示：
+  "+" 代表同意， "-" 代表拒絕， "?" 代表使用者已要求設定旗標的狀態。
+</p>
+
+<p>
+  例如，你可以定義一種狀態叫 "review" ，讓使用者可以對瀏覽附件做出要求。當 patch 寫作者要求瀏覽時，
+  "review?" 字串就會出現在附件上。而當 patch 瀏覽者瀏覽該 patch 時，就會依 patch 是否通過瀏覽的條件，顯示為
+  "review+" 或 "review-" 。
+</p>
+
+<p>
+  你可以對特定的產品以及子產品限制旗標類型的清單。如果選擇沒有子產品的產品，那麼將只顯示屬於產品中至少一項子產品的旗標類型。
+</p>
+
+<form action="editflagtypes.cgi" method="get">
+  <table>
+    <tr>
+      <th><label for="product">產品：</label></th>
+      <td>
+        <select name="product" onchange="selectProduct(this, this.form.component, null, null, '__任何__');">
+          <option value="">__任何__</option>
+          [% FOREACH prod = products %]
+            <option value="[% prod.name FILTER html %]"
+                    [% " selected" IF selected_product == prod.name %]>
+                    [% prod.name FILTER html %]</option>
+          [% END %]
+        </select>
+      </td>
+      <th><label for="component">子產品：</label></th>
+      <td>
+        <select name="component">
+          <option value="">__任何__</option>
+          [% FOREACH comp = components %]
+            <option value="[% comp FILTER html %]"
+                    [% " selected" IF selected_component == comp %]>
+                    [% comp FILTER html %]</option>
+          [% END %]
+        </select>
+      </td>
+      <td><input type="submit" id="submit" value="篩選"></td>
+    </tr>
+  </table>
+</form>
+
+<h3>[% terms.Bugs %] 的旗標類型</h3>
+
+[% PROCESS display_flag_types types=bug_types types_id='bugs' %]
+
+<p>
+  <a href="editflagtypes.cgi?action=enter&amp;target_type=bug">新增 [% terms.Bugs %] 的旗標類型</a>
+</p>
+
+<h3>附件的旗標類型</h3>
+
+[% PROCESS display_flag_types types=attachment_types types_id='attachments' %]
+
+<p>
+  <a href="editflagtypes.cgi?action=enter&amp;target_type=attachment">新增附件的旗標類型</a>
+</p>
+
+[% PROCESS global/footer.html.tmpl %]
+
+
+[% BLOCK display_flag_types %]
+  <table id="flag_types_[% types_id FILTER html %]" cellspacing="0" cellpadding="4" border="1">
+
+    <tr>
+      <th>編輯名稱…</th>
+      <th>描述</th>
+      <th>排序鍵</th>
+      <th>性質</th>
+      <th>同意的群組</th>
+      <th>要求的群組</th>
+      <th>動作</th>
+    </tr>
+
+    [% FOREACH type = types %]
+
+      <tr class="[% IF type.is_active %]active[% ELSE %]inactive[% END %]">
+        <td><a href="editflagtypes.cgi?action=edit&amp;id=[% type.id %]">[% type.name FILTER html FILTER no_break %]</a></td>
+        <td>[% type.description FILTER html %]</td>
+        <td align="right">[% type.sortkey FILTER html %]</td>
+        <td>
+          [% IF type.is_requestable %]
+            <span class="requestable">可以要求</span>
+          [% END %]
+          [% IF type.is_requestable && type.is_requesteeble %]
+            <span class="requesteeble">（特定要求）</span>
+          [% END %]
+          [% IF type.is_multiplicable %]
+            <span class="multiplicable">多重種類</span>
+          [% END %]
+        </td>
+        <td>[% IF type.grant_group %][% type.grant_group.name FILTER html %][% END %]</td>
+        <td>[% IF type.request_group %][% type.request_group.name FILTER html %][% END %]</td>
+        <td>
+          <a href="editflagtypes.cgi?action=copy&amp;id=[% type.id %]">複製</a>
+          | <a href="editflagtypes.cgi?action=confirmdelete&amp;id=[% type.id %]">刪除</a>
+        </td>
+      </tr>
+
+    [% END %]
+
+  </table>
+[% END %]

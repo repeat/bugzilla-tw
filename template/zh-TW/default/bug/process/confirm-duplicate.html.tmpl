@@ -1,0 +1,65 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Myk Melez <myk@mozilla.org>
+  #%]
+
+[%# INTERFACE:
+  # original_bug_id: number; the bug number for the bug
+  #   against which a bug is being duped
+  # duplicate_bug_id: number; the bug number for the bug
+  #   being duped
+  # cclist_accessible: boolean; whether or not users on the cc: list
+  #   of the original bug can access that bug.
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+[% PROCESS global/header.html.tmpl title="警告：將${terms.abug}標記為重複" %]
+[% orig_bug = "$terms.bug $original_bug_id"
+     FILTER bug_link(original_bug_id) %]
+
+<p>
+  當把[% terms.abug %]標記為重複的時候，回報此重複 [% terms.bug %] 的人將會被加入到原先的 [% terms.bug %] 的寄件副本清單中。在 [% orig_bug FILTER none %] （也就是原先的 [% terms.bug %] ）的權限設定上，回報此重複 [% terms.bug %] 的人通常是無法看見的。
+</p>
+
+<p>
+  <b>把回報者加入 [% orig_bug FILTER none %] 的寄件副本清單的話，將會使回報者[% IF cclist_accessible %]立刻[% ELSE %]未來可能[% END %]擁有瀏覽這個 [% terms.bug %] 的權限。</b>你確定嗎？
+</p>
+
+<form method="post" action="process_bug.cgi">
+
+[% PROCESS "global/hidden-fields.html.tmpl" exclude="^Bugzilla_(login|password)$" %]
+
+<p>
+  <input type="radio" name="confirm_add_duplicate" value="1">
+    是的，將回報者加到 [% orig_bug FILTER none %] 的寄件副本清單中
+</p>
+<p>
+  <input type="radio" name="confirm_add_duplicate" value="0" checked="checked">
+    不，不要將回報者加到 [% orig_bug FILTER none %] 的寄件副本清單中
+</p>
+<p>
+  [% "刪除我所做的變更，並重新瀏覽 $terms.bug $duplicate_bug_id"
+     FILTER bug_link(duplicate_bug_id) FILTER none %]
+</p>
+<p>
+  <input type="submit" id="process" value="送出">
+</p>
+
+</form>
+
+[% PROCESS global/footer.html.tmpl %]

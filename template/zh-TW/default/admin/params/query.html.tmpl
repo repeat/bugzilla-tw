@@ -1,0 +1,54 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Dave Miller <justdave@bugzilla.org>
+  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #%]
+[%
+   title = "預設查詢值"
+   desc = "預設的查詢值和 $terms.bug 清單"
+%]
+
+[% param_descs = {
+  quip_list_entry_control => "控制使用者加入智語的容易度。
+                              <ul>
+                                <li>
+                                  開啟 (open) ：使用者可以輸入智語，並會立即顯示。
+                                </li>
+                                <li>
+                                  認證 (moderated) ：可以輸入智語，但必須經由管理者認證後才會顯示。
+                                </li>
+                                <li>
+                                  關閉 (closed) ：不允許輸入新的智語。
+                                </li>
+                              </ul>",
+
+  mostfreqthreshold => "${terms.abug}最少要重複幾次才會出現在" _
+                       "<a href=\"duplicates.cgi\">最常回報的 $terms.bugs 頁面</a>中。" _
+                       "如果你的資料庫十分龐大，讓此頁面需以較長的時間載入，" _
+                       "試著增加此數值。",
+
+  mybugstemplate => "這是讓使用者簡單列出「我的所有 $terms.bugs 」清單的網址。 " _
+                    "%userid% 會被取代為該使用者的帳號。",
+
+  defaultquery => "當使用者瀏覽「進階搜尋」頁時的預設查詢。這是網址的參數格式，因此較為難以閱讀，十分抱歉。",
+
+  quicksearch_comment_cutoff => "快速搜尋列所允許搜尋意見內容的最大值。" _
+                                "如果快速搜尋列中的值比這個值還多，則不會搜尋意見內容。",
+
+  specific_search_allow_empty_words => "是否允許使用者在「尋找一個特定的 $terms.bug 」頁面不輸入任何字串搜尋。" }
+%]

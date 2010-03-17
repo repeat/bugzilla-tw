@@ -1,0 +1,61 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Myk Melez <myk@mozilla.org>
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+[% title = BLOCK %]確認刪除旗標類型 '[% flag_type.name FILTER html %]'[% END %]
+
+[% PROCESS global/header.html.tmpl
+  title = title
+  doc_section = "flags-overview.html#flags-delete"
+%]
+
+<p>
+  [% IF flag_type.flag_count %]
+    目前在類型 [% flag_type.name FILTER html %] 下有 [% flag_type.flag_count %]
+    種旗標。如果你刪除此一旗標類型，這些旗標也都會被刪除。
+  [% END %]
+
+  除了刪除以外，你也可以選擇<a
+  href="editflagtypes.cgi?action=deactivate&amp;id=[% flag_type.id %]&amp;token=
+  [%- token FILTER html %]">停用</a>。如果選擇停用，那麼此一旗標類型
+  [%- IF flag_type.flag_count %]以及這些旗標[% END %]仍會儲存在資料庫中，但不會在
+  [% terms.Bugzilla %] 使用者介面裡顯示。
+
+</p>
+
+<table>
+   <tr>
+      <td colspan="2">
+         你確定要刪除此一旗標類型嗎？
+      </td>
+   </tr>
+   <tr>
+      <td>
+         <a href="editflagtypes.cgi?action=delete&amp;id=[% flag_type.id %]&amp;token=
+                 [%- token FILTER html %]">是的，刪除</a>
+      </td>
+      <td align="right">
+         <a href="editflagtypes.cgi">不，不要刪除</a>
+      </td>
+   </tr>
+</table>
+
+[% PROCESS global/footer.html.tmpl %]

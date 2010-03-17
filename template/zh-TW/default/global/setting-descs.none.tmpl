@@ -1,0 +1,49 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # Contributor(s): Shane H. W. Travis <travis@sedsystems.ca>
+  #
+  #%]
+
+[%# Remember to PROCESS rather than INCLUDE this template. %]
+
+[% PROCESS global/variables.none.tmpl %]
+
+[% setting_descs = {
+   "comment_sort_order"               => "瀏覽${terms.abug}時，以此順序列出意見",
+   "csv_colsepchar"                   => "CSV 檔案的欄位分隔字元",
+   "display_quips"                    => "在每個 $terms.bug 清單上方顯示智語",
+   "zoom_textareas"                   => "自動放大使用中的文字框（需要 JavaScript ）",
+   "newest_to_oldest"                 => "從新到舊",
+   "newest_to_oldest_desc_first"      => "從新到舊，但保留描述於上方",
+   "off"                              => "關",
+   "oldest_to_newest"                 => "從舊到新",
+   "on"                               => "開",
+   "per_bug_queries"                  => "允許對 $terms.bugs 加標籤",
+   "post_bug_submit_action"           => "在變更${terms.abug}之後",
+   "next_bug"                         => "列出我的清單中的下一個 $terms.bug",
+   "same_bug"                         => "顯示更新後的 $terms.bug",
+   "standard"                         => "古典",
+   "skin"                             => "$terms.Bugzilla 的基本外觀設定（佈景主題）",
+   "nothing"                          => "什麼也不做",
+   "state_addselfcc"                  => "將我自動加到我變更的 $terms.bugs 的寄件副本清單中",
+   "always"                           => "總是",
+   "never"                            => "總不",
+   "cc_unless_role"                   => "僅在當我並非其中相關人員時",
+   "lang"                             => "在電子郵件中用的語言",
+   "quote_replies"                    => "當點選「回應」時，引用相關的意見",
+   "quoted_reply"                     => "引用全部意見",
+   "simple_reply"                     => "僅參照意見的編號",
+                   }
+%]
+
+[% Hook.process('settings') %]

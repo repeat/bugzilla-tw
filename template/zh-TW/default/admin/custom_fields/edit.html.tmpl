@@ -1,0 +1,116 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # Contributor(s): Frédéric Buclin <LpSolit@gmail.com>
+  #%]
+
+[%# INTERFACE:
+  # none
+  #%]
+
+[% PROCESS "global/field-descs.none.tmpl" %]
+
+[% title = BLOCK %]
+  編輯自訂欄位 '[% field.name FILTER html %]' ([% field.description FILTER html %])
+[% END %]
+
+[% PROCESS global/header.html.tmpl
+           title = title
+           onload = "toggleCheckbox(document.getElementById('enter_bug'), 'new_bugmail');"
+           doc_section = "custom-fields.html#edit-custom-fields"
+%]
+
+<script type="text/javascript">
+  <!--
+  // Disable a checkbox based on the state of another one.
+  function toggleCheckbox(this_checkbox, other_checkbox_id) {
+    var other_checkbox = document.getElementById(other_checkbox_id);
+    other_checkbox.disabled = !this_checkbox.checked;
+  }
+  //-->
+</script>
+
+<p>
+  「描述」是一個用來描述欄位，而且非常短的字串。將會在使用者介面使用它來當作這個自訂欄位的標籤。
+</p>
+
+<form id="edit_field" action="editfields.cgi" method="GET">
+  <table border="0" cellspacing="0" cellpadding="5">
+    <tr>
+      <th align="right">名稱：</th>
+      <td>[% field.name FILTER html %]</td>
+
+      <th align="right">
+        <label for="enter_bug">可以在建立 [% terms.bug %] 時設定：</label>
+      </th>
+      <td><input type="checkbox" id="enter_bug" name="enter_bug" value="1"
+                 [%- " checked" IF field.enter_bug %]
+                 onchange="toggleCheckbox(this, 'new_bugmail');"></td>
+    </tr>
+    <tr>
+      <th align="right"><label for="desc">描述：</label></th>
+      <td><input type="text" id="desc" name="desc" size="40"
+                 value="[% field.description FILTER html %]"></td>
+
+      <th align="right">
+        <label for="new_bugmail">將新的 [% terms.bug %] 顯示於 [% terms.bug %] 通知信中：</label>
+      </th>
+      <td><input type="checkbox" id="new_bugmail" name="new_bugmail" value="1"
+                 [%- " checked" IF field.mailhead %]></td>
+    </tr>
+    <tr>
+      <th align="right">種類：</th>
+      <td>[% field_types.${field.type} FILTER html %]</td>
+
+      <th align="right"><label for="obsolete">已廢棄：</label></th>
+      <td><input type="checkbox" id="obsolete" name="obsolete" value="1"
+                 [%- " checked" IF field.obsolete %]></td>
+    </tr>
+    <tr>
+      <th align="right"><label for="sortkey">排序鍵：</label></th>
+      <td>
+        <input type="text" id="sortkey" name="sortkey" size="6" maxlength="6"
+               value="[% field.sortkey FILTER html %]">
+      </td>
+
+      <th>&nbsp;</th>
+      <td>&nbsp;</td>
+    </tr>
+    [% IF field.type == constants.FIELD_TYPE_SINGLE_SELECT
+          || field.type == constants.FIELD_TYPE_MULTI_SELECT %]
+      <tr>
+        <th>&nbsp;</th>
+        <td colspan="3">
+          <a href="editvalues.cgi?field=[% field.name FILTER url_quote %]">編輯此自訂欄位的有效數值</a>。
+        </td>
+      </tr>
+    [% END %]
+  </table>
+  <br>
+  <input type="hidden" name="action" value="update">
+  <input type="hidden" name="name" value="[% field.name FILTER html %]">
+  <input type="hidden" name="token" value="[% token FILTER html %]">
+  <input type="submit" id="edit" value="送出">
+</form>
+
+[% IF field.obsolete %]
+<p>
+  <a href="editfields.cgi?action=del&amp;name=[% field.name FILTER html %]">自資料庫中刪除此自訂欄位。</a><br>
+  只有在此自訂欄位從未於 [% terms.bug %] 中使用過時，才會成功。
+</p>
+[% END %]
+
+<p>
+  <a href="editfields.cgi">回到現有的自訂欄位列表</a>
+</p>
+
+[% PROCESS global/footer.html.tmpl %]

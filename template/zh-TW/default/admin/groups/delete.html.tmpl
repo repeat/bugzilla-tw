@@ -1,0 +1,114 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Dave Miller <justdave@syndicomm.com>
+  #                 Joel Peshkin <bugreport@peshkin.net>
+  #                 Jacob Steenhagen <jake@bugzilla.org>
+  #                 Vlad Dascalu <jocuri@softhome.net>
+  #%]
+
+[%# INTERFACE:
+  # gid: number. The group ID.
+  # name: string. The name of the group.
+  # description: string. The description of the group.
+  # hasusers: boolean int. True if the group includes users in it.
+  # hasbugs: boolean int. True if the group includes bugs in it.
+  # hasproduct: boolean int. True if the group is binded to a product.
+  # hasflags: boolean int. True if the group is used by a flag type.
+  # shared_queries: int. Number of saved searches being shared with this group.
+  # buglist: string. The list of bugs included in this group.
+  #%]
+
+
+[% PROCESS global/header.html.tmpl
+  title = "刪除群組"
+  doc_section = "groups.html"
+%]
+
+<table border="1">
+  <tr>
+    <th>編號</th>
+    <th>名稱</th>
+    <th>描述</th>
+  </tr>
+  <tr>
+    <td>[% gid FILTER html %]</td>
+    <td>[% name FILTER html %]</td>
+    <td>[% description FILTER html_light %]</td>
+  </tr>
+</table>
+
+<form method="post" action="editgroups.cgi">
+  [% IF hasusers %]
+    <p><b>還有至少一位使用者屬於此群組。<br>
+       你無法在群組中還有使用者時刪除它。</b>
+
+    <br><a href="editusers.cgi?action=list&groupid=[% gid FILTER html %]&grouprestrict=1">顯示有哪些使用者</a>
+    - <input type="checkbox" name="removeusers">刪除此群組中的所有使用者。</p>
+  [% END %]
+
+  [% IF hasbugs %]
+    <p><b>還有至少一個 [% terms.bug %] 回報屬於只有此群組可瀏覽。<br>
+       你無法在群組中還有[% terms.bugs %]時刪除它。</b>
+
+    <br><a href="buglist.cgi?bug_id=[% buglist FILTER html %]">顯示有哪些 [% terms.bugs %]</a>
+    - <input type="checkbox" name="removebugs">刪除此群組中所有的[% terms.bugs %]限制。</p>
+
+    <p><b>注意：</b>這可能會使不公開的[% terms.bugs %]變為公開。<br>
+       <b>強烈</b>建議在勾選前，先瀏覽在此群組中的[% terms.bugs %]。</p>
+  [% END %]
+
+  [% IF hasproduct %]
+    <p><b>此群組和產品 <u>[% name FILTER html %]</u> 仍有關係。<br>
+       當群組和產品仍有關係時，你無法刪除它。</b>
+
+    <br><input type="checkbox" name="unbind">刪除此群組，並將產品 <U>[% name FILTER html %]</U> 變更為公開可見。</p>
+  [% END %]
+
+  [% IF hasflags %]
+    <p><b>此群組限制誰可以對特定類型的旗標做變更。<br>
+       你無法在使用旗標類型時刪除此群組。</b>
+
+    <br><a href="editflagtypes.cgi?action=list&group=[% gid FILTER html %]">顯示有哪些類型</a>
+    - <input type="checkbox" name="removeflags">刪除此群組中的所有旗標類型。</p>
+  [% END %]
+
+  [% IF shared_queries %]
+    <p>
+      <b>有 [% shared_queries %] 個已儲存的搜尋分享給此一群組。</b><br>
+      如果你刪除此群組，所有已儲存的搜尋都會再次設定為私人狀態。
+    </p>
+  [% END %]
+
+  <h2>確認</h2>
+
+  <p>你確定要刪除此一群組嗎？</p>
+  [% IF (hasusers || hasbugs || hasproduct || hasflags) %]
+    <p><b>你必須勾選以上所有勾選框，或更正已指出的問題後，才能繼續。</b></p>
+  [% END %]
+
+  <p>
+    <input type="submit" id="delete" value="是的，刪除">
+    <input type="hidden" name="action" value="delete">
+    <input type="hidden" name="group" value="[% gid FILTER html %]">
+    <input type="hidden" name="token" value="[% token FILTER html %]">
+  </p>
+</form>
+
+回到<a href="editgroups.cgi">群組清單</a>。
+
+[% PROCESS global/footer.html.tmpl %]

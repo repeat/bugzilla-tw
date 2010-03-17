@@ -1,0 +1,97 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # Contributor(s): Shane H. W. Travis <travis@sedsystems.ca>
+  #
+  #%]
+
+[%# INTERFACE:
+  # settings:      a hash of hashes, keyed by setting_name.
+  #                Each hash contains:
+  #                 is_enabled    - boolean
+  #                 default_value - string (global default for this setting)
+  #                 value         - string (user-defined preference)
+  #                 is_default    - boolean (true if user has no preference)
+  #%]
+
+[% PROCESS global/header.html.tmpl
+   title = "預設的使用偏好"
+ %]
+
+[% PROCESS "global/setting-descs.none.tmpl" %]
+
+<p>
+此頁面可讓你編輯預設的使用偏好值。
+</p>
+<p>
+每項偏好的「預設值」將會適用於所有未選擇自己的偏好設定的使用者，以及未登入的訪客。
+</p>
+<p>
+「啟用」的勾選框控制此一偏好值是否可供使用者選用。<br>
+如果勾選，使用者可以在他們的偏好設定頁面看見此一偏好設定，並可以選擇是否變更。<br>
+如果不勾選，此一偏好設定將不會顯示在偏好設定頁面上，所有使用者將會使用預設值。
+</p>
+<hr>
+
+[% IF settings.size %]
+    <form name="adminsettingform" method="post" action="editsettings.cgi">
+      <table border="1" cellpadding="4">
+      <tr>
+        <th>偏好</th>
+        <th>預設值</th>
+        <th>啟用</th>
+      </tr>
+
+      [% FOREACH name = settings.keys %]
+          [% checkbox_name = name _ '-enabled' %]
+          <tr>
+            <td align="right">
+              [% setting_descs.$name OR name FILTER html %]
+            </td>
+            <td>
+              <select name="[% name FILTER html %]" id="[% name FILTER html %]">
+                [% FOREACH x = settings.${name}.legal_values %]
+                    <option value="[% x FILTER html %]"
+                      [% " selected=\"selected\"" IF x == settings.${name}.default_value %]>
+                      [% setting_descs.${x} OR x FILTER html %]
+                    </option>
+                [% END %]
+              </select>
+            </td>
+            <td align="center">
+              <input type="checkbox"
+                name="[% checkbox_name FILTER html %]"
+                id="[% checkbox_name FILTER html %]"
+                [% " checked=\"checked\"" IF settings.${name}.is_enabled %]>
+              <br>
+            </td>
+          </tr>
+      [% END %]
+      </table>
+
+    <input type="hidden" name="action" value="update">
+    <input type="hidden" name="token" value="[% token FILTER html %]">
+    <table>
+      <tr>
+        <td width="150"></td>
+        <td>
+          <input type="submit" id="update" value="儲存設定">
+        </td>
+      </tr>
+    </table>
+
+  </form>
+[% ELSE %]
+  沒有使用偏好可以編輯。
+[% END %]
+
+[% PROCESS global/footer.html.tmpl %]

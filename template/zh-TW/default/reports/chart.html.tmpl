@@ -1,0 +1,64 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Gervase Markham <gerv@gerv.net>
+  #%]
+
+[%# INTERFACE:
+  #%]
+
+[% DEFAULT width = 600
+           height = 350
+%]
+
+[% PROCESS global/header.html.tmpl
+  title = "圖表"
+  header_addl_info = time2str("%Y-%m-%d %H:%M:%S", time)
+%]
+
+<div align="center">
+
+  [% imageurl = BLOCK %]chart.cgi?
+    [% imagebase FILTER html %]&amp;ctype=png&amp;action=plot&amp;width=
+    [% width %]&amp;height=[% height -%]
+  [% END %]
+
+  <img alt="圖形式報表結果" src="[% imageurl %]"
+    width="[% width %]" height="[% height %]">
+  <p>
+    [% sizeurl = BLOCK %]chart.cgi?
+      [% imagebase FILTER html %]&amp;action=wrap
+    [% END %]
+    <a href="[% sizeurl %]&amp;width=[% width %]&amp;height=
+             [% height + 100 %]">較高</a><br>
+    <a href="[% sizeurl %]&amp;width=[% width - 100 %]&amp;height=
+             [% height %]">較窄</a> *
+    <a href="[% sizeurl %]&amp;width=[% width + 100 %]&amp;height=
+             [% height %]">較寬</a>&nbsp;&nbsp;&nbsp;&nbsp;<br>
+    <a href="[% sizeurl %]&amp;width=[% width %]&amp;height=
+             [% height - 100 %]">較短</a><br>
+  </p>
+
+  <p>
+    <a href="chart.cgi?
+      [% imagebase FILTER html %]&amp;ctype=csv&amp;action=plot">CSV</a> |
+    <a href="chart.cgi?[% imagebase FILTER html %]&amp;action=assemble">編輯此一報表</a>
+  </p>
+
+</div>
+
+[% PROCESS global/footer.html.tmpl %]

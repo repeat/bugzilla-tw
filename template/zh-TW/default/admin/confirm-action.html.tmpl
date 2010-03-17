@@ -1,0 +1,98 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Frédéric Buclin.
+  #
+  # Contributor(s): Frédéric Buclin <LpSolit@gmail.com>
+  #%]
+
+[%# INTERFACE:
+  # abuser: identity of the user who created the (invalid?) token.
+  # token_action: the action the token was supposed to serve.
+  # expected_action: the action the user was going to do.
+  # script_name: the script generating this warning.
+  # alternate_script: the suggested script to redirect the user to
+  #                   if he declines submission.
+  #%]
+
+[% PROCESS "global/field-descs.none.tmpl" %]
+
+[% PROCESS global/header.html.tmpl title = "可疑的動作"
+                                   style_urls = ['skins/standard/global.css'] %]
+
+[% IF abuser %]
+  <div class="throw_error">
+    <p>當你瀏覽 [% terms.Bugzilla %] 的管理表格時，將會隨機產生 token
+    ，並儲存在資料庫以及瀏覽器載入的表格中，以確保所做出的變更要求是由
+    [% terms.Bugzilla %] 的表格送出。很遺憾的是，目前使用的 token
+    並不正確，代表你可能並非來自正確的頁面。
+    <br>以下的 token 已被使用：</p>
+
+    <table border="0" cellpadding="5" cellspacing="0">
+      [% IF token_action != expected_action %]
+        <tr>
+          <th>儲存的動作：</th>
+          <td>[% token_action FILTER html %]</td>
+        </tr>
+        <tr>
+          <th>&nbsp;</th>
+          <td>
+            此動作並不符合預料的動作 ([% expected_action FILTER html %]) 。
+          </td>
+        </tr>
+      [% END %]
+
+      [% IF abuser != user.identity %]
+        <tr>
+          <th>由誰產生：</th>
+          <td>[% abuser FILTER html %]</td>
+        </tr>
+        <tr>
+          <th>&nbsp;</th>
+          <td>
+            這個 token 並非由你產生。可能是有人嘗試作弄你！
+          </td>
+        </tr>
+      [% END %]
+    </table>
+
+    <p>請向 [%+ Param("maintainer") FILTER html %] 回報此問題。</p>
+  </div>
+[% ELSE %]
+  <div class="throw_error">
+    看起來你並非從正確的頁面過來（你在執行 '[% script_name FILTER html%]'
+    的時候，並沒有 <em>[% expected_action FILTER html %]</em> 此項動作有效的
+    token ）。原因可能是下列其中之一：<br>
+    <ul>
+      <li>
+        你在成功送出變更後點選了瀏覽器的「上一頁」按鈕。這並不是個好方式（不過沒有損害）。
+      </li>
+      <li>
+        你直接在瀏覽器的網址列輸入網址。這應該是安全的。
+      </li>
+      <li>
+        你點選了一個自動轉址的網址，<b>但未經過你的同意</b>，因此這個動作較為嚴重。
+      </li>
+    </ul>
+    你確定你仍要做出這些變更嗎？這可能導致非預料中或非期望的結果。
+  </div>
+
+  <form name="check" id="check" method="post" action="[% script_name FILTER html %]">
+    [% PROCESS "global/hidden-fields.html.tmpl"
+               exclude="^(Bugzilla_login|Bugzilla_password)$" %]
+    <input type="submit" id="confirm" value="確認變更">
+  </form>
+  <p>或是放棄這些變更，並回到 <a href="[% alternate_script FILTER html %]">
+    [%- alternate_script FILTER html %]</a> 。</p>
+[% END %]
+
+[% PROCESS global/footer.html.tmpl %]

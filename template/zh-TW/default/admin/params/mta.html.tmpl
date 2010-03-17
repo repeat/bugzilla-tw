@@ -1,0 +1,65 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Dave Miller <justdave@bugzilla.org>
+  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #%]
+[%
+   title = "電子郵件"
+   desc = "電子郵件將如何寄出？"
+%]
+
+[% param_descs = {
+  mail_delivery_method => "定義電子郵件如何寄送。<br>
+                           <ul>
+                             <li>
+                               'Sendmail'、'SMTP' 以及 'Qmail' 都是 MTA 。如果你想在
+                               windows 上使用 sendmail 功能，你必須安裝第三方的 sendmail 軟體。
+                             </li>
+                             <li>
+                               測試 (Test) 在 debug 時很有用，所有的電子郵件都儲存在
+                               'data/mailer.testfile' 而不寄送。
+                             </li>
+                             <li>
+                               無 (none)：不寄送郵件。 $terms.Bugzilla
+                               仍會視為將相關動作視為寄送郵件，但實際上並未寄送或儲存任何郵件。
+                             </li>
+                           </ul>",
+
+  mailfrom => "$terms.Bugzilla mail daemon 的電子郵件地址。有些電子郵件系統要求這必須是有效的電子郵件地址。",
+
+  sendmailnow => "若使用早於版本 8.12 的 'sendmail' ，將此選項設為「關」時，可以在使用者介面得到十分明顯的改善，但代價是不會即時寄信。<br>" _
+                 "若使用版本 8.12 以後的 'sendmail' ，則應將此選項設為「開」，因為設為「關」時，並不會有任何效益。<br>" _
+                 "使用 'sendmail' 以外的 MTA 的站台<b>必須</b>設為「開」，否則將不會寄送任何 $terms.bug 通知信。",
+
+  smtpserver => "若使用 SMTP 做為郵件傳遞方式時， SMTP 的伺服器地址。",
+
+  smtp_username => "使用於 SMTP 伺服器，供 SMTP 認證用的使用者名稱。" _
+                   "如果你的 SMTP 伺服器無需認證，則此欄位留白。",
+
+  smtp_password => "使用於 SMTP 伺服器，供 SMTP 認證用的密碼。" _
+                   "如果 smtp_username 參數留白時，此欄位無作用。",
+
+  smtp_debug => "若設為「開」，則將會在 $terms.Bugzilla 和 SMTP 伺服器連線發生錯誤時，" _
+                "會將詳細資訊記錄在網頁伺服器的 log 檔。你可以用此功能來對電子郵件的問題進行故障排除。",
+
+  whinedays => "在系統的 cronjob 提醒擁有 $terms.bug 的人之前，系統允許一個 $terms.bug 處於新的 (NEW)狀態且仍未被處理的天數。<br>" _
+               "若設為 0 ，則會停用訂閱功能。",
+
+  globalwatchers => "以半形逗號 (,) 分隔的清單。此清單將會收到系統所寄出的每一封通知信。" }
+
+%]

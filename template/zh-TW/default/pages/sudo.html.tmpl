@@ -1,0 +1,54 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 2005 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): A. Karl Kornel <karl@kornel.name>
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+[% INCLUDE global/header.html.tmpl title = "sudo ：扮演其他使用者" %]
+
+<p>
+  [%+ terms.Bugzilla %] 擁有讓一個使用者扮演其他使用者的功能，通常稱為
+  <i>sudo</i> ，這樣在扮演其他使用者時可以擁有適當的權限。
+</p>
+
+<p>
+  當進行 sudo 時， [% terms.Bugzilla %] 將會視同被扮演的使用者進行各項動作。這對測試十分有用，此外當被扮演的使用者無法親自操作時，也可利用此功能進行緊急處理。被扮演的使用者在 sudo 開始時，會收到一封來自 [% terms.Bugzilla %] 的通知信，但不會被告知其他細節。
+</p>
+
+<p>
+  如要使用此功能，你必須是適當群組的成員。所有的管理者都已預設為可使用此功能。其他使用者，以及其他群組的成員，可以在個別的情況下，給予此功能的權限。若要要求此功能的權限，請連絡管理者：
+  <a href="mailto:[% Param("maintainer") %]"> [%- Param("maintainer") %]</a> 。
+</p>
+
+<p>
+  如果你不想要被 sudo ，你應該連絡管理者，看看有無這個可能。可以使用 sudo 功能的人已被自動保護。
+</p>
+
+<p id="message">
+  [% IF user.groups.bz_sudoers %]
+    你是 <b>bz_sudoers</b> 群組的成員之一。你可以使用此功能，對其他使用者進行 sudo 。
+  [% ELSE %]
+    你並非適當群組的成員。你無法使用此功能。
+  [% END %]
+  [% IF user.groups.bz_sudo_protect %]
+    <br>
+    你是 <b>bz_sudo_protect</b> 群組的成員之一。其他使用者無法使用此功能對你進行 sudo 。
+  [% END %]
+</p>
+
+[% INCLUDE global/footer.html.tmpl %]

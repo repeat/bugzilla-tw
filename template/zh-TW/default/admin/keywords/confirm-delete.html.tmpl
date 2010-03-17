@@ -1,0 +1,47 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Terry Weissman <terry@mozilla.org>
+  #                 Vlad Dascalu <jocuri@softhome.net>
+  #                 Max Kanat-Alexander <mkanat@bugzilla.org>
+  #%]
+
+[%# INTERFACE:
+  # keyword: A Bugzilla::Keyword object.
+  #%]
+
+[% PROCESS global/header.html.tmpl
+  title = "刪除關鍵字"
+%]
+
+<p>
+  在此組關鍵字中還有 [% keyword.bug_count FILTER html %] 個 [% terms.bugs %] 。
+
+  你<b>確定</b>要刪除 <code>[% keyword.name FILTER html %]</code> 此關鍵字嗎？
+</p>
+
+<form method="post" action="editkeywords.cgi">
+  <input type="hidden" name="id" value="[% keyword.id FILTER html %]">
+  <input type="hidden" name="action" value="delete">
+  <input type="hidden" name="token" value="[% token FILTER html %]">
+  <input type="submit" id="delete"
+         value="是的，確認刪除該關鍵字">
+</form>
+
+<p><a href="editkeywords.cgi">編輯其他關鍵字</a>。</p>
+
+[% PROCESS global/footer.html.tmpl %]

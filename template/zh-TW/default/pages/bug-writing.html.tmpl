@@ -1,0 +1,152 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Eli Goldberg <eli@prometheus-music.com>
+  #                 Gervase Markham <gerv@gerv.net>
+  #                 Vera Horiuchi
+  #                 Claudius Gayle
+  #                 Peter Mock
+  #                 Chris Pratt
+  #                 Tom Schutter
+  #                 Chris Yeh
+  #%]
+
+[% PROCESS "global/field-descs.none.tmpl" %]
+
+[% INCLUDE global/header.html.tmpl title = "$terms.Bug 回報寫作技巧" %]
+
+  <p>有效率的 [% terms.bug %] 回報可以讓 [% terms.bug %] 較容易被修復。以下解釋如何寫出此類回報。
+
+<h3>原則</h3>
+
+  <ul>
+    <li>正確</li>
+    <li>清晰－－適當解釋，讓他人可以重製該 [% terms.bug %]</li>
+    <li>每份報告只回報一個 [% terms.bug %]</li>
+    <li>即使是微小的 [% terms.bug %] 也應該回報－－小的 [% terms.bugs %] 背後可能隱藏著大的 [% terms.bugs %]</li>
+    <li>陳述事實而不猜測</li>
+  </ul>
+
+<h3>事前準備</h3>
+
+<ol>
+  <li>以最新 build 的軟體試著重製你遇到的 [% terms.bug %] ，看此問題是否已修正。</li>
+
+  <li><a href="query.cgi?format=specific">搜尋</a> [% terms.Bugzilla %]
+  看看你遇到的 [% terms.bug %] 是否已有人回報。
+  </li>
+</ol>
+
+<h3>回報一個新的 [% terms.Bug %]</h3>
+
+<p>如果你已在最新的 build 重製出這個 [% terms.bug %] 而且還沒有人回報，那麼：</p>
+
+<ol>
+ <li>點選「<a href="enter_bug.cgi">輸入新的 [% terms.bug %]</a> 」</li>
+ <li>選擇在哪個產品遇到這個 [% terms.bug %]</li>
+ <li>填表。以下是一些有助瞭解表格內容的說明：</li>
+</ol>
+
+  <blockquote>
+    <p><b>子產品：</b>這個 [% terms.bug %] 屬於軟體的哪個部份？<br>
+    此欄位為必填。點選「子產品」可以看見每項子產品的描述。如果沒有適當的子產品，試著尋找「一般」子產品。
+    </p>
+
+    <p><b>作業系統：</b>在哪個作業系統發現的？（例如 Linux 、 Windows XP 、 Mac OS X 。）<br>
+    如果你知道這個 [% terms.bug %] 會發生在多種作業系統，選擇全部 (All) 。
+    如果你的作業系統不在清單上，選擇其他 (Other) 。</p>
+
+    <p><b>摘要：</b>你如何以少於 60 個字元的長度，來描述這個 [% terms.bug %] ？<br>
+    一個好的摘要應該能夠<b>快速並獨一無二地識別[% terms.abug %]的回報。</b>
+    它應該要解釋問題所在點，而非提供解決方法。<br>
+    <ul>
+     <li>好的例子：「<tt>取消複製檔案的對話框時，檔案總管當掉</tt>」</li>
+     <li>不好的例子：「<tt>軟體當掉</tt>」</li>
+     <li>不好的例子：「<tt>瀏覽器應該要可以瀏覽我的網頁</tt>」</li>
+    </ul>
+
+    <b>描述：</b>
+    問題回報的細節，包括：</p>
+
+    <blockquote>
+      <p><b>概觀：</b>對於摘要做更詳細的描述。
+      </p>
+
+      <blockquote>
+<pre>
+在 NSGetFactory 功能下拖拉任何頁面，會使 Mac build 當掉。
+</pre>
+      </blockquote>
+
+      <p><b>重製步驟：</b> 可以簡單重製 [% terms.bug %] 的步驟。包括任何特別的設定步驟。</p>
+
+      <blockquote>
+<pre>
+1) 瀏覽任何網頁。（我用了預設的範本頁面， resource:/res/samples/test0.html ）
+
+2) 拖拉該頁。（特別是當按住滑鼠按鍵時，將滑鼠游標從瀏覽器內容區的任一點拖至瀏覽器內容區的底部。）
+</pre>
+      </blockquote>
+
+      <p><b>實際結果：</b>在上述步驟後，程式的實際結果。</p>
+
+      <blockquote>
+<pre>
+應用程式當了。
+</pre>
+      </blockquote>
+
+      <p><b>預期結果：</b>如果沒有 [% terms.bug %] 的話，程式預期的結果。</p>
+
+      <blockquote>
+<pre>
+視窗應該往下拉。下拉的內容應該被選取。（至少應用程式不應該當掉。）
+</pre>
+      </blockquote>
+
+      <p><b>build 日期以及硬體平台：</b>第一次遇到這個 [% terms.bug %] 時，硬體平台的 build 以及日期。</p>
+
+      <blockquote>
+<pre>
+Build 2006-08-10 的 Mac OS 10.4.3
+</pre>
+      </blockquote>
+
+      <p><b>額外的 build 以及硬體平台：</b>在其他的硬體平台（或瀏覽器）是否會發生這個 [% terms.bug %] 。</p>
+
+      <blockquote>
+<pre>
+不會在 build 2006-08-10 的 Windows XP Home (Service Pack 2) 上發生
+</pre>
+      </blockquote>
+
+      <p><b>附加資訊：</b>其他有用的資訊。
+      <br><br>對於會造成當掉的 [% terms.bugs %] ：</p>
+
+      <ul>
+        <li><b>Windows ：</b>註明當掉的種類，以及應用程式在哪種模組下當掉換（例如：在 apprunner.exe 中拒絕存取。）</li>
+
+        <li><b>Mac OS X ：</b>附上 "Crash Reporter" 的記錄檔。只要附上 "Thread 0 Crashed"
+        的段落即可。請勿貼上整份記錄檔！</li>
+      </ul>
+    </blockquote>
+
+  <p>檢查報告內容是否正確，然後點選「送出」，就可以將你回報的 [% terms.bug %] 放進 [% terms.Bugzilla %] 資料庫裡了。<br>
+  </p>
+</blockquote>
+
+[% INCLUDE global/footer.html.tmpl %]

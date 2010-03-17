@@ -1,0 +1,89 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Gervase Markham <gerv@gerv.net>
+  #%]
+
+[%# INTERFACE:
+  # has_bits: array of hashes. May be empty.
+  #           name => Names of the permissions the user has.
+  #           desc => Descriptions of the permissions the user has.
+  # set_bits: array of hashes. May be empty.
+  #           name => Names of the permissions the user can set for
+  #           other people.
+  #           desc => Descriptions of the permissions the user can set for
+  #           other people.
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+<table align="center">
+  <tr>
+    <td>
+      [% IF has_bits.size %]
+        你的帳號擁有以下的權限：
+        <table align="center">
+          [% FOREACH bit_description = has_bits %]
+            <tr>
+              <td>[% bit_description.name FILTER html %]</td>
+              <td>[% bit_description.desc FILTER html_light %]</td>
+            </tr>
+          [% END %]
+        </table>
+
+        [% FOREACH privs = ["editcomponents", "canconfirm", "editbugs"] %]
+          [% SET products = ${"local_$privs"} %]
+          [% IF products && products.size %]
+            <br>
+            <p>
+              你也擁有下列產品的區域 '[% privs FILTER html %]' 權限：
+            </p>
+            <p>
+              [% FOREACH product = products %]
+                [% product.name FILTER html %]<br>
+              [% END %]
+            </p>
+          [% END %]
+        [% END %]
+
+      [% ELSE %]
+        你的帳號沒有被設定任何權限。
+      [% END %]
+
+      [% IF user.groups.editusers %]
+        <br>
+        你擁有 editusers 的權限。你可以開啟或關閉所有使用者的所有權限。
+      [% ELSIF set_bits.size %]
+        <br>
+        你可以開啟或關閉<a href="editusers.cgi">其他使用者</a>的下列權限：
+          <table align="center">
+          [% FOREACH bit_description = set_bits %]
+            <tr>
+              <td>[% bit_description.name FILTER html %]</td>
+              <td>[% bit_description.desc FILTER html_light %]</td>
+            </tr>
+          [% END %]
+          </table>
+      [% END %]
+
+      [% IF user.groups.bz_sudoers %]
+        <br>
+        你是 <b>bz_sudoers</b> 群組的成員，因此你可以<a href="relogin.cgi?action=prepare-sudo">以其他使用者身份進行操作</a>。
+      [% END %]
+    </td>
+  </tr>
+</table>

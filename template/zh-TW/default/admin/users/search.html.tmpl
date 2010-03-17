@@ -1,0 +1,74 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # Contributor(s): Marc Schumann <wurblzap@gmail.com>
+  #                 David Lawrence <dkl@redhat.com>
+  #%]
+
+[%# INTERFACE:
+  #
+  # editusers:          is viewing user member of editusers?
+  # restrictablegroups: list of groups visible to the user:
+  #                     id: group id
+  #                     name: group name
+  #%]
+
+
+[% PROCESS global/header.html.tmpl
+  title = "搜尋使用者"
+  style_urls = ['skins/standard/editusers.css']
+  onload = "document.forms['f'].matchstr.focus()"
+  doc_section = "useradmin.html#user-account-search"
+%]
+
+[% PROCESS admin/users/listselectvars.html.tmpl
+  listselectionvalues = listselectionvalues
+%]
+
+<form name="f" method="get" action="editusers.cgi">
+<input type="hidden" name="action" value="list" />
+<p><label for="matchvalue">以下列條件列出使用者</label>
+<select id="matchvalue" name="matchvalue">
+  <option value="login_name">帳號</option>
+  <option value="realname">真實姓名</option>
+  <option value="userid">使用者編號</option>
+</select>
+<label for="matchstr">符合</label>
+<input size="32" name="matchstr" id="matchstr" />
+<select name="matchtype">
+  <option value="substr" selected="selected">子字串（忽略大小寫）</option>
+  <option value="regexp">正規表達式（忽略大小寫）</option>
+  <option value="notregexp">不符合正規表達式（忽略大小寫）</option>
+  <option value="exact">完全符合（搜尋該使用者）</option>
+</select>
+<input type="submit" id="search" value="搜尋" /></p>
+
+[% IF restrictablegroups.size %]
+  <p><input type="checkbox" name="grouprestrict" value="1" id="grouprestrict" />
+  <label for="grouprestrict">限制使用者屬於群組…</label>
+  <select name="groupid"
+          onchange="document.forms['f'].grouprestrict.checked=true">
+    [% FOREACH group = restrictablegroups %]
+      <option value="[% group.id FILTER html %]">[% group.name FILTER html %]</option>
+    [% END %]
+  </select></p>
+[% END %]
+</form>
+
+[% IF editusers %]
+  <p>
+    你也可以<a href="editusers.cgi?action=add">新增使用者</a>[%- IF listselectionvalues %]，或者<a
+    href="editusers.cgi?action=list[% INCLUDE listselectionurlparams %]">再次顯示使用者清單</a>[%- END %]。
+  </p>
+[% END %]
+
+[% PROCESS global/footer.html.tmpl %]

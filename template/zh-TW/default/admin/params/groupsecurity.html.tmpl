@@ -1,0 +1,52 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Dave Miller <justdave@bugzilla.org>
+  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #%]
+[%
+   title = "群組安全性"
+   desc = "設定群組安全性"
+%]
+
+[% param_descs = {
+  makeproductgroups => "若設為開， $terms.Bugzilla 將會對資料庫中的每項產品做出 $terms.bug 的群組關連，" _
+                       "並用於查詢 $terms.bugs 中。",
+
+  useentrygroupdefault => "若設為開， $terms.Bugzilla 將預設使用產品的 $terms.bug 群組" _
+                          "做為誰可以輸入 $terms.bugs 的限制條件。若設為開，" _
+                          "使用者將可以看見他們在搜尋功能表可以瀏覽的所有產品。" _
+                          "若設為關，使用者可以看見任何未將使用者強制排除在外的產品。",
+
+  chartgroup => "設定可以使用「新圖表」功能的使用者群組名稱。" _
+                "在對不受信任的大眾啟用此功能前，管理者應該確認所有公開的分類及系列定義並不會洩漏機密資訊。" _
+                "若設為空白，則不允許任何使用者使用該功能。",
+
+  insidergroup => "設定可以看見並更改不公開的意見及附件的使用者群組名稱。",
+
+  timetrackinggroup => "設定可以看見並更改時間追蹤資訊的使用者群組名稱。",
+
+  querysharegroup => "設定可以分享己儲存的搜尋給其他人的使用者群組名稱。",
+
+  usevisibilitygroups => "是否要限制特定群組的成員才能看見使用者？",
+
+  strict_isolation => "當使用者被禁止編輯一項產品中的 $terms.bug 時，" _
+                      "也不允許使用者被分配、被設為 QA 連絡人、被加入寄件副本清單、變更依賴關係" _
+                      "或其他任何和 $terms.bug 有關的活動。",
+
+ }
+%]

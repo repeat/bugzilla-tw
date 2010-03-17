@@ -1,0 +1,48 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Dave Miller <justdave@bugzilla.org>
+  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #%]
+[%
+   title = "$terms.Bug 變更政策"
+   desc = "設定 $terms.bug 變更的政策"
+%]
+
+[% param_descs = {
+  duplicate_or_move_bug_status => "當 $terms.bug 被標記為和另一個 $terms.bug 重複 (DUPLICATE) ，" _
+                                  "或是搬到另一台安裝的機器上時，使用此狀態。",
+
+  letsubmitterchoosepriority => "若設為「開」，則回報 $terms.bug 的使用者可以選擇它的優先程度為何。" _
+                                "若設為「關」，則使用預設的優先程度值。",
+
+  letsubmitterchoosemilestone => "若設為「開」，則回報 $terms.bug 的使用者可以選擇它的目標里程碑為何。" _
+                                 "若設為「關」，則使用該產品預設的目標里程碑。",
+
+  musthavemilestoneonaccept => "使用「目標里程碑」時，是否要求使用者在接受一個 $terms.bug 時，設定目標里程碑？",
+
+  commentonclearresolution => "若設為「開」，當清除 $terms.bug 的解決方案時，使用者需要輸入意見。",
+
+  commentonchange_resolution => "若設為「開」，當變更 $terms.bug 的解決方案時，使用者需要輸入意見。",
+
+  commentonreassignbycomponent => "若設為「開」，當重新分配 $terms.bug 至其他子產品時，使用者需要輸入意見。",
+
+  commentonduplicate => "若設為「開」，當 $terms.bug 被標記為重複 (DUPLICATE) 時，使用者需要輸入意見。",
+
+  noresolveonopenblockers => "若設為「開」，當 $terms.bug 的依賴關係樹還有未解的的 $terms.bugs 時，" _
+                             "將不允許設定解決方案為已修復 (FIXED) 。" }
+%]

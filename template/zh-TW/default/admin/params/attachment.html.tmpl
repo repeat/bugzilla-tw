@@ -1,0 +1,65 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Dave Miller <justdave@bugzilla.org>
+  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #%]
+[%
+   title = "附件"
+   desc = "設定附件選項"
+%]
+
+[% param_descs = {
+  allow_attachment_display =>
+    "設定為「開」時，若使用者的瀏覽器支援附件的 MIME 類型時，將可直接從瀏覽器瀏覽附件。<br>" _
+    "設定為「關」時，則不論使用者的瀏覽器是否支援該 MIME 類型，都必須下載附件後才能瀏覽。" _
+    "<p>這是一個安全性限制的考量。如果直接支援自瀏覽器瀏覽附件時，可能會有惡意使用者上傳有害的附件。</p>" _
+    "<p>若你將此參數設定為「開」，強烈建議你也設定 <tt>attachment_base</tt> 參數。",
+
+  attachment_base =>
+    "當 <tt>allow_attachment_display</tt> 參數設定為「開」時，可能會有有害的附件存取你的 cookies ，" _
+    "或是使用你的帳號攻擊 $terms.Bugzilla 。" _
+    "<p>如果你要避免前述狀況而想增加附件的安全性，將此參數設定為不同於 <tt>urlbase</tt> " _
+    "或 <tt>sslbase</tt> 參數的網址。也就是說，" _
+    "設定一組不相同的域名，但透過 DNS 解析後仍可連到同一台安裝 $terms.Bugzilla 的機器。</p>" _
+    "<p>要注意的是，如果你已經設定了" _
+    " <a href=\"editparams.cgi?section=core#cookiedomain\"><tt>cookiedomain</tt> " _
+    "這個參數時，你應該要把 <tt>attachment_base</tt> 設定為" _
+    "<em>不</em>符合 <tt>cookiedomain</tt> 的域名。</p>" _
+    "<p>當你瀏覽附件時，為了增強安全性，你可以在網址中插入 <tt>%bugid%</tt> ，" _
+    "將會被系統自動替換為該附件所在的 $terms.bug 的編號中。這將會限制瀏覽附件的同時，" _
+    "只能瀏覽其他同屬於同一個 $terms.bug 的附件。記得，這些可能出現的域名" _
+    "（例如 <tt>1234.your.domain.com</tt> ）都必須指向同一台安裝 $terms.Bugzilla 的機器。",
+
+  allow_attachment_deletion => "設定為「開」時，管理者可以刪除附件內容。",
+
+  allow_attach_url => "設定為「開」時，可於上傳附件時，將指定的網址做為附件。",
+
+  maxpatchsize => "所允許的 patch 檔案大小的最大值 (KB) 。<br>" _
+                  "大於指定大小的 patch 將不被允許上傳至 $terms.Bugzilla 。<br>" _
+                  "若設定為 0 ，則會允許任何檔案大小的 patch 。",
+
+  maxattachmentsize => "所允許的附件檔案大小的最大值 (KB) 。<br>" _
+                       "大於指定大小的附件將不被允許上傳至 $terms.Bugzilla 。<br>" _
+                       "若設定為 0 ，則會允許任何檔案大小的附件。",
+
+  maxlocalattachment => "所允許儲存於伺服器端的「大檔案」大小的最大值 (MB) 。<br>" _
+                        "若設定為 0 ，則附件將永遠不會儲存在本地伺服器中。",
+
+  convert_uncompressed_images => "設定為「開」時，附件中的 BMP 檔會被自動轉為 PNG 檔，" _
+                                 "以節省資料庫空間。" }
+%]

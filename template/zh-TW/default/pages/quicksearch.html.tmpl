@@ -1,0 +1,169 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # Contributor(s): N.N.
+  #                 Marc Schumann <wurblzap@gmail.com>
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+[% INCLUDE global/header.html.tmpl
+   title  = "$terms.Bugzilla 快速搜尋",
+   style  = 'ul {margin-bottom: 2ex}
+             ul li {margin-top: 2ex}
+             ul li ul li {margin-top: 0}'
+   onload = 'document.forms[\'f\'].quicksearch.focus()'
+ %]
+
+<p style="font-size: 80%">
+  若你對原始的 <a href="query.cgi">[% terms.Bugzilla %] 搜尋表單</a>已十分熟悉，你可能會想要用<a
+  href="page.cgi?id=quicksearchhack.html">這份表單</a>。
+</p>
+
+<p>
+  輸入一個以上的字（或字串）進行搜尋：
+</p>
+
+<form name="f" action="buglist.cgi" method="get"
+      onsubmit="if (this.quicksearch.value == '')
+                { alert('請至少輸入一個字串來搜尋。');
+                  return false; } return true;">
+  <input type="text" size="40" name="quicksearch">
+  <input type="submit" value="尋找" id="find">
+</form>
+
+<h2>開始使用</h2>
+
+<ul>
+  <li>
+    這是<strong>忽略大小寫字母</strong>的搜尋：<br />
+    <ul>
+      <li><tt>table</tt> 、 <tt>Table</tt> 和 <tt>TABLE</tt> 會被當成相同的字串。</li>
+    </ul>
+  </li>
+  <li>
+    這是<strong>把所有字視為子字串</strong>的搜尋。<br />
+    因此，你應該<strong>使用字的語幹</strong>以獲得較佳的搜尋結果：
+    <ul>
+      <li>
+        使用 <tt>localiz</tt> 而不是 <tt>localize</tt> 或 <tt>localization</tt> 。
+      </li>
+     <li>
+       使用 <tt>bookmark</tt> 而不是 <tt>bookmarks</tt> 或 <tt>bookmarking</tt> 。
+     </li>
+   </ul>
+  </li>
+</ul>
+
+<h2><a name="features">特色</a></h2>
+
+<ul>
+  <li>
+    布林運算式： &ldquo;<tt>-foo</tt>&rdquo;&nbsp;（非）、
+    &ldquo;<tt>foo&nbsp;bar</tt>&rdquo;&nbsp;（且），
+    &ldquo;<tt>foo|bar</tt>&rdquo;&nbsp;（或）。
+    <ul>
+      <li>
+        <strong>非</strong>：<br />
+        使用 <tt><b>-</b><i>foo</i></tt> 排除在摘要中有 <tt><i>foo</i></tt> 的 [% terms.bugs %] 。
+      </li>
+      <li>
+        <strong>且</strong>：<br />
+        以空白分隔的字會被視為較長的字串。
+      </li>
+      <li>
+        <strong>或</strong>：<br />
+        可以使用 "|" 來代表「或」。
+      </li>
+      <li>
+        除了 "|" 之外，也可使用逗號 (,) 代表「或」。
+      </li>
+      <li>
+        「或」比「且」有較高的優先權；「且」是最上層的運算子。
+      </li>
+    </ul>
+    <i>例如：</i>
+    <tt>url,location bar,field -focus</tt> 代表
+    (<tt>url</tt> 或 <tt>location</tt>) 且 (<tt>bar</tt> 或 <tt>field</tt>) 且 (非 <tt>focus</tt>)
+  </li>
+  <li>
+    當 [% terms.bugs %] 的<strong>摘要</strong>包含<strong>子字串</strong> <tt>foo</tt> 時，使用
+    <tt>+foo</tt> 來搜尋。<br/>
+    當 [% terms.bugs %] 的<strong>摘要</strong>包含<strong>單字</strong> <tt>foo</tt> 時，使用
+    <tt>#foo</tt> 來搜尋。
+    <ul>
+      <li>
+        <tt>+brow</tt> does not find all [% terms.bugs %] in the
+        <tt>Browser</tt> product.
+      </li>
+      <li>
+        <tt>#title</tt> does not find [% terms.bugs %] with <tt>titlebar</tt>
+        or <tt>titled</tt>.
+      </li>
+    </ul>
+    若有字串包括空白，以及 , + - # 等特殊符號，可以用雙引號 (") <strong>括起來</strong>：
+    <ul>
+      <li>
+        <tt>"lock icon"</tt>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <strong>開啟的 vs. 已解決的 [% terms.Bugs %]</strong>：<br />
+    預設值僅顯示示開啟的（也就是尚未解決的） [% terms.bugs %] 。
+    在搜尋中將 <tt>+DUP</tt> 放在最前面代表要包括重複的 [%+ terms.bugs %] ，
+    <tt>FIXED</tt> 代表僅搜尋已修復的 [%+ terms.bugs %] ，或
+    <tt>ALL</tt> 代表搜尋全部的 [% terms.bugs %] 。
+    如果在開啟的 [%+ terms.bug %] 中無法直接找到，建議搜尋重複的 [%+ terms.bug %] 。
+    <ul>
+      <li>
+        <tt>+DUP,FIXED 表格 框線</tt>
+      </li>
+      <li>
+        <tt>ALL 滑鼠 滾輪</tt>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <strong>將搜尋聚焦於產品及子產品中</strong>：<br />
+    僅在產品 "Foo Bar" 中搜尋 [% terms.bugs %] 時，在搜尋中加入
+    <tt>:foo</tt> 、 <tt>:bar</tt> 字串，或兩者都加。你可以對任何<a href="describecomponents.cgi">產品或子產品</a>的子字串做此種聚焦搜尋。
+  </li>
+</ul>
+
+<h2>更多小技巧</h2>
+
+<ul>
+  <li>
+    你也可以輸入 [% terms.bug %] 的編號來直接<strong>找</strong> 一個 [% terms.bug %] ：<br />
+    <ul>
+      <li><tt>12345</tt></li>
+    </ul>
+  </li>
+  <li>
+    輸入以逗號 (,) 分隔的 [% terms.bug %] 編號清單，會呈現這些 [% terms.bug %] 的清單：<br />
+    <ul>
+      <li><tt>12345,23456,34567</tt></li>
+    </ul>
+  </li>
+</ul>
+
+<p>
+  預設會搜尋下列欄位：摘要、關鍵字、產品、子產品，以及狀態白板。如果輸入的字看起來像網址的一部份時，在搜尋時也會包括網址欄位。
+</p>
+<hr>
+
+<p>
+  也可使用 <a href="query.cgi">[% terms.Bugzilla %] 搜尋表單</a>做為進階搜尋。
+</p>
+
+[% PROCESS global/footer.html.tmpl %]

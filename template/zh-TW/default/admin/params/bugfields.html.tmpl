@@ -1,0 +1,55 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Dave Miller <justdave@bugzilla.org>
+  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #%]
+[%
+   title = "$terms.Bug 欄位"
+   desc = "選擇你想要顯示的欄位"
+%]
+
+[% param_descs = {
+  useclassification => "若設為「開」， $terms.Bugzilla 將把每項產品歸到一個分類中。" _
+                       "但是你必須將 editclassification 參數設為「開」，才能夠編輯分類。",
+
+  showallproducts => "若設為「開」，且 useclassification 參數已設定，則 $terms.Bugzilla 將會在" _
+                     "「輸入新的 $terms.bug 」頁面加上「全部」的連結，以列出所有產品。",
+
+  usetargetmilestone => "你是否希望使用目標里程碑欄位？",
+
+  useqacontact => "你是否希望使用 QA 連絡人欄位？",
+
+  usestatuswhiteboard => "你是否希望使用狀態白板欄位？",
+
+  usevotes => "你是否希望使用者對 $terms.bugs 投票？" _
+              "注意：若設定此選項設定為「開」，你也必須在" _
+              "<a href=\"editproducts.cgi\">編輯產品</a>的頁面中，將每項產品所允許的最大票數設為 0 以外的值。",
+
+  usebugaliases => "你是否希望使用 $terms.bug 別名功能，這樣你可以對 " _
+                   "$terms.bugs 輸入一個好記的名稱？",
+
+  defaultpriority => "這是新輸入的 $terms.bugs 的預設優先程度。",
+
+  defaultseverity => "這是新輸入的 $terms.bugs 的預設嚴重等級。",
+
+  defaultplatform => "這是在輸入 $terms.bug 時，預先選擇的硬體平台。<br>" _
+                     "若留白，則 $terms.Bugzilla 會使用瀏覽器回報的值做為平台預先選擇的值。",
+
+  defaultopsys => "這是在輸入 $terms.bug 時，預先選擇的作業系統。<br>" _
+                  "若留白，則 $terms.Bugzilla 會使用瀏覽器回報的值做為作業系統預先選擇的值。" }
+%]

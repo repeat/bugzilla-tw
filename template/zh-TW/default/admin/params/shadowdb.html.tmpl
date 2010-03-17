@@ -1,0 +1,42 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Dave Miller <justdave@bugzilla.org>
+  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #%]
+[%
+   title = "Shadow 資料庫"
+   desc = "增加資料庫效能的選項"
+%]
+
+[% param_descs = {
+  shadowdbhost => "Shadow 資料庫在的主機。",
+
+  shadowdbport => "Shadow 資料庫所在的連接埠。若 <tt>shadowdbhost</tt> 設為空白，則會忽略此設定。" _
+                  "注意：如果主機是本地的機器，那麼 MySQL 會忽略此設定，因此你必須在下方指定 socket 。",
+
+  shadowdbsock => "如果主機是本地的機器的話，此選項用來指定連線到 shadow 資料庫的 socket 。" _
+                  "因為在從客戶端連線到本地伺服器時， MySQL 會忽略客戶端所指定的連接埠，" _
+                  "而使用它內建（在 unix 機器上）的 socket 路徑連線。" _
+                  "如果設為空白，並且在 localhost 安裝資料庫的話， " _
+                  "<tt>shadowdbport</tt> 參數將被忽略。",
+
+  shadowdb => "如果不設為空白，那麼這就是另一個資料庫的名稱，並且被 $terms.Bugzilla 用來做唯讀的複製備份。" _
+              "這麼做的好處是在執行又長又慢的唯讀程序時，可以使用此一資料庫，而不會讓其他人因此鎖死。" _
+              "這個資料庫必須設在 <tt>shadowdbhost</tt> 上，且必須存在。 " _
+              "$terms.Bugzilla 並不會更新它，因此如果你使用此一參數，那麼你必須替你的資料庫設定複製。" }
+%]

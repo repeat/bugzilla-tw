@@ -1,0 +1,52 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # Contributor(s): Max Kanat-Alexander <mkanat@bugzilla.org>
+  #%]
+
+[%# INTERFACE:
+  # value: string; the value being inserted/edited.
+  # field: object; the field which the value belongs/belonged to.
+  #
+  # no_XXX_link: boolean; if defined, then don't show the corresponding
+  #                       link. Supported parameters are:
+  #
+  # no_edit_link
+  # no_edit_other_link
+  # no_add_link
+  #%]
+
+<hr>
+
+<p>
+
+[% UNLESS no_add_link %]
+  <a title="在 '[% field.description FILTER html %]' 新增一個數值。"
+     href="editvalues.cgi?action=add&amp;field=
+          [%- field.name FILTER url_quote %]">新增</a>一個數值。
+[% END %]
+
+[% IF value && !no_edit_link %]
+  編輯數值 <a
+  title="編輯 '[%- field.name FILTER html %]' 欄位的數值 '[% value FILTER html %]'"
+  href="editvalues.cgi?action=edit&amp;field=
+        [%- field.name FILTER url_quote %]&amp;value=[% value FILTER url_quote %]"
+        >'[% value FILTER html %]'</a> 。
+[% END %]
+
+[% UNLESS no_edit_other_link %]
+  編輯 <a href="editvalues.cgi?field=
+        [%- field.name FILTER url_quote %]">'[% field.description FILTER html %]'</a> 欄位的其他數值。
+
+[% END %]
+
+</p>

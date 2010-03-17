@@ -1,0 +1,104 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # Contributor(s): Max Kanat-Alexander <mkanat@bugzilla.org>
+  #%]
+
+[%# INTERFACE:
+  # value: string; The field value being deleted.
+  # bug_count: number; The number of bugs that have this field value.
+  # value_count: number; The number of values left for this field, including
+  #              this value.
+  # field: object; the field the value is being deleted from.
+  # param_name: string; The name of the parameter (defaultxxx) associated
+  #             with the field.
+  #%]
+
+[% title = BLOCK %]
+  從 '[% field.description FILTER html %]' ([% field.name FILTER html %]) 欄位中刪除數值 '[% value FILTER html %]'
+[% END %]
+
+[% PROCESS global/header.html.tmpl
+  title = title
+  style_urls = ['skins/standard/admin.css']
+%]
+
+<table border="1" cellpadding="4" cellspacing="0">
+<tr bgcolor="#6666FF">
+  <th valign="top" align="left">欄位</th>
+  <th valign="top" align="left">值</th>
+</tr>
+<tr>
+  <td valign="top">欄位名稱：</td>
+  <td valign="top">[% field.description FILTER html %]</td>
+</tr>
+<tr>
+  <td valign="top">欄位數值：</td>
+  <td valign="top">[% value FILTER html %]</td>
+</tr>
+<tr>
+  <td valign="top">[% terms.Bugs %] ：</td>
+  <td valign="top">
+[% IF bug_count %]
+  <a title="列出 '[% field.description FILTER html %]' 是 '[% value FILTER html %]' 的 [% terms.bugs %]"
+     href="buglist.cgi?[% field.name FILTER url_quote %]=[%- value FILTER url_quote %]">[% bug_count FILTER html %]</a>
+[% ELSE %]
+  無
+[% END %]
+  </td>
+</tr>
+</table>
+
+<h2>確認</h2>
+
+[% IF (param_name.defined && Param(param_name) == value) || bug_count || (value_count == 1) %]
+
+  <p>很抱歉，由於下列原因，無法將 '[% value FILTER html %]' 數值從 '[% field.description FILTER html %]' 欄位中刪除：</p>
+
+  <ul class="warningmessages">
+    [% IF param_name.defined && Param(param_name) == value %]
+      <li>'[% value FILTER html %]' 是 '[% field.description FILTER html %]' 欄位的預設值。
+          [% IF user.groups.tweakparams %]在刪除此數值之前，你必須先<a href="editparams.cgi?section=bugfields#
+            [%- param_name FILTER url_quote %]">調整此欄位的預設值</a>。[% END %]
+    [% END %]
+
+    [% IF bug_count %]
+      <li>有 [% bug_count FILTER html %] 個 [%+ terms.bug %] 使用了此一數值。在刪除此數值之前，你必須先變更<a
+          title="列出 '[% field.description FILTER html %]' 是 '[% value FILTER html %]' 的 [% terms.bugs %]"
+          href="buglist.cgi?[% field.name FILTER url_quote %]=[% value FILTER url_quote %]"
+          >那[% IF bug_count > 1 %]些[% ELSE %]個[% END %] [% terms.bugs %] </a>的數值。
+        [% END %]
+
+    [% IF value_count == 1 %]
+      <li>'[% value FILTER html %]' 是 '[%- field.description FILTER html %]' 的最後一個數值，因此無法被刪除。
+    [% END %]
+  </ul>
+
+[% ELSE %]
+
+  <p>你確定要刪除此一數值嗎？</p>
+
+  <form method="post" action="editvalues.cgi">
+    <input type="submit" value="是的，刪除" id="delete">
+    <input type="hidden" name="action" value="delete">
+    <input type="hidden" name="field" value="[% field.name FILTER html %]">
+    <input type="hidden" name="value" value="[% value FILTER html %]">
+    <input type="hidden" name="token" value="[% token FILTER html %]">
+  </form>
+
+[% END %]
+
+[% PROCESS admin/fieldvalues/footer.html.tmpl
+  no_edit_link = 1
+ +%]
+
+[% PROCESS global/footer.html.tmpl %]

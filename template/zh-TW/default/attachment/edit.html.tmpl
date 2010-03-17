@@ -1,0 +1,344 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Myk Melez <myk@mozilla.org>
+  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+[%# Define strings that will serve as the title and header of this page %]
+[% title = BLOCK %]
+  [% terms.Bug %] [%+ attachment.bug_id %] 附件 [% attachment.id %] 的詳細內容
+[% END %]
+[% header = BLOCK %]
+  [%+ "$terms.Bug $attachment.bug_id" FILTER bug_link(attachment.bug_id) FILTER none %]
+  附件 [% attachment.id %] 的詳細內容
+[% END %]
+[% subheader = BLOCK %][% bugsummary FILTER html %][% END %]
+
+[% PROCESS global/header.html.tmpl
+  title = title
+  header = header
+  subheader = subheader
+  doc_section = "attachments.html"
+%]
+
+[%# No need to display the Diff button and iframe if the attachment is not a patch. %]
+[% patchviewerinstalled = (patchviewerinstalled && attachment.ispatch) %]
+
+<script type="text/javascript">
+  <!--
+  var prev_mode = 'raw';
+  var current_mode = 'raw';
+  var has_edited = 0;
+  var has_viewed_as_diff = 0;
+  function editAsComment()
+    {
+      switchToMode('edit');
+      has_edited = 1;
+    }
+  function undoEditAsComment()
+    {
+      switchToMode(prev_mode);
+    }
+  function redoEditAsComment()
+    {
+      switchToMode('edit');
+    }
+[% IF patchviewerinstalled %]
+  function viewDiff()
+    {
+      switchToMode('diff');
+
+      // If we have not viewed as diff before, set the view diff frame URL
+      if (!has_viewed_as_diff) {
+        var viewDiffFrame = document.getElementById('viewDiffFrame');
+        viewDiffFrame.src =
+            'attachment.cgi?id=[% attachment.id %]&action=diff&headers=0';
+        has_viewed_as_diff = 1;
+      }
+    }
+[% END %]
+  function viewRaw()
+    {
+      switchToMode('raw');
+    }
+
+  function switchToMode(mode)
+    {
+      if (mode == current_mode) {
+        alert('切換到同一模式！這不應該發生。');
+        return;
+      }
+
+      // Switch out of current mode
+      if (current_mode == 'edit') {
+        hideElementById('editFrame');
+        hideElementById('undoEditButton');
+      } else if (current_mode == 'raw') {
+        hideElementById('viewFrame');
+[% IF patchviewerinstalled %]
+        hideElementById('viewDiffButton');
+[% END %]
+        hideElementById(has_edited ? 'redoEditButton' : 'editButton');
+        hideElementById('smallCommentFrame');
+      } else if (current_mode == 'diff') {
+[% IF patchviewerinstalled %]
+        hideElementById('viewDiffFrame');
+[% END %]
+        hideElementById('viewRawButton');
+        hideElementById(has_edited ? 'redoEditButton' : 'editButton');
+        hideElementById('smallCommentFrame');
+      }
+
+      // Switch into new mode
+      if (mode == 'edit') {
+        showElementById('editFrame');
+        showElementById('undoEditButton');
+      } else if (mode == 'raw') {
+        showElementById('viewFrame');
+[% IF patchviewerinstalled %]
+        showElementById('viewDiffButton');
+[% END %]
+        showElementById(has_edited ? 'redoEditButton' : 'editButton');
+        showElementById('smallCommentFrame');
+      } else if (mode == 'diff') {
+[% IF patchviewerinstalled %]
+        showElementById('viewDiffFrame');
+[% END %]
+        showElementById('viewRawButton');
+        showElementById(has_edited ? 'redoEditButton' : 'editButton');
+        showElementById('smallCommentFrame');
+      }
+
+      prev_mode = current_mode;
+      current_mode = mode;
+    }
+
+  function hideElementById(id)
+  {
+    var elm = document.getElementById(id);
+    if (elm) {
+      elm.style.display = 'none';
+    }
+  }
+
+  function showElementById(id, val)
+  {
+    var elm = document.getElementById(id);
+    if (elm) {
+      if (!val) val = 'inline';
+      elm.style.display = val;
+    }
+  }
+
+  function normalizeComments()
+  {
+    // Remove the unused comment field from the document so its contents
+    // do not get transmitted back to the server.
+
+    var small = document.getElementById('smallCommentFrame');
+    var big = document.getElementById('editFrame');
+    if ( (small) && (small.style.display == 'none') )
+    {
+      small.parentNode.removeChild(small);
+    }
+    if ( (big) && (big.style.display == 'none') )
+    {
+      big.parentNode.removeChild(big);
+    }
+  }
+  //-->
+</script>
+
+<form method="post" action="attachment.cgi" onsubmit="normalizeComments();">
+  <input type="hidden" name="id" value="[% attachment.id %]">
+  <input type="hidden" name="action" value="update">
+  <input type="hidden" name="contenttypemethod" value="manual">
+  <input type="hidden" name="delta_ts" value="[% attachment.modification_time FILTER html %]">
+  [% IF user.id %]
+    <input type="hidden" name="token" value="[% issue_hash_token([attachment.id, attachment.modification_time]) FILTER html %]">
+  [% END %]
+
+  <table class="attachment_info" width="100%">
+
+    <tr>
+      <td width="25%">
+        <small>
+        <b><label for="description">描述</label>：</b><br>
+          [% INCLUDE global/textarea.html.tmpl
+            id             = 'description'
+            name           = 'description'
+            minrows        = 3
+            cols           = 25
+            wrap           = 'soft'
+            defaultcontent = attachment.description
+          %]<br>
+
+        [% IF attachment.isurl %]
+            <input type="hidden" name="filename"
+                   value="[% attachment.filename FILTER html %]">
+            <input type="hidden" name="contenttypeentry"
+                   value="[% attachment.contenttype FILTER html %]">
+        [% ELSE %]
+          <b><label for="filename">檔名</label>：</b><br>
+            <input type="text" size="20" id="filename" name="filename"
+                   value="[% attachment.filename FILTER html %]"><br>
+          <b>大小：</b>
+          [% IF attachment.datasize %]
+            [%+ attachment.datasize FILTER unitconvert %]
+          [% ELSE %]
+            <em>已刪除</em>
+          [% END %]<br>
+
+          <b><label for="contenttypeentry">MIME 類別</label>：</b><br>
+            <input type="text" size="20"
+                   id="contenttypeentry" name="contenttypeentry"
+                   value="[% attachment.contenttype FILTER html %]"><br>
+
+          <input type="checkbox" id="ispatch" name="ispatch" value="1"
+                 [%+ 'checked="checked"' IF attachment.ispatch %]>
+          <label for="ispatch">patch</label>
+        [% END %]
+          <input type="checkbox" id="isobsolete" name="isobsolete" value="1"
+                 [%+ 'checked="checked"' IF attachment.isobsolete %]>
+          <label for="isobsolete">已廢棄的附件</label>
+          [% IF (Param("insidergroup") && user.in_group(Param("insidergroup"))) %]
+            <input type="checkbox" id="isprivate" name="isprivate" value="1"
+                   [% " checked" IF attachment.isprivate %]>
+            <label for="isprivate">不公開</label><br>
+          [% END %]
+          <br>
+        </small>
+
+        [% IF flag_types.size > 0 %]
+          [% PROCESS "flag/list.html.tmpl" bug_id = attachment.bug_id
+                                           attach_id = attachment.id %]<br>
+        [% END %]
+
+        <div id="smallCommentFrame">
+          <b><small>對於 [%+ terms.bug %] 的<label for="comment">意見</label>：</small></b><br>
+            [% INCLUDE global/textarea.html.tmpl
+              id      = 'comment'
+              name    = 'comment'
+              minrows = 5
+              cols    = 25
+              wrap    = 'soft'
+            %]<br>
+        </div>
+
+        <input type="submit" value="送出" id="update"><br><br>
+        <strong>動作：</strong>
+        <a href="attachment.cgi?id=[% attachment.id %]">瀏覽</a>
+        [% IF attachment.ispatch && patchviewerinstalled %]
+         | <a href="attachment.cgi?id=[% attachment.id %]&amp;action=diff">比較差異</a>
+        [% END %]
+        [% IF Param("allow_attachment_deletion")
+              && user.groups.admin
+              && attachment.datasize > 0 %]
+          | <a href="attachment.cgi?id=[% attachment.id %]&amp;action=delete">刪除</a>
+        [% END %]
+      </td>
+
+      [% IF !attachment.datasize %]
+        <td width="75%"><b>此附件的內容已被刪除。</b></td>
+      [% ELSIF attachment.isurl %]
+        <td width="75%">
+          <a href="[% attachment.data FILTER html %]">
+            [% IF attachment.datasize < 120 %]
+              [% attachment.data FILTER html %]
+            [% ELSE %]
+              [% attachment.data FILTER truncate(80) FILTER html %]
+              &nbsp;...
+              [% attachment.data.match(".*(.{20})$").0 FILTER html %]
+            [% END %]
+          </a>
+        </td>
+      [% ELSIF !Param("allow_attachment_display") %]
+        <td id="view_disabled" width="50%">
+          <p><b>
+            因 [% terms.Bugzilla %] 的安全性限制，此附件無法直接顯示於瀏覽器中。
+          </b></p>
+          <p><b>
+            若要檢視此附件，請先<a href="attachment.cgi?id=[% attachment.id %]">下載</a>。
+          </b></p>
+        </td>
+      [% ELSIF attachment.is_viewable %]
+        <td width="75%">
+          [% INCLUDE global/textarea.html.tmpl
+            id      = 'editFrame'
+            name    = 'comment'
+            style   = 'height: 400px; width: 100%; display: none'
+            minrows = 10
+            cols    = 80
+            wrap    = 'soft'
+            defaultcontent = (attachment.contenttype.match('^text\/')) ?
+                              attachment.data.replace('(.*\n|.+)', '>$1') : undef
+          %]
+          <iframe id="viewFrame" src="attachment.cgi?id=[% attachment.id %]" style="height: 400px; width: 100%;">
+            <b>你無法在瀏覽附件的詳細資料時同時瀏覽附件，因為你的瀏覽器並不支援 IFRAME 屬性。<a
+            href="attachment.cgi?id=[% attachment.id %]">另開新視窗瀏覽</a>。</b>
+          </iframe>
+          <script type="text/javascript">
+            <!--
+            if (typeof document.getElementById == "function") {
+[% IF patchviewerinstalled %]
+              document.write('<iframe id="viewDiffFrame" style="height: 400px; width: 100%; display: none;"><\/iframe>');
+[% END %]
+              document.write('<button type="button" id="editButton" onclick="editAsComment();">以編輯附件方式做為意見<\/button>');
+              document.write('<button type="button" id="undoEditButton" onclick="undoEditAsComment();" style="display: none;">回復<\/button>');
+              document.write('<button type="button" id="redoEditButton" onclick="redoEditAsComment();" style="display: none;">重做以編輯附件方式做為意見<\/button>');
+[% IF patchviewerinstalled %]
+              document.write('<button type="button" id="viewDiffButton" onclick="viewDiff();">以比較差異方式瀏覽附件<\/button>');
+[% END %]
+              document.write('<button type="button" id="viewRawButton" onclick="viewRaw();" style="display: none;">以原始格式瀏覽附件<\/button>');
+            }
+            //-->
+          </script>
+        </td>
+      [% ELSE %]
+        <td id="noview" width="50%">
+          <p><b>
+            無法在你的瀏覽器中瀏覽該附件，因為它的 MIME 類別〔
+            [% attachment.contenttype FILTER html %] 〕 並非你的瀏覽器支援可以顯示的種類。
+          </b></p>
+          <p><b>
+            <a href="attachment.cgi?id=[% attachment.id %]">下載該附件</a>。
+          </b></p>
+        </td>
+      [% END %]
+
+    </tr>
+
+  </table>
+
+  在這個 [% terms.Bug %] 裡的附件：
+  [% FOREACH a = attachments %]
+    [% IF a == attachment.id %]
+      [%+ a %]
+    [% ELSE %]
+      <a href="attachment.cgi?id=[% a %]&amp;action=edit">[% a %]</a>
+    [% END %]
+    [% " |" UNLESS loop.last() %]
+  [% END %]
+
+</form>
+
+<br>
+
+[% PROCESS global/footer.html.tmpl %]

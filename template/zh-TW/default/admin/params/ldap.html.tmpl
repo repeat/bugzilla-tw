@@ -1,0 +1,48 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Dave Miller <justdave@bugzilla.org>
+  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #%]
+[%
+   title = "LDAP"
+   desc = "在選擇 LDAP 做為認證方式前，請先設定"
+%]
+
+[% param_descs = {
+  LDAPserver => "你的 LDAP 伺服器的位址（以及連接埠）。" _
+                "例如： <code>ldap.company.com</code> 或 <code>ldap.company.com:portnum</code> 。<br>" _
+                "也可以使用 URI 語法，例如 ldaps://ldap.company.com （安全連線）或 " _
+                "ldapi://%2fvar%2flib%2fldap_sock （以 socket 為基礎的本機連線）。<br>" _
+                "若有多筆伺服器名稱或 URI ，可以用半形逗號 (,) 分隔；會輪流試到連上為止。",
+
+  LDAPstarttls => "當可以接受 LDAP 正常連線到伺服器時，是否要求通訊加密。",
+
+  LDAPbinddn => "如果你的 LDAP 伺服器需要你使用 binddn 及密碼，而非匿名使用 bind 時，在此輸入。" _
+                "例如： cn=default,cn=user:password 。<br>" _
+                "若為匿名使用 bind 時，請設為空白。",
+
+  LDAPBaseDN => "認證使用者所使用的 BaseDN 。例如 ou=People,o=Company 。",
+
+  LDAPuidattribute => "包括使用者帳號的屬性名稱。",
+
+  LDAPmailattribute => "在目錄中包含電子郵件地址，做為 $terms.Bugzilla 帳號使用的使用者的屬性名稱。<br>" _
+                       "若設為空白，則 $terms.Bugzilla 會使用 LDAP 的使用者名稱做為 $terms.Bugzilla 的使用者名稱。" _
+                       "你可能也會想要設定 'emailsuffix' 參數。",
+
+  LDAPfilter => "過濾有效的使用者清單所使用，到 AND 的過濾條件；和 <tt>LDAPuidattribute</tt> 一併使用。" }
+%]

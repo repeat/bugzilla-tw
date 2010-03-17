@@ -1,0 +1,130 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Gervase Markham <gerv@gerv.net>
+  #%]
+
+[%# Remember to PROCESS rather than INCLUDE this template. %]
+
+[% PROCESS global/variables.none.tmpl %]
+
+[% field_descs = { "[Bug creation]"          => "[建立 $terms.Bug 時]",
+                   "actual_time"             => "實際小時數",
+                   "alias"                   => "別名",
+                   "assigned_to"             => "負責人",
+                   "attach_data.thedata"     => "附件資料",
+                   "attachments.description" => "附件描述",
+                   "attachments.filename"    => "附件檔名",
+                   "attachments.mimetype"    => "附件的 MIME 類別",
+                   "attachments.ispatch"     => "附件是 patch",
+                   "attachments.isobsolete"  => "附件已廢棄",
+                   "attachments.isprivate"   => "附件不公開",
+                   "attachments.isurl"       => "附件是網址",
+                   "attachments.submitter"   => "附件建立者",
+                   "blocked"                 => "會擋掉這些 $terms.Bug",
+                   "bug_file_loc"            => "網址",
+                   "bug_group"               => "群組",
+                   "bug_id"                  => "$terms.Bug 編號",
+                   "bug_severity"            => "嚴重程度",
+                   "bug_status"              => "狀態",
+                   "changeddate"             => "修改日期",
+                   "cc"                      => "寄件副本",
+                   "classification"          => "分類",
+                   "cclist_accessible"       => "可用的寄件副本清單",
+                   "commenter"               => "意見發表人",
+                   "component_id"            => "子產品編號",
+                   "component"               => "子產品",
+                   "content"                 => "內容",
+                   "creation_ts"             => "建立 $terms.Bug 的時間",
+                   "deadline"                => "截止期限",
+                   "delta_ts"                => "已變更",
+                   "dependson"               => "要先修好這些 $terms.Bug",
+                   "dup_id"                  => "重複的",
+                   "estimated_time"          => "原先估計時間",
+                   "everconfirmed"           => "是否確認",
+                   "flagtypes.name"          => "旗標",
+                   "keywords"                => "關鍵字",
+                   "longdesc"                => "意見",
+                   "longdescs.isprivate"     => "意見不公開",
+                   "newcc"                   => "寄件副本",
+                   "op_sys"                  => "作業系統",
+                   "opendate"                => "開啟日",
+                   "owner_idle_time"         => "自負責人接受後過了多久時間",
+                   "percentage_complete"     => "完成度 (%)",
+                   "priority"                => "優先程度",
+                   "product_id"              => "產品編號",
+                   "product"                 => "產品",
+                   "qa_contact"              => "QA 連絡人",
+                   "remaining_time"          => "剩餘時數",
+                   "rep_platform"            => "硬體平台",
+                   "reporter"                => "回報者",
+                   "reporter_accessible"     => "可瀏覽的回報者",
+                   "requestees.login_name"   => "旗標要求者",
+                   "resolution"              => "解決方案",
+                   "setters.login_name"      => "旗標設定者",
+                   "setting"                 => "設定",
+                   "settings"                => "設定",
+                   "short_desc"              => "摘要",
+                   "status_whiteboard"       => "狀態白板",
+                   "target_milestone"        => "目標里程碑",
+                   "version"                 => "版本",
+                   "votes"                   => "投票",
+                   "work_time"               => "已工作時數"} %]
+
+[%# Also include any custom fields or fields which don't have a
+    Description here, by copying their Description from the
+    database. If you want to override this for your language
+    or your installation, just use a hook. %]
+
+[% UNLESS Param('shutdownhtml') %]
+  [% USE Bugzilla %]
+  [% FOREACH bz_field = bug_fields.values %]
+    [% SET field_descs.${bz_field.name} = bz_field.description
+       IF !field_descs.${bz_field.name}.defined %]
+  [% END %]
+[% END %]
+
+[% field_types = { ${constants.FIELD_TYPE_UNKNOWN}       => "未知的類別",
+                   ${constants.FIELD_TYPE_FREETEXT}      => "任意文字",
+                   ${constants.FIELD_TYPE_SINGLE_SELECT} => "下拉式選單",
+                   ${constants.FIELD_TYPE_MULTI_SELECT}  => "多選式選單",
+                   ${constants.FIELD_TYPE_TEXTAREA}      => "文字輸入框",
+                   ${constants.FIELD_TYPE_DATETIME}      => "日期／時間"
+                } %]
+
+[% status_descs = { "UNCONFIRMED" => "未確認 (UNCONFIRMED)",
+                    "NEW"         => "新的 (NEW)",
+                    "ASSIGNED"    => "已分配 (ASSIGNED)",
+                    "REOPENED"    => "再開啟 (REOPENED)",
+                    "RESOLVED"    => "已解決 (RESOLVED)",
+                    "VERIFIED"    => "已認證 (VERIFIED)",
+                    "CLOSED"      => "已關閉 (CLOSED)" } %]
+
+[% MACRO get_status(status) GET status_descs.$status || status %]
+
+[% resolution_descs = { "FIXED"      => "已修復 (FIXED)",
+                        "INVALID"    => "無效的 (INVALID)",
+                        "WONTFIX"    => "不處理 (WONTFIX)",
+                        "DUPLICATE"  => "重複 (DUPLICATE)",
+                        "WORKSFORME" => "好好的 (WORKSFORME)",
+                        "MOVED"      => "已搬移 (MOVED)",
+                        "---"        => "---",
+                        " "          => " " } %]
+
+[% MACRO get_resolution(res) GET resolution_descs.$res || res %]
+
+[% Hook.process("end") %]

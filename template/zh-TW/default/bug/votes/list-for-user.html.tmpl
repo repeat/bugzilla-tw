@@ -1,0 +1,168 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Gervase Markham <gerv@gerv.net>
+  #%]
+
+[%# INTERFACE:
+  # voting_user: hash containing a 'login' field
+  #
+  # products: list of hashes containing details of products relating to
+  #           voting:
+  #            name: name of product
+  #            bugs: list of bugs the user has voted for
+  #            bug_ids: list of bug ids the user has voted for
+  #            onevoteonly: one or more votes allowed per bug?
+  #            total: users current vote count for the product
+  #            maxvotes: max votes allowed for a user in this product
+  #            maxperbug: max votes per bug allowed for a user in this product
+  #
+  # bug_id: number; if the user is voting for a bug, this is the bug id
+  #
+  # canedit: boolean; Should the votes be presented in a form, or readonly?
+  #
+  # all_bug_ids: List of all bug ids the user has voted for, across all products
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+[% IF !header_done %]
+  [% subheader = voting_user.login FILTER html %]
+  [% IF canedit %]
+    [% title = "變更" %]
+    [% IF bug_id %]
+      [%# We .select and .focus the input so it works for textbox and
+          checkbox %]
+      [% onload = "document.forms['voting_form'].bug_" _ bug_id _
+                  ".select();document.forms['voting_form'].bug_" _ bug_id _
+                  ".focus()" %]
+    [% END %]
+  [% ELSE %]
+    [% title = "顯示投票" %]
+  [% END %]
+  [% PROCESS global/header.html.tmpl
+             style_urls = [ "skins/standard/voting.css" ]
+  %]
+[% ELSE %]
+  <hr>
+[% END %]
+
+[% IF votes_recorded %]
+  <p>
+    <font color="red">
+      你對你的投票所做的變更已儲存。
+    </font>
+  </p>
+[% ELSE %]
+  <br>
+[% END %]
+
+[% IF products.size %]
+  <form name="voting_form" method="post" action="votes.cgi">
+    <input type="hidden" name="action" value="vote">
+    <table cellspacing="4">
+      <tr>
+        <td></td>
+        <th>投票</th>
+        <th>[% terms.Bug %] 編號</th>
+        <th>摘要</th>
+      </tr>
+
+      [% onevoteproduct = 0 %]
+      [% multivoteproduct = 0 %]
+      [% FOREACH product = products %]
+        [% IF product.onevoteonly %]
+          [% onevoteproduct = 1 %]
+        [% ELSE %]
+          [% multivoteproduct = 1 %]
+        [% END %]
+        <tr>
+          <th>[% product.name FILTER html %]</th>
+          <td colspan="2" ><a href="buglist.cgi?bug_id=
+              [%- product.bug_ids.join(",") FILTER url_quote %]">([% terms.bug %] list)</a>
+          </td>
+          <td>
+            [% IF product.maxperbug < product.maxvotes AND
+                  product.maxperbug > 1 %]
+              <font size="-1">
+                (注意：在此產品中，每一個 [% terms.bug %] 僅允許投 [% product.maxperbug %] 票。)
+              </font>
+            [% END %]
+          </td>
+        </tr>
+
+        [% FOREACH bug = product.bugs %]
+          <tr [% IF bug.id == bug_id && canedit %]
+            class="bz_bug_being_voted_on" [% END %]>
+            <td>[% IF bug.id == bug_id && canedit %]在此輸入新的投票 &rarr;
+              [%- END %]</td>
+            <td align="right"><a name="vote_[% bug.id %]">
+              [% IF canedit %]
+                [% IF product.onevoteonly %]
+                  <input type="checkbox" name="[% bug.id %]" value="1"
+                    [% " checked" IF bug.count %] id="bug_[% bug.id %]">
+                [% ELSE %]
+                  <input name="[% bug.id %]" value="[% bug.count %]"
+                         size="2" id="bug_[% bug.id %]">
+                [% END %]
+              [% ELSE %]
+                [% bug.count %]
+              [% END %]
+            </a></td>
+            <td align="center">
+              [% bug.id FILTER bug_link(bug.id) FILTER none %]
+            </td>
+            <td>
+              [% bug.summary FILTER html %]
+              (<a href="votes.cgi?action=show_bug&amp;bug_id=[% bug.id %]">顯示投票</a>)
+            </td>
+          </tr>
+        [% END %]
+
+        <tr>
+          <td></td>
+          <td colspan="3">已投下 [% product.total %] 票，最多可投 [% product.maxvotes %] 票。
+            <br>
+            <br>
+          </td>
+        </tr>
+      [% END %]
+    </table>
+
+    [% IF canedit %]
+      <input type="submit" value="變更我的投票" id="change">或
+      <a href="buglist.cgi?bug_id=[% all_bug_ids.join(",") FILTER url_quote %]">以
+        [% terms.bug %] 清單方式瀏覽</a>
+      <br>
+      <br>
+      要變更你的投票，[% IF multivoteproduct %]輸入新的數字 (以 0 代表沒有投票) [% "或是" IF onevoteproduct %][% END %][% IF onevoteproduct %]變更勾選框[% END %]，然後點選<b>變更我的投票</b>鍵。
+      [% ELSE %]
+        <a href="buglist.cgi?bug_id=[% all_bug_ids.join(",") FILTER url_quote %]">以
+          [% terms.bug %] 清單方式瀏覽</a>
+    [% END %]
+  </form>
+[% ELSE %]
+  <p>
+    [% IF canedit %]你[% ELSE %]此使用者[% END %]目前並未對任何 [% terms.bugs %] 做出投票。
+  </p>
+[% END %]
+
+<p>
+  <a href="page.cgi?id=voting.html">關於投票的提示</a>。
+</p>
+
+[% PROCESS global/footer.html.tmpl %]

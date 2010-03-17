@@ -1,0 +1,110 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # Contributor(s): Frédéric Buclin <LpSolit@gmail.com>
+  #%]
+
+[%# INTERFACE:
+  # none
+  #%]
+
+[% PROCESS "global/field-descs.none.tmpl" %]
+
+[% PROCESS global/header.html.tmpl
+           title = "新增自訂欄位"
+           onload = "document.getElementById('new_bugmail').disabled = true;"
+           doc_section = "custom-fields.html#add-custom-fields"
+%]
+
+<script type="text/javascript">
+  <!--
+  // Disable a checkbox based on the state of another one.
+  function toggleCheckbox(this_checkbox, other_checkbox_id) {
+    var other_checkbox = document.getElementById(other_checkbox_id);
+    other_checkbox.disabled = !this_checkbox.checked;
+  }
+  //-->
+</script>
+
+<p>
+  新增自訂欄位可能會使得 [% terms.Bugzilla %] 變得非常複雜。許多 [% terms.Bugzilla %]
+  的新手管理者一開始加入過多自訂欄位，然後他們的使用者就開始抱怨使用介面「過於複雜」。<br>
+  請在新增任何自訂欄位前先考慮清楚。有可能 [% terms.Bugzilla %]
+  本身就有這個功能，只是你沒有將該功能啟用而已。
+</p>
+
+<ul>
+  <li>自訂欄位的名稱必須以 "cf_" 做為開頭，以和原本的欄位做區隔。如果你忽略在自訂欄位名稱開頭加上 "cf_" 的話，系統將會自動加上。</li>
+  <li>「描述」是一個用來描述欄位，而且非常短的字串。將會在使用者介面使用它來當作這個自訂欄位的標籤。</li>
+</ul>
+
+<form id="add_field" action="editfields.cgi" method="GET">
+  <table border="0" cellspacing="0" cellpadding="5">
+    <tr>
+      <th align="right"><label for="name">名稱：</label></th>
+      <td>
+        <input type="text" id="name" name="name" value="cf_" size="40" maxlength="64">
+      </td>
+
+      <th align="right">
+        <label for="enter_bug">可以在建立 [% terms.bug %] 時設定：</label>
+      </th>
+      <td>
+        <input type="checkbox" id="enter_bug" name="enter_bug" value="1"
+               onchange="toggleCheckbox(this, 'new_bugmail');">
+      </td>
+    </tr>
+    <tr>
+      <th align="right"><label for="desc">描述：</label></th>
+      <td><input type="text" id="desc" name="desc" value="" size="40"></td>
+
+      <th align="right">
+        <label for="new_bugmail">將新的 [% terms.bug %] 顯示於 [% terms.bug %] 通知信中：</label>
+      </th>
+      <td><input type="checkbox" id="new_bugmail" name="new_bugmail" value="1"></td>
+    </tr>
+    <tr>
+      <th align="right"><label for="type">種類：</label></th>
+      <td>
+        <select id="type" name="type">
+          [% FOREACH type = field_types.keys %]
+            [% NEXT IF type == constants.FIELD_TYPE_UNKNOWN %]
+            <option value="[% type FILTER html %]">[% field_types.$type FILTER html %]</option>
+          [% END %]
+        </select>
+      </td>
+
+      <th align="right"><label for="obsolete">已廢棄：</label></th>
+      <td><input type="checkbox" id="obsolete" name="obsolete" value="1"></td>
+    </tr>
+    <tr>
+      <th align="right"><label for="sortkey">排序鍵：</label></th>
+      <td>
+        <input type="text" id="sortkey" name="sortkey" size="6" maxlength="6">
+      </td>
+
+      <th>&nbsp;</th>
+      <td>&nbsp;</td>
+    </tr>
+  </table>
+  <p>
+    <input type="hidden" name="action" value="new">
+    <input type="hidden" name="token" value="[% token FILTER html %]">
+    <input type="submit" id="create" value="新增">
+  </p>
+</form>
+
+<p>
+  <a href="editfields.cgi">回到現有的自訂欄位列表</a>
+</p>
+
+[% PROCESS global/footer.html.tmpl %]

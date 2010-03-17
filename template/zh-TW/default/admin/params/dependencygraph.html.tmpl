@@ -1,0 +1,47 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Dave Miller <justdave@bugzilla.org>
+  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #%]
+[%
+   title = "依賴關係圖表"
+   desc = "依賴關係圖表的選用設定"
+%]
+
+[% param_descs = {
+  webdotbase => "顯示 $terms.bugs 之間的依賴關係性的圖表是可以做到的。你可以選擇以下其中一種方式設定此參數：
+                 <ul>
+                   <li>
+                     若指到 'dot' （ <a
+                     href=\"http://www.graphviz.org\">GraphViz</a> 的一部份）的完整檔案路徑，
+                     則會在本地端產生圖表。
+                   </li>
+                   <li>
+                     若指到已安裝
+                     <a href=\"http://www.research.att.com/~north/cgi-bin/webdot.cgi\"
+                     >webdot 套件</a>的機器的網址，則會遠端產生圖表。
+                   </li>
+                   <li>
+                     若將值設為空白，則會停用依賴關係圖表。
+                   </li>
+                 </ul>
+                 預設值是一台公眾可瀏覽的 webdot 伺服器。<br>
+                 如果你變更此一設定值，請確定 webdot 伺服器可以讀取你的 webdot 資料夾。<br>
+                 在 Apache 上請編輯 .htaccess 檔案來確認，在其他系統上需要的作法可能不盡相同。<br>
+                 如果 .htaccess 檔案已經遺失了，則你可以執行 checksetup.pl 重新建立它。"}
+%]

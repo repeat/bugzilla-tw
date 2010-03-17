@@ -1,0 +1,106 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Dave Miller <justdave@bugzilla.org>
+  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #                 Marc Schumann <wurblzap@gmail.com>
+  #%]
+[%
+   title = "使用者認證"
+   desc = "設定使用者認證政策"
+%]
+
+[% param_descs = {
+  auth_env_id => "外部認證系統所使用的環境變數，對每個使用者儲存一個獨一無二的認證碼。" _
+                 "如果不使用此方法，或沒有此變數，請留白。",
+
+  auth_env_email => "外部認證系統所使用的環境變數，用來儲存每位使用者的電子郵件地址。" _
+                    "這對環境認證來說是必須的欄位。若你不打算使用此功能，請留白。",
+
+  auth_env_realname => "外部認證系統所使用的環境變數，用來儲存每位使用者的真實姓名。" _
+                       "如果不是用此方法，或沒有此變數，請留白。",
+
+  user_info_class => "用來蒐集使用者登入資訊的機制。可複選。如果第一個無效，將會試第二個，類推。<br>
+                      類型有：
+                      <dl>
+                        <dt>CGI</dt>
+                        <dd>
+                          使用 CGI 介面詢問使用者名稱及密碼。
+                        </dd>
+                        <dt>Env</dt>
+                        <dd>
+                          預先認證的使用者的資訊傳送至系統環境變數中。
+                        </dd>
+                      </dl>",
+
+  user_verify_class => "以 user_info_class 蒐集到的認證資訊來驗證的機制。可複選。如果第一個無效，將會試第二個，類推。<br>
+                        類型有：
+                        <dl>
+                          <dt>DB</dt>
+                          <dd>
+                            $terms.Bugzilla 內建的認證。這是最常選的選項。
+                          </dd>
+                          <dt>RADIUS</dt>
+                          <dd>
+                            使用 RADIUS 伺服器進行 RADIUS 認證。此方法實驗中，請參考
+                            $terms.Bugzilla 說明以瞭解更多資訊。使用此方法必須先設定<a
+                            href=\"?section=radius\">額外的參數</a>。
+                          </dd>
+                          <dt>LDAP</dt>
+                          <dd>
+                            使用 LDAP 伺服器進行 LDAP 認證。請參考
+                            $terms.Bugzilla 說明以瞭解更多資訊。使用此方法必須先設定<a
+                            href=\"?section=ldap\">額外的參數</a>。
+                          </dd>
+                        </dl>",
+
+  rememberlogin => "對 cookie 的管理
+                    <ul>
+                      <li>
+                        開 (on) - cookie 將永遠不會過期 (使用者只需在瀏覽器登入一次)。
+                      </li>
+                      <li>
+                        關 (off) - cookie 只到使用者結束使用時有效 (使用者必須在每個新的瀏覽器視窗登入)。
+                      </li>
+                      <li>
+                        預設開 (defaulton)／預設關 (defaultoff) -
+                        選定如上所述的預設值，但使用者可自行選擇是否讓
+                        $terms.Bugzilla 記住他的登入資訊。
+                      </li>
+                    </ul>",
+
+  loginnetmask => "如果使用者選擇允許對於每次登入而言，多於一個 IP 有效時， netmask 的位元數。" _
+                  "設定為 32 時，將停用此功能。<br>" _
+                  "注意：啟用此功能可能減低你的系統安全性。",
+
+  requirelogin => "若設定此選項，則所有瀏覽系統任何頁面均需要登入。不允許匿名使用者使用。",
+
+  emailregexp => "定義有效的電子郵件地址的正規表達式。" _
+                 "預設值為包括所有有效的電子郵件地址。" _
+                 "另一個常用的值是 <tt>^[^@]+$</tt> ，代表" _
+                 "「本地的使用者名稱，不允許 @ 字元。」",
+
+  emailregexpdesc => "以<u>英文</u>表示 <tt>emailregexp</tt> 參數所允許的電子郵件地址。",
+
+  emailsuffix => "這是用來加在使用者帳號後面，形成電子郵件地址的字串。" _
+                 "如果你將 <tt>emailregexp</tt> 參數設定為僅允許本地的使用者名稱，" _
+                 "但希望將郵件寄送到 username@my.local.hostname 時，這參數將十分有用。",
+
+  createemailregexp => "此處定義使用者自行使用「新增帳號」功能所允許的電子郵件地址正規表達式。" _
+                       "預設值 (.*) 允許建立任何符何 emailregexp 參數的帳號。" _
+                       "如果設為空白，將不允許使用者自行建立新帳號；所有的帳號都必須透過管理者設定。" }
+%]

@@ -1,0 +1,56 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Dave Miller <justdave@bugzilla.org>
+  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #%]
+[%
+   title = "Patch Viewer"
+   desc = "設定第三方應用程式來執行 Patch Viewer"
+%]
+
+[% param_descs = {
+  cvsroot => "系統中多數的使用者將會使用在 'cvs diff' 的 " _
+             "<a href=\"http://www.cvshome.org\">CVS</a> 根目錄。" _
+             "既使使用者在不同的目錄位置使用了 'cvs diff' ，也會於 Patch Viewer 中使用此參數" _
+             "（在 patch 上使用 'Diff' 選項）來指出 patch 存放於何處。" _
+             "（注意：若你的 CVS repository 位於遠端，並需要輸入密碼，" _
+             "你必須確定 $terms.Bugzilla 使用者已完成 'cvs login' ，" _
+             "或是將密碼指定<a href=\"http://www.cvshome.org/docs/manual/cvs_2.html#SEC26\">" _
+             "為 CVS 根目錄的一部份</a>。）" _
+             "若你並沒有 CVS repository ，請設為空白。",
+
+  cvsroot_get => "$terms.Bugzilla 用來擷取 patch 的 CVS 根目錄。" _
+                 "有些系統可能想要把 CVS repository 映像在 $terms.Bugzilla 伺服器或同一個伺服器上，" _
+                 "如此一來 repository 可以是本地的檔案系統（並且較快）。" _
+                 "若你不明白這是什麼參數，請設為和 cvsroot 參數相同的值" _
+                 "（若 cvsroot 設為空白，則此參數亦設為空白）。",
+
+  bonsai_url => "連到含有你的 CVS repository 資訊的 <a href=\"http://www.mozilla.org/bonsai.html\">Bonsai</a> " _
+                "伺服器網址。 Patch Viewer 將會使用此資訊，對 patch 中的每一個段落建立連往 bonsai 的 blame 連結" _
+                "（將會自動在網址後方加上 '/cvsblame.cgi?...' ）。" _
+                "若你不明白這是什麼參數，請設為空白。",
+
+  lxr_url => "指向你的 CVS repository 的 <a href=\"http://sourceforge.net/projects/lxr\">LXR</a> 伺服器網址。" _
+             "Patch Viewer 將會使用此資訊，對 patch 中的每一個檔案建立連往 LXR 的連結。" _
+             "若你不明白這是什麼參數，請設為空白。",
+
+  lxr_root => "有些 LXR 的伺服器並非將 CVS repository 指向根目錄－－例如 " _
+              "<a href=\"http://lxr.mozilla.org/mozilla\">Mozilla</a> 的 LXR 伺服器指向 " _
+              "<code>mozilla/</code> 。這代表著在根目錄下的相對路徑網址。若你有類似情況，請輸入。" _
+              "若你不明白這是什麼參數，請設為空白。" }
+%]

@@ -1,0 +1,103 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Dave Miller <justdave@syndicomm.com>
+  #                 Joel Peshkin <bugreport@peshkin.net>
+  #                 Jacob Steenhagen <jake@bugzilla.org>
+  #                 Vlad Dascalu <jocuri@softhome.net>
+  #%]
+
+[%# INTERFACE:
+  # none
+  #%]
+
+[% PROCESS global/header.html.tmpl
+  title = "新增群組"
+  subheader = "此頁面允許你新增一個使用者群組。"
+  doc_section = "groups.html#create-groups"
+%]
+
+<form method="post" action="editgroups.cgi">
+  <table border="1" cellpadding="4" cellspacing="0"><tr>
+    <th>名稱</th>
+    <th>描述</th>
+    <th>使用者正規表達式</th>
+    <th>使用於 [% terms.Bugs %]</th>
+  </tr><tr>
+    <td><input size="20" name="name"></td>
+    <td><input size="40" name="desc"></td>
+    <td><input size="30" name="regexp"></td>
+    <td><input type="checkbox" name="isactive" value="1" checked></td>
+  </tr>
+  <tr>
+    <th>圖示網址：</th>
+    <td colspan="3"><input type="text" size="70" maxlength="255" id="icon_url" name="icon_url"></td>
+  </tr>
+  [% Hook.process('field') %]
+  </table>
+
+  <hr>
+
+  <input type="checkbox" id="insertnew" name="insertnew" value="1"
+    [% IF Param("makeproductgroups") %] checked[% END %]>
+  <label for="insertnew">將新的群組插入所有已存在的產品中。</label>
+  <p>
+  <input type="submit" id="create" value="新增">
+  <input type="hidden" name="action" value="new">
+  <input type="hidden" name="token" value="[% token FILTER html %]">
+</form>
+
+<p>
+   <b>名稱</b><br>
+   用於 B<!-- -->ugzilla&rarr;user&rarr;in_group() 函數，以及所有自訂的 cgi 檔案中。<br>
+   也可以用於以電子郵件送出 [% terms.bugs %] 時，限制[% terms.abug %]於特定的群組中。
+</p>
+
+<p>
+   <b>描述</b><br>
+   於 [% terms.bug %] 的報告中顯示。<br>
+   群組成員可以選擇此 [% terms.bug %] 是否僅限制於同群組的其他成員可以看見。
+</p>
+
+<p>
+   <b>使用於 [% terms.Bugs %]</b><br>
+   此一旗標決定此群組是否可以被用於 [% terms.bugs %] 中。<br>
+   如不選擇，使用者將無法再加入 [% terms.bugs %] 到此一群組中，不過已於此群組中的
+   [% terms.bugs %] 並不會被影響。這麼做會比刪除該群組還要好一點。<br>
+   <b>注意：如果你在新增群組，那麼你應該希望此群組可以接受 [% terms.bugs %]，因此你應該勾選此選項。</b>
+</p>
+
+<p>
+   <b>使用者正規表達式</b><br>
+   選填。<br>
+   若勾選，則會將符合正規表達式的所有使用者全部加至此群組。
+</p>
+
+<p>
+   <b>圖示網址</b><br>
+   選填，是用來辨識此群組的圖示的網址。<br>
+   可以是相對路徑，或是絕對路徑。將會在 [% terms.bugs %] 意見作者的旁邊顯示此圖示。
+</p>
+
+<p>
+   預設值會把新的群組和現有的產品全數做出關連。<br>
+   若不勾選「將新的群組插入所有已存在的產品中」選項，則只有在該群組的權限被加入一項產品時，才會對該群組產生關連。
+</p>
+
+<p>回到 <a href="./">[% terms.bugs %] 主頁</a>，或是<a href="editgroups.cgi">群組列表</a>。
+
+[% PROCESS global/footer.html.tmpl %]

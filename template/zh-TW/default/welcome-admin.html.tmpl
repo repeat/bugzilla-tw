@@ -1,0 +1,94 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # Contributor(s): Frédéric Buclin <LpSolit@gmail.com>
+  #%]
+
+[%# INTERFACE:
+  # none
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+[% title = BLOCK %]歡迎來到 [% terms.Bugzilla %][% END %]
+
+[% PROCESS global/header.html.tmpl
+   title = title
+   header_addl_info = "版本 $constants.BUGZILLA_VERSION"
+   style_urls = [ 'skins/standard/index.css' ]
+%]
+
+<div id="welcome-admin">
+  <p>歡迎， [% user.identity FILTER html %] 。</p>
+
+  <p>你會看到此頁面是因為有部份核心參數尚未被設定。此頁面的目的是告知你正確安裝的最後幾個步驟。</p>
+
+  <p>做為一個管理者，你可以透過下方的<a href="admin.cgi">管理</a>連結，瀏覽所有管理者頁面。<br>
+     此連結可以在所有頁面看到。<br>
+     在此連結中，請務必至少瀏覽<a href="editparams.cgi">參數設定</a>頁。<br>
+     該頁面允許你設定所有重要的參數。同時，你也可以設定以下參數：</p>
+
+  <ul>
+    <li>
+      <a href="editparams.cgi?section=core#maintainer">maintainer</a><br>
+      管理者。當執行已安裝 [% terms.Bugzilla %] 的機器發生錯誤訊息時，要回報給誰負責。
+    </li>
+
+    <li>
+      <a href="editparams.cgi?section=core#urlbase">urlbase</a><br>
+      網址基準。指向安裝 [% terms.Bugzilla %] 的機器的網址。也會用於電子郵件中。<br>
+      （這也是你會看到此頁面的原因：只要此一參數未被設定，就會一直看到此頁面。）
+    </li>
+
+    <li>
+      <a href="editparams.cgi?section=core#cookiepath">cookiepath</a><br>
+      Cookie 路徑。可使你的瀏覽器正確管理你的 cookie 。
+    </li>
+
+    <li>
+      <a href="editparams.cgi?section=core#utf8">utf8</a><br>
+      UTF-8 。可選擇是否將所有文字編碼為 UTF-8 。（強烈建議開啟此參數。）
+    </li>
+  </ul>
+
+  <p>下列參數也很重要：</p>
+
+  <ul>
+    <li>
+      <a href="editparams.cgi?section=auth#requirelogin">requirelogin</a><br>
+      需要登入。開啟此參數時，將不允許無帳號者使用此 [% terms.Bugzilla %] 。<br>
+      換句話說，沒有經過授權並擁有有效帳號密碼的使用者，將無法看見任何資料。<br>
+      如果你希望所有資料不對外公開時，可開啟此參數。
+    </li>
+
+    <li>
+      <a href="editparams.cgi?section=auth#createemailregexp">createemailregexp</a><br>
+      允許建立新帳號的正規表達式。此參數定義哪些使用者可以建立新帳號。<br>
+      如果設定為 ".*" (預設值)，則所有人均可建立新帳號。<br>
+      如果設定為 "@mycompany.com$"，則只有擁有 @mycompany.com 帳號的使用者可以建立新帳號。<br>
+      如果留白，將不允許使用者自行建立新帳號，僅能由管理者建立。<br>
+      如果你不希望公開此 [% terms.Bugzilla %] ，你必須將此參數設為預設值以外的值。
+    </li>
+
+    <li>
+      <a href="editparams.cgi?section=mta#mail_delivery_method">mail_delivery_method</a><br>
+      信件傳送方式。定義信件使用何種方式傳送，例如 sendmail 或 SMTP 。必須設定正確，才能寄送郵件。
+    </li>
+  </ul>
+
+  <p>
+    在設定完成之後，我們也建議你有空時不妨看看其他的 [% terms.Bugzilla %] 參數設定。<br>
+    這樣你才能明白他們的功用，以及在需要時修改這些設定。
+  </p>
+</div>
+
+[% PROCESS global/footer.html.tmpl %]

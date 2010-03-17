@@ -1,0 +1,161 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Gervase Markham <gerv@gerv.net>
+  #%]
+
+[%# INTERFACE:
+  # added_quip: string. Defined if the CGI added a quip data before
+  #                displaying anything; if defined, its value is that quip.
+  # show_quips: boolean. True if we are showing the entire quip list.
+  # quips: list of strings. Defined if and only if show_quips is true.
+  #                List of all quips.
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+[% PROCESS global/header.html.tmpl
+           title = "${terms.Bugzilla} 智語系統"
+           header = "新增自己的大標題"
+ %]
+
+[% IF added_quip %]
+  <p>
+    <font color="red">
+      已新增智語 '<tt>[% added_quip FILTER html %]</tt>'。
+      [% IF Param("quip_list_entry_control") == "moderated" AND !user.groups.admin %]
+        在通過審核之後就會立即使用它。
+      [% END %]
+    </font>
+  </p>
+[% END %]
+
+[% IF deleted_quip %]
+  <p>
+    <font color="red">
+      已刪除智語 '<tt>[% deleted_quip FILTER html %]</tt>'。
+    </font>
+  </p>
+[% END %]
+
+[% IF approved or unapproved %]
+  <p>[% approved.size %] 條智語已通過審核， [% unapproved.size %] 條智語尚未審核。</p>
+[% END %]
+
+
+<p>
+  [% terms.Bugzilla %] 會隨機選擇一條智語做為每個 [% terms.bug %] 清單的大標題。
+</p>
+
+[% IF Param("quip_list_entry_control") != "closed" %]
+  <p>
+    你可以加長智語的清單。只要輸入聰明的、有趣的，甚至無聊的句子（但請勿輸入十八禁的或具有攻擊性的句子），然後按下「送出」鍵即可。
+    [% IF Param("quip_list_entry_control") == "moderated" AND !user.groups.admin %]
+      注意：在智語被採用前，將先接受審核。
+    [% END %]
+  </p>
+
+  <form method="post" action="quips.cgi">
+    <input type="hidden" name="action" value="add">
+    <input size="80" name="quip">
+    <p>
+      <input type="submit" id="add" value="送出">
+    </p>
+  </form>
+[% ELSE %]
+  <p>現在不允許輸入新的智語。
+  </p>
+[% END %]
+
+[% IF show_quips %]
+  [% IF !user.in_group('admin') %]
+    <h2>
+      已存在的智語：
+    </h2>
+    <ul>
+      [% FOREACH quipid = quipids %]
+        [% NEXT IF NOT quips.$quipid.approved %]
+        <li>[% quips.$quipid.quip FILTER html %]</li>
+      [% END %]
+    </ul>
+  [% ELSE %]
+    <h2>編輯已存在的智語：</h2>
+    <p>
+      <strong>注意：</strong>只會顯示審核通過的智語。
+      如果參數 'quip_list_entry_control' 設為<q>開</q>，將會把輸入的智語自動審核通過。
+    </p>
+    <form name="editform" method="post" action="quips.cgi">
+      <input type="hidden" name="action" value="approve">
+      <table border="1">
+        <thead><tr>
+          <th>智語</th>
+          <th>作者</th>
+          <th>動作</th>
+          <th>審核通過</th>
+        </tr></thead><tbody>
+        [% FOREACH quipid = quipids %]
+          <tr>
+            <td>[% quips.$quipid.quip FILTER html %]</td>
+            <td>
+              [% userid = quips.$quipid.userid  %]
+              [% users.$userid FILTER html      %]
+              [% "未知的" IF NOT users.$userid %]
+            </td>
+            <td>
+              <a href="quips.cgi?action=delete&amp;quipid=[% quipid FILTER url_quote %]">
+                刪除
+              </a>
+            </td>
+            <td>
+              <input type="hidden" name="defined_quipid_[% quipid FILTER html %]"
+                     id="defined_quipid_[% quipid FILTER html %]"
+                     value="1">
+              <input type="checkbox" name="quipid_[% quipid FILTER html %]"
+                     id="quipid_[% quipid FILTER html %]"
+                     [%- ' checked="checked"' IF quips.$quipid.approved %]>
+            </td>
+          </tr>
+        [% END %]
+        </tbody>
+      </table>
+      <script type="text/javascript"><!--
+        var numelements = document.forms.editform.elements.length;
+        function SetCheckboxes(value) {
+          var item;
+          for (var i=0 ; i<numelements ; i++) {
+            item = document.forms.editform.elements[i];
+            item.checked = value;
+          }
+        }
+        document.write(' <input type="button" name="uncheck_all" '
+                      +'value="全不選" onclick="SetCheckboxes(false);">');
+        document.write(' <input type="button" name="check_all" '
+                      +'value="全選" onclick="SetCheckboxes(true);">');
+        //--></script>
+
+      <input type="submit" id="update" value="儲存設定">
+    </form>
+    <br>
+  [% END %]
+[% ELSE %]
+  <p>
+    想要全部列出的人，也可以<a
+    href="quips.cgi?action=show">瀏覽[% IF user.in_group('admin') %]並編輯[% END %]整個智語的清單</a>。
+  </p>
+[% END %]
+
+[% PROCESS global/footer.html.tmpl %]

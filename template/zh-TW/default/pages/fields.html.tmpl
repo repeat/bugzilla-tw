@@ -1,0 +1,276 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Terry Weissman <terry@mozilla.org>
+  #                 Gervase Markham <gerv@gerv.net>
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+[% PROCESS "global/field-descs.none.tmpl" %]
+[% INCLUDE global/header.html.tmpl title = "一個 $terms.Bug 的生命週期" %]
+
+<p>
+<b>狀態</b>以及<b>解決方案</b>這兩個欄位定義並記錄[% terms.abug %]的生命週期。
+</p>
+
+<a name="status"></a>
+<a name="resolution"></a>
+
+<table border="1" cellpadding="4">
+  <tr align="center" valign="top">
+    <td width="50%">
+      <h1>狀態</h1>
+    </td>
+
+    <td>
+      <h1>解決方案</h1>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td><b>狀態</b>欄位指出一個 [% terms.bug %] 的狀態為何。僅允許特定的狀態轉換。</td>
+
+    <td><b>解決方案</b>欄位指出這個 [%+ terms.bug %] 的解決方案為何。</td>
+  </tr>
+
+  <tr valign="top">
+    <td>
+      <dl>
+        <dt>
+          <b>[% get_status("UNCONFIRMED") FILTER html %]</b>
+        </dt>
+        <dd>
+          這個 [% terms.bug %] 最近才被加到資料庫。沒有人確認它是不是真的。擁有
+          canconfirm 權限的使用者可以藉由將它的狀態設定為[% get_status("NEW") FILTER html %]
+          來確認這個 [% terms.bug %] 。或者它也可以直接被解決，並標記為
+          [% get_status("RESOLVED") FILTER html %] 。
+        </dd>
+
+        <dt>
+          <b>[% get_status("NEW") FILTER html %]</b>
+        </dt>
+        <dd>
+          這個 [% terms.bug %] 最近被加到負責人的 [% terms.bugs %] 清單中，而且必須處理。在這個狀態的
+          [% terms.Bugs %] 可以被負責人接受，並將狀態設為<b>[% get_status("ASSIGNED") FILTER html %]</b>
+          ；或是丟給其他人負責，並維持<b>[% get_status("NEW") FILTER html %]</b>
+          的狀態；或是將它解決，並標記為<b>[% get_status("RESOLVED") FILTER html %]</b> 。
+        </dd>
+
+        <dt>
+          <b>[% get_status("ASSIGNED") FILTER html %]</b>
+        </dt>
+        <dd>
+          這個 [% terms.bug %] 還沒解決，但已分配給適當的人負責。在這狀態下，
+          [% terms.bugs %] 可以丟給其他人處理，並會自動將狀態變更為<b>[% get_status("NEW") FILTER html %]</b>
+          ；或是將它解決，並標記為<b>[% get_status("RESOLVED") FILTER html %]</b> 。
+        </dd>
+
+        <dt>
+          <b>[% get_status("REOPENED") FILTER html %]</b>
+        </dt>
+        <dd>
+          這個 [% terms.bug %]
+          曾解決過，但解決方案似乎不正確。例如，有更多的資訊顯示某個原先解決方案是<b>[%
+          get_resolution("WORKSFORME") FILTER html %]</b> 的 [% terms.bug %]
+          可以被重製，並設定為<b>[% get_status("REOPENED") FILTER html %]</b> 。在這狀態下，
+          [% terms.bugs %] 可以標記為<b>[% get_status("ASSIGNED") FILTER html %]</b>
+          或<b>[% get_status("RESOLVED") FILTER html %]</b> 。
+        </dd>
+      </dl>
+    </td>
+
+    <td>
+      <dl>
+        <dd>
+          還沒有解決方案。所有處於這些「開啟」狀態的 [% terms.bugs %]
+          都不會有解決方案。其他的 [% terms.bugs %] 則會標記下列其中一種解決方案。
+        </dd>
+      </dl>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td>
+      <dl>
+        <dt>
+          <b>[% get_status("RESOLVED") FILTER html %]</b>
+        </dt>
+        <dd>
+          已採取解決方案，並等待 QA 認證。在此狀態下，
+          [% terms.bugs %] 可以被重新開啟並設定為<b>[% get_status("REOPENED") FILTER html %]</b>
+          、標記為<b>[% get_status("VERIFIED") FILTER html %]</b>
+          ，或是永遠關閉並設定為<b>[% get_status("CLOSED") FILTER html %]</b> 。
+        </dd>
+
+        <dt>
+          <b>[% get_status("VERIFIED") FILTER html %]</b>
+        </dt>
+        <dd>
+          QA 看過了 [% terms.bug %] 和解決方案，並同意已採取適當的解決方案。
+          [% terms.Bugs %] 將維持在此狀態，直到所回報的 [% terms.bug %]
+          所屬的產品結束之後，才會被設定為<b>[% get_status("CLOSED") FILTER html %]</b> 。
+        </dd>
+
+        <dt>
+          <b>[% get_status("CLOSED") FILTER html %]</b>
+        </dt>
+        <dd>
+          這個 [% terms.bug %] 已有正確的方案，並被認為不會再發生。任何復活的
+          [% terms.bugs %] 必須被設定為<b>[% get_status("REOPENED") FILTER html %]</b> 。
+        </dd>
+      </dl>
+    </td>
+
+    <td>
+      <dl>
+        <dt>
+          <b>[% get_resolution("FIXED") FILTER html %]</b>
+        </dt>
+        <dd>
+          這個 [% terms.bug %] 已被修復。
+        </dd>
+
+        <dt>
+          <b>[% get_resolution("INVALID") FILTER html %]</b>
+        </dt>
+        <dd>
+          描述的問題並不是[% terms.abug %]。
+        </dd>
+
+        <dt>
+          <b>[% get_resolution("WONTFIX") FILTER html %]</b>
+        </dt>
+        <dd>
+          描述的問題的確是[% terms.abug %]，但不打算修復。
+        </dd>
+
+        <dt>
+         <b>[% get_resolution("DUPLICATE") FILTER html %]</b>
+        </dt>
+        <dd>
+          此問題和已存在的 [% terms.bug %]
+          重複了。將[% terms.abug %]標記為重複時，需要輸入該已存在的 [% terms.bug %] 編號。
+        </dd>
+
+        <dt>
+          <b>[% get_resolution("WORKSFORME") FILTER html %]</b>
+        </dt>
+        <dd>
+          無法重製這個 [% terms.bug %] ，且檢視程式碼也沒有發現任何可能引發這個
+          [% terms.bug %] 的線索。如果有較多的資訊，這個 [% terms.bug %] 可以被重新開啟。
+        </dd>
+
+        <dt>
+          <b>[% get_resolution("MOVED") FILTER html %]</b>
+        </dt>
+        <dd>
+          此 [% terms.bug %] 被搬到另一個相關產品的 [% terms.bug %] 資料庫並進行追蹤。
+        </dd>
+      </dl>
+    </td>
+  </tr>
+</table>
+
+<h2><a name="importance">重要性</h2>
+[% terms.abug %]的重要性，是由它的<a href="#priority">優先等級</a>及<a href="#bug_severity">嚴重性來描述。
+
+<h2><a name="priority">優先等級</a></h2>
+此欄位描述[% terms.abug %]應該被修復的優先等級。此欄位是讓程式設計師或工程師能夠對他們的工作進行排程，以完成工作。可用的優先等級從 <b>P1</b> （最重要）到 <b>P5</b> （最不重要）。
+
+<h2><a name="bug_severity">嚴重等級</a></h2>
+此欄位描述[% terms.abug %]的嚴重等級。
+
+<table>
+  <tr>
+    <th>Blocker</th>
+
+    <td>會擋掉所有開發中、測試中的工作</td>
+  </tr>
+
+  <tr>
+    <th>Critical</th>
+
+    <td>系統發生 crash 、資料遺失、嚴重的記憶體流失</td>
+  </tr>
+
+  <tr>
+    <th>Major</th>
+
+    <td>功能出現較大型的問題</td>
+  </tr>
+
+  <tr>
+    <th>Normal</th>
+
+    <td>功能出現一般的問題，在特定環境下某些功能不正常</td>
+
+  </tr>
+
+  <tr>
+    <th>Minor</th>
+
+    <td>功能出現小問題，或者可以用其他方式避開此問題的發生</td>
+  </tr>
+
+  <tr>
+    <th>Trivial</th>
+
+    <td>十分微小的問題，例如拼錯字、排版錯誤</td>
+  </tr>
+
+  <tr>
+    <th>Enhancement</th>
+
+    <td>要求增強功能</td>
+</table>
+
+<h2><a name="rep_platform">平台</a></h2>
+選擇所回報的 [% terms.bug %] 的硬體平台。有效的平台包括：
+
+<ul>
+  <li>All (所有平台均會發生，是一個跨平台的 [% terms.bug %])</li>
+
+  <li>Macintosh</li>
+
+  <li>PC (個人電腦)</li>
+</ul>
+<b>注意：</b>搜尋時，若選擇 "All" 選項，並不代表選擇所有的 [% terms.bugs %] 。它只會選擇被標記為跨平台的 [% terms.bugs %] 。
+
+<h2><a name="op_sys">作業系統</a></h2>
+選擇所回報的 [% terms.bug %] 的作業系統。有效的作業系統包括：
+
+<ul>
+  <li>All (所有作業系統均會發生，是一個跨平台的 [% terms.bug %])</li>
+
+  <li>Windows</li>
+
+  <li>Mac OS</li>
+
+  <li>Linux</li>
+</ul>
+有時候作業系統本身就包括了硬體平台的描述，但有時並非如此。例如， Linux 可以在個人電腦、 Macintosh 以及其他硬體平台上運作。
+
+<h2><a name="assigned_to">分配給誰負責</a></h2>
+
+<p>
+此欄位指出這個 [% terms.bug %] 由誰負責。每次此欄位變更時，狀態欄位也會變更為<b>[% get_status("NEW") FILTER html %]</b> ，這樣可以較容易看出在該負責人的清單中哪些是新的 [% terms.bugs %] 。</p>
+
+<p>
+查詢 [% terms.bugs %] 的預設值設定為選擇[% get_status("NEW") FILTER html %] 、[%+ get_status("ASSIGNED") FILTER html %] 以及[% get_status("REOPENED") FILTER html %] 的 [% terms.bugs %] 。如要搜尋已解決或已認證的 [% terms.bugs %] ，記得將狀態欄位選擇適當的選項。
+</p>
+
+[% INCLUDE global/footer.html.tmpl %]

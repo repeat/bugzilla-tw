@@ -1,0 +1,60 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Frédéric Buclin.
+  # Portions created by Frédéric Buclin are Copyright (C) 2008
+  # Frédéric Buclin. All Rights Reserved.
+  #
+  # Contributor(s): Frédéric Buclin <LpSolit@gmail.com>
+  #%]
+
+[%# INTERFACE:
+  # script_name: the script generating this warning.
+  # token: a valid token for the current action.
+  # reason: reason of the failure.
+  #%]
+
+[% PROCESS global/header.html.tmpl title = "可疑的動作"
+                                   style_urls = ['skins/standard/global.css'] %]
+
+<div class="throw_error">
+  [% IF reason == "expired_token" %]
+    你所做的變更已被拒絕，原因是在送出你對 [% script_name FILTER html %]
+    所做的變更的時限（
+    [% constants.MAX_TOKEN_AGE FILTER html %]
+    天）已經超過了。可能是頁面顯示過久，或是意外送出已送出的舊有變更。
+
+  [% ELSIF reason == "missing_token" %]
+    看起來你並非從正確的頁面過來。
+    其中一個原因是你直接在瀏覽器的網址列輸入網址。這應該是安全的。
+    你點選了一個自動轉址的網址，<b>但未經過你的同意</b>。
+
+  [% ELSIF reason == "invalid_token" %]
+    你對 [% script_name FILTER html %] 做出的變更中含有不正確的
+    token ，可能是有人想要盜用你的帳號，例如讓你點選了一個自動轉址的網址跳轉到這裡，<b>但未經過你的同意</b>。
+  [% END %]
+  <p>
+    你確定你仍要做出這些變更嗎？
+  </p>
+</div>
+
+<form name="check" id="check" method="post" action="[% script_name FILTER html %]">
+  [% PROCESS "global/hidden-fields.html.tmpl"
+             exclude="^(Bugzilla_login|Bugzilla_password|token)$" %]
+  <input type="hidden" name="token" value="[% token FILTER html %]">
+  <input type="submit" id="confirm" value="確認所做的變更">
+</form>
+
+<p><a href="index.cgi">放棄所做的變更</a>（你會被重導到此 [% terms.Bugzilla %] 的首頁）。
+</p>
+
+[% PROCESS global/footer.html.tmpl %]

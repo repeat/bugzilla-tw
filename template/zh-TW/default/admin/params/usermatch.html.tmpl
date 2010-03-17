@@ -1,0 +1,41 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Dave Miller <justdave@bugzilla.org>
+  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #%]
+[%
+   title = "使用者符合政策"
+   desc = "設定你的使用者符合政策"
+%]
+
+[% param_descs = {
+  usemenuforusers => "若此選項設為「開」， $terms.Bugzilla 將會讓你自清單中選擇使用者，" _
+                     "而非自輸入框輸入。當此站台有大量使用者時，不建議使用此選項。",
+
+  usermatchmode => "當輸入及編輯 $terms.bugs 時，是否允許輸入的使用者帳號自動符合字串。<p>" _
+                   "若設為「關 (off) 」，則代表停用。<br>" _
+                   "若設為「萬用字元 (wildcard) 」，則僅允許萬用字元。<br>" _
+                   "若設為「搜尋 (search) 」，則允許任何文字以及萬用字元。",
+
+  maxusermatches => "不顯示超過此數字以上的搜尋符合結果。<br>" _
+                    "如果設為 1 ，將不允許模稜兩可的符合結果。<br>" _
+                    "這對使用者隱私權很有幫助。<br>" _
+                    "若不限制，請設為 0 。",
+
+  confirmuniqueusermatch => "當只有一位使用者符合搜尋時，是否顯示確認頁。" }
+%]

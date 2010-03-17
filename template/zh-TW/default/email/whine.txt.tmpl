@@ -1,0 +1,62 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Emmanuel Seyman <eseyman@linagora.com>
+  #%]
+
+[% PROCESS "global/field-descs.none.tmpl" %]
+From: [% Param("mailfrom") %]
+To: [% email %][% Param("emailsuffix") %]
+Subject: [% terms.Bugzilla %] [% terms.bug %] 清單需要你的注意。
+X-Bugzilla-Type: whine
+
+[此電子郵件為系統自動產生。]
+
+在 [% terms.Bugzilla %] [% terms.bug %] 追蹤系統 ([% urlbase %]) 中，
+有一個以上的 [% terms.bugs %] 分配給你，並需要你的注意。
+
+這些 [% terms.bugs %] 都是在[% get_status("NEW") %]或[% get_status("REOPENED") %]的狀態，
+並且已經超過 [% Param("whinedays") %] 天沒有人處理。
+你需要查看它們，並且決定一個初始的動作。
+
+一般而言，這代表以下三種狀況其中之一：
+
+(1) 你覺得這個 [% terms.bug %] 可以很快解決（例如說，
+    它是個[% get_resolution("INVALID") %] [% terms.bug %] ）。
+(2) 你覺得這個 [% terms.bug %] 不是你負責，因此你把它重新分配給別人。
+    （提示：如果你不知道要分配給誰，重新選擇適合的子產品欄位，
+    並使用「重新分配 [% terms.bug %] 給選擇的子產品預設負責人」選項。）
+(3) 你覺得這個 [% terms.bug %] 是你負責的，但是現在還無法解決。
+    使用"接受 [% terms.bug %]"的選項即可。
+
+若要得到所有狀態是[% get_status("NEW") %]／[% get_status("REOPENED") %]的 [%+ terms.bugs %] 清單，
+你可以使用以下網址（你也可以加入書籤）：
+
+ [% urlbase %]buglist.cgi?bug_status=NEW&bug_status=REOPENED&assigned_to=[% email %]
+
+你也可以使用一般查詢頁：
+[%+ urlbase %]query.cgi
+
+以下為超過 [% Param("whinedays") %] 天以上沒有處理，狀態為[% get_status("NEW") %]，
+並且是屬於你負責的每個 [%+ terms.bugs %] 的網址。
+
+在你處理這些 [% terms.bugs %] 之前，你將會每天收到此一訊息！
+
+[% FOREACH bug = bugs %]
+ [%+ bug.summary %]
+    →  [% urlbase %]show_bug.cgi?id=[% bug.id %]
+[% END %]

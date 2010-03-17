@@ -1,0 +1,133 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # Contributor(s): Gavin Shelley <bugzilla@chimpychompy.org>
+  #%]
+
+[%# INTERFACE:
+  # products: array of Bugzilla::Product objects
+  #
+  # classification: Bugzilla::Classification object; If classifications
+  #                         are enabled, then this is
+  #                         the currently selected classification
+  # showbugcounts: boolean; true if bug counts should be included in the table
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+[% IF classification %]
+  [% classification_url_part = BLOCK %]&amp;classification=
+    [%- classification.name FILTER url_quote %]
+  [%- END %]
+  [% classification_title = BLOCK %]
+    分類 '[% classification.name FILTER html %]' 中的
+  [% END %]
+[% END %]
+
+[% PROCESS global/header.html.tmpl
+  title = "選擇${classification_title}產品"
+%]
+
+[% edit_contentlink = BLOCK %]
+  editproducts.cgi?action=edit&amp;product=%%name%%
+  [%- classification_url_part %]
+[% END %]
+[% delete_contentlink = BLOCK %]
+  editproducts.cgi?action=del&amp;product=%%name%%
+  [%- classification_url_part %]
+[% END %]
+[% bug_count_contentlink = BLOCK %]buglist.cgi?product=%%name%%
+  [%- classification_url_part %][% END %]
+
+
+[% columns = [
+     {
+       name => "name"
+       heading => "編輯產品…"
+       contentlink => edit_contentlink
+     },
+     {
+       name => "description"
+       heading => "描述"
+       allow_html_content => 1
+     },
+     {
+       name => "disallow_new"
+       heading => "允許回報新的 $terms.bugs"
+     },
+     {
+       name => "votesperuser"
+       heading => "每人幾票"
+       align => 'right'
+     },
+     {
+       name => "maxvotesperbug"
+       heading => "每個 $terms.bug 最多幾票"
+       align => 'right'
+     },
+     {
+       name => "votestoconfirm"
+       heading => "確認票數"
+       align => 'right'
+     } ]
+%]
+
+[% IF showbugcounts %]
+
+  [% columns.push({
+       name => "bug_count"
+       heading => "$terms.Bug 數目"
+       align => 'right'
+       contentlink => bug_count_contentlink
+     })
+  %]
+
+[% END %]
+
+[% columns.push({
+       heading => "動作"
+       content => "刪除"
+       contentlink => delete_contentlink
+     })
+%]
+
+[% overrides.disallow_new = [ {
+     match_value => "1"
+     match_field => 'disallow_new'
+     override_content => 1
+     content => "否"
+   },
+   {
+     match_value => 0
+     match_field => 'disallow_new'
+     override_content => 1
+     content => "是"
+   }]
+%]
+
+[% PROCESS admin/table.html.tmpl
+     columns = columns
+     data = products
+%]
+
+[% IF !showbugcounts %]
+
+  <p><a href="editproducts.cgi?showbugcounts=1[% classification_url_part %]"
+     >以 [% terms.bug %] 數目重新顯示（較慢）</a></p>
+
+[% END %]
+
+[% PROCESS admin/products/footer.html.tmpl
+    no_edit_other_products_link = 1
+ %]
+
+[% PROCESS global/footer.html.tmpl %]

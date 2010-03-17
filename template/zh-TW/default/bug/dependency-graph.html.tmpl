@@ -1,0 +1,106 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Gervase Markham <gerv@gerv.net>
+  #%]
+
+[%# INTERFACE:
+  # bug_id: integer. The number of the bug(s).
+  # multiple_bugs: boolean. True if bug_id contains > 1 bug number.
+  # doall: boolean. True if we are displaying every bug in the database.
+  # showsummary: boolean. True if we are showing bug summaries.
+  # rankdir: string. "TB" if we are ranking top-to-bottom,
+                     "LR" if left-to-right.
+  # image_url: string. The URL of the graphic showing the dependencies.
+  # map_url: string. The URL of the map file for the image.  (Optional)
+  # image_map: string. The image map for the graphic showing the
+                       dependencies. (Optional)
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+[% title = "依賴關係圖"
+   header = title
+ %]
+
+[% IF NOT multiple_bugs AND NOT doall %]
+  [% filtered_desc = short_desc FILTER html %]
+  [% title = "$terms.bug $bug_id 的${title}"
+     header = "$terms.bug <a href=\"show_bug.cgi?id=$bug_id\">$bug_id</a> 的 $header"
+     subheader = filtered_desc
+   %]
+[% END %]
+
+[% PROCESS global/header.html.tmpl %]
+
+[% image_map %]
+
+<p>
+  綠色的圓圈代表開啟的 [% terms.bugs %] 。
+</p>
+
+[% IF image_map %]
+  <img src="[% image_url %]" alt="依賴關係圖" usemap="#imagemap">
+[% ELSE %]
+  <a href="[% map_url %]">
+    <img src="[% image_url %]" alt="依賴關係圖" ismap="ismap">
+  </a>
+[% END %]
+
+<hr>
+
+<form action="showdependencygraph.cgi" method="GET">
+  <table>
+    <tr>
+      <th align="left"><label for="id">[% terms.Bug %] 編號</label>：</th>
+      <td><input id="id" name="id" value="[% bug_id %]"></td>
+      <td>
+        <input type="checkbox" id="showsummary" name="showsummary" [% " checked" IF showsummary %]>
+        <label for="showsummary">顯示所有已呈現的 [% terms.bugs %] 的摘要</label>
+      </td>
+    </tr>
+
+    <tr>
+      <th align="left"><label for="display">呈現：</label></th>
+      <td colspan="2">
+        <select id="display" name="display">
+          <option value="tree"[% 'selected="selected"' IF (!display || display == "tree") %]>
+            將 [% terms.bugs %] 限制在和輸入的 [% terms.bugs %] 有直接關係</option>
+          <option value="web" [% 'selected="selected"' IF display == "web" %]>
+            顯示和輸入的 [% terms.bugs %] 有任何關係的 [% terms.bugs %]</option>
+          <option value="doall" [% 'selected="selected"' IF display == "doall" %]>
+            顯示每一個 [% terms.bug %] 在系統中的依賴性</option>
+        </select>
+      </td>
+    </tr>
+
+    <tr>
+      <th align="left"><label for="rankdir">排序：</label></th>
+      <td colspan="2">
+        <select id="rankdir" name="rankdir">
+          <option value="TB"[% " selected" IF rankdir == "TB" %]>由上而下</option>
+          <option value="BT"[% " selected" IF rankdir == "BT" %]>由下而上</option>
+          <option value="LR"[% " selected" IF rankdir == "LR" %]>由左至右</option>
+          <option value="RL"[% " selected" IF rankdir == "RL" %]>由右至左</option>
+        </select>
+      </td>
+    </tr>
+  </table>
+  <input type="submit" id="change" value="變更參數">
+</form>
+
+[% PROCESS global/footer.html.tmpl %]

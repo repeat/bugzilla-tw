@@ -1,0 +1,76 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Gervase Markham <gerv@gerv.net>
+  #%]
+
+[%# INTERFACE
+  # none
+  #
+  # Param("maintainer") is used to display the maintainer's email.
+  # Param("emailsuffix") is used to pre-fill the email field.
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+[% title = BLOCK %]
+  建立一個新的 [% terms.Bugzilla %] 帳號
+[% END %]
+
+[% PROCESS global/header.html.tmpl
+           title = title
+           onload = "document.forms['account_creation_form'].login.focus();" %]
+
+<p>
+  要建立一個[% terms.Bugzilla %]帳號，你只要輸入：<br>
+[% IF Param('emailsuffix') == '' %]
+  一個有效的電子郵件地址。
+[% ELSE %]
+  一個帳號名稱。此一帳號名稱後面加上 [% Param('emailsuffix') %] 時可以對應到你的電子郵件地址。
+[% END %]
+  會寄一封用來建立帳號的認證信到此一電子郵件地址。
+  <br><b>在你收到電子郵件之前，你將無法登入。</b>
+  <br>如果沒有在合理的時間範圍內收到，你可以用電子郵件連絡此一 [% terms.Bugzilla %] 的管理者： <a
+  href="mailto:[% Param("maintainer") %]">[% Param("maintainer") %]</a> 。
+</p>
+
+[% IF Param('createemailregexp') == '.*' && Param('emailsuffix') == '' %]
+<p>
+  <b>隱私權提醒：</b>
+  <br>[% terms.Bugzilla %] 是一個開放的 [% terms.bug %] 追蹤系統。
+  <br>在大多數 [%+ terms.bugs %] 的活動，包括電子郵件地址，都是公眾可瀏覽的。
+  <br>我們<b>建議</b>使用次要的電子郵件，或者使用免費的網路電子郵件服務（例如 Gmail、Yahoo、Hotmail 等等），以避免你的主要電子郵件收到垃圾郵件。
+</p>
+[% END %]
+
+<form id="account_creation_form" method="get" action="createaccount.cgi">
+  <table>
+    <tr>
+      <td align="right">
+        <b>電子郵件：</b>
+      </td>
+      <td>
+        <input size="35" id="login" name="login">
+        [% Param('emailsuffix') FILTER html %]
+      </td>
+    </tr>
+  </table>
+  <br>
+  <input type="submit" id="send" value="送出">
+</form>
+
+[% PROCESS global/footer.html.tmpl %]

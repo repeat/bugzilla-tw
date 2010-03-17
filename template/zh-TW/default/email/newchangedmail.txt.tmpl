@@ -1,0 +1,79 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): André Batosti <batosti@async.com.br>
+  #%]
+
+[% PROCESS "global/variables.none.tmpl" %]
+From: [% Param('mailfrom') %]
+To: [% to %]
+Subject: [[% terms.Bug %] [%+ bugid %]] [% IF isnew %]新增[% ELSE %]變更[% END %]：[%+ summary %]
+X-Bugzilla-Reason: [% reasonsheader %]
+X-Bugzilla-Type: newchanged
+X-Bugzilla-Watch-Reason: [% reasonswatchheader %]
+[% IF Param('useclassification') %]
+X-Bugzilla-Classification: [% classification %]
+[% END %]
+X-Bugzilla-Product: [% product %]
+X-Bugzilla-Component: [% comp %]
+X-Bugzilla-Keywords: [% keywords %]
+X-Bugzilla-Severity: [% severity %]
+X-Bugzilla-Who: [% changer %]
+X-Bugzilla-Status: [% status %]
+X-Bugzilla-Priority: [% priority %]
+X-Bugzilla-Assigned-To: [% assignedto %]
+X-Bugzilla-Target-Milestone: [% targetmilestone %]
+X-Bugzilla-Changed-Fields: [% changedfields %]
+[%+ threadingmarker %]
+
+[%+ urlbase %]show_bug.cgi?id=[% bugid %]
+
+[%+ diffs %]
+
+--
+可以在 [% urlbase %]userprefs.cgi?tab=email 調整是否收到 [% terms.bug %] 通知信的設定。
+------- 你會收到這封信是因為： -------
+[% FOREACH relationship = reasons %]
+  [% SWITCH relationship %]
+    [% CASE constants.REL_ASSIGNEE %]
+你是這個 [% terms.bug %] 的負責人。
+    [% CASE constants.REL_REPORTER %]
+你回報了這個 [% terms.bug %] 。
+    [% CASE constants.REL_QA %]
+你是這個 [% terms.bug %] 的 QA 連絡人。
+    [% CASE constants.REL_CC %]
+你在這個 [% terms.bug %] 的寄件副本清單中。
+    [% CASE constants.REL_VOTER %]
+你是這個 [% terms.bug %] 的其中一個投票者。
+    [% CASE constants.REL_GLOBAL_WATCHER %]
+你正在監控所有對[% terms.bug %]的變更。
+  [% END %]
+[% END %]
+[% FOREACH relationship = reasons_watch %]
+  [% SWITCH relationship %]
+    [% CASE constants.REL_ASSIGNEE %]
+你在監控這個 [% terms.bug %] 的負責人。
+    [% CASE constants.REL_REPORTER %]
+你在監控這個 [% terms.bug %] 的回報者。
+    [% CASE constants.REL_QA %]
+你在監控這個 [% terms.bug %] 的 QA 連絡人。
+    [% CASE constants.REL_CC %]
+你在監控這個 [% terms.bug %] 的寄件副本清單中的某個人。
+    [% CASE constants.REL_VOTER %]
+你在監控這個 [% terms.bug %] 的其中一個投票者。
+  [% END %]
+[% END %]

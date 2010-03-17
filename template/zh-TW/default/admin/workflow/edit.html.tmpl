@@ -1,0 +1,107 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # Contributor(s): Frédéric Buclin <LpSolit@gmail.com>
+  #                 Gervase Markham <gerv@mozilla.org>
+  #%]
+
+[% PROCESS "global/field-descs.none.tmpl" %]
+
+[% INCLUDE global/header.html.tmpl
+   title = "編輯流程"
+   style_urls = ['skins/standard/admin.css']
+%]
+
+<script type="text/javascript">
+<!--
+  function toggle_cell(cell) {
+    if (cell.checked)
+      cell.parentNode.className = "checkbox-cell checked";
+    else
+      cell.parentNode.className = "checkbox-cell";
+  }
+//-->
+</script>
+
+<p>
+  此頁面允許你定義在流程中哪些狀態的變更是有效的。<br>
+  為了向下相容較舊版本的 [% terms.Bugzilla %] ，因此當你重新開啟了一個 [% terms.bug %]
+  時，將只會以[% get_status("UNCONFIRMED") FILTER html %] 或[%+ get_status("REOPENED") FILTER html %]
+  （如果在流程中允許此狀態），而非同時顯示。<br>
+  顯示的方式決定於這個 [% terms.bug %] 是否被確認過。<br>
+  因此建議你允許此兩種變更，讓 [% terms.Bugzilla %] 自動正確選擇。
+</p>
+
+<form id="workflow_form" method="POST" action="editworkflow.cgi">
+<table>
+  <tr>
+    <th colspan="2">&nbsp;</th>
+    <th colspan="[% statuses.size FILTER html %]" class="title">到</th>
+  </tr>
+
+  <tr>
+    <th rowspan="[% statuses.size + 2 FILTER html %]" class="title">從</th>
+    <th>&nbsp;</th>
+    [% FOREACH status = statuses %]
+      <th class="col-header[% status.is_open ? " open-status" : " closed-status" %]">
+        [% status.name FILTER html %]
+      </th>
+    [% END %]
+  </tr>
+
+  [%# This defines the entry point in the workflow %]
+  [% p = [{id => 0, name => "{開始}", is_open => 1}] %]
+  [% FOREACH status = p.merge(statuses) %]
+    <tr class="highlight">
+      <th align="right" class="[% status.is_open ? "open-status" : "closed-status" %]">
+        [% status.name FILTER html %]
+      </th>
+
+      [% FOREACH new_status = statuses %]
+        [% IF status.id != new_status.id && (status.id || new_status.is_open) %]
+          [% checked = workflow.${status.id}.${new_status.id}.defined ? 1 : 0 %]
+          [% mandatory = (status.id && new_status.name == Param("duplicate_or_move_bug_status")) ? 1 : 0 %]
+          <td align="center" class="checkbox-cell[% " checked" IF checked || mandatory %]"
+              title="從[% status.name FILTER html %]到[% new_status.name FILTER html %]">
+            <input type="checkbox" name="w_[% status.id %]_[% new_status.id %]"
+                   id="w_[% status.id %]_[% new_status.id %]" onclick="toggle_cell(this)"
+                   [%+ "checked='checked'" IF checked || mandatory %]
+                   [%+ "disabled='disabled'" IF mandatory %]>
+          </td>
+        [% ELSE %]
+          <td class="checkbox-cell forbidden">&nbsp;</td>
+        [% END %]
+      [% END %]
+    </tr>
+  [% END %]
+</table>
+
+<p>
+  當 [% terms.bug %] 標記為和另一個 [% terms.bug %] 重複，或是已經移到另一台機器上時，
+  [% terms.bug %] 的狀態將自動設定為<b>[% Param("duplicate_or_move_bug_status") FILTER html %]</b> 。
+  所有對這個 [% terms.bug %] 狀態所做的變更都必須是有效的。（這也是你為什麼無法在上面編輯的原因。）<br>
+  注意：你可以瀏覽<a
+  href="editparams.cgi?section=bugchange#duplicate_or_move_bug_status">參數設定</a>頁，並編輯
+  <i>duplicate_or_move_bug_status</i> 參數來變更此設定。
+</p>
+
+<p align="center">
+  <input type="hidden" name="action" value="update">
+  <input type="hidden" name="token" value="[% token FILTER html %]">
+  <input type="submit" value="確定變更"> -
+  <a href="editworkflow.cgi">取消變更</a> -
+  <a href="editworkflow.cgi?action=edit_comment">瀏覽哪些狀態變更需要留下意見</a>
+</p>
+
+</form>
+
+[% INCLUDE global/footer.html.tmpl %]

@@ -1,0 +1,295 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # Contributor(s): Marc Schumann <wurblzap@gmail.com>
+  #%]
+
+[%# INTERFACE:
+  #
+  # listselectionvalues:      selection values to recreate the current user
+  #                           list.
+  # editusers:                is viewing user member of editusers?
+  # otheruser:                Bugzilla::User object of the viewed user.
+  # reporter:                 number of bugs reported by the user
+  # assignee_or_qa:           number of bugs the user is either the assignee
+  #                           or the QA contact
+  # bugs_activity:            number of bugs the viewed user has activity
+  #                           entries on
+  # cc                        number of bugs the viewed user is cc list member
+  #                           of
+  # flags.requestee:          number of flags the viewed user is being asked for
+  # flags.setter:             number of flags the viewed user has set
+  # longdescs:                number of bug comments the viewed user has written
+  # namedqueries:             number of named queries the user has created
+  # namedquery_group_map:     number of named queries the user has shared
+  # profiles_activity:        number of changes made to other users' profiles
+  # series:                   number of series the viewed user has created
+  # votes:                    number of bugs the viewed user has voted on
+  # watch.watched:            number of users the viewed user is being watched
+  #                           by
+  # watch.watcher:            number of users the viewed user is watching
+  # whine_events:             number of whine events the viewed user has created
+  # whine_schedules:          number of whine schedules the viewed user has
+  #                           created
+  #%]
+
+[% title = BLOCK %]確認刪除使用者 [% otheruser.login FILTER html %][% END %]
+
+[% PROCESS global/header.html.tmpl
+  title = title
+  style_urls = ['skins/standard/admin.css',
+                'skins/standard/editusers.css']
+  doc_section = "useradmin.html#user-account-deletion"
+%]
+
+[% PROCESS admin/users/listselectvars.html.tmpl
+  listselectionvalues = listselectionvalues
+%]
+
+<table class="main">
+  <tr>
+    <th>帳號：</th>
+    <td>[% otheruser.login FILTER html %]</td>
+  </tr>
+  <tr>
+    <th>真實姓名：</th>
+    <td>[% otheruser.name FILTER html %]</td>
+  </tr>
+  <tr>
+    <th>群組設定：</th>
+    <td>
+      [% IF otheruser.groups.size %]
+        <ul>
+          [% FOREACH group = otheruser.groups.keys %]
+            <li>[% group FILTER html %]</li>
+          [% END %]
+        </ul>
+      [% ELSE %]
+        無
+      [% END %]
+    </td>
+  </tr>
+  [% IF otheruser.product_responsibilities.size %]
+    <tr>
+      <th>負責的產品：</th>
+      <td>
+        [% PROCESS admin/users/responsibilities.html.tmpl otheruser = otheruser %]
+      </td>
+    </tr>
+  [% END %]
+</table>
+
+[% IF otheruser.product_responsibilities.size %]
+  <p>
+    你現在無法刪除該使用者，因為
+    [%+ otheruser.login FILTER html %] 對至少一項產品負責。
+  </p>
+  <p>
+    [% IF user.in_group("editcomponents", component.product_id) %]
+      點選上方的編輯產品連結變更此設定，
+    [% ELSE %]
+      現在你可以
+    [% END %]
+[% ELSE %]
+
+  [% accept_deletion = 1 %]
+
+  [% display_warning = 0 %][% IF attachments || reporter || bugs_activity || flags.setter || longdescs || profiles_activity %]
+    <div class="criticalmessages">
+      <p><b>執行下列刪除是<b>不安全的</b>，且可能產生完整參照的不一致！</p>
+
+      <ul>
+        [% IF attachments %]
+          <li>
+            [% otheruser.login FILTER html %]
+            <a href="buglist.cgi?field0-0-0=attachments.submitter&type0-0-0=equals&value0-0-0=
+               [%- otheruser.login FILTER url_quote %]"
+               >已送出了 [%+ attachments %] 個附件</a>。如果你刪除此使用者帳號，資料庫的記錄將不一致，導致這
+               [% attachments %] 個附件不再出現於 [% terms.bugs %] 中。
+          </li>
+        [% END %]
+        [% IF reporter %]
+          <li>
+            [% otheruser.login FILTER html %]
+            <a href="buglist.cgi?emailreporter1=1&amp;emailtype1=exact&amp;email1=
+               [%- otheruser.login FILTER url_quote %]">回報了 [%+ reporter %] 個 [%+ terms.bugs %]</a>
+               。如果你刪除該使用者，資料庫的記錄將不一致，導致這
+               [% reporter %] 個 [% terms.bug %] 不再出現在 [% terms.bug %] 清單中。
+          </li>
+        [% END %]
+        [% IF bugs_activity %]
+          <li>
+            [% otheruser.login FILTER html %] 曾對 [% terms.bugs %]
+            做出變更。如果你刪除該使用者，資料庫中的 [% terms.bugs %]
+            活動記錄將不一致，導致這 [% bugs_activity %] 項變更不再出現在
+            [% terms.bug %] 活動記錄中。
+          </li>
+        [% END %]
+        [% IF flags.setter %]
+          <li>
+            [% otheruser.login FILTER html %] 曾經<a
+              href="buglist.cgi?field0-0-0=setters.login_name&amp;type0-0-0=equals&amp;value0-0-0=
+              [%- otheruser.login FILTER url_quote %]">設定或要求設定 [%+ flags.setter %]
+              個旗標</a>。如果你刪除該使用者，資料庫中的旗標記錄將不一致，導致這
+              [% flags.setter %] 個旗標不再正確地顯示。
+          </li>
+        [% END %]
+        [% IF longdescs %]
+          <li>
+            [% otheruser.login FILTER html %] 曾經<a
+              href="buglist.cgi?emaillongdesc1=1&amp;emailtype1=exact&amp;email1=
+              [%- otheruser.login FILTER url_quote %]">對 [% terms.bugs %] 發表過
+              [%+ longdescs %] 次意見</a>。如果你刪除該使用者，資料庫中的意見記錄將不一致，導致這
+              [% longdescs %] 個意見無法再瀏覽。
+          </li>
+        [% END %]
+        [% IF profiles_activity %]
+          <li>
+            [% otheruser.login FILTER html %]
+            曾對其他使用者的檔案做出變更。如果你刪除該使用者，資料庫中的使用者檔案活動記錄將不一致。
+          </li>
+        [% END %]
+      </ul>
+    </div>
+    [% accept_deletion = 0 %]
+  [% END %]
+
+  [% IF assignee_or_qa || cc || component_cc || email_setting || flags.requestee ||
+        namedqueries || profile_setting || quips || series || votes || watch.watched ||
+        watch.watcher || whine_events || whine_schedules %]
+    <div class="warningmessages">
+      <p>下列刪除是<b>安全的</b>，且不會產生完整參照的不一致。</p>
+
+      <ul>
+        [% IF assignee_or_qa %]
+          <li>
+            [% otheruser.login FILTER html %]
+            <a href="buglist.cgi?emailassigned_to1=1&amp;emailqa_contact1=1&amp;emailtype1=exact&amp;email1=
+               [%- otheruser.login FILTER url_quote %]">是 [%+ assignee_or_qa %] 個 [%+ terms.bugs %]</a>
+               的預設負責人或 QA 連絡人。如果你刪除該使用者，將會自動設回預設的負責人或預設的 QA 連絡人。
+          </li>
+        [% END %]
+        [% IF cc %]
+          <li>
+            [% otheruser.login FILTER html %]
+            <a href="buglist.cgi?emailcc1=1&amp;emailtype1=exact&amp;email1=
+               [%- otheruser.login FILTER url_quote %]">在 [%+ cc %] 個 [%+ terms.bugs %]</a>
+               的寄件副本清單中。如果你刪除該使用者，將會自動自寄件副本清單中刪除。
+          </li>
+        [% END %]
+        [% IF component_cc %]
+          <li>
+            [% otheruser.login FILTER html %] 在 [% component_cc %]
+            項子產品的預設寄件副本清單中。如果你刪除該使用者，將會自動自預設的寄件副本清單中刪除。
+          </li>
+        [% END %]
+        [% IF email_setting %]
+          <li>
+            使用者的電子郵件設定將和該使用者一併刪除。
+          </li>
+        [% END %]
+        [% IF flags.requestee %]
+          <li>
+            [% otheruser.login FILTER html %] 曾<a
+              href="buglist.cgi?field0-0-0=requestees.login_name&amp;type0-0-0=equals&amp;value0-0-0=
+              [%- otheruser.login FILTER url_quote %]">被要求設定 [% flags.requestee %]
+              個旗標</a>。如果你刪除該使用者，這 [% flags.requestee %] 個旗標將變更為非指定要求的狀態。
+          </li>
+        [% END %]
+        [% IF namedqueries %]
+          <li>
+            [% otheruser.login FILTER html %] 有 [%+ namedqueries FILTER html %]
+            個[% '已分享的' IF namedquery_group_map %]自訂搜尋名稱，將和該使用者一併刪除。
+            [% IF namedquery_group_map %]
+              [% IF namedqueries > 1 %]其中有 [%+ namedquery_group_map FILTER html %]
+              個是已分享的自訂搜尋。[% END %]其他使用者將不再可以使用這
+              [% namedquery_group_map %] 個已分享的自訂搜尋名稱。
+            [% END %]
+          </li>
+        [% END %]
+        [% IF profile_setting %]
+          <li>
+            使用者的偏好設定將和該使用者一併刪除。
+          </li>
+        [% END %]
+        [% IF series %]
+          <li>
+            [% otheruser.login FILTER html %] 建立了 [%+ series %] 個系列，將和該使用者一併刪除。
+          </li>
+        [% END %]
+        [% IF quips %]
+          <li>
+            [% otheruser.login FILTER html %] 送出了 [% quips %] 條智語。如果你刪除此使用者帳號，這
+            [% quips %] 條智語將不再有作者，但仍會顯示。
+          </li>
+        [% END %]
+        [% IF votes %]
+          <li>
+            [% otheruser.login FILTER html %] 曾對 [%+ votes %] 個 [%+ terms.bugs %]
+            投過票。如果你刪除該使用者，則該使用者的投票將和該使用者一併刪除。
+          </li>
+        [% END %]
+        [% IF watch.watched || watch.watcher %]
+          <li>
+            [% otheruser.login FILTER html %]
+            [% IF watch.watched %]被 [%+ watch.watched %] 位使用者監控中[% END %]
+            [% IF watch.watcher %][%+ '，並' IF watch.watched %]監控 [%+ watch.watcher %]
+            位使用者中[% END %]。所有的相關監控將和該使用者一併刪除。
+          </li>
+        [% END %]
+        [% IF whine_events %]
+          <li>
+            [% otheruser.login FILTER html %] 排定了 [%+ whine_events %] 項訂閱。相關訂閱將和該使用者一併刪除。
+          </li>
+        [% END %]
+        [% IF whine_schedules %]
+          <li>
+            [% otheruser.login FILTER html %] 是
+              [%+ whine_schedules %] 項訂閱的收件者之一。對應到寄送此帳號的排程將被刪除，但不會變更訂閱的內容。
+          </li>
+        [% END %]
+      </ul>
+    </div>
+
+    [% IF accept_deletion %]
+      <p class="areyoureallyreallysure">
+        在繼續執行之前，請先確認執行後可能的結果。
+      </p>
+
+      <p>你確定要刪除該使用者嗎？</p>
+
+      <form method="post" action="editusers.cgi">
+        <p>
+          <input type="submit" id="delete" value="是的，刪除"/>
+          <input type="hidden" name="action" value="delete" />
+          <input type="hidden" name="userid" value="[% otheruser.id %]" />
+          <input type="hidden" name="token" value="[% token FILTER html %]">
+          [% INCLUDE listselectionhiddenfields %]
+        </p>
+      </form>
+
+      <p>如果你現在不想要刪除該使用者，你可以
+    [% ELSE %]
+      <p>因為前述不安全的動作，<b>你無法刪除此使用者帳號</b>。你可以
+    [% END %]
+
+  [% END %]
+[% END %]
+
+  <a href="editusers.cgi?action=edit&amp;userid=[% otheruser.id %]
+           [% INCLUDE listselectionurlparams %]">編輯該使用者</a>，回到<a
+     href="editusers.cgi?action=list[% INCLUDE listselectionurlparams %]">使用者清單</a>，[% IF editusers %]<a
+     href="editusers.cgi?action=add[% INCLUDE listselectionurlparams %]">新增使用者</a>，[% END %]或是<a
+     href="editusers.cgi">搜尋其他使用者</a>。
+</p>
+
+[% PROCESS global/footer.html.tmpl %]

@@ -1,0 +1,128 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Gervase Markham <gerv@gerv.net>
+  #                 Svetlana Harisova <light@rathedg.com>
+  #%]
+
+[% DEFAULT qs_suffix = "" %]
+
+<ul class="links">
+  <li><a href="./">首頁</a></li>
+  <li><span class="separator">| </span><a href="enter_bug.cgi">輸入新的 [% terms.bug %]</a></li>
+  <li><span class="separator">| </span><a href="query.cgi">搜尋</a></li>
+
+  <li class="form">
+    <span class="separator">| </span>
+    <form action="buglist.cgi" method="get"
+        onsubmit="if (this.quicksearch.value == '')
+                  { alert('請至少輸入一個字串來搜尋。');
+                    return false; } return true;">
+    <input class="txt" type="text" id="quicksearch[% qs_suffix FILTER html %]" name="quicksearch">
+    <input class="btn" type="submit" value="尋找" id="find[% qs_suffix FILTER html %]">
+    [%-# Work around FF bug: keep this on one line %]</form></li>
+
+  <li><span class="separator">| </span><a href="report.cgi">報告</a></li>
+
+  <li>
+    [% IF Param('shutdownhtml') || Bugzilla.has_flags %]
+      <span class="separator">| </span>
+      [% IF user.id %]
+        <a href="request.cgi?requester=[% user.login FILTER url_quote %]&amp;requestee=
+                 [% user.login FILTER url_quote %]&amp;do_union=1&amp;group=type">我的要求</a>
+      [% ELSE %]
+        <a href="request.cgi">要求</a>
+      [% END %]
+    [% END %]
+  [%-# Work around FF bug: keep this on one line %]</li>
+
+  [% IF user.id && Param('usevotes') %]
+    <li><span class="separator">| </span><a href="votes.cgi?action=show_user">我的投票</a></li>
+  [% END %]
+
+  [% IF user.login %]
+    <li><span class="separator">| </span><a href="userprefs.cgi">偏好設定</a></li>
+    [% IF user.groups.tweakparams || user.groups.editusers || user.can_bless
+          || (Param('useclassification') && user.groups.editclassifications)
+          || user.groups.editcomponents || user.groups.admin || user.groups.creategroups
+          || user.groups.editkeywords || user.groups.bz_canusewhines
+          || user.get_products_by_permission("editcomponents").size %]
+      <li><span class="separator">| </span><a href="admin.cgi">管理者介面</a></li>
+    [% END %]
+
+    [% PROCESS link_to_documentation %]
+
+    <li>
+      <span class="separator">| </span>
+      [% IF user.authorizer.can_logout %]
+        <a href="relogin.cgi">登出</a>
+      [% ELSE %]
+        登入為：
+      [% END %]
+      [% IF sudoer %]
+        [%+ sudoer.login FILTER html %] (<b>sudo 使用者
+        [%+ user.login FILTER html %] 中</b>
+        <a href="relogin.cgi?action=end-sudo">結束 sudo </a>)
+      [% ELSE %]
+        [%+ user.login FILTER html %]
+      [% END %]
+    [%-# Work around FF bug: keep this on one line %]</li>
+  [% ELSE %]
+    [% IF Param('createemailregexp')
+          && user.authorizer.user_can_create_account %]
+      <li><span class="separator">| </span><a href="createaccount.cgi">新增帳號</a></li>
+    [% END %]
+
+    [% PROCESS link_to_documentation %]
+
+    [% IF user.authorizer.can_login %]
+      [%# Use the current script name. If an empty name is returned,
+        # then we are accessing the home page. %]
+
+      [% script_name = cgi.url(Relative => 1) %]
+
+      [% IF cgi.request_method == "POST" OR script_name.match("relogin") %]
+        [% script_name = "" %]
+      [% END %]
+
+      [%# If SSL is in use, use 'sslbase', else use 'urlbase'. %]
+      [% IF Param("sslbase") != "" && Param("ssl") != "never" %]
+        [% script_name = Param("sslbase") _ script_name %]
+      [% ELSE %]
+        [% script_name = Param("urlbase") _ script_name %]
+      [% END %]
+
+      [% IF cgi.request_method == "GET" AND cgi.query_string %]
+        [% script_name = script_name _ "?" _ cgi.query_string %]
+        [% script_name = script_name _ "&GoAheadAndLogIn=1" IF !cgi.query_string.match("GoAheadAndLogIn") %]
+      [% ELSE %]
+        [% script_name = script_name _ "?GoAheadAndLogIn=1" %]
+      [% END %]
+
+      <li><span class="separator">| </span><a href="[% script_name FILTER html %]">登入</a></li>
+    [% END %]
+  [% END %]
+</ul>
+[% Hook.process("link-row") %]
+[% BLOCK link_to_documentation %]
+    [% IF doc_section && Param('docs_urlbase') %]
+      <li>
+        <span class="separator">| </span>
+        <a href="[% docs_urlbase _ doc_section FILTER html %]" target="_blank">幫助</a>
+      </li>
+    [% END %]
+[% END %]

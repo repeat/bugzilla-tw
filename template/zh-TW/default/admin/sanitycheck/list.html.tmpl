@@ -1,0 +1,35 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Frédéric Buclin.
+  #
+  # Contributor(s): Frédéric Buclin <LpSolit@gmail.com>
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+[% PROCESS global/header.html.tmpl title = "健全度測試"
+                                   style_urls = ['skins/standard/admin.css'] %]
+
+<div>
+  <p>
+    [% terms.Bugzilla %] 正在檢查你的資料庫的參考完整性。需要數分鐘才能完成。
+  </p>
+
+  <p>
+    如果有任何錯誤，將會以<span class="alert">類似這樣的方式強調</span>。
+    將會針對找到的錯誤，顯示一些允許你簡易修復該錯誤的連結。
+    修復這些錯誤後，將會重新執行此一 script （所以可能會花比第一次執行還久的時間）。
+  </p>
+</div>
+
+<hr>

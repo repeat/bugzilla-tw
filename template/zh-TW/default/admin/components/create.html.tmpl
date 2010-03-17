@@ -1,0 +1,103 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Gavin Shelley <bugzilla@chimpychompy.org>
+  #                 Akamai Technologies <bugzilla-dev@akamai.com>
+  #%]
+
+[%# INTERFACE:
+  # product: object; Bugzilla::Product object representing the product to
+  #               which the component belongs.
+  #%]
+
+[% title = BLOCK %]在產品 '[% product.name FILTER html %]' 中加入子產品[% END %]
+[% PROCESS global/header.html.tmpl
+  title = title
+%]
+
+<form method="post" action="editcomponents.cgi">
+  <table border="0" cellpadding="4" cellspacing="0">
+    <tr>
+      <th align="right">子產品：</th>
+      <td><input size="64" maxlength="64" name="component" value=""></td>
+    </tr>
+    <tr>
+      <th align="right">描述：</th>
+      <td>
+        [% INCLUDE global/textarea.html.tmpl
+          name    = 'description'
+          minrows = 4
+          cols    = 64
+          wrap    = 'virtual'
+        %]
+      </td>
+    </tr>
+    <tr>
+      <th align="right"><label for="initialowner">預設負責人：</label></th>
+      <td>
+        [% INCLUDE global/userselect.html.tmpl
+           name => "initialowner"
+           value => ""
+           id => "initialowner"
+           size => 64
+         %]
+      </td>
+    </tr>
+[% IF Param('useqacontact') %]
+    <tr>
+      <th align="right">
+        <label for="initialqacontact">預設 QA 連絡人：</label></th>
+      <td>
+        [% INCLUDE global/userselect.html.tmpl
+           name => "initialqacontact"
+           id => "initialqacontact"
+           value => ""
+           size => 64
+           emptyok => 1
+         %]
+      </td>
+    </tr>
+[% END %]
+    <tr>
+      <th align="right">
+        <label for="initialcc">預設寄件副本清單：</label>
+      </th>
+      <td>
+        [% INCLUDE global/userselect.html.tmpl
+           name => "initialcc"
+           id => "initialcc"
+           value => ""
+           size => 64
+           multiple => 5
+        %]
+        <br>
+        [% IF !Param("usemenuforusers") %]
+          <em>輸入寄件副本清單時，多位連絡者可用半形逗號 (,) 分隔。</em>
+        [% END %]
+      </td>
+    </tr>
+  </table>
+  <hr>
+  <input type="submit" id="create" value="新增">
+  <input type="hidden" name="action" value="new">
+  <input type="hidden" name='product' value="[% product.name FILTER html %]">
+  <input type="hidden" name="token" value="[% token FILTER html %]">
+</form>
+
+[% PROCESS admin/components/footer.html.tmpl %]
+
+[% PROCESS global/footer.html.tmpl %]

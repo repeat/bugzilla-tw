@@ -1,0 +1,55 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Joel Peshkin <bugreport@peshkin.net>
+  #
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+[% title = BLOCK %]
+  確認對產品 '[%- product.name FILTER html %]' 做出群組控制的變更
+[% END %]
+
+[% PROCESS global/header.html.tmpl title = title %]
+[% FOREACH group = mandatory_groups %]
+<p>
+由於群組 '[% group.name FILTER html %]' 設定為強制 (MANDATORY)，因此將新增受該群組影響的
+[% group.count %] 個 [%+ terms.bugs %] 。</p>
+[% END %]
+
+[% FOREACH group = na_groups %]
+<p>
+群組 '[% group.name FILTER html %]' 影響了 [% group.count %] 個 [% terms.bugs %] ，這些
+[% terms.bugs %] 已不再適用於此群組，因此將會被移除。</p>
+[% END %]
+<form action="editproducts.cgi" method="post" >
+
+  [% PROCESS "global/hidden-fields.html.tmpl" exclude="^Bugzilla_(login|password)$" %]
+
+  <br>
+     點選「繼續」鍵確認上方的所有變更。如果你不想做出上列變更，請點選「上一頁」按鍵回到上一頁。
+  <p>
+    <input type="hidden" name="confirmed" value="confirmed">
+    <input type="submit" id="update" value="繼續">
+  </p>
+
+</form>
+
+
+[% PROCESS global/footer.html.tmpl %]
+
+
