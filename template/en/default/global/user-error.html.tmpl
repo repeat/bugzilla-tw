@@ -1301,8 +1301,13 @@
     Try splitting your patch into several pieces.
 
   [% ELSIF error == "product_access_denied" %]
-    Either the product '[% product FILTER html %]' does not exist or
-    you don't have access to it.
+    Either the product 
+    [%+ IF id.defined %]
+      with the id [% id FILTER html %]
+    [% ELSE %]
+      '[% name FILTER html %]'
+    [% END %]
+    does not exist or you don't have access to it.
 
   [% ELSIF error == "product_doesnt_exist" %]
     [% title = "Specified Product Does Not Exist" %]
@@ -1431,8 +1436,8 @@
     [% END %]
 
     [% IF unknown.size %]
-      <p>The legal field names are
-        <a href="page.cgi?id=quicksearchhack.html">listed here</a>.</p>
+      <p>The legal field names are 
+        <a href="page.cgi?id=quicksearch.html#fields">listed here</a>.</p>
     [% END %]
 
   [% ELSIF error == "reassign_to_empty" %]
