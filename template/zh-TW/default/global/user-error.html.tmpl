@@ -1197,11 +1197,17 @@
     請試著將 patch 分割成多個檔案。
 
   [% ELSIF error == "product_access_denied" %]
-    [% title = "權限不足" %]
-    無法編輯產品 '[% product FILTER html %]' 的設定。
+    產品
+    [%+ IF id.defined %]
+      編號 [% id FILTER html %]
+    [% ELSE %]
+      '[% product FILTER html %]'
+    [% END %]
+    不存在，或是你沒有存取該產品的權限。
 
   [% ELSIF error == "product_admin_denied" %]
-    產品 '[% product FILTER html %]' 不存在，或是你沒有存取該產品的權限。
+    [% title = "權限不足" %]
+    無法編輯產品 '[% product FILTER html %]' 的設定。
 
   [% ELSIF error == "product_blank_name" %]
     [% title = "不允許產品名稱空白" %]
@@ -1319,7 +1325,7 @@
 
     [% IF unknown.size %]
       <p>有效的欄位名稱
-        <a href="page.cgi?id=quicksearchhack.html">列於此處</a>。</p>
+        <a href="id=quicksearch.html#fields">列於此處</a>。</p>
     [% END %]
 
   [% ELSIF error == "reassign_to_empty" %]
