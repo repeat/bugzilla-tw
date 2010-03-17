@@ -57,7 +57,7 @@
 [% IF matchsuccess == 1 %]
   [% PROCESS global/header.html.tmpl title="確認符合" %]
 
-[% USE Bugzilla %]
+  [% USE Bugzilla %]
 
   <form method="post"
   [% IF script -%]
@@ -83,8 +83,11 @@
   [% PROCESS global/header.html.tmpl title="找不到符合的資料" %]
   <p>
     你在前一頁所輸入的名稱或電子郵件地址，在 [% terms.Bugzilla %] 中找不到符合的資料。
-    <br>請回到前一頁，並試試其他的名稱或電子郵件地址。
+    [% IF !user.id %]
+      <b>注意：你現在是登出狀態。只會顯示完全符合的電子郵件地址。</b>
+    [% END %]
   </p>
+  <p>請回到前一頁，並試試其他的名稱或電子郵件地址。</p>
 [% END %]
 
   <table border="0">

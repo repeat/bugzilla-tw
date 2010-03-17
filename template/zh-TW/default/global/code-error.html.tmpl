@@ -444,6 +444,9 @@
   [% ELSIF error == "unknown_comparison_type" %]
     所指定的比較種類並不支援。
 
+  [% ELSIF error == "unknown_method" %]
+    找不到指定的 method '[% method FILTER html %]' 。
+
   [% ELSIF error == "usage_mode_invalid" %]
     '[% invalid_usage_mode FILTER html %]' 並非有效的使用模式。
 

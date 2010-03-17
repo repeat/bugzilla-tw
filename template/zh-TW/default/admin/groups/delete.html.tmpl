@@ -58,6 +58,15 @@
     - <label><input type="checkbox" name="removeusers">刪除此群組中的所有使用者。</label></p>
   [% END %]
 
+  [% IF group.granted_by_direct(constants.GROUP_MEMBERSHIP).size %]
+    <p><b>此群組的成員繼承了下列群組的成員資格：</b></p>
+    <ul>
+      [% FOREACH grantor = group.granted_by_direct(constants.GROUP_MEMBERSHIP) %]
+        <li>[% grantor.name FILTER html %]</li>
+      [% END %]
+    </ul>
+  [% END %]
+
   [% IF group.bugs.size %]
     <p><b>[% group.bugs.size FILTER html %] 個 [% terms.bug %] 回報屬於只有此群組可瀏覽。
      你無法在群組中還有[% terms.bugs %]時刪除它。</b>

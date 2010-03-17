@@ -252,8 +252,8 @@
   <div class="bz_alias_short_desc_container edit_form">
       [% PROCESS commit_button id="_top"%]
      <a href="show_bug.cgi?id=[% bug.bug_id %]">
-        <b>[% terms.Bug %]&nbsp;[% bug.bug_id FILTER html %]</b></a> -
-     <span id="summary_alias_container" class="bz_default_hidden">
+        [%-# %]<b>[% terms.Bug %]&nbsp;[% bug.bug_id FILTER html %]</b>
+     [%-# %]</a> -<span id="summary_alias_container" class="bz_default_hidden">
       [% IF Param("usebugaliases") %]
         [% IF bug.alias != "" %]
           (<span id="alias_nonedit_display">[% bug.alias FILTER html %]</span>)
@@ -437,11 +437,11 @@
 
     [% IF Param("usetargetmilestone") && bug.target_milestone %]
       <tr>
-        <th class="field_label">
+        <td class="field_label">
           <label for="target_milestone">
               <a href="page.cgi?id=fields.html#target_milestone">
             目標里程碑</a></label>：
-        </th>
+        </td>
         [% PROCESS select selname = "target_milestone" %]
       </tr>
     [% END %]
