@@ -60,8 +60,9 @@
        allow_html_content => 1
      },
      { 
-       name => "disallow_new"
+       name => "is_active"
        heading => "Open For New $terms.Bugs"
+       yesno_field => 1
      },
      { 
        name => "votesperuser"
@@ -98,18 +99,6 @@
        contentlink => delete_contentlink
      })
 %]
-
-[% overrides.disallow_new.disallow_new = {
-     "1" => {
-       override_content => 1
-       content => "No"
-     },
-     "0" => {
-       override_content => 1
-       content => "Yes"
-     }
-   }
-%] 
 
 [% PROCESS admin/table.html.tmpl
      columns = columns

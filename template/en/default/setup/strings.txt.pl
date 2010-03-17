@@ -33,6 +33,8 @@
     checking_dbd      => 'Checking available perl DBD modules...',
     checking_optional => 'The following Perl modules are optional:',
     checking_modules  => 'Checking perl modules...',
+    chmod_failed      => '##path##: Failed to change permissions: ##error##',
+    chown_failed      => '##path##: Failed to change ownership: ##error##',
     commands_dbd      => <<EOT,
 YOU MUST RUN ONE OF THE FOLLOWING COMMANDS (depending on which database
 you use):
@@ -40,9 +42,30 @@ EOT
     commands_optional => 'COMMANDS TO INSTALL OPTIONAL MODULES:',
     commands_required => <<EOT,
 COMMANDS TO INSTALL REQUIRED MODULES (You *must* run all these commands
-and then re-run checksetup.pl):
+and then re-run this script):
 EOT
     done => 'done.',
+    extension_must_return_name => <<END,
+##file## returned ##returned##, which is not a valid name for an extension.
+Extensions must return their name, not <code>1</code> or a number. See
+the documentation of Bugzilla::Extension for details.
+END
+    feature_auth_ldap         => 'LDAP Authentication',
+    feature_auth_radius       => 'RADIUS Authentication',
+    feature_graphical_reports => 'Graphical Reports',
+    feature_html_desc         => 'More HTML in Product/Group Descriptions',
+    feature_inbound_email     => 'Inbound Email',
+    feature_jobqueue          => 'Mail Queueing',
+    feature_jsonrpc           => 'JSON-RPC Interface',
+    feature_new_charts        => 'New Charts',
+    feature_old_charts        => 'Old Charts',
+    feature_mod_perl          => 'mod_perl',
+    feature_moving            => 'Move Bugs Between Installations',
+    feature_patch_viewer      => 'Patch Viewer',
+    feature_smtp_auth         => 'SMTP Authentication',
+    feature_updates           => 'Automatic Update Notifications',
+    feature_xmlrpc            => 'XML-RPC Interface',
+
     header => "* This is Bugzilla ##bz_ver## on perl ##perl_ver##\n"
             . "* Running on ##os_name## ##os_ver##",
     install_all => <<EOT,
@@ -61,6 +84,7 @@ then the value of the ##column## column that needs to be fixed:
 
 EOT
     install_module => 'Installing ##module## version ##version##...',
+    installation_failed => '*** Installation aborted. Read the messages above. ***',
     max_allowed_packet => <<EOT,
 WARNING: You need to set the max_allowed_packet parameter in your MySQL
 configuration to at least ##needed##. Currently it is set to ##current##.
@@ -125,6 +149,11 @@ EOT
 * top of the displayed list.                                          *
 EOT
     template_precompile   => "Precompiling templates...",
+    template_removal_failed => <<END,
+WARNING: The directory '##datadir##/template' could not be removed.
+         It has been moved into '##datadir##/deleteme', which should be
+         deleted manually to conserve disk space.
+END
     template_removing_dir => "Removing existing compiled templates...",
 );
 

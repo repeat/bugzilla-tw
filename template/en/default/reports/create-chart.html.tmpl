@@ -120,7 +120,7 @@ function subcatSelected() {
 
   <h3>List Of Data Sets To Plot</h3>
 
-  [% IF chart.lines.size > 0 %]
+  [% IF chart.lines.size %]
     <table cellspacing="2" cellpadding="2">
       <tr>
         <th style="width: 5em;">Select</th>
@@ -173,9 +173,11 @@ function subcatSelected() {
             </td>
 
             <td align="center">
-              [% IF user.id == series.creator OR user.in_group("admin") %]
+              [% IF user.id == series.creator_id OR user.in_group("admin") %]
                <a href="chart.cgi?action=edit&amp;series_id=
                        [% series.series_id %]">Edit</a> |
+               <a href="chart.cgi?action=confirm-delete&amp;series_id=
+                       [%- series.series_id %]">Delete</a> |
               [% END %]
               <a href="buglist.cgi?cmdtype=dorem&amp;namedcmd=
                 [% series.category FILTER url_quote %]%20/%20
@@ -246,7 +248,23 @@ function subcatSelected() {
 </form>
 
 [% IF user.in_group('editbugs') %]
-  <h3><a href="query.cgi?format=create-series">Create New Data Set</a></h3>
+  <h3>Create New Data Set</h3>
+  <p>
+    You can either create a new data set based on one of your saved searches
+    or start with a clean slate.
+  </p>
+
+  <form action="chart.cgi" id="create_series" name="create_series" method="GET">
+    <input type="hidden" name="action" value="convert_search">
+    <label for="series_from_search">Based on:</label>
+    <select id="series_from_search" name="series_from_search">
+      <option value="">(Clean slate)</option>
+      [% FOREACH q = user.queries %]
+        <option value="[% q.name FILTER html %]">[% q.name FILTER html %]</option>
+      [% END %]
+    </select>
+    <input id="submit_create" type="submit" value="Create a new data set">
+  </form>
 [% END %]                 
 
 [% PROCESS global/footer.html.tmpl %]

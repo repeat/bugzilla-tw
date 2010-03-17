@@ -60,8 +60,9 @@
        allow_html_content => 1
      },
      {
-       name => "disallow_new"
+       name => "is_active"
        heading => "允許回報新的 $terms.bugs"
+       yesno_field => 1
      },
      {
        name => "votesperuser"
@@ -97,18 +98,6 @@
        content => "刪除"
        contentlink => delete_contentlink
      })
-%]
-
-[% overrides.disallow_new.disallow_new = {
-     "1" => {
-       override_content => 1
-       content => "否"
-     },
-     "0" => {
-       override_content => 1
-       content => "是"
-     }
-   }
 %]
 
 [% PROCESS admin/table.html.tmpl

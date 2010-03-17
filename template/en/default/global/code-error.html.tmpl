@@ -47,6 +47,14 @@
     Attachment #[% attach_id FILTER html %] ([% description FILTER html %]) 
     is already obsolete.
 
+  [% ELSIF error == "attachment_local_storage_disabled" %]
+    [% title = "Local Storage Disabled" %]
+    You cannot store attachments locally. This feature is disabled.
+
+  [% ELSIF error == "attachment_url_disabled" %]
+    [% title = "Attachment URL Disabled" %]
+    You cannot attach a URL. This feature is currently disabled.
+
   [% ELSIF error == "auth_invalid_email" %]
     [% title = "Invalid Email Address" %]
     We received an email address (<b>[% addr FILTER html %]</b>)
@@ -102,11 +110,6 @@
   [% ELSIF error == "chart_file_open_fail" %]
     Unable to open the chart datafile <tt>[% filename FILTER html %]</tt>.
   
-  [% ELSIF error == "chart_lines_not_installed" %]
-    [% admindocslinks = {'installation.html#install-perlmodules' => 'Installing Perl modules necessary for Charting'} %]
-    Charts will not work without the Chart::Lines Perl module being installed.
-    Run checksetup.pl for installation instructions.
-
   [% ELSIF error == "column_not_null_without_default" %]
     Failed adding the column [% name FILTER html %]:
     You cannot add a NOT NULL column with no default to an existing table
@@ -116,6 +119,23 @@
     You cannot alter the [% name FILTER html %] column to be NOT NULL 
     without specifying a default or something for $set_nulls_to, because
     there are NULL values currently in it.
+
+  [% ELSIF error == "comment_extra_data_not_allowed" %]
+    You tried to set the <code>extra_data</code> field to 
+    '[% extra_data FILTER html %]' but comments of type [% type FILTER html %]
+    do not accept an <code>extra_data</code> argument.
+
+  [% ELSIF error == "comment_extra_data_required" %]
+    Comments of type [% type FILTER html %] require an <code>extra_data</code>
+    argument to be set.
+
+  [% ELSIF error == "comment_extra_data_not_numeric" %]
+    You tried to set the <code>extra_data</code> field to
+    '[% extra_data FILTER html %]' but comments of type [% type FILTER html %]
+    require a numeric <code>extra_data</code> argument.
+
+  [% ELSIF error == "comment_type_invalid" %]
+    '[% type FILTER html %]' is not a valid comment type.
 
   [% ELSIF error == "db_rename_conflict" %]
     Name conflict: Cannot rename [% old FILTER html %] to
@@ -136,9 +156,32 @@
       address.
     [% END %]
 
-  [% ELSIF error == "extension_invalid" %]
-    An error occurred processing hook [% name FILTER html %] in
-    extension [% extension FILTER html %]: [% errstr FILTER html %]
+  [% ELSIF error == "extension_must_be_subclass" %]
+    <code>[% package FILTER html %]</code> from 
+    <code>[% filename FILTER html %]</code> is not a subclass of
+    <code>[% class FILTER html %]</code>.
+
+  [% ELSIF error == "extension_must_return_name" %]
+    <code>[% extension FILTER html %]</code> returned
+    <code>[% returned FILTER html %]</code>, which is not a valid name
+    for an extension. Extensions must return their name, not <code>1</code>
+    or a number. See the documentation of
+    <a href="[% docs_urlbase FILTER html %]api/Bugzilla/Extension.html">Bugzilla::Extension</a>
+    for details.
+
+  [% ELSIF error == "extension_no_name" %]
+    We did not find a <code>NAME</code> method in 
+    <code>[% package FILTER html %]</code> (loaded from
+    <code>[% filename FILTER html %]</code>). This means that
+    the extension has one or more of the following problems:
+
+    <ul>
+      <li><code>[% filename FILTER html %]</code> did not define a
+        <code>[% package FILTER html %]</code> package.</li>
+      <li><code>[% package FILTER html %]</code> did not define a
+        <code>NAME</code> method (or the <code>NAME</code> method
+        returned an empty string).</li>
+    </ul>
 
   [% ELSIF error == "extern_id_conflict" %]
     The external ID '[% extern_id FILTER html %]' already exists
@@ -151,18 +194,17 @@
     to generate the right class (you can't call class methods directly
     on Bugzilla::Field::Choice).
 
-  [% ELSIF error == "field_type_mismatch" %]
-    Cannot seem to handle <code>[% field FILTER html %]</code>
-    and <code>[% type FILTER html %]</code> together.
-
   [% ELSIF error == "field_not_custom" %]
     '[% field.description FILTER html %]' ([% field.name FILTER html %])
     is not a custom field.
 
-  [% ELSIF error == "gd_not_installed" %]
-    [% admindocslinks = {'installation.html#install-perlmodules' => 'Installing Perl modules necessary for Charting'} %]
-    Charts will not work without the GD Perl module being installed.
-    Run checksetup.pl for installation instructions.
+  [% ELSIF error == "field_type_mismatch" %]
+    Cannot seem to handle <code>[% field FILTER html %]</code>
+    and <code>[% type FILTER html %]</code> together.
+
+  [% ELSIF error == "field_type_not_specified" %]
+    [% title = "Field Type Not Specified" %]
+    You must specify a type when creating a custom field.
 
   [% ELSIF error == "illegal_content_type_method" %]
     Your form submission got corrupted somehow.  The <em>content
@@ -182,17 +224,6 @@
      The attachment number of one of the attachments you wanted to obsolete,
      [% attach_id FILTER html %], is invalid.
           
-  [% ELSIF error == "invalid_column_name_cookie" %]
-    [% title = "Invalid Column Name" %]
-     The custom sort order specified in your cookie contains an invalid
-     column name <em>[% fragment FILTER html %]</em>. 
-     The cookie has been cleared.
-         
-  [% ELSIF error == "invalid_column_name_form" %]
-    [% title = "Invalid Column Name" %]
-     The custom sort order specified in your form submission contains an
-     invalid column name <em>[% fragment FILTER html %]</em>.
-
   [% ELSIF error == "invalid_customfield_type" %]
     [% title = "Invalid Field Type" %]
     The type <em>[% type FILTER html %]</em> is not a valid field type.
@@ -200,6 +231,12 @@
   [% ELSIF error == "invalid_dimensions" %]
     [% title = "Invalid Dimensions" %]
     The width or height specified is not a positive integer.
+
+  [% ELSIF error == "invalid_feature" %]
+    [% title = "Invalid Feature Name" %]
+    [% feature FILTER html %] is not a valid feature name. See
+    <code>OPTIONAL_MODULES</code> in 
+    <code>Bugzilla::Install::Requirements</code> for valid names.
 
   [% ELSIF error == "invalid_flag_association" %]
     [% title = "Invalid Flag Association" %]
@@ -225,15 +262,19 @@
     but you tried to flag it as obsolete while creating a new attachment to 
     [% terms.bug %] [%+ my_bug_id FILTER html %].
 
-  [% ELSIF error == "flags_not_available" %]
-    [% title = "Flag Editing not Allowed" %]
-    [% IF type == "b" %]
-      Flags cannot be set or changed when
-      changing several [% terms.bugs %] at once.
-    [% ELSE %]
-      References to existing flags when creating
-      a new attachment are invalid.
-    [% END %] 
+  [% ELSIF error == "feature_disabled" %]
+    The [% install_string("feature_$feature") FILTER html %] feature is not
+    available in this [% terms.Bugzilla %]. 
+    [% IF user.in_group('admin') %]
+      If you would like to enable this feature, please run 
+      <kbd>checksetup.pl</kbd> to see how to install the necessary
+      requirements for this feature.
+    [% END %]
+
+  [% ELSIF error == "flag_unexpected_object" %]
+    [% title = "Object Not Recognized" %]
+    Flags cannot be set for objects of type [% caller FILTER html %].
+    They can only be set for [% terms.bugs %] and attachments.
 
   [% ELSIF error == "flag_requestee_disabled" %]
     [% title = "Flag not Requestable from Specific Person" %]
@@ -282,11 +323,6 @@
     Inserting a <code>[% job FILTER html %]</code> job into the Job 
     Queue failed with the following error: [% errmsg FILTER html %]
 
-  [% ELSIF error == "jobqueue_not_configured" %]
-    Using the job queue system requires that certain Perl modules
-    be installed. Run <code>checksetup.pl</code> to see what modules
-    you are missing.
-
   [% ELSIF error == "jobqueue_no_job_mapping" %]
     <code>Bugzilla::JobQueue</code> has not been configured to handle
     the job "[% job FILTER html %]".  You need to add this job type
@@ -308,7 +344,11 @@
   [% ELSIF error == "ldap_search_error" %]
     An error occurred while trying to search LDAP for 
     &quot;[% username FILTER html %]&quot;: 
-   <code>[% errstr FILTER html %]</code>
+    [% IF errstr %]
+      <code>[% errstr FILTER html %]</code>
+    [% ELSE %]
+      Unable to find user in LDAP
+    [% END %]
 
   [% ELSIF error == "ldap_server_not_defined" %]
     The LDAP server for authentication has not been defined.
@@ -331,13 +371,13 @@
     A valid quipid is needed.
 
   [% ELSIF error == "no_manual_moved" %]
-    You cannot set the resolution of [% terms.abug %] to MOVED without
+    You cannot set the resolution of [% terms.abug %] to [% display_value("resolution", "MOVED") FILTER html %] without
     moving the [% terms.bug %].
 
   [% ELSIF error == "no_open_bug_status" %]
     [% title = "$terms.Bug Cannot Be Confirmed" %]
     There is no valid transition from
-    [%+ get_status("UNCONFIRMED") FILTER html %] to an open state.
+    [%+ display_value("bug_status", "UNCONFIRMED") FILTER html %] to an open state.
 
   [% ELSIF error == "param_invalid" %]
     [% title = "Invalid Parameter" %]
@@ -346,8 +386,8 @@
 
   [% ELSIF error == "param_must_be_numeric" %]
     [% title = "Invalid Parameter" %]
-    Invalid parameter passed to [% function FILTER html %].
-    It must be numeric.
+    Invalid parameter <code>[% param FILTER html %]</code> passed to 
+    <code>[% function FILTER html %]</code>: It must be numeric.
 
   [% ELSIF error == "param_required" %]
     [% title = "Missing Parameter" %]
@@ -420,12 +460,6 @@
   [% ELSIF error == "setting_value_invalid" %]
     The value "<code>[% value FILTER html %]</code>" is not in the list of
     legal values for the <em>[% name FILTER html %]</em> setting.
-
-  [% ELSIF error == "soap_not_installed" %]
-    [% admindocslinks = {'installation.html#install-perlmodules' => 'Installing Perl modules'} %]
-    The XMLRPC interface will not work without the SOAP::Lite Perl module being
-    installed.
-    Run checksetup.pl for installation instructions.
 
   [% ELSIF error == "token_generation_error" %]
     Something is seriously wrong with the token generation system.

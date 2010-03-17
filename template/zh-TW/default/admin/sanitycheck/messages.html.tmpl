@@ -294,6 +294,15 @@
   [% ELSIF san_tag == "whines_obsolete_target_fix" %]
     <a href="sanitycheck.cgi?remove_old_whine_targets=1">點選此處移除舊的使用者／群組</a>
 
+  [% ELSE %]
+    [% message = Hook.process("statuses") %]
+
+    [% IF message %]
+      [% message FILTER none %]
+    [% ELSE %]
+      找不到對應 <code>[% san_tag FILTER html %]</code> 的訊息字串。請寄電子郵件到
+      [% Prarm("maintainer") %] 說明得到此一訊息的步驟。
+    [% END %]
   [% END %]
 [% END %]
 

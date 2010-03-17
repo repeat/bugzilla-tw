@@ -28,19 +28,14 @@
   #     this contents, see template bug/process/bugmail.html.tmpl
   # bug: object; Bugzilla::Bug object of the bug that was created (used in
   #     template bug/edit.html.tmpl
-  # bug_list: array of integers; sorted bug list (used in template
-  #     bug/navigate.html.tmpl)
   #%]
 
 [% PROCESS global/variables.none.tmpl %]
 
-[% filtered_desc = bug.short_desc FILTER html %]
+[% PROCESS "bug/show-header.html.tmpl" %]
 [% PROCESS global/header.html.tmpl
   title = "$terms.Bug $id 已送出 &ndash; $filtered_desc"
   header = "$terms.Bug $id 已送出"
-  subheader = filtered_desc
-  javascript_urls = [ "js/util.js", "js/field.js", "js/yui/calendar.js" ]
-  style_urls = [ "skins/standard/yui/calendar.css", "skins/standard/show_bug.css" ]
 %]
 
 [% header_done = 1 %]

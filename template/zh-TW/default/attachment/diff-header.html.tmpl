@@ -69,6 +69,7 @@
     <a href="[% PROCESS viewurl id=attachid %]">瀏覽</a>
     | <a href="[% PROCESS editurl id=attachid %]">詳細資料</a>
     | <a href="[% PROCESS diffurl id=attachid %]&amp;context=[% context FILTER url_quote %]&amp;collapsed=[% collapsed FILTER url_quote %]&amp;headers=[% headers FILTER url_quote %]&amp;format=raw">原始檔案</a>
+    | 回到 [% "$terms.bug $bugid" FILTER bug_link(bugid) FILTER none %]
   [% END %]
   [% IF other_patches.size > 0 %]
     [% IF headers %] |[%END%]
@@ -92,6 +93,7 @@
 [% ELSE %]
   [% IF headers %]
     <a href="attachment.cgi?oldid=[% oldid %]&amp;newid=[% newid %]&amp;action=interdiff&amp;format=raw">原始檔案</a>
+    | 回到 [% "$terms.bug $bugid" FILTER bug_link(bugid) FILTER none %]
     |
   [% END %]
 [% END %]

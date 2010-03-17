@@ -35,7 +35,8 @@
 <p>
   此頁面允許你定義在流程中哪些狀態的變更是有效的。<br>
   為了向下相容較舊版本的 [% terms.Bugzilla %] ，因此當你重新開啟了一個 [% terms.bug %]
-  時，將只會以[% get_status("UNCONFIRMED") FILTER html %] 或[%+ get_status("REOPENED") FILTER html %]
+  時，將只會以[% display_value("bug_status", "UNCONFIRMED") FILTER html %] 或
+  [%+ display_value("bug_status", "REOPENED") FILTER html %]
   （如果在流程中允許此狀態），而非同時顯示。<br>
   顯示的方式決定於這個 [% terms.bug %] 是否被確認過。<br>
   因此建議你允許此兩種變更，讓 [% terms.Bugzilla %] 自動正確選擇。
@@ -53,7 +54,7 @@
     <th>&nbsp;</th>
     [% FOREACH status = statuses %]
       <th class="col-header[% status.is_open ? " open-status" : " closed-status" %]">
-        [% status.name FILTER html %]
+        [% display_value("bug_status", status.name) FILTER html %]
       </th>
     [% END %]
   </tr>
@@ -63,7 +64,7 @@
   [% FOREACH status = p.merge(statuses) %]
     <tr class="highlight">
       <th align="right" class="[% status.is_open ? "open-status" : "closed-status" %]">
-        [% status.name FILTER html %]
+        [% display_value("bug_status", status.name) FILTER html %]
       </th>
 
       [% FOREACH new_status = statuses %]
@@ -71,7 +72,7 @@
           [% checked = workflow.${status.id}.${new_status.id}.defined ? 1 : 0 %]
           [% mandatory = (status.id && new_status.name == Param("duplicate_or_move_bug_status")) ? 1 : 0 %]
           <td align="center" class="checkbox-cell[% " checked" IF checked || mandatory %]"
-              title="從[% status.name FILTER html %]到[% new_status.name FILTER html %]">
+              title="從 [% status.name FILTER html %] 到 [% new_status.name FILTER html %]">
             <input type="checkbox" name="w_[% status.id %]_[% new_status.id %]"
                    id="w_[% status.id %]_[% new_status.id %]" onclick="toggle_cell(this)"
                    [%+ "checked='checked'" IF checked || mandatory %]
@@ -87,7 +88,7 @@
 
 <p>
   當 [% terms.bug %] 標記為和另一個 [% terms.bug %] 重複，或是已經移到另一台機器上時，
-  [% terms.bug %] 的狀態將自動設定為<b>[% Param("duplicate_or_move_bug_status") FILTER html %]</b> 。
+  [% terms.bug %] 的狀態將自動設定為 <b>[% display_value("bug_status", Param("duplicate_or_move_bug_status")) FILTER html %]</b> 。
   所有對這個 [% terms.bug %] 狀態所做的變更都必須是有效的。（這也是你為什麼無法在上面編輯的原因。）<br>
   注意：你可以瀏覽<a
   href="editparams.cgi?section=bugchange#duplicate_or_move_bug_status">參數設定</a>頁，並編輯

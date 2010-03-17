@@ -17,6 +17,7 @@
   #
   # Contributor(s): Gervase Markham <gerv@gerv.net>
   #                 Frédéric Buclin <LpSolit@gmail.com>
+  #                 Max Kanat-Alexander <mkanat@bugzilla.org>
   #%]
 
 [%# INTERFACE:
@@ -32,10 +33,10 @@
   # in this file; if you do not wish to change it, use the "none" filter.
   #
   # Extension- or custom-specific error handling  can be easily added
-  # via hooks: just place your <extension>-errors.html.tmpl into
-  # template/en/extension/hook/global/user-error.html.tmpl/errors/
+  # via hooks: just place additional code into
+  # template/en/hook/global/user-error-errors.html.tmpl
   # Note: be aware of uniqueness of error string parameter value, since
-  # nobody can guarantee the hook files processing order in the future
+  # nobody can guarantee the hook files processing order in the future.
   #%]
 
 [% PROCESS global/variables.none.tmpl %]
@@ -66,6 +67,12 @@
   [% ELSIF error == "account_exists" %]
     [% title = "帳號已存在" %]
     帳號名稱[% IF email %] [% email FILTER html %] [% END %]已存在。
+
+  [% ELSIF error == "account_locked" %]
+    [% title = "帳號已鎖住" %]
+    因為你已超過嘗試登入的次數，
+    你的 IP ([% ip_addr FILTER html %]) 在
+    [% unlock_at FILTER time %] 前已不被允許登入此帳號。
 
   [% ELSIF error == "alias_has_comma_or_space" %]
     [% title = "別名中有無效的字元" %]
@@ -139,7 +146,11 @@
     [% IF object == "administrative_pages" %]
       管理用頁面
     [% ELSIF object == "attachment" %]
-      此附件
+    [% IF attach_id %]
+        附件 #[% attach_id FILTER html %]
+      [% ELSE %]
+        此附件
+      [% END %]
     [% ELSIF object == "bugs" %]
       [%+ terms.bugs %]
     [% ELSIF object == "charts" %]
@@ -199,6 +210,11 @@
   [% ELSIF error == "attachment_deletion_disabled" %]
     [% title = "禁止刪除附件" %]
     已禁止刪除附件。
+
+  [% ELSIF error == "attachment_illegal_url" %]
+    [% title = "不合法的附件網址" %]
+    <em>[% url FILTER html %]</em> 並非合法的附件網址。
+    網址必須以 http:// 、 https:// 或 ftp:// 開頭。
 
   [% ELSIF error == "attachment_removed" %]
     [% title = "附件已移除" %]
@@ -398,6 +414,13 @@
     [% admindocslinks = {'groups.html' => '群組安全性'} %]
     很抱歉，產品 <em>[% product FILTER html %]</em> 不存在，或者你沒有權限在此產品輸入 [% terms.bug %] 。
 
+  [% ELSIF error == "extension_create_no_name" %]
+    因此程式需要，你必須替你的附加元件命名，以做為參數。
+
+  [% ELSIF error == "extension_first_letter_caps" %]
+    你的附加元件名稱的第一個字母必須為大寫。
+    （你指定的是 '[% name FILTER html %]' 。）
+
   [% ELSIF error == "field_already_exists" %]
     [% title = "欄位已存在" %]
     欄位 '[% field.name FILTER html %]'
@@ -523,12 +546,6 @@
     [% END %]
     <br>如果你的附件是圖片的話，你可以先將它轉換為 JPG 或 PNG 格式，然後再試一次。
 
-  [% ELSIF error == "flag_not_multiplicable" %]
-    [% docslinks = {'flags-overview.html' => '旗標概述',
-                    'flags.html' => '使用旗標'} %]
-    你不能夠一次要求多位使用者設定
-    <em>[% type.name FILTER html %]</em> 。
-
   [% ELSIF error == "flag_requestee_needs_privs" %]
     [% title = "旗標設定者需要權限" %]
     [% requestee.identity FILTER html %]並沒有設定
@@ -581,6 +598,12 @@
     [% admindocslinks = {'flags-overview.html#flags-admin'  => '管理旗標'} %]
     名稱 <em>[% name FILTER html %]</em> 必須是 1 到 50 字元長，且不得包含任何空白或逗號 (,) 。
 
+  [% ELSIF error == "flag_type_not_multiplicable" %]
+    [% docslinks = {'flags-overview.html' => '旗標概述',
+                    'flags.html' => '使用旗標'} %]
+    你不能對這個[% IF attachment %]附件
+    [% ELSE %] [%+ terms.bug %] [% END %]設定多個 <em>[% type.name FILTER html %]</em> 旗標。
+
   [% ELSIF error == "flag_update_denied" %]
     [% title = "拒絕變更旗標" %]
     [% admindocslinks = {'flags-overview.html#flags-admin'  => '管理旗標',
@@ -612,8 +635,10 @@
 
   [% ELSIF error == "group_cannot_delete" %]
     [% title = "無法刪除群組" %]
-    無法刪除 <em>[% name FILTER html %]</em> 群組，因為在資料庫中有指向該群組的<a
-    href="editgroups.cgi?action=del&amp;group=[% gid FILTER url_quote %]">記錄</a>。在你能夠刪除此群組前，必須先刪除所有指向此群組的參照。
+    無法刪除 <em>[% group.name FILTER html %]</em> 群組，因為在資料庫中有指向該群組的
+    <a href="editgroups.cgi?action=del&amp;group=
+             [%- gid FILTER url_quote %]">記錄</a>。
+    在你能夠刪除此群組前，必須先刪除所有指向此群組的參照。
 
   [% ELSIF error == "group_change_denied" %]
     [% title = "無法新增或移除該群組" %]
@@ -810,8 +835,8 @@
     [% title = "無效的 MIME 類別" %]
     無效的 MIME 類別 <em>[% contenttype FILTER html %]</em>。
     有效的類別必須是類似 <em>foo/bar</em> 的格式，其中 <em>foo</em>
-    必須是 <em>application 、 audio 、 image 、 message 、 model 、 multipart 、
-    text</em> 或是 <em>video</em> 的其中一種。
+    必須是 <em>[% constants.LEGAL_CONTENT_TYPES.join(', ') FILTER html %]</em>
+    的其中一種。
 
   [% ELSIF error == "invalid_context" %]
     [% title = "無效的內容" %]
@@ -877,6 +902,18 @@
   [% ELSIF error == "invalid_username_or_password" %]
     [% title = "無效的使用者名稱或密碼" %]
     你輸入的使用者名稱或密碼不正確。
+    [%# People get two login attempts before being warned about
+      # being locked out.
+      #%]
+    [% IF remaining <=  2 %]
+      如果你再嘗試
+      [%+ remaining FILTER html %] 次後仍無法輸入正確的密碼，
+      你將會有
+      [%+ constants.LOGIN_LOCKOUT_INTERVAL FILTER html %] 分鐘無法登入此帳號。
+    [% END %]
+
+  [% ELSIF error == "json_rpc_post_only" %]
+    為了安全性考量，你只能用 HTTP POST 和 JSON-RPC 。
 
   [% ELSIF error == "keyword_already_exists" %]
     [% title = "關鍵字已存在" %]
@@ -905,6 +942,14 @@
   [% ELSIF error == "login_required_for_pronoun" %]
     [% title = "必須輸入帳號" %]
     你不能在未登入狀態下使用 %user% ，因為 %user% 代表你的帳號，但系統並不知道你的帳號是什麼。
+
+  [% ELSIF error == "migrate_config_created" %]
+    檔案 <kbd>[% file FILTER html %]</kbd> 包含了必須在合併前設定的變數設定。
+
+  [% ELSIF error == "migrate_from_invalid" %]
+    '[% from FILTER html %]' 並非可以合併的 [% terms.bug %] 追蹤種類。
+    請參考 <kbd>B[% %]ugzilla/Migrate/</kbd> 目錄下的內容，該處列有
+    [% terms.bug %] 的追蹤種類。
 
   [% ELSIF error == "milestone_already_exists" %]
     [% title = "里程碑已存在" %]
@@ -1064,29 +1109,6 @@
     [% title = "未選擇標籤" %]
     你並未選擇要移除 [% terms.bugs %] 標籤的標籤。
 
-  [% ELSIF error == "no_dupe_stats" %]
-    [% title = "找不到重複的統計數據" %]
-    [% admindocslinks = {'extraconfig.html' => '設定 collecstats.pl'} %]
-    今天 ([% today FILTER html %]) 或昨天都沒有重複的統計數據。
-
-  [% ELSIF error == "no_dupe_stats_error_today" %]
-    [% title = "讀取今天重複的統計檔發生錯誤" %]
-    [% admindocslinks = {'extraconfig.html' => '設定 collecstats.pl'} %]
-    開啟今天重複的統計檔時發生錯誤： [% error_msg FILTER html %] 。
-
-  [% ELSIF error == "no_dupe_stats_error_whenever" %]
-    [% title = "讀取前一次重複的統計檔發生錯誤" %]
-    [% admindocslinks = {'extraconfig.html' => '設定 collecstats.pl'} %]
-    讀取 [% changedsince FILTER html %] 天前
-    ([% whenever FILTER html %]) 重複的統計檔發生錯誤：
-    [% error_msg FILTER html %] 。
-
-  [% ELSIF error == "no_dupe_stats_error_yesterday" %]
-    [% title = "讀取昨天重複的統計檔發生錯誤" %]
-    [% admindocslinks = {'extraconfig.html' => '設定 collecstats.pl'} %]
-    今天 ([% today FILTER html %]) 沒有重複的統計數據，
-    而開啟昨天重複的統計檔時發生錯誤： [% error_msg FILTER html %]。
-
   [% ELSIF error == "no_initial_bug_status" %]
     [% title = "沒有初始的 $terms.Bug 狀態" %]
     在新增 [% terms.bug %]時沒有初始的 [% terms.bug %] 狀態可以選。
@@ -1163,10 +1185,6 @@
   [% ELSIF error == "passwords_dont_match" %]
     [% title = "密碼不符" %]
     所輸入的兩組密碼不一致。
-
-  [% ELSIF error == "password_too_long" %]
-    [% title = "密碼過長" %]
-    密碼不得長於 [% constants.USER_PASSWORD_MAX_LENGTH FILTER html %] 字元。
 
   [% ELSIF error == "password_too_short" %]
     [% title = "密碼過短" %]
@@ -1289,17 +1307,20 @@
     查詢名稱的長度不得超過 [% constants.MAX_LEN_QUERY_NAME FILTER html %] 字元。
 
   [% ELSIF error == "quicksearch_unknown_field" %]
-    [% title = "未知的快速搜尋欄位" %]
-    [% IF fields.unique.size == 1 %]
-      <code>[% fields.first FILTER html %]</code> 並非已知的欄位。
-    [% ELSE %]
-      [% FOREACH field = fields.unique.sort %]
-         <code>[% field FILTER html %]</code>
-         [% ', ' UNLESS loop.last() %]
-      [% END %]
-      並非已知的欄位。
+    [% title = "快速搜尋發生錯誤" %]
+    你的搜尋發生問題：
+    [% FOREACH field = unknown %]
+      <p><code>[% field FILTER html %]</code> 並非已知的欄位。</p>
     [% END %]
-    有效的欄位名稱<a href="page.cgi?id=quicksearchhack.html">列於此處</a>。
+    [% FOREACH field = ambiguous.keys %]
+      <p><code>[% field FILTER html %]</code> 符合多個欄位：
+        [%+ ambiguous.${field}.join(', ') FILTER html %]</p>
+    [% END %]
+
+    [% IF unknown.size %]
+      <p>有效的欄位名稱
+        <a href="page.cgi?id=quicksearchhack.html">列於此處</a>。</p>
+    [% END %]
 
   [% ELSIF error == "reassign_to_empty" %]
     [% title = "無效的重新分配" %]
@@ -1441,10 +1462,6 @@
     這個版本中還有 [% nb FILTER html %] 個 [% terms.bugs %]！
     在刪除此版本前，你必須將這些 [% terms.bugs %] 重新分配至另一個版本。
 
-  [% ELSIF error == "version_not_specified" %]
-    [% title = "未指定版本" %]
-    並未指定要編輯的版本。
-
   [% ELSIF error == "users_deletion_disabled" %]
     [% title = "未開啟刪除功能" %]
     [% admindocslinks = {'useradmin.html' => '管理使用者'} %]
@@ -1473,6 +1490,11 @@
   [% ELSIF error == "user_match_failed" %]
     [% title = "找不到符合的資料" %]
     <tt>[% name FILTER html %]</tt> 並不存在，或者你不被允許看見該使用者。
+
+  [% ELSIF error == "user_match_too_many" %]
+    [% title = "無法做出結論" %]
+    [% terms.Bugzilla %] 無法對你在 [% fields.join(', ') FILTER html %]
+    欄位中所輸入的姓名或電子郵件，做出適合的結論。
 
   [% ELSIF error == "user_not_insider" %]
     [% title = "使用者無適當的群組權限" %]
@@ -1581,7 +1603,9 @@
 [% PROCESS global/footer.html.tmpl %]
 
 [% BLOCK object_name %]
-  [% IF class == "Bugzilla::User" %]
+  [% IF class == "Bugzilla::Attachment" %]
+    附件
+  [% ELSIF class == "Bugzilla::User" %]
     使用者
   [% ELSIF class == "Bugzilla::Component" %]
     子產品
@@ -1591,8 +1615,18 @@
     里程碑
   [% ELSIF class == "Bugzilla::Status" %]
     狀態
+  [% ELSIF class == "Bugzilla::Flag" %]
+    旗標
+  [% ELSIF class == "Bugzilla::FlagType" %]
+    旗標種類
   [% ELSIF class == "Bugzilla::Field" %]
     欄位
+  [% ELSIF class == "Bugzilla::Group" %]
+    群組
+  [% ELSIF class == "Bugzilla::Product" %]
+    產品
+  [% ELSIF class == "Bugzilla::Search::Saved" %]
+    已儲存的搜尋
   [% ELSIF ( matches = class.match('^Bugzilla::Field::Choice::(.+)') ) %]
     [% SET field_name = matches.0 %]
     [% field_descs.$field_name FILTER html %]

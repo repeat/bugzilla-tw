@@ -26,6 +26,8 @@
 
 [% USE Bugzilla %]
 
+[% PROCESS "bug/show-header.html.tmpl" %]
+
 [% IF    title_tag == "bug_processed" %]
   [% title = BLOCK %]
     [% IF Bugzilla.cgi.param('id') %]
@@ -41,8 +43,4 @@
   [% title = "Change Votes" %]
 [% END %]
 
-[% PROCESS global/header.html.tmpl
-  javascript_urls = [ "js/util.js", "js/field.js", "js/yui/calendar.js" ]
-  style_urls = [ "skins/standard/yui/calendar.css", "skins/standard/show_bug.css" ]
-  doc_section = "bug_page.html"
-%]
+[% PROCESS global/header.html.tmpl %]

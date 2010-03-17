@@ -25,65 +25,20 @@
 %]
 
 [% param_descs = {
-  maintainer => "安裝 $terms.Bugzilla 機器的維護者的電子郵件地址。",
-
   urlbase => "所有 $terms.Bugzilla 的基礎網域名稱。",
-
-  docs_urlbase => "所有 $terms.Bugzilla 說明文件的網址。" _
-                  "可以是絕對路徑，也可以是相對於 urlbase 的相對路徑。" _
-                  "若設為空白，則不允許連結說明文件。 " _
-                  "'%lang%' 會被取代為使用者喜好的語言（如果有的話）。",
 
   sslbase => "使用 HTTPS (SSL) 連線時 $terms.Bugzilla 網址的網域名稱。",
 
-  ssl => "控制 $terms.Bugzilla 什麼時候應該強制使用 HTTPS 連線及 <tt>sslbase</tt> 參數。" _
-         "<ul><li>never ：從不</li>" _
-         "<li>authenticated sessions ：僅在已授權的連線時</li>" _
-         "<li>always ：總是</li></ul>",
+  ssl_redirect =>
+    "當此參數啟用時， $terms.Bugzilla 會根據 <tt>sslbase</tt> 參數的設定，將所有的"
+    _ " HTTP 頁面導到 HTTPS 的頁面，以確保每一頁均透過 SSL 存取。另外，"
+    _ " $terms.Bugzilla 也會在把電子郵件中的連結 <tt>sslbase</tt> 參數的設定顯示，"
+    _ "而非原本的 <tt>urlbase</tt> 參數。",
 
-  cookiedomain => "$terms.Bugzilla cookie 的網域名稱。通常設為空白。" _
-                  "如果你的網站是 'www.foo.com' ，則把此參數設定為 " _
-                  "'.foo.com' 時，將會允許 'bar.foo.com' 存取 $terms.Bugzilla " _
-                  "的 cookie 。這對於同一個網站伺服器有多個域名，且希望共享 " _
-                  "$terms.Bugzilla 的 cookie 時很有用。",
-
-  cookiepath => "$terms.Bugzilla 的 cookie 路徑。通常設定為網址的基準。" _
-                "以斜線 (/) 開頭。例如， $terms.Bugzilla 架在 " _
-                "'http://www.somedomain.com/bugzilla/' 時，則將此值設定為 " _
-                "'/bugzilla/' 。設定為 / 時，將允許此網頁伺服器的所有站台存取 " _
-                "$terms.Bugzilla 的 cookie 。",
-
-  utf8 => "在 $terms.Bugzilla 裡所有的文字均使用 UTF-8 (Unicode) 編碼。" _
-          "新安裝的 $terms.Bugzilla 應該設為「開」，以避免字元編碼問題。<br>" _
-          "<strong>已存在的資料庫只有在資料從現有編碼執行 " _
-          "<kbd>contrib/recode.pl</kbd> 轉換為 UTF-8 之後，" _
-          "才可以設為「開」。</strong><br><br>" _
-          "注意：若你將此參數從「關」設為「開」，則設定完後必須立刻執行 checksetup.pl 。",
-
-  shutdownhtml => "如果此欄位並非空白，那麼將會完全停用 $terms.Bugzilla ，" _
-                  "並在每一個 $terms.Bugzilla 頁面顯示以下的訊息。",
-
-  announcehtml => "如果此欄位並非空白，那麼 $terms.Bugzilla 將在每個 HTML " _
-                  "頁面上方顯示此欄位內容。在此欄位中的 HTML 將不會自動斷行，" _
-                  "因此如需斷行，可以將需斷行的文字放在 <tt>&lt;div&gt;</tt> 中。" _
-                  "使用 <em>id=message</em> 可以得到紅框包圍的綠色文字，" _
-                  "而 <em>class=bz_private</em> 則是紅色背景的暗紅色字。" _
-                  "所有在 <tt>skins/standard/global.css</tt> 或 " _
-                  "<tt>skins/custom/global.css</tt> 中定義的樣式將會生效。" _
-                  "若要將文字置中，請使用 <em>style=\"text-align: center;\"</em> 。",
-
-  proxy_url => "$terms.Bugzilla 可以自動連線到網路並擷取關於最新版的版本資訊，參考 " _
-               "<tt>upgrade_notification</tt> 參數。如果透過代理伺服器連線，可能需要設定代理伺服器的網址，" _
-               "以免 HTTP_PROXY 環境變數無法被存取。如需認證，使用 " _
-               "<code>http://user:pass@proxy_url/</code> 的格式。",
-
-  upgrade_notification => "<p>$terms.Bugzilla 可以通知你是否有新釋出的版本可用。" _
-                          "此通知將會顯示於 $terms.Bugzilla 的首頁，僅供管理者參考。</p>" _
-                          "<ul><li>development_snapshot ：在 trunk 有最新釋出時通知，也就是 " _
-                          "development snapshot 。</li>" _
-                          "<li>latest_stable_release ：在最新的穩定 branch 版本上有最新釋出可用。" _
-                          "這個 branch 的版本可能和你安裝的版本不同。</li>" _
-                          "<li>stable_branch_release ：根據你目前安裝的 branch 版本通知相關更新。" _
-                          "如果你安裝的是 release candidate (RC) 版本，在有新的 RC 時也會通知你。</li>" _
-                          "<li>停用 (disabled) ：不會通知有新版本，也不會連線到遠端伺服器。</li></ul>" }
-%]
+  cookiepath =>
+    "$terms.Bugzilla 的 cookie 路徑。通常設定為網址的基準。"
+    _ "以斜線 (/) 開頭。例如， $terms.Bugzilla 架在"
+    _ " 'http://www.somedomain.com/bugzilla/' 時，則將此值設定為"
+    _ " '/bugzilla/' 。設定為 / 時，將允許此網頁伺服器的所有站台存取"
+    _ " $terms.Bugzilla 的 cookie 。",
+} %]

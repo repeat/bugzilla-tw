@@ -1,4 +1,4 @@
-Bugzilla 3.4.5 繁體中文化語系檔
+Bugzilla 3.5.3 繁體中文化語系檔
 
 常見問題
 
@@ -29,7 +29,7 @@ A. 請利用 Google Code 裡的 New Issue 功能 ( http://code.google.com/p/bugz
 
 
 
-Bugzilla 3.4.5 Chinese, traditional (zh-TW) language pack files
+Bugzilla 3.5.3 Chinese, traditional (zh-TW) language pack files
 
 FAQ for non-Chinese speakers
 

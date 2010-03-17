@@ -93,10 +93,7 @@ function quicksearchHelpText(el_id, action){
       新版本釋出日期： [% release.data.date FILTER html %] 。</p>
 
       <p class="notice">此一訊息僅對有管理權限的使用者顯示。
-      你可以在<a href="editparams.cgi?section=core#upgrade_notification">參數設定</a>頁設定此通知。</p>
-    [% ELSIF release.error == "missing_package" %]
-      <p>並未安裝 '[% release.package FILTER html %]' 。此元件是<a
-      href="editparams.cgi?section=core#upgrade_notification">在有新版本釋出時通知你用的</a>。</p>
+      你可以在<a href="editparams.cgi?section=general#upgrade_notification">參數設定</a>頁設定此通知。</p>
     [% ELSIF release.error == "cannot_download" %]
       <p>無法建立本地 XML 檔案 '[% release.xml_file FILTER html %]' 。請確認網站伺服器可在此目錄下寫入此檔案，以及你可以瀏覽網際網路。如果你在使用代理伺服器，請正確設定
       <a href="editparams.cgi?section=core#proxy_url">proxy_url</a> 參數。</p>

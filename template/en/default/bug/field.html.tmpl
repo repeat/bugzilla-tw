@@ -70,6 +70,7 @@
     id="field_container_[% field.name FILTER html %]" 
     [% " colspan=\"$value_span\"" FILTER none IF value_span %]>
 [% END %]
+[% Hook.process('start_field_column') %]
 [% IF editable %]
   [% SWITCH field.type %]
     [% CASE constants.FIELD_TYPE_FREETEXT %]
@@ -148,11 +149,12 @@
                 selected="selected"
               [% ELSIF (control_field && control_value
                         && !bug.${control_field.name}.contains(control_value.name))
-                       || (field.name == "product" && legal_value.disallow_new)
+                       || !legal_value.is_active
               %]
                 class="bz_hidden_option" disabled="disabled"
               [% END %]>
-              [%- legal_value.name FILTER html %]</option>
+              [%- display_value(field.name, legal_value.name) FILTER html ~%]
+            </option>
           [% END %]
         </select>
         [%# When you pass an empty multi-select in the web interface,
@@ -209,4 +211,5 @@
 [% ELSE %]
   [% value.join(', ') FILTER html %]
 [% END %]
+[% Hook.process('end_field_column') %]
 [% '</td>' IF NOT no_tds %]

@@ -94,7 +94,6 @@
 
 
 [% DEFAULT start_at = 0 mode = "show" %]
-[% isinsider = Param("insidergroup") && user.in_group(Param("insidergroup")) %]
 [% sort_order = user.settings.comment_sort_order.value %]
 
 [%# NOTE: (start_at > 0) means we came here from a midair collision,
@@ -121,11 +120,10 @@
     [% END %]
 [% END %]
 
-[% IF mode == "edit" %]
-  <a href="#" onclick="toggle_all_comments('collapse'); return false;">Collapse All Comments</a> -
-  <a href="#" onclick="toggle_all_comments('expand'); return false;">Expand All Comments</a>
-  <hr>
-[% END %]
+<!-- This auto-sizes the comments and positions the collapse/expand links 
+     to the right. -->
+<table class="bz_comment_table" cellpadding="0" cellspacing="0"><tr>
+<td>
 
 [% FOREACH comment = comments %]
   [% IF count >= start_at %]
@@ -140,13 +138,27 @@
   #%]  
 [% Hook.process("aftercomments") %]
 
+</td>
+<td>
+  [% IF mode == "edit" %]
+    <ul class="bz_collapse_expand_comments">
+      <li><a href="#" onclick="toggle_all_comments('collapse'); 
+                               return false;">Collapse All Comments</a></li>
+      <li><a href="#" onclick="toggle_all_comments('expand');
+                               return false;">Expand All Comments</a></li>
+    </ul>
+  [% END %]
+</td>
+</tr></table>
+
 [%############################################################################%]
 [%# Block for individual comments                                            #%]
 [%############################################################################%]
 
 [% BLOCK a_comment %]
-  [% IF NOT comment.isprivate || isinsider %]
-    <div class="bz_comment[% " bz_private" IF comment.isprivate %]
+  [% RETURN IF comment.is_private AND ! user.is_insider %]
+
+    <div class="bz_comment[% " bz_private" IF comment.is_private %]
                 [% " bz_comment_hilite" IF marks.$count %]
                 [% " bz_first_comment" IF count == description %]">
       [% IF count == description %]
@@ -168,7 +180,7 @@
           </span>
         [% END %]
 
-        [% IF mode == "edit" && isinsider %]
+        [% IF mode == "edit" && user.is_insider %]
           <div class="bz_private_checkbox">
             <input type="hidden" value="1"
                    name="defined_isprivate_[% comment.id %]">
@@ -176,7 +188,7 @@
                    name="isprivate_[% comment.id %]" value="1"
                    id="isprivate_[% comment.id %]"
                    onClick="updateCommentPrivacy(this, [% count %])"
-                   [% " checked=\"checked\"" IF comment.isprivate %]>
+                   [% " checked=\"checked\"" IF comment.is_private %]>
             <label for="isprivate_[% comment.id %]">Private</label>
           </div>
         [% END %]
@@ -201,11 +213,11 @@
         </span>
 
         <span class="bz_comment_time">
-          [%+ comment.time FILTER time %]
+          [%+ comment.creation_ts FILTER time %]
         </span>
       </div>
 
-      [% IF user.in_group(Param('timetrackinggroup')) &&
+      [% IF user.is_timetracker &&
             (comment.work_time > 0 || comment.work_time < 0) %]
          <br>
          Additional hours worked: 
@@ -215,15 +227,9 @@
 [%# Don't indent the <pre> block, since then the spaces are displayed in the
   # generated HTML
   #%]
-[% IF comment.already_wrapped %]
-    [% wrapped_comment = comment.body %]
-[% ELSE %]
-    [% wrapped_comment = comment.body FILTER wrap_comment %]
-[% END %]
 <pre class="bz_comment_text" 
      [% ' id="comment_text_' _ count _ '"' IF mode == "edit" %]>
-  [%- wrapped_comment FILTER quoteUrls(bug.bug_id) -%]
+  [%- comment.body_full({ wrap => 1 }) FILTER quoteUrls(bug, comment) -%]
 </pre>
     </div>
-  [% END %]
 [% END %]

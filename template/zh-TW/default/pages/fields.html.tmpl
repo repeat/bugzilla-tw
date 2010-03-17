@@ -19,7 +19,6 @@
   #                 Gervase Markham <gerv@gerv.net>
   #%]
 
-[% PROCESS global/variables.none.tmpl %]
 [% PROCESS "global/field-descs.none.tmpl" %]
 [% INCLUDE global/header.html.tmpl title = "一個 $terms.Bug 的生命週期" %]
 
@@ -51,44 +50,43 @@
     <td>
       <dl>
         <dt>
-          <b>[% get_status("UNCONFIRMED") FILTER html %]</b>
+          <b>[% display_value("bug_status", "UNCONFIRMED") FILTER html %]</b>
         </dt>
         <dd>
           這個 [% terms.bug %] 最近才被加到資料庫。沒有人確認它是不是真的。擁有
-          canconfirm 權限的使用者可以藉由將它的狀態設定為[% get_status("NEW") FILTER html %]
+          canconfirm 權限的使用者可以藉由將它的狀態設定為 [% display_value("bug_status", "NEW") FILTER html %]
           來確認這個 [% terms.bug %] 。或者它也可以直接被解決，並標記為
-          [% get_status("RESOLVED") FILTER html %] 。
+          [% display_value("bug_status", "RESOLVED") FILTER html %] 。
         </dd>
 
         <dt>
-          <b>[% get_status("NEW") FILTER html %]</b>
+          <b>[% display_value("bug_status", "NEW") FILTER html %]</b>
         </dt>
         <dd>
           這個 [% terms.bug %] 最近被加到負責人的 [% terms.bugs %] 清單中，而且必須處理。在這個狀態的
-          [% terms.Bugs %] 可以被負責人接受，並將狀態設為<b>[% get_status("ASSIGNED") FILTER html %]</b>
-          ；或是丟給其他人負責，並維持<b>[% get_status("NEW") FILTER html %]</b>
-          的狀態；或是將它解決，並標記為<b>[% get_status("RESOLVED") FILTER html %]</b> 。
+          [% terms.Bugs %] 可以被負責人接受，並將狀態設為 <b>[% display_value("bug_status", "ASSIGNED") FILTER html %]</b>
+          ；或是丟給其他人負責，並維持 <b>[% display_value("bug_status", "NEW") FILTER html %]</b>
+          的狀態；或是將它解決，並標記為 <b>[% display_value("bug_status", "RESOLVED") FILTER html %]</b> 。
         </dd>
 
         <dt>
-          <b>[% get_status("ASSIGNED") FILTER html %]</b>
+          <b>[% display_value("bug_status", "ASSIGNED") FILTER html %]</b>
         </dt>
         <dd>
           這個 [% terms.bug %] 還沒解決，但已分配給適當的人負責。在這狀態下，
-          [% terms.bugs %] 可以丟給其他人處理，並會自動將狀態變更為<b>[% get_status("NEW") FILTER html %]</b>
-          ；或是將它解決，並標記為<b>[% get_status("RESOLVED") FILTER html %]</b> 。
+          [% terms.bugs %] 可以丟給其他人處理，並會自動將狀態變更為 <b>[% display_value("bug_status", "NEW") FILTER html %]</b>
+          ；或是將它解決，並標記為 <b>[% display_value("bug_status", "RESOLVED") FILTER html %]</b> 。
         </dd>
 
         <dt>
-          <b>[% get_status("REOPENED") FILTER html %]</b>
+          <b>[% display_value("bug_status", "REOPENED") FILTER html %]</b>
         </dt>
         <dd>
-          這個 [% terms.bug %]
-          曾解決過，但解決方案似乎不正確。例如，有更多的資訊顯示某個原先解決方案是<b>[%
-          get_resolution("WORKSFORME") FILTER html %]</b> 的 [% terms.bug %]
-          可以被重製，並設定為<b>[% get_status("REOPENED") FILTER html %]</b> 。在這狀態下，
-          [% terms.bugs %] 可以標記為<b>[% get_status("ASSIGNED") FILTER html %]</b>
-          或<b>[% get_status("RESOLVED") FILTER html %]</b> 。
+          這個 [% terms.bug %] 曾解決過，但解決方案似乎不正確。例如，有更多的資訊顯示某個原先解決方案是
+          <b>[% display_value("resolution", "WORKSFORME") FILTER html %]</b> 的 [% terms.bug %]
+          可以被重製，並設定為 <b>[% display_value("bug_status", "REOPENED") FILTER html %]</b>
+          。在這狀態下， [% terms.bugs %] 可以標記為 <b>[% display_value("bug_status", "ASSIGNED") FILTER html %]</b>
+          或 <b>[% display_value("bug_status", "RESOLVED") FILTER html %]</b> 。
         </dd>
       </dl>
     </td>
@@ -107,30 +105,30 @@
     <td>
       <dl>
         <dt>
-          <b>[% get_status("RESOLVED") FILTER html %]</b>
+          <b>[% display_value("bug_status", "RESOLVED") FILTER html %]</b>
         </dt>
         <dd>
           已採取解決方案，並等待 QA 認證。在此狀態下，
-          [% terms.bugs %] 可以被重新開啟並設定為<b>[% get_status("REOPENED") FILTER html %]</b>
-          、標記為<b>[% get_status("VERIFIED") FILTER html %]</b>
-          ，或是永遠關閉並設定為<b>[% get_status("CLOSED") FILTER html %]</b> 。
+          [% terms.bugs %] 可以被重新開啟並設定為 <b>[% display_value("bug_status", "REOPENED") FILTER html %]</b>
+          、標記為 <b>[% display_value("bug_status", "VERIFIED") FILTER html %]</b>
+          ，或是永遠關閉並設定為 <b>[% display_value("bug_status", "CLOSED") FILTER html %]</b> 。
         </dd>
 
         <dt>
-          <b>[% get_status("VERIFIED") FILTER html %]</b>
+          <b>[% display_value("bug_status", "VERIFIED") FILTER html %]</b>
         </dt>
         <dd>
           QA 看過了 [% terms.bug %] 和解決方案，並同意已採取適當的解決方案。
           [% terms.Bugs %] 將維持在此狀態，直到所回報的 [% terms.bug %]
-          所屬的產品結束之後，才會被設定為<b>[% get_status("CLOSED") FILTER html %]</b> 。
+          所屬的產品結束之後，才會被設定為 <b>[% display_value("bug_status", "CLOSED") FILTER html %]</b> 。
         </dd>
 
         <dt>
-          <b>[% get_status("CLOSED") FILTER html %]</b>
+          <b>[% display_value("bug_status", "CLOSED") FILTER html %]</b>
         </dt>
         <dd>
           這個 [% terms.bug %] 已有正確的方案，並被認為不會再發生。任何復活的
-          [% terms.bugs %] 必須被設定為<b>[% get_status("REOPENED") FILTER html %]</b> 。
+          [% terms.bugs %] 必須被設定為 <b>[% display_value("bug_status", "REOPENED") FILTER html %]</b> 。
         </dd>
       </dl>
     </td>
@@ -138,28 +136,28 @@
     <td>
       <dl>
         <dt>
-          <b>[% get_resolution("FIXED") FILTER html %]</b>
+          <b>[% display_value("resolution", "FIXED") FILTER html %]</b>
         </dt>
         <dd>
           這個 [% terms.bug %] 已被修復。
         </dd>
 
         <dt>
-          <b>[% get_resolution("INVALID") FILTER html %]</b>
+          <b>[% display_value("resolution", "INVALID") FILTER html %]</b>
         </dt>
         <dd>
           描述的問題並不是 [% terms.bug %] 。
         </dd>
 
         <dt>
-          <b>[% get_resolution("WONTFIX") FILTER html %]</b>
+          <b>[% display_value("resolution", "WONTFIX") FILTER html %]</b>
         </dt>
         <dd>
           描述的問題的確是 [% terms.bug %] ，但不打算修復。
         </dd>
 
         <dt>
-         <b>[% get_resolution("DUPLICATE") FILTER html %]</b>
+          <b>[% display_value("resolution", "DUPLICATE") FILTER html %]</b>
         </dt>
         <dd>
           此問題和已存在的 [% terms.bug %]
@@ -167,7 +165,7 @@
         </dd>
 
         <dt>
-          <b>[% get_resolution("WORKSFORME") FILTER html %]</b>
+          <b>[% display_value("resolution", "WORKSFORME") FILTER html %]</b>
         </dt>
         <dd>
           無法重製這個 [% terms.bug %] ，且檢視程式碼也沒有發現任何可能引發這個
@@ -175,7 +173,7 @@
         </dd>
 
         <dt>
-          <b>[% get_resolution("MOVED") FILTER html %]</b>
+          <b>[% display_value("resolution", "MOVED") FILTER html %]</b>
         </dt>
         <dd>
           此 [% terms.bug %] 被搬到另一個相關產品的 [% terms.bug %] 資料庫並進行追蹤。
@@ -189,51 +187,51 @@
 一個 [% terms.bug %] 的重要性，是由它的<a href="#priority">優先等級</a>及<a href="#bug_severity">嚴重性</a>來描述。
 
 <h2><a name="priority">優先等級</a></h2>
-此欄位描述 [% terms.bug %] 應該被修復的優先等級。此欄位是讓程式設計師或工程師能夠對他們的工作進行排程，以完成工作。可用的優先等級從 <b>P1</b> （最重要）到 <b>P5</b> （最不重要）。
+此欄位描述一個 [% terms.bug %] 相對於其他的 [% terms.bugs %] 應該被修復的優先等級。此欄位是讓程式設計師或工程師能夠對他們的工作進行排程，以完成工作。
 
 <h2><a name="bug_severity">嚴重等級</a></h2>
 此欄位描述 [% terms.bug %] 的嚴重等級。
 
 <table>
   <tr>
-    <th>Blocker</th>
+    <th>[% display_value("bug_severity", "blocker") FILTER html %]</th>
 
     <td>會擋掉所有開發中、測試中的工作</td>
   </tr>
 
   <tr>
-    <th>Critical</th>
+    <th>[% display_value("bug_severity", "critical") FILTER html %]</th>
 
     <td>系統發生 crash 、資料遺失、嚴重的記憶體流失</td>
   </tr>
 
   <tr>
-    <th>Major</th>
+    <th>[% display_value("bug_severity", "major") FILTER html %]</th>
 
     <td>功能出現較大型的問題</td>
   </tr>
 
   <tr>
-    <th>Normal</th>
+    <th>[% display_value("bug_severity", "normal") FILTER html %]</th>
 
     <td>功能出現一般的問題，在特定環境下某些功能不正常</td>
 
   </tr>
 
   <tr>
-    <th>Minor</th>
+    <th>[% display_value("bug_severity", "minor") FILTER html %]</th>
 
     <td>功能出現小問題，或者可以用其他方式避開此問題的發生</td>
   </tr>
 
   <tr>
-    <th>Trivial</th>
+    <th>[% display_value("bug_severity", "trivial") FILTER html %]</th>
 
     <td>十分微小的問題，例如拼錯字、排版錯誤</td>
   </tr>
 
   <tr>
-    <th>Enhancement</th>
+    <th>[% display_value("bug_severity", "enhancement") FILTER html %]</th>
 
     <td>要求增強功能</td>
 </table>
@@ -242,19 +240,19 @@
 選擇所回報的 [% terms.bug %] 的硬體平台。有效的平台包括：
 
 <ul>
-  <li>All (所有平台均會發生，是一個跨平台的 [% terms.bug %])</li>
+  <li>[% display_value("rep_platform", "All") FILTER html %] (所有平台均會發生，是一個跨平台的 [% terms.bug %])</li>
 
-  <li>Macintosh</li>
+  <li>[% display_value("rep_platform", "Macintosh") FILTER html %]</li>
 
-  <li>PC (個人電腦)</li>
+  <li>[% display_value("rep_platform", "PC") FILTER html %]</li>
 </ul>
-<b>注意：</b>搜尋時，若選擇 "All" 選項，並不代表選擇所有的 [% terms.bugs %] 。它只會選擇被標記為跨平台的 [% terms.bugs %] 。
+<b>注意：</b>搜尋時，若選擇 <em>[% display_value("rep_platform", "All") FILTER html %]</em> 選項，並不代表選擇所有的 [% terms.bugs %] 。它只會選擇被標記為跨平台的 [% terms.bugs %] 。
 
 <h2><a name="op_sys">作業系統</a></h2>
 選擇所回報的 [% terms.bug %] 的作業系統。有效的作業系統包括：
 
 <ul>
-  <li>All (所有作業系統均會發生，是一個跨平台的 [% terms.bug %])</li>
+  <li>[% display_value("op_sys", "All") FILTER html %] (所有作業系統均會發生，是一個跨平台的 [% terms.bug %])</li>
 
   <li>Windows</li>
 
@@ -267,10 +265,10 @@
 <h2><a name="assigned_to">分配給誰負責</a></h2>
 
 <p>
-此欄位指出這個 [% terms.bug %] 由誰負責。每次此欄位變更時，狀態欄位也會變更為<b>[% get_status("NEW") FILTER html %]</b> ，這樣可以較容易看出在該負責人的清單中哪些是新的 [% terms.bugs %] 。</p>
+此欄位指出這個 [% terms.bug %] 由誰負責。每次此欄位變更時，狀態欄位也會變更為 <b>[% display_value("bug_status", "NEW") FILTER html %]</b> ，這樣可以較容易看出在該負責人的清單中哪些是新的 [% terms.bugs %] 。</p>
 
 <p>
-查詢 [% terms.bugs %] 的預設值設定為選擇[% get_status("NEW") FILTER html %] 、[%+ get_status("ASSIGNED") FILTER html %] 以及[% get_status("REOPENED") FILTER html %] 的 [% terms.bugs %] 。如要搜尋已解決或已認證的 [% terms.bugs %] ，記得將狀態欄位選擇適當的選項。
+查詢 [% terms.bugs %] 的預設值設定為選擇 [% display_value("bug_status", "NEW") FILTER html %] 、 [%+ display_value("bug_status", "ASSIGNED") FILTER html %] 以及 [% display_value("bug_status", "REOPENED") FILTER html %] 的 [% terms.bugs %] 。如要搜尋已解決或已認證的 [% terms.bugs %] ，記得將狀態欄位選擇適當的選項。
 </p>
 
 [% IF Param("use_see_also") %]

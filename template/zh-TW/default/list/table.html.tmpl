@@ -16,11 +16,16 @@
   # Rights Reserved.
   #
   # Contributor(s): Myk Melez <myk@mozilla.org>
+  #                 Jesse Clark <jjclark1982@gmail.com>
   #%]
 
 [%############################################################################%]
 [%# Initialization                                                           #%]
 [%############################################################################%]
+
+[%# Don't display the table or do any processing if there are no bugs
+  # to display %]
+[% RETURN IF !bugs.size %]
 
 [%# Columns whose titles or values should be abbreviated to make the list
   # more compact.  For columns whose titles should be abbreviated,
@@ -54,6 +59,7 @@
     "short_short_desc"  => { maxlength => 60 , ellipsis => "..." , wrap => 1 } ,
     "status_whiteboard" => { title => "狀態白板" , wrap => 1 } ,
     "keywords"          => { wrap => 1 } ,
+    "flagtypes.name"    => { wrap => 1 } ,
     "component"         => { maxlength => 8 , title => "子產品" } ,
     "product"           => { maxlength => 8 } ,
     "version"           => { maxlength => 4 , title => "版本" } ,
@@ -71,29 +77,18 @@
 
 [% tableheader = BLOCK %]
   <table class="bz_buglist" cellspacing="0" cellpadding="4" width="100%">
-    <colgroup>
-      [% IF dotweak %]
-        <col class="bz_checkbox_column">
-      [% END %]
-      <col class="bz_id_column">
-      [% FOREACH id = displaycolumns %]
-      <col class="bz_[% id FILTER css_class_quote %]_column">
-      [% END %]
-    </colgroup>
-
     <tr class="bz_buglist_header bz_first_buglist_header" align="left">
       [% IF dotweak %]
       <th>&nbsp;</th>
       [% END %]
       <th colspan="[% splitheader ? 2 : 1 %]" class="first-child">
-        [% desc = '' %]
-        [% IF (om = order.match("^bug_id( DESC)?")) %]
-          [% desc = ' DESC' IF NOT om.0 %]
-        [% END %]
         <a href="buglist.cgi?
-                  [% urlquerypart FILTER html %]&amp;order=bug_id[% desc FILTER url_quote %]
+                  [% urlquerypart FILTER html %]&amp;order=
+                  [% PROCESS new_order id='bug_id' %]
                   [%-#%]&amp;query_based_on=
-                  [% defaultsavename OR searchname FILTER url_quote %]">ID</a>
+                  [% defaultsavename OR searchname FILTER url_quote %]">ID
+          [% PROCESS order_arrow id='bug_id' ~%]
+        </a>
       </th>
 
       [% IF splitheader %]
@@ -130,33 +125,47 @@
 
 [% BLOCK columnheader %]
   <th colspan="[% splitheader ? 2 : 1 %]">
-    [% desc = '' %]
-    [% IF (om = order.match("$id( DESC)?")) %]
-      [% desc = ' DESC' IF NOT om.0 %]
-    [% END %]
-    [% order = order.remove("\\b$id( DESC)?(,\\s*|\$)") %]
     <a href="buglist.cgi?[% urlquerypart FILTER html %]&amp;order=
-      [% id FILTER url_quote %][% desc FILTER url_quote %]
-      [% ",$order" FILTER url_quote IF order %]
+      [% PROCESS new_order %]
       [%-#%]&amp;query_based_on=
       [% defaultsavename OR searchname FILTER url_quote %]">
-        [%- abbrev.$id.title || field_descs.$id || column.title -%]</a>
+        [%- abbrev.$id.title || field_descs.$id || column.title -%]
+        [% PROCESS order_arrow ~%]
+    </a>
   </th>
 [% END %]
 
+[% BLOCK new_order %]
+  [% desc = '' %]
+  [% IF (om = order.match("\\b$id( DESC)?")) %]
+    [% desc = ' DESC' IF NOT om.0 %]
+  [% END %]
+  [% id _ desc FILTER url_quote %]
+  [% IF id != 'bug_id' AND order %]
+    [% ',' _ order.remove("\\b$id( DESC)?(,\\s*|\$)") FILTER url_quote %]
+  [% END %]
+[% END %]
+
+[% BLOCK order_arrow %]
+  [% IF order.match("^$id DESC") %]
+    <span class="bz_sort_order_primary">&#x25BC;</span>
+  [% ELSIF order.match("^$id(,\\s*|\$)") %]
+    <span class="bz_sort_order_primary">&#x25B2;</span>
+  [% ELSIF order.match("\\b$id DESC") %]
+    <span class="bz_sort_order_secondary">&#x25BC;</span>
+  [% ELSIF order.match("\\b$id(,\\s*|\$)") %]
+    <span class="bz_sort_order_secondary">&#x25B2;</span>
+  [% END %]
+[% END %]
 
 [%############################################################################%]
 [%# Bug Table                                                                #%]
 [%############################################################################%]
 
+[% tableheader %]
+
 [% FOREACH bug = bugs %]
   [% count = loop.count() %]
-  [% FLUSH IF count % 10 == 1 %]
-
-  [%# At the beginning of every hundred bugs in the list, start a new table. %]
-  [% IF count % 100 == 1 %]
-    [% tableheader %]
-  [% END %]
 
   <tr class="bz_bugitem
              bz_[% bug.bug_severity FILTER css_class_quote -%]
@@ -169,27 +178,21 @@
              ">
 
     [% IF dotweak %]
-    <td>
+    <td class="bz_checkbox_column">
       <input type="checkbox" name="id_[% bug.bug_id %]">
     </td>
     [% END %]
-    <td class="first-child">
+    <td class="first-child bz_id_column">
       <a name="b[% bug.bug_id %]"
          href="show_bug.cgi?id=[% bug.bug_id %]">[% bug.bug_id %]</a>
       <span style="display: none">[%+ '[SEC]' IF bug.secure_mode %]</span>
     </td>
 
     [% FOREACH column = displaycolumns %]
-    <td [% 'style="white-space: nowrap"' IF NOT abbrev.$column.wrap %]>
+    <td [% 'style="white-space: nowrap"' IF NOT abbrev.$column.wrap %]
+        class="bz_[% column FILTER css_class_quote %]_column">
       [% IF abbrev.$column.maxlength %]
-        <span title="
-          [%- IF column == 'bug_status' %]
-            [%- get_status(bug.$column) FILTER html %]
-          [% ELSIF column == 'resolution' %]
-            [%- get_resolution(bug.$column) FILTER html %]
-          [% ELSE %]
-            [%- bug.$column FILTER html %]
-          [% END %]">
+        <span title="[%- display_value(column, bug.$column) FILTER html %]">
       [% END %]
       [% IF abbrev.$column.format_value %]
         [%- bug.$column FILTER format(abbrev.$column.format_value) FILTER html -%]
@@ -197,11 +200,6 @@
                column == 'remaining_time' ||
                column == 'estimated_time' %]
         [% PROCESS formattimeunit time_unit=bug.$column %]
-      [% ELSIF column == 'bug_status' %]
-        [%- get_status(bug.$column).truncate(abbrev.$column.maxlength, abbrev.$column.ellipsis) FILTER html %]
-      [% ELSIF column == 'resolution' %]
-        [%- get_resolution(bug.$column).truncate(abbrev.$column.maxlength, abbrev.$column.ellipsis) FILTER html %]
-
       [%# Display the login name of the user if their real name is empty. %]
       [% ELSIF column.match('_realname$') && bug.$column == '' %]
         [% SET login_column = column.remove('_realname$') %]
@@ -209,7 +207,7 @@
                                         abbrev.$column.ellipsis) FILTER html %]
 
       [% ELSE %]
-        [%- bug.$column.truncate(abbrev.$column.maxlength, abbrev.$column.ellipsis) FILTER html -%]
+        [%- display_value(column, bug.$column).truncate(abbrev.$column.maxlength, abbrev.$column.ellipsis) FILTER html -%]
       [% END %]
       [% IF abbrev.$column.maxlength %]
         </span>
@@ -219,18 +217,13 @@
 
   </tr>
 
-  [%# At the end of every hundred bugs in the list, or at the end of the list,
-    # end the current table.
-    #%]
-  [% IF loop.last() || loop.count() % 100 == 0 %]
-    [% IF loop.last() && time_info.time_present == 1 %]
-      [% PROCESS time_summary_line %]
-    [% END %]
-    </table>
+  [% IF loop.last() && time_info.time_present == 1 %]
+    [% PROCESS time_summary_line %]
   [% END %]
 
 [% END %]
 
+</table>
 
 [% BLOCK time_summary_line %]
   <tr class="bz_time_summary_line">

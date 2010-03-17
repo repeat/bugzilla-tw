@@ -90,10 +90,10 @@
   <tr>
     <td>[% terms.bugs %] 回報：</td>
     <td>
-      [% IF product.disallownew %]
-        關
-      [% ELSE %]
+      [% IF product.is_active %]
         開
+      [% ELSE %]
+        關
       [% END %]
     </td>
   </tr>
@@ -217,6 +217,11 @@
   <p>你確定要刪除此產品嗎？</p>
 
   <form method="post" action="editproducts.cgi">
+    <input type="checkbox" id="delete_series" name="delete_series" value=1>
+    <label for="delete_series">
+      刪除相關的系列（你也可以稍後檢視
+      <a href="chart.cgi?category=[% product.name FILTER html %]">「新圖表」頁面</a>來刪除它們）。
+    </label><p>
     <input type="submit" id="delete" value="是的，刪除">
     <input type="hidden" name="action" value="delete">
     <input type="hidden" name="product" value="[% product.name FILTER html %]">

@@ -38,6 +38,22 @@
 [%# use the global field descs %]
 [% PROCESS "global/field-descs.none.tmpl" %]
 
+[%# This lists fields which use the user auto-completion feature and which
+  # are not listed in field_descs. %]
+[% field_labels = { # Used by editcomponents.cgi
+                    "initialcc"               => "Default CC List",
+                    "initialowner"            => "Default Assignee",
+                    "initialqacontact"        => "Default QA Contact",
+                    # Used by process_bug.cgi
+                    "masscc"                  => "CC List",
+                    # Used by request.cgi
+                    "requester"               => "Requester",
+                    "requestee"               => "Requestee",
+                    # Used by userprefs.cgi
+                    "new_watchedusers"        => "Watch List",
+
+   }
+%]
 [% IF matchsuccess == 1 %]
   [% PROCESS global/header.html.tmpl title="Confirm Match" %]
 
@@ -132,8 +148,7 @@
                   <b>[% query.value.users.0.identity FILTER html %]</b>
                 [% END %]
             [% ELSE %]
-                [% IF (query.key.length < 3) && !(Param('emailsuffix'))
-                    && (Param('usermatchmode') == 'search') %]
+                [% IF (query.key.length < 3) && !Param('emailsuffix') %]
                   <font color="#FF0000">was too short for substring match
                   (minimum 3 characters)</font>
                 [% ELSE %]
@@ -170,14 +185,12 @@
 
 [% BLOCK field_names %]
 
-  [% IF field_descs.${field_name} %]
-    [%  field_descs.${field_name} FILTER html -%]
-
-  [%-# ELSIF for things that don't belong in the field_descs hash here -%]
-
+  [% IF field_descs.$field_name %]
+    [% field_descs.$field_name FILTER html %]
+  [% ELSIF field_labels.$field_name %]
+    [% field_labels.$field_name FILTER html %]
   [% ELSIF field_name.match("^requestee") %]
     [% fields.${field_name}.flag_type.name %] requestee
-
   [% ELSE %]
     [% field_name FILTER html %]
   [% END %]

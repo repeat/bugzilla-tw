@@ -91,16 +91,8 @@
     [% IF shown_types.contains(desc_item.type) || debug %]
       ([% search_descs.${desc_item.type} FILTER html %])
     [% END %]
-    [% IF desc_item.field == 'bug_status' %]
-      [% FOREACH status IN desc_item.value.split(',') %]
-        [%+ get_status(status) FILTER html %][% ',' UNLESS loop.last %]
-      [% END %]
-    [% ELSIF desc_item.field == 'resolution' %]
-      [% FOREACH resolution IN desc_item.value.split(',') %]
-        [%+ get_resolution(resolution) FILTER html %][% ',' UNLESS loop.last %]
-      [% END %]
-    [% ELSE %]
-      [%+ desc_item.value FILTER html %]
+    [% FOREACH val IN desc_item.value.split(',') %]
+      [%+ display_value(desc_item.field, val) FILTER html %][% ',' UNLESS loop.last %]
     [% END %]
     [% IF debug %]
       (<code>[% desc_item.term FILTER html %]</code>)
@@ -142,11 +134,22 @@
 
 <span class="bz_result_count">
   [% IF bugs.size == 0 %]
-    [% terms.zeroSearchResults %]。
+    <span class="zero_results">[% terms.zeroSearchResults %]。</span>
   [% ELSE %]
     找到 [% bugs.size %] 個 [% terms.bugs %] 。
   [% END %]
 </span>
+
+[% IF bugs.size == 0 %]
+  <ul class="zero_result_links">
+    <li>[% PROCESS enter_bug_link %]</li>
+    [% IF one_product.defined %]
+      <li><a href="enter_bug.cgi">在不同的產品中回報一個新的 [% terms.bug %]</a></li>
+    [% END %]
+    <li><a href="[% PROCESS edit_search_url %]">編輯搜尋條件</a></li>
+    <li><a href="query.cgi">開始新的搜尋</a></li>
+  </ul>
+[% END %]
 
 <br>
 
@@ -184,7 +187,7 @@
             <input type="submit" value="XML" id="xml">
         </form>
 
-        [% IF user.in_group(Param('timetrackinggroup')) %]
+        [% IF user.is_timetracker %]
           <form method="post" action="summarize_time.cgi">
             <input type="hidden" name="id" value="[% buglist_joined FILTER html %]">
             <input type="submit" id="timesummary" value="時間統計">
@@ -224,11 +227,7 @@
     [% END %]
 
     <td valign="middle" class="bz_query_edit">
-      [% editqueryname = searchname OR defaultsavename OR '' %]
-      <a href="query.cgi?[% urlquerypart FILTER html %]
-      [% IF editqueryname != '' %]&amp;known_name=
-        [% editqueryname FILTER url_quote %]
-      [% END %]">編輯搜尋條件</a>
+      <a href="[% PROCESS edit_search_url %]">編輯搜尋條件</a>
     </td>
 
     [% IF searchtype == "saved" %]
@@ -257,10 +256,9 @@
   </tr>
 </table>
 
-[% IF cgi.param('product').size == 1 && cgi.param('product') != "" %]
+[% IF one_product.defined %]
   <p class="bz_query_single_product">
-    <a href="enter_bug.cgi?product=[% cgi.param('product') FILTER url_quote %]">
-      在產品 "[% cgi.param('product') FILTER html %]" 中回報新的 [% terms.bug %]</a>
+    [% PROCESS enter_bug_link %]
   </p>
 [% END %]
 
@@ -269,3 +267,22 @@
 [%############################################################################%]
 
 [% PROCESS global/footer.html.tmpl %]
+
+[% BLOCK edit_search_url %]
+  [% editqueryname = searchname OR defaultsavename OR '' %]
+  query.cgi?[% urlquerypart FILTER html %]
+    [%- IF editqueryname != '' %]&amp;known_name=
+      [%- editqueryname FILTER url_quote %]
+    [% END %]
+[% END %]
+
+[% BLOCK enter_bug_link %]
+  <a href="enter_bug.cgi
+           [%- IF one_product.defined %]?product=
+             [%- one_product.name FILTER url_quote %][% END %]">
+   [% IF one_product.defined %]
+     在 "[% one_product.name FILTER html %]" 產品中
+   [% END %]
+   回報新的 [% terms.bug %]
+  </a>
+[% END %]

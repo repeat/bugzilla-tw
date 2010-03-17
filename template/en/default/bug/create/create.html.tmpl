@@ -33,7 +33,8 @@
   style_urls = [ 'skins/standard/create_attachment.css',
                  'skins/standard/yui/calendar.css' ]
   javascript_urls = [ "js/attachment.js", "js/util.js", "js/yui/calendar.js",
-                      "js/field.js", "js/yui/cookie.js", "js/TUI.js" ]
+                      "js/field.js", "js/TUI.js" ]
+  onload = 'set_assign_to();'
 %]
 
 <script type="text/javascript">
@@ -187,21 +188,25 @@ TUI_hide_default('expert_fields');
     [%# Migration note: The following file corresponds to the old Param
       # 'entryheaderhtml'
       #%]
-    [% INCLUDE 'bug/create/user-message.html.tmpl' %]
+    [% PROCESS 'bug/create/user-message.html.tmpl' %]
     </td>
   </tr>
 
   <tr>
-    <td colspan="4">
-        <a id="expert_fields_controller" class="controller bz_default_hidden"
-            href="javascript:TUI_toggle_class('expert_fields')">Hide
+    <td colspan="2">
+      <a id="expert_fields_controller" class="controller bz_default_hidden"
+         href="javascript:TUI_toggle_class('expert_fields')">Hide
         Advanced Fields</a>
       [%# Show the link if the browser supports JS %]
       <script type="text/javascript">
-          YAHOO.util.Dom.removeClass('expert_fields_controller', 
-                                     'bz_default_hidden');
+        YAHOO.util.Dom.removeClass('expert_fields_controller', 
+                                   'bz_default_hidden');
       </script>
     </td>
+    <td colspan="2">
+      (<span class="required_star">*</span> =
+      <span class="required_explanation">Required Field</span>)
+   </td>
   </tr>
 
   <tr>
@@ -214,12 +219,13 @@ TUI_hide_default('expert_fields');
 
   [%# We can't use the select block in these two cases for various reasons. %]
   <tr>
-    <th>
+    <th class="required">
       <a href="describecomponents.cgi?product=[% product.name FILTER url_quote %]">
       Component</a>:
     </th>
     <td>
-      <select name="component" onchange="set_assign_to();" size="7">
+      <select name="component" onchange="set_assign_to();" size="7"
+              aria-required="true" class="required">
         [%# Build the lists of assignees and QA contacts if "usemenuforusers" is enabled. %]
         [% IF Param("usemenuforusers") %]
           [% assignees_list = user.get_userlist.clone %]
@@ -335,7 +341,7 @@ TUI_hide_default('expert_fields');
   <input type="hidden" name="bug_status" 
          value="[% default.bug_status FILTER html %]">
     <th>Initial State:</th>
-    <td>[% get_status(default.bug_status) FILTER html %]</td>
+    <td>[% display_value("bug_status", default.bug_status) FILTER html %]</td>
 [% ELSE %]
     [% sel = { description => 'Initial State', name => 'bug_status' } %]
     [% INCLUDE select %]
@@ -344,7 +350,7 @@ TUI_hide_default('expert_fields');
     <td>&nbsp;</td>
     [%# Calculate the number of rows we can use for flags %]
     [% num_rows = 6 + (Param("useqacontact") ? 1 : 0) +
-                      (user.in_group(Param('timetrackinggroup')) ? 3 : 0) +
+                      (user.is_timetracker ? 3 : 0) +
                       (Param("usebugaliases") ? 1 : 0)
     %]
 
@@ -418,10 +424,6 @@ TUI_hide_default('expert_fields');
     <th>Default CC:</th>
     <td colspan="2">
       <div id="initial_cc">
-          <!-- This has to happen after everything above renders,
-               and onload doesn't work. So this is as good a place
-               as any to put it. -->
-          <script type="text/javascript">set_assign_to();</script>
       </div>
    </td>
   </tr>
@@ -430,11 +432,11 @@ TUI_hide_default('expert_fields');
     <td colspan="3">&nbsp;</td>
   </tr>
 
-[% IF user.in_group(Param('timetrackinggroup')) %]
+[% IF user.is_timetracker %]
   <tr>
     <th>Estimated Hours:</th>
     <td colspan="2">
-      <input name="estimated_time" size="6" maxlength="6" value="0.0">
+      <input name="estimated_time" size="6" maxlength="6" value="[% estimated_time FILTER html %]">
     </td>
   </tr>
   <tr>
@@ -454,7 +456,7 @@ TUI_hide_default('expert_fields');
   <tr>
     <th>Alias:</th>
     <td colspan="2">
-      <input name="alias" size="20">
+      <input name="alias" size="20" value="[% alias FILTER html %]">
     </td>
   </tr>
 [% END %]
@@ -485,10 +487,11 @@ TUI_hide_default('expert_fields');
 <tbody>
 
   <tr>
-    <th>Summary:</th>
+    <th class="required">Summary:</th>
     <td colspan="3">
       <input name="short_desc" size="70" value="[% short_desc FILTER html %]"
-             maxlength="255" spellcheck="true">
+             maxlength="255" spellcheck="true" aria-required="true"
+             class="required">
     </td>
   </tr>
 
@@ -517,7 +520,7 @@ TUI_hide_default('expert_fields');
     </td>
   </tr>
 
-  [% IF Param("insidergroup") && user.in_group(Param("insidergroup")) %]
+  [% IF user.is_insider %]
     <tr class="expert_fields">
       <th>&nbsp;</th>
       <td colspan="3">
@@ -525,7 +528,8 @@ TUI_hide_default('expert_fields');
         <input type="checkbox" id="commentprivacy" name="commentprivacy"
           [% " checked=\"checked\"" IF commentprivacy %]>
         <label for="commentprivacy">
-          Initial Description is Private
+          Make description private (visible only to members of the 
+          <strong>[% Param('insidergroup') FILTER html %]</strong> group)
         </label>
       </td>
     </tr>
@@ -630,7 +634,7 @@ TUI_hide_default('expert_fields');
   <tr>
     <th>&nbsp;</th>
     <td colspan="3">
-      <input type="submit" id="commit" value="Commit"
+      <input type="submit" id="commit" value="Submit [% terms.Bug %]"
              onclick="if (this.form.short_desc.value == '')
              { alert('Please enter a summary sentence for this [% terms.bug %].');
                return false; } return true;">
@@ -666,11 +670,8 @@ TUI_hide_default('expert_fields');
     [%- FOREACH x = ${sel.name} %]
       <option value="[% x FILTER html %]"
         [% " selected=\"selected\"" IF x == default.${sel.name} %]>
-        [% IF sel.name == "bug_status" %]
-          [% get_status(x) FILTER html %]
-        [% ELSE %]
-          [% x FILTER html %]
-        [% END %]</option>
+        [% display_value(sel.name, x) FILTER html %]
+      </option>
     [% END %]
     </select>
 

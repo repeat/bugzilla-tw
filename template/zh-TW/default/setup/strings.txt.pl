@@ -27,21 +27,44 @@
 # Please keep the strings in alphabetical order by their name.
 
 %strings = (
-    any  => '任何',
-    blacklisted => '(被列入黑名單)',
-    checking_for => '檢查',
+    any               => '任何',
+    blacklisted       => '(被列入黑名單)',
+    checking_for      => '檢查',
     checking_dbd      => '檢查可用的 perl DBD 模組...',
     checking_optional => '下列 perl 模組是選用的：',
     checking_modules  => '檢查 perl 模組中...',
+    chmod_failed      => '##path##: 變更權限失敗： ##error##',
+    chown_failed      => '##path##: 變更擁有者失敗： ##error##',
     commands_dbd      => <<EOT,
 你必須執行以下指令之一（視你使用的資料庫而定）：
 EOT
     commands_optional => '安裝選用模組的指令：',
     commands_required => <<EOT,
 安裝必備模組的指令（你「必須」執行所有的指令後，重新執行
-checksetup.pl ）：
+此程式）：
 EOT
     done => '完成。',
+    extension_must_return_name => <<END,
+##file## 回傳了 ##returned## ，但這不是個有效的附加元件名稱。
+附加元件必須要回傳它們的名稱，而不是 <code>1</code> 或數字。
+詳情請參閱 Bugzilla::Extension 。
+END
+    feature_auth_ldap         => 'LDAP 認證',
+    feature_auth_radius       => 'RADIUS 認證',
+    feature_graphical_reports => '圖表式報告',
+    feature_html_desc         => '在產品／群組描述中使用較多的 HTML',
+    feature_inbound_email     => 'Inbound Email',
+    feature_jobqueue          => '信件佇列',
+    feature_jsonrpc           => 'JSON-RPC 介面',
+    feature_new_charts        => '新圖表',
+    feature_old_charts        => '舊圖表',
+    feature_mod_perl          => 'mod_perl',
+    feature_moving            => '在不同機器間搬移 Bugs',
+    feature_patch_viewer      => 'Patch Viewer',
+    feature_smtp_auth         => 'SMTP 認證',
+    feature_updates           => '自動更新通知',
+    feature_xmlrpc            => 'XML-RPC 介面',
+
     header => "* 這是在 ##os_name## ##os_ver## ，\n"
             . "* Perl ##perl_ver## 上執行的 Bugzilla ##bz_ver## 。",
     install_all => <<EOT,
@@ -58,6 +81,7 @@ EOT
 
 EOT
     install_module => '安裝 ##module## 版本 ##version## 中...',
+    installation_failed => '*** 安裝已中止。請閱讀上述訊息。 ***',
     max_allowed_packet => <<EOT,
 警告：你必須在你的 MySQL 設定裡將 max_allowed_packet 參數設定為
 ##needed## 。現在它設定為 ##current## 。
@@ -116,6 +140,11 @@ EOT
 * 重複以上指令，一直到你在已顯示的列表上方看到 "theory58S" 字樣。     *
 EOT
     template_precompile   => "預先編譯模版中...",
+    template_removal_failed => <<END,
+警告：無法移除目錄 '##datadir##/template' 。
+      已將它更名為 '##datadir##/deleteme' 。如要釋放磁碟空間，
+      請手動刪除。
+END
     template_removing_dir => "刪除存在的已編譯模版中...",
 );
 

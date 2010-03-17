@@ -75,7 +75,7 @@
         replytext = prefix;
       [% END %]
 
-    [% IF Param("insidergroup") && user.in_group(Param("insidergroup")) %]
+    [% IF user.is_insider %]
       if (document.getElementById('isprivate_' + real_id).checked) {
           document.getElementById('newcommentprivacy').checked = 'checked';
       }
@@ -115,7 +115,7 @@
       return text;
   }
 
-[% IF user.in_group(Param('timetrackinggroup')) %]
+[% IF user.is_timetracker %]
   var fRemainingTime = [% bug.remaining_time %]; // holds the original value
   function adjustRemainingTime() {
       // subtracts time spent from remaining time
@@ -142,7 +142,7 @@
 <form name="changeform" method="post" action="process_bug.cgi">
 
   <input type="hidden" name="delta_ts" value="[% bug.delta_ts %]">
-  <input type="hidden" name="longdesclength" value="[% bug.longdescs.size %]">
+  <input type="hidden" name="longdesclength" value="[% bug.comments.size %]">
   <input type="hidden" name="id" value="[% bug.bug_id %]">
   <input type="hidden" name="token" value="[% issue_hash_token([bug.id, bug.delta_ts]) FILTER html %]">
 
@@ -211,84 +211,36 @@
     </tr>
   </table>
 
-  [% PROCESS section_restrict_visibility %]
-  [% IF user.in_group(Param('timetrackinggroup')) %]
-    <br>
-    [% PROCESS section_timetracking %]
-  [% END %]
+  <table id="bz_big_form_parts" cellspacing="0" cellpadding="0"><tr>
+  <td>
+    [% IF user.is_timetracker %]
+      [% PROCESS section_timetracking %]
+    [% END %]
 
+    [%# *** Attachments *** %]
 
-[%# *** Attachments *** %]
+    [% PROCESS attachment/list.html.tmpl
+               attachments = bug.attachments
+               bugid       = bug.bug_id
+               num_attachment_flag_types = bug.num_attachment_flag_types
+               show_attachment_flags = bug.show_attachment_flags
+    %]
 
-  [% PROCESS attachment/list.html.tmpl
-             attachments = bug.attachments
-             bugid       = bug.bug_id
-             num_attachment_flag_types = bug.num_attachment_flag_types
-             show_attachment_flags = bug.show_attachment_flags
-   %]
+    [% PROCESS comment_box %]
+  </td>
+  <td>
+    [% PROCESS section_restrict_visibility %]
+  </td>
+  </tr></table>
 
+  [%# *** Additional Comments *** %]
+  <div id="comments">
+    [% PROCESS bug/comments.html.tmpl
+      comments = bug.comments
+      mode = user.id ? "edit" : "show"
+    %]
+  </div>
 
-[%# *** Comments Groups *** %]
-
-  <br>
-  <table cellpadding="1" cellspacing="1">
-    <tr>
-      <td id="comment_status_commit">
-        <!-- The table keeps the commit button aligned with the box. -->
-	<a name="add_comment"></a>
-        [% IF user.id %]
-	<table><tr><td>
-          <label for="comment" accesskey="c"><b>附加意見 (<u>C</u>)</b></label>：
-          [% IF Param("insidergroup") && user.in_group(Param("insidergroup")) %]
-            <input type="checkbox" name="commentprivacy" value="1"
-                   id="newcommentprivacy"
-                   onClick="updateCommentTagControl(this, form)">
-            <label for="newcommentprivacy">不公開</label>
-          [% END %]
-          <br>
-          [% INCLUDE global/textarea.html.tmpl
-                     name      = 'comment'
-                     id        = 'comment'
-                     minrows   = 10
-                     maxrows   = 25
-                     cols      = constants.COMMENT_COLS
-          %]
-	  [% Hook.process("after_comment_textarea") %]
-          <br>
-          [% PROCESS commit_button id=""%]
-          <table class="status" cellspacing="0" cellpadding="0">
-            <tr>
-              <td class="field_label">
-                <b><a href="page.cgi?id=fields.html#status">狀態</a></b>：
-              </td>
-              <td>
-                <a name="bug_status_bottom"></a>
-                [% PROCESS bug/knob.html.tmpl %]
-              </td>
-            </tr>
-          </table>
-        </td></tr></table>
-        [% ELSE %]
-          <fieldset>
-            <legend>注意</legend>
-            <p>
-              你需要<a href="[% IF Param('ssl') != 'never' %][% Param('sslbase') %][% END %]show_bug.cgi?id=[% bug.bug_id %]&amp;GoAheadAndLogIn=1">登入</a>才能夠發表意見，或對此
-              [% terms.bug %] 做變更。
-            </p>
-          </fieldset>
-        [% END %]
-        [%# *** Additional Comments *** %]
-        <hr>
-        <div id="comments">
-        [% PROCESS bug/comments.html.tmpl
-           comments = bug.longdescs
-           mode = user.id ? "edit" : "show"
-        %]
-        </div>
-
-      </td>
-    </tr>
-  </table>
 </form>
 
 [%############################################################################%]
@@ -307,7 +259,7 @@
           (<span id="alias_nonedit_display">[% bug.alias FILTER html %]</span>)
         [% END %]
       [% END %]
-      <span id="short_desc_nonedit_display">[% bug.short_desc FILTER html %]</span>
+      <span id="short_desc_nonedit_display">[% bug.short_desc FILTER quoteUrls(bug) %]</span>
       [% IF bug.check_can_change_field('short_desc', 0, 1) ||
             bug.check_can_change_field('alias', 0, 1)  %]
         <small class="editme">(<a href="#" id="editme_action">編輯</a>)</small>
@@ -367,16 +319,9 @@
     [%#  PRODUCT  #%]
     [%#############%]
     <tr>
-       [% IF bug.check_can_change_field('product', 0, 1) %]
-         [% prod_list = user.get_enterable_products %]
-         [% IF NOT user.can_enter_product(bug.product) %]
-           [% prod_list.unshift(bug.product_obj) %]
-         [% END %]
-       [% END %]
-
        [% INCLUDE bug/field.html.tmpl
             bug = bug, field = select_fields.product,
-	    override_legal_values = prod_list
+            override_legal_values = bug.choices.product
             desc_url = 'describecomponents.cgi', value = bug.product
             editable = bug.check_can_change_field('product', 0, 1) %]
     </tr>
@@ -436,9 +381,9 @@
     </td>
     <td id="bz_field_status">
       <span id="static_bug_status">
-        [% get_status(bug.bug_status) FILTER html %]
+        [% display_value("bug_status", bug.bug_status) FILTER html %]
         [% IF bug.resolution %]
-          [%+ get_resolution(bug.resolution) FILTER html %]
+          [%+ display_value("resolution", bug.resolution) FILTER html %]
           [% IF bug.dup_id %]
             ：[% "${terms.bug} ${bug.dup_id}" FILTER bug_link(bug.dup_id) FILTER none %]
           [% END %]
@@ -492,14 +437,11 @@
 
     [% IF Param("usetargetmilestone") && bug.target_milestone %]
       <tr>
-        <td class="field_label">
-          <label for="target_milestone"><b>
-            [% IF bug.milestoneurl %]
-              <a href="[% bug.milestoneurl FILTER html %]">
-            [% END %]
-            目標里程碑[% "</a>" IF bug.milestoneurl %]
-          [%%]</b></label>：
-        </td>
+        <th class="field_label">
+          <label for="target_milestone">
+              <a href="page.cgi?id=fields.html#target_milestone">
+            目標里程碑</a></label>：
+        </th>
         [% PROCESS select selname = "target_milestone" %]
       </tr>
     [% END %]
@@ -699,99 +641,91 @@
 [% BLOCK section_restrict_visibility %]
   [% RETURN UNLESS bug.groups.size %]
 
-  [% inallgroups = 1 %]
-  [% inagroup = 0 %]
-  [% emitted_description = 0 %]
+  <div class="bz_group_visibility_section">
+    [% inallgroups = 1 %]
+    [% inagroup = 0 %]
+    [% emitted_description = 0 %]
 
-  [% FOREACH group = bug.groups %]
-    [% SET inallgroups = 0 IF NOT group.ingroup %]
-    [% SET inagroup = 1 IF group.ison %]
+    [% FOREACH group = bug.groups %]
+      [% SET inallgroups = 0 IF NOT group.ingroup %]
+      [% SET inagroup = 1 IF group.ison %]
 
-    [% NEXT IF group.mandatory %]
+      [% NEXT IF group.mandatory %]
 
-    [% IF NOT emitted_description %]
-      [% emitted_description = 1 %]
-      <table>
-        <tr>
-          <td class="field_label">
-            <label id="bz_restrict_group_visibility_label"><b>限制群組瀏覽</b>：</label>
-          </td>
-          <td>
-            <div id="bz_restrict_group_visibility_help">
-              <b>只有在所有已選擇群組中的使用者可以瀏覽這個 [% terms.bug %] ：</b>
-              <br>
-              <small>
-                （若不勾選，則會公開此 [% terms.bug %] 。）
-              </small>
-            </div>
-    [% END %]
+      [% IF NOT emitted_description %]
+        [% emitted_description = 1 %]
+          <div id="bz_restrict_group_visibility_help">
+            <b>只有在所有已選擇群組中的使用者可以瀏覽這個
+              [%+ terms.bug %] ：</b>
+             <p class="instructions">
+               若不勾選， [% terms.bug %] 將會公開。
+             </p>
+          </div>
+      [% END %]
 
-    [% IF group.ingroup %]
-      <input type="hidden" name="defined_bit-[% group.bit %]" value="1">
-    [% END %]
-    <input type="checkbox" value="1" name="bit-[% group.bit %]" id="bit-[% group.bit %]"
-           [% ' checked="checked"' IF group.ison %]
-           [% ' disabled="disabled"' IF NOT group.ingroup %]>
-    <label for="bit-[% group.bit %]">[% group.description FILTER html_light %]</label>
-    <br>
-  [% END %]
+      [% IF group.ingroup %]
+        <input type="hidden" name="defined_bit-[% group.bit %]" value="1">
+      [% END %]
 
-  [% IF emitted_description %]
-    [% IF NOT inallgroups %]
-      <b>只有群組的成員可以變更屬於該群組的 [% terms.bug %] 的可見性。</b>
+      <input type="checkbox" value="1" name="bit-[% group.bit %]"
+             id="bit-[% group.bit %]"
+             [% ' checked="checked"' IF group.ison %]
+             [% ' disabled="disabled"' IF NOT group.ingroup %]>
+      <label for="bit-[% group.bit %]">
+      [%- group.description FILTER html_light %]</label>
       <br>
     [% END %]
-      </td>
-    </tr>
-    [% "</table>" IF NOT inagroup %]
-  [% END %]
 
-  [% IF inagroup %]
-    [% IF NOT emitted_description %]
-      [% emitted_description = 1 %]
-      <table>
+    [% IF emitted_description %]
+      [% IF NOT inallgroups %]
+        <p class="instructions">Only members of a group can change the
+          visibility of [% terms.abug %] for that group.</p>
+      [% END %]
     [% END %]
-      <tr>
-        <td class="field_label">
-          <label id="bz_enable_role_visibility_label"><b>開啟角色可見度</b>：</label>
-        </td>
-        <td>
-          <div id="bz_enable_role_visibility_help">
-            <b>在以下已選擇角色中的使用者一定可以瀏覽這個 [% terms.bug %] ：</b>
-            <br>
-            <small>
-              （一個 [% terms.bug %] 的負責人[% IF (Param('useqacontact')) %]和 QA 連絡人[% END %]一定可以看見這個
-              [% terms.bug %] 。這個部份的設定只有在 [% terms.bug %] 被限制在至少一個群組時才會生效。）
-            </small>
-          </div>
-          <div>
-            <div>
-              [% user_can_edit_accessible = bug.check_can_change_field("reporter_accessible", 0, 1) %]
-              [% IF user_can_edit_accessible %]
-              <input type="hidden" name="defined_reporter_accessible" value="1">
-            [% END %]
-            <input type="checkbox" value="1"
-                   name="reporter_accessible" id="reporter_accessible"
-                   [% " checked" IF bug.reporter_accessible %]
-                   [% " disabled=\"disabled\"" UNLESS user_can_edit_accessible %]>
-            <label for="reporter_accessible">回報者</label>
-          </div>
-          <div>
-            [% user_can_edit_accessible = bug.check_can_change_field("cclist_accessible", 0, 1) %]
-            [% IF user_can_edit_accessible %]
-              <input type="hidden" name="defined_cclist_accessible" value="1">
-            [% END %]
-            <input type="checkbox" value="1"
-                   name="cclist_accessible" id="cclist_accessible"
-                   [% " checked" IF bug.cclist_accessible %]
-                   [% " disabled=\"disabled\"" UNLESS user_can_edit_accessible %]>
-            <label for="cclist_accessible">寄件副本清單</label>
-          </div>
+
+    [% IF inagroup %]
+      <div id="bz_enable_role_visibility_help">
+        <b>只有群組的成員可以變更屬於該群組的
+          [%+ terms.bug %] 的可見性：</b>
+      </div>
+      <div id="bz_enable_role_visibility">
+        <div>
+          [% user_can_edit_accessible =
+            bug.check_can_change_field("reporter_accessible", 0, 1)
+          %]
+          [% IF user_can_edit_accessible %]
+            <input type="hidden" name="defined_reporter_accessible" value="1">
+          [% END %]
+          <input type="checkbox" value="1"
+                 name="reporter_accessible" id="reporter_accessible"
+                 [% " checked" IF bug.reporter_accessible %]
+                 [% " disabled=\"disabled\"" UNLESS user_can_edit_accessible %]>
+          <label for="reporter_accessible">回報者</label>
         </div>
-      </td>
-    </tr>
-  </table>
-  [% END %]
+        <div>
+          [% user_can_edit_accessible =
+            bug.check_can_change_field("cclist_accessible", 0, 1)
+          %]
+          [% IF user_can_edit_accessible %]
+            <input type="hidden" name="defined_cclist_accessible" value="1">
+          [% END %]
+          <input type="checkbox" value="1"
+                 name="cclist_accessible" id="cclist_accessible"
+                 [% " checked" IF bug.cclist_accessible %]
+                 [% " disabled=\"disabled\"" UNLESS user_can_edit_accessible %]>
+          <label for="cclist_accessible">寄件副本清單</label>
+        </div>
+        <p class="instructions">
+          [% terms.bug %] 的負責人
+          [% IF (Param('useqacontact')) %]
+             和 QA 連絡人
+          [% END %]
+          一定可以看見這個 [% terms.bug %] 。
+          這個部份的設定只有在 [% terms.bug %] 被限制在至少一個群組時，才會生效。
+        </p>
+      </div>
+    [% END %]
+  </div> [%# bz_group_visibility_section %]
 [% END %]
 
 [%############################################################################%]
@@ -1084,28 +1018,85 @@
 [% END %]
 
 [%############################################################################%]
+[%# Block for the Additional Comments box                                    #%]
+[%############################################################################%]
+
+[% BLOCK comment_box %]
+  <div class="bz_section_additional_comments">
+    <a name="add_comment"></a>
+    [% IF user.id %]
+      <label for="comment" accesskey="c"><b>附加意見
+        (<u>C</u>)</b></label> ：
+
+      [% IF user.is_insider %]
+        <input type="checkbox" name="commentprivacy" value="1"
+               id="newcommentprivacy"
+               onClick="updateCommentTagControl(this, form)">
+        <label for="newcommentprivacy">
+          將意見設定為不公開（僅有
+          <strong>[% Param('insidergroup') FILTER html %]</strong> 群組可見）
+        </label>
+      [% END %]
+
+      <!-- This table keeps the submit button aligned with the box. -->
+      <table><tr><td>
+        [% INCLUDE global/textarea.html.tmpl
+                   name      = 'comment'
+                   id        = 'comment'
+                   minrows   = 10
+                   maxrows   = 25
+                   cols      = constants.COMMENT_COLS
+        %]
+        [% Hook.process("after_comment_textarea", 'bug/edit.html.tmpl') %]
+        <br>
+        [% PROCESS commit_button id=""%]
+
+        <table class="status" cellspacing="0" cellpadding="0">
+          <tr>
+            <td class="field_label">
+              <b><a href="page.cgi?id=fields.html#status">狀態</a></b>：
+            </td>
+            <td>
+              <a name="bug_status_bottom"></a>
+              [% PROCESS bug/knob.html.tmpl %]
+            </td>
+          </tr>
+        </table>
+      </td></tr></table>
+
+    [%# For logged-out users %]
+    [% ELSE %]
+      <table><tr><td><fieldset>
+        <legend>注意</legend>
+        你需要
+        <a href="show_bug.cgi?id=
+                 [%- bug.bug_id %]&amp;GoAheadAndLogIn=1">登入</a>
+         才能夠發表意見，或對此 [% terms.bug %] 做變更。
+      </fieldset></table><tr></td>
+    [% END %]
+  </div>
+[% END %]
+
+[%############################################################################%]
 [%# Block for SELECT fields                                                  #%]
 [%############################################################################%]
 
 [% BLOCK select %]
-  [% IF NOT no_td %]
   <td>
-  [% END %]
-    [% IF bug.check_can_change_field(selname, 0, 1) AND bug.choices.${selname}.size > 1 %]
+    [% IF bug.check_can_change_field(selname, 0, 1)
+          AND bug.choices.${selname}.size > 1 %]
       <select id="[% selname %]" name="[% selname %]">
         [% FOREACH x = bug.choices.${selname} %]
-          <option value="[% x FILTER html %]"
-            [% " selected" IF x == bug.${selname} %]>[% x FILTER html %]
+          <option value="[% x.name FILTER html %]"
+            [% " selected" IF x.name == bug.${selname} %]>
+            [%- x.name FILTER html %]
           </option>
         [% END %]
       </select>
     [% ELSE %]
       [% bug.${selname} FILTER html %]
     [% END %]
-  [% IF NOT no_td %]
   </td>
-  [% END %]
-  [% no_td = 0 %]
 [% END %]
 
 [%############################################################################%]
@@ -1144,7 +1135,8 @@
 [% BLOCK commit_button %]
   [% IF user.id %]
     <div class="knob-buttons">
-      <input type="submit" value="送出" id="commit[% id FILTER css_class_quote %]">
+      <input type="submit" value="儲存變更"
+             id="commit[% id FILTER css_class_quote %]">
       [% IF bug.user.canmove %]
         <input type="submit" name="action" id="action[% id FILTER css_class_quote %]" value="[% Param("move-button-text") %]">
       [% END %]

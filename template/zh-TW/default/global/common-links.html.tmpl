@@ -25,6 +25,7 @@
 <ul class="links">
   <li><a href="./">首頁</a></li>
   <li><span class="separator">| </span><a href="enter_bug.cgi">輸入新的 [% terms.bug %]</a></li>
+  <li><span class="separator">| </span><a href="describecomponents.cgi">瀏覽</a></li>
   <li><span class="separator">| </span><a href="query.cgi">搜尋</a></li>
 
   <li class="form">
@@ -34,7 +35,8 @@
                   { alert('請至少輸入一個字串來搜尋。');
                     return false; } return true;">
     <input class="txt" type="text" id="quicksearch[% qs_suffix FILTER html %]" name="quicksearch">
-    <input class="btn" type="submit" value="尋找" id="find[% qs_suffix FILTER html %]">
+    <input class="btn" type="submit" value="搜尋"
+           id="find[% qs_suffix FILTER html %]">
     [%-# Work around FF bug: keep this on one line %]</form></li>
 
   <li><span class="separator">| </span><a href="report.cgi">報告</a></li>
@@ -50,10 +52,6 @@
       [% END %]
     [% END %]
   [%-# Work around FF bug: keep this on one line %]</li>
-
-  [% IF user.id && Param('usevotes') %]
-    <li><span class="separator">| </span><a href="votes.cgi?action=show_user">我的投票</a></li>
-  [% END %]
 
   [% IF user.login %]
     <li><span class="separator">| </span><a href="userprefs.cgi">偏好設定</a></li>

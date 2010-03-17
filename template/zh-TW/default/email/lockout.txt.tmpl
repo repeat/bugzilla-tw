@@ -1,0 +1,40 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is the Mozilla Corporation.
+  # Portions created by the Initial Developer are Copyright (C) 2008
+  # the Initial Developer. All Rights Reserved.
+  #
+  # Contributor(s):
+  #   Max Kanat-Alexander <mkanat@bugzilla.org>
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+From: [% Param('mailfrom') %]
+To: [% Param('maintainer') %]
+Subject: [[% terms.Bugzilla %]] 鎖帳號通知： [% locked_user.login %] ([% attempts.0.ip_addr %])
+X-Bugzilla-Type: admin
+
+此 IP 位址 [% attempts.0.ip_addr %] 在登入
+[% locked_user.login %] 此帳號時失敗次數過多
+（ [% constants.MAX_LOGIN_ATTEMPTS %] 次）。
+
+以下是嘗試登入的時間點：
+
+[% FOREACH login = attempts %]
+  [%+ login.login_time FILTER time %]
+[% END %]
+
+此 IP 將在
+[%+ unlock_at FILTER time %]
+後，才能以此帳號登入。

@@ -51,6 +51,6 @@
   <input type="hidden" name="token" value="[% token FILTER html %]">
 </FORM>
 
-<p>回到<a href="./"> [% terms.bugs %] 主頁面</a>，或是<a href="editclassifications.cgi">編輯</a>更多分類。
+[% PROCESS admin/classifications/footer.html.tmpl %]
 
 [% PROCESS global/footer.html.tmpl %]

@@ -45,7 +45,7 @@
 
 <p>
   在你嘗試對
-  [%+ "$terms.bug $bug.id" FILTER bug_link(bug.id) FILTER none %]
+  [%+ "$terms.bug $bug.id" FILTER bug_link(bug) FILTER none %]
   做變更的同時，有其他人已做出變更。
   已做出的變更為：
 </p>
@@ -100,7 +100,7 @@
     </li>
   [% END %]
   <li>
-    刪除我做的變更，並[% "重新瀏覽 $terms.bug $bug.id 。" FILTER bug_link(bug.id) FILTER none %]
+    刪除我做的變更，並[% "重新瀏覽 $terms.bug $bug.id 。" FILTER bug_link(bug) FILTER none %]
   </li>
 </ul>
 

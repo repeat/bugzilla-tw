@@ -31,14 +31,16 @@
 
 [% IF target == "enter_bug.cgi" %]
   [% title = "輸入 $terms.Bug" %]
-  [% subheader = BLOCK %]在輸入 [% terms.bug %] 之前，你必須先選擇一項產品。[% END %]
+  [% h2 = BLOCK %]在輸入 [% terms.bug %] 之前，你必須先選擇一項產品：[% END %]
 [% ELSIF target == "describecomponents.cgi" %]
-  [% title = "$terms.Bugzilla 子產品描述" %]
-  [% subheader = "請指定該子產品所屬的產品。" %]
+  [% title = "$terms.Bugzilla ：瀏覽" %]
+  [% h2 = "選擇要瀏覽的產品分類：" %]
 [% END %]
 
 [% DEFAULT title = "選擇一項產品" %]
 [% PROCESS global/header.html.tmpl %]
+
+<h2>[% h2 FILTER html %]</h2>
 
 <table>
 

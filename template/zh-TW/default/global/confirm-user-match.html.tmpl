@@ -38,6 +38,22 @@
 [%# use the global field descs %]
 [% PROCESS "global/field-descs.none.tmpl" %]
 
+[%# This lists fields which use the user auto-completion feature and which
+  # are not listed in field_descs. %]
+[% field_labels = { # Used by editcomponents.cgi
+                    "initialcc"               => "預設寄件副本清單",
+                    "initialowner"            => "預設負責人",
+                    "initialqacontact"        => "預設 QA 連絡人",
+                    # Used by process_bug.cgi
+                    "masscc"                  => "寄件副本清單",
+                    # Used by request.cgi
+                    "requester"               => "要求者",
+                    "requestee"               => "被要求者",
+                    # Used by userprefs.cgi
+                    "new_watchedusers"        => "監控清單",
+
+   }
+%]
 [% IF matchsuccess == 1 %]
   [% PROCESS global/header.html.tmpl title="確認符合" %]
 
@@ -125,8 +141,7 @@
                   <b>[% query.value.users.0.identity FILTER html %]</b>
                 [% END %]
             [% ELSE %]
-                [% IF (query.key.length < 3) && !(Param('emailsuffix'))
-                    && (Param('usermatchmode') == 'search') %]
+                [% IF (query.key.length < 3) && !Param('emailsuffix') %]
                   <font color="#FF0000">要搜尋的子字串太短
                   (至少 3 個字元)</font>
                 [% ELSE %]
@@ -163,14 +178,12 @@
 
 [% BLOCK field_names %]
 
-  [% IF field_descs.${field_name} %]
-    [%  field_descs.${field_name} FILTER html -%]
-
-  [%-# ELSIF for things that don't belong in the field_descs hash here -%]
-
+  [% IF field_descs.$field_name %]
+    [% field_descs.$field_name FILTER html %]
+  [% ELSIF field_labels.$field_name %]
+    [% field_labels.$field_name FILTER html %]
   [% ELSIF field_name.match("^requestee") %]
     [% fields.${field_name}.flag_type.name %] 位被要求者
-
   [% ELSE %]
     [% field_name FILTER html %]
   [% END %]

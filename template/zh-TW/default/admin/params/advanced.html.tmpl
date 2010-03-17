@@ -1,0 +1,46 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Dave Miller <justdave@bugzilla.org>
+  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #%]
+
+[%
+   title = "進階"
+   desc = "進階設定"
+%]
+
+[% param_descs = {
+  cookiedomain =>
+    "如果你的網站是 'www.foo.com' ，則把此參數設定為"
+    _ " '.foo.com' 時，將會允許 'bar.foo.com' 存取 $terms.Bugzilla"
+    _ " 的 cookie 。這對於同一個網站伺服器有多個域名，且希望共享"
+    _ " $terms.Bugzilla 的 cookie 時很有用。",
+
+  inbound_proxies =>
+    "當透過代理伺服器連線至 $terms.Bugzilla 時，"
+    _ " $terms.Bugzilla 將每個使用者都認定為該代理伺服器的 IP 位址。"
+    _ "如果在參數中輸入以逗號 (,) 分隔的 IP 列表，"
+    _ "那麼 $terms.Bugzilla 將會信任來自這些 IP 的 <code>X-Forwarded-For</code> Header ，"
+    _ "並使用 Header 的值來做為使用者的 IP 位址。",
+
+  proxy_url =>
+    "$terms.Bugzilla 可以自動連線到網路並擷取關於最新版的版本資訊，參考"
+    _ " <tt>upgrade_notification</tt> 參數。如果透過代理伺服器連線，"
+    _ "可能需要設定代理伺服器的網址，以免 HTTP_PROXY 環境變數無法被存取。"
+    _ "如需認證，使用 <code>http://user:pass@proxy_url/</code> 的格式。",
+} %]

@@ -80,8 +80,19 @@
         </td>
       </tr>
     [% END %]
+    <tr>
+      <th align="right"><label for="is_active">開啟回報 [% terms.bugs %] 功能：</label></th>
+      <td><input id="is_active" name="is_active" type="checkbox" value="1"
+           [%+ 'checked="checked"' IF value.is_active %]
+           [%+ 'disabled="disabled"' IF value.is_default OR value.is_static %]>
+           [% IF value.is_default %]
+             此數值是此欄位的預設值，無法被停用。
+           [% ELSIF value.is_static %]
+              此數值不可刪除，也不能被停用。
+           [% END %]
+           </td>
+    </tr>
   </table>
-
   <input type="hidden" name="value" value="[% value.name FILTER html %]">
   <input type="hidden" name="action" value="update">
   <input type="hidden" name="field" value="[% field.name FILTER html %]">

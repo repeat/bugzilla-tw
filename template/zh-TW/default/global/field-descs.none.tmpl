@@ -136,29 +136,45 @@
   ${constants.FIELD_TYPE_BUG_ID}        => "$terms.Bug 編號"
 } %]
 
-[% status_descs = {
-  "UNCONFIRMED" => "未確認 (UNCONFIRMED)",
-  "NEW"         => "新的 (NEW)",
-  "ASSIGNED"    => "已分配 (ASSIGNED)",
-  "REOPENED"    => "再開啟 (REOPENED)",
-  "RESOLVED"    => "已解決 (RESOLVED)",
-  "VERIFIED"    => "已認證 (VERIFIED)",
-  "CLOSED"      => "已關閉 (CLOSED)"
+[%# You can use this hash to localize (translate) the values displayed
+  # for drop-down and multiple-select fields. Lines starting with "#"
+  # are comments.
+  #%]
+[% value_descs = {
+  "bug_status" => {
+    # "UNCONFIRMED" => "UNCO",
+    # "NEW"         => "NEWISH",
+    "UNCONFIRMED" => "未確認 (UNCONFIRMED)",
+    "NEW"         => "新的 (NEW)",
+    "ASSIGNED"    => "已分配 (ASSIGNED)",
+    "REOPENED"    => "再開啟 (REOPENED)",
+    "RESOLVED"    => "已解決 (RESOLVED)",
+    "VERIFIED"    => "已認證 (VERIFIED)",
+    "CLOSED"      => "已關閉 (CLOSED)"
+  },
+
+  "resolution" => {
+    # "FIXED" => "NO LONGER AN ISSUE",
+    # "MOVED" => "BYE-BYE",
+    ""        => "---",
+    "FIXED"      => "已修復 (FIXED)",
+    "INVALID"    => "無效的 (INVALID)",
+    "WONTFIX"    => "不處理 (WONTFIX)",
+    "DUPLICATE"  => "重複 (DUPLICATE)",
+    "WORKSFORME" => "好好的 (WORKSFORME)",
+    "MOVED"      => "已搬移 (MOVED)"
+  }
 } %]
 
-[% MACRO get_status(status) GET status_descs.$status || status %]
-
-[% resolution_descs = {
-  "FIXED"      => "已修復 (FIXED)",
-  "INVALID"    => "無效的 (INVALID)",
-  "WONTFIX"    => "不處理 (WONTFIX)",
-  "DUPLICATE"  => "重複 (DUPLICATE)",
-  "WORKSFORME" => "好好的 (WORKSFORME)",
-  "MOVED"      => "已搬移 (MOVED)",
-  "---"        => "---",
-  " "          => " "
-} %]
-
-[% MACRO get_resolution(res) GET resolution_descs.$res || res %]
+[%# We use "FILTER none" here because only the caller can know how to
+  # filter the result appropriately.
+  #%]
+[% MACRO display_value(field_name, value_name) BLOCK %][% FILTER trim %]
+  [% IF value_descs.${field_name}.${value_name}.defined %]
+    [% value_descs.${field_name}.${value_name} FILTER none %]
+  [% ELSE %]
+    [% value_name FILTER none %]
+  [% END %]
+[% END %][% END %]
 
 [% Hook.process("end") %]

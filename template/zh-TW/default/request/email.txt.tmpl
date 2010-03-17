@@ -24,28 +24,31 @@
 
 [% bugidsummary = bug.bug_id _ '：'_ bug.short_desc %]
 [% attidsummary = attachment.id _ '：' _ attachment.description %]
+[% flagtype_name = flag ? flag.type.name : old_flag.type.name %]
 [% statuses = { '+' => "同意" , '-' => "拒絕" , 'X' => "取消" ,
                 '?' => "要求" } %]
 
 [% to_identity = "" %]
 [% on_behalf_of = 0 %]
-[% IF flag.status == '?' %]
+[% action = flag.status || 'X' %]
+
+[% IF flag && flag.status == '?' %]
   [% subject_status = "已要求" %]
-  [% IF flag.setter.id == user.id %]
+  [% IF flag.setter_id == user.id %]
     [% to_identity = flag.requestee.identity _ "所要求的" %]
   [% ELSE %]
     [% on_behalf_of = 1 %]
     [% IF flag.requestee %][% to_identity = "給" _ flag.requestee.identity %][% END %]
   [% END %]
 [% ELSE %]
-  [% IF flag.requester %]
-    [% to_identity = flag.requester.identity _ "所要求的" %]
+  [% IF old_flag && old_flag.status == '?' %]
+    [% to_identity = old_flag.setter.identity _ "所要求的" %]
   [% END %]
-  [% subject_status = statuses.${flag.status} %]
+  [% subject_status = statuses.$action %]
 [% END %]
 From: [% Param('mailfrom') %]
 To: [% to %]
-Subject: [%+ subject_status %] [% flag.type.name %] ： [[% terms.Bug %] [%+ bug.bug_id %]] [% bug.short_desc %]
+Subject: [% flagtype_name %] [%+ subject_status %] ： [[% terms.Bug %] [%+ bug.bug_id %]] [% bug.short_desc %]
 [%- IF attachment %]：[附件 [% attachment.id %]] [% attachment.description %][% END %]
 X-Bugzilla-Type: request
 [%+ threadingmarker %]
@@ -54,9 +57,9 @@ X-Bugzilla-Type: request
 [%- FILTER bullet = wrap(80) -%]
 
 [% IF on_behalf_of %]
-[% user.identity %] 已重新分配 [% flag.setter.identity %] 對  [% flag.type.name %] 的要求[% to_identity %]：
+[% user.identity %] 已重新分配 [% flag.setter.identity %] 對  [% flagtype_name %] 的要求[% to_identity %]：
 [% ELSE %]
-[% user.identity %] 已[% statuses.${flag.status} %] [%+ to_identity %] [%+ flag.type.name %]：
+[% user.identity %] 已[% statuses.$action %] [%+ to_identity %] [%+ flagtype_name %]：
 [% END %]
 
 [% terms.Bug %] [%+ bugidsummary %]

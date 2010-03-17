@@ -17,6 +17,7 @@
   #
   # Contributor(s): Gervase Markham <gerv@gerv.net>
   #                 Frédéric Buclin <LpSolit@gmail.com>
+  #                 Max Kanat-Alexander <mkanat@bugzilla.org>
   #%]
 
 [%# INTERFACE:
@@ -32,10 +33,10 @@
   # in this file; if you do not wish to change it, use the "none" filter.
   #
   # Extension- or custom-specific error handling  can be easily added 
-  # via hooks: just place your <extension>-errors.html.tmpl into 
-  # template/en/extension/hook/global/user-error.html.tmpl/errors/
-  # Note: be aware of uniqueness of error string parameter value, since 
-  # nobody can guarantee the hook files processing order in the future
+  # via hooks: just place additional code into
+  # template/en/hook/global/user-error-errors.html.tmpl
+  # Note: be aware of uniqueness of error string parameter value, since
+  # nobody can guarantee the hook files processing order in the future.
   #%]
 
 [% PROCESS global/variables.none.tmpl %]
@@ -75,6 +76,12 @@
     [% ELSE %]
       that login name.
     [% END %]
+
+  [% ELSIF error == "account_locked" %]
+    [% title = "Account Locked" %]
+    Your IP ([% ip_addr FILTER html %]) has been locked out of this
+    account until [% unlock_at FILTER time %], as you have
+    exceeded the maximum number of login attempts.
 
   [% ELSIF error == "alias_has_comma_or_space" %]
     [% title = "Invalid Characters In Alias" %]
@@ -153,7 +160,11 @@
     [% IF object == "administrative_pages" %]
       administrative pages
     [% ELSIF object == "attachment" %]
-      this attachment
+      [% IF attach_id %]
+        attachment #[% attach_id FILTER html %]
+      [% ELSE %]
+        this attachment
+      [% END %]
     [% ELSIF object == "bugs" %]
       [%+ terms.bugs %]
     [% ELSIF object == "charts" %]
@@ -210,6 +221,11 @@
   [% ELSIF error == "attachment_deletion_disabled" %]
     [% title = "Attachment Deletion Disabled" %]
     Attachment deletion is disabled on this installation.
+
+  [% ELSIF error == "attachment_illegal_url" %]
+    [% title = "Illegal Attachment URL" %]
+    <em>[% url FILTER html %]</em> is not a legal URL for attachments.
+    It must start either with http://, https:// or ftp://.
 
   [% ELSIF error == "attachment_removed" %]
     [% title = "Attachment Removed" %]
@@ -423,6 +439,13 @@
     does not exist or you aren't authorized to
     enter [% terms.abug %] into it.
 
+  [% ELSIF error == "extension_create_no_name" %]
+    You must specify a name for your extension, as an argument to this script.
+
+  [% ELSIF error == "extension_first_letter_caps" %]
+    The first letter of your extension's name must be a capital letter.
+    (You specified '[% name FILTER html %]'.)
+
   [% ELSIF error == "field_already_exists" %]
     [% title = "Field Already Exists" %]
     The field '[% field.name FILTER html %]'     
@@ -563,12 +586,6 @@
     <br>Alternately, if your attachment is an image, you could convert
     it to a compressible format like JPG or PNG and try again.
 
-  [% ELSIF error == "flag_not_multiplicable" %]
-    [% docslinks = {'flags-overview.html' => 'An overview on Flags',
-                    'flags.html' => 'Using Flags'} %]
-    You can't ask more than one person at a time for
-    <em>[% type.name FILTER html %]</em>.
-
   [% ELSIF error == "flag_requestee_needs_privs" %]
     [% title = "Flag Requestee Needs Privileges" %]
     [% requestee.identity FILTER html %] does not have permission to set the
@@ -627,6 +644,12 @@
     The name <em>[% name FILTER html %]</em> must be 1-50 characters long
     and must not contain any spaces or commas.
 
+  [% ELSIF error == "flag_type_not_multiplicable" %]
+    [% docslinks = {'flags-overview.html' => 'An overview on Flags',
+                    'flags.html' => 'Using Flags'} %]
+    You cannot have several <em>[% type.name FILTER html %]</em> flags
+    for this [% IF attachment %] attachment [% ELSE %] [%+ terms.bug %] [% END %].
+
   [% ELSIF error == "flag_update_denied" %]
     [% title = "Flag Modification Denied" %]
     [% admindocslinks = {'flags-overview.html#flags-admin'  => 'Administering Flags',
@@ -659,9 +682,10 @@
 
   [% ELSIF error == "group_cannot_delete" %]
     [% title = "Cannot Delete Group" %]
-    The <em>[% name FILTER html %]</em> group cannot be deleted because
+    The <em>[% group.name FILTER html %]</em> group cannot be deleted because
     there are
-    <a href="editgroups.cgi?action=del&amp;group=[% gid FILTER url_quote %]">records</a>
+    <a href="editgroups.cgi?action=del&amp;group=
+             [%- group.id FILTER url_quote %]">records</a>
     in the database which refer to it. All references to this group must
     be removed before you can remove it.
 
@@ -877,8 +901,7 @@
     [% title = "Invalid Content-Type" %]
     The content type <em>[% contenttype FILTER html %]</em> is invalid.
     Valid types must be of the form <em>foo/bar</em> where <em>foo</em>
-    is either <em>application, audio, image, message, model, multipart,
-    text,</em> or <em>video</em>.
+    is one of <em>[% constants.LEGAL_CONTENT_TYPES.join(', ') FILTER html %]</em>.
     
   [% ELSIF error == "invalid_context" %]
     [% title = "Invalid Context" %]
@@ -950,6 +973,19 @@
   [% ELSIF error == "invalid_username_or_password" %]
     [% title = "Invalid Username Or Password" %]
     The username or password you entered is not valid.
+    [%# People get two login attempts before being warned about
+      # being locked out.
+      #%]
+    [% IF remaining <=  2 %]
+      If you do not enter the correct password after 
+      [%+ remaining FILTER html %] more attempt(s), you will be
+      locked out of this account for 
+      [%+ constants.LOGIN_LOCKOUT_INTERVAL FILTER html %] minutes.
+    [% END %]
+
+  [% ELSIF error == "json_rpc_post_only" %]
+    For security reasons, you may only use JSON-RPC with the POST
+    HTTP method.
 
   [% ELSIF error == "keyword_already_exists" %]
     [% title = "Keyword Already Exists" %]
@@ -980,6 +1016,15 @@
     [% title = "Login Name Required" %]
     You can't use %user% without being logged in, because %user% refers
     to your login name, which we don't know.
+
+  [% ELSIF error == "migrate_config_created" %]
+    The file <kbd>[% file FILTER html %]</kbd> contains configuration
+    variables that must be set before continuing with the migration.
+
+  [% ELSIF error == "migrate_from_invalid" %]
+    '[% from FILTER html %]' is not a valid type of [% terms.bug %]-tracker
+    to migrate from. See the contents of the <kbd>B[% %]ugzilla/Migrate/</kbd>
+    directory for a list of valid [% terms.bug %]-trackers.
 
   [% ELSIF error == "milestone_already_exists" %]
     [% title = "Milestone Already Exists" %]
@@ -1160,31 +1205,6 @@
     [% title = "No Tag Selected" %]
     You didn't select a tag from which to remove [% terms.bugs %].
 
-  [% ELSIF error == "no_dupe_stats" %]
-    [% title = "Cannot Find Duplicate Statistics" %]
-    [% admindocslinks = {'extraconfig.html' => 'Setting up the collecstats.pl job'} %]
-    There are no duplicate statistics for today ([% today FILTER html %]) 
-    or yesterday.
-
-  [% ELSIF error == "no_dupe_stats_error_today" %]
-    [% title = "Error Reading Today's Dupes File" %]
-    [% admindocslinks = {'extraconfig.html' => 'Setting up the collecstats.pl job'} %]
-    An error occurred opening today's dupes file: [% error_msg FILTER html %].
-
-  [% ELSIF error == "no_dupe_stats_error_whenever" %]
-    [% title = "Error Reading Previous Dupes File" %]
-    [% admindocslinks = {'extraconfig.html' => 'Setting up the collecstats.pl job'} %]
-    An error occurred opening [% changedsince FILTER html %] days ago
-    ([% whenever FILTER html %])'s dupes file:
-    [% error_msg FILTER html %].
-
-  [% ELSIF error == "no_dupe_stats_error_yesterday" %]
-    [% title = "Error Reading Yesterday's Dupes File" %]
-    [% admindocslinks = {'extraconfig.html' => 'Setting up the collecstats.pl job'} %]
-    There are no duplicate statistics for today ([% today FILTER html %]), 
-    and an error
-    occurred opening yesterday's dupes file: [% error_msg FILTER html %].
-
   [% ELSIF error == "no_initial_bug_status" %]
     [% title = "No Initial $terms.Bug Status" %]
     No [% terms.bug %] status is available on [% terms.bug %] creation.
@@ -1268,11 +1288,6 @@
     [% title = "Passwords Don't Match" %]
     The two passwords you entered did not match.
 
-  [% ELSIF error == "password_too_long" %]
-    [% title = "Password Too Long" %]
-    The password must be no more than
-    [%+ constants.USER_PASSWORD_MAX_LENGTH FILTER html %] characters long.
-
   [% ELSIF error == "password_too_short" %]
     [% title = "Password Too Short" %]
     The password must be at least
@@ -1313,7 +1328,7 @@
     </em> field, which should contain a non-negative number.
 
   [% ELSIF error == "product_name_already_in_use" %]
-    [% title = "Product name already in use" %]
+    [% title = "Product name already exists" %]
     [% admindocslinks = {'products.html' => 'Administering products'} %]
     The product name '[% product FILTER html %]' already exists.
   
@@ -1405,18 +1420,20 @@
     characters long.
 
   [% ELSIF error == "quicksearch_unknown_field" %]
-    [% title = "Unknown QuickSearch Field" %]
-    [% IF fields.unique.size == 1 %]
-      Field <code>[% fields.first FILTER html %]</code> is not a known field.
-    [% ELSE %]
-      Fields
-      [% FOREACH field = fields.unique.sort %]
-         <code>[% field FILTER html %]</code>
-         [% ', ' UNLESS loop.last() %]
-      [% END %]
-      are not known fields.
+    [% title = "QuickSearch Error" %]
+    There is a problem with your search:
+    [% FOREACH field = unknown %]
+      <p><code>[% field FILTER html %]</code> is not a valid field name.</p>
     [% END %]
-    The legal field names are <a href="page.cgi?id=quicksearchhack.html">listed here</a>.
+    [% FOREACH field = ambiguous.keys %]
+      <p><code>[% field FILTER html %]</code> matches more than one field:
+        [%+ ambiguous.${field}.join(', ') FILTER html %]</p>
+    [% END %]
+
+    [% IF unknown.size %]
+      <p>The legal field names are
+        <a href="page.cgi?id=quicksearchhack.html">listed here</a>.</p>
+    [% END %]
 
   [% ELSIF error == "reassign_to_empty" %]
     [% title = "Illegal Reassignment" %]
@@ -1575,10 +1592,6 @@
     version! You must reassign those [% terms.bugs %] to another version
     before you can delete this one.
 
-  [% ELSIF error == "version_not_specified" %]
-    [% title = "No Version Specified" %]
-    No version specified when trying to edit versions.
-
   [% ELSIF error == "users_deletion_disabled" %]
     [% title = "Deletion not activated" %]
     [% admindocslinks = {'useradmin.html' => 'User administration'} %]
@@ -1614,6 +1627,12 @@
     [% title = "Match Failed" %]
     <tt>[% name FILTER html %]</tt> does not exist or you are not allowed 
     to see that user.
+
+  [% ELSIF error == "user_match_too_many" %]
+    [% title = "No Conclusive Match" %]
+    [% terms.Bugzilla %] cannot make a conclusive match for one or more
+    of the names and/or email addresses you entered for
+    the [% fields.join(', ') FILTER html %] field(s).
 
   [% ELSIF error == "user_not_insider" %]
     [% title = "User Not In Insidergroup" %]
@@ -1730,7 +1749,9 @@
 [% PROCESS global/footer.html.tmpl %]
 
 [% BLOCK object_name %]
-  [% IF class == "Bugzilla::User" %]
+  [% IF class == "Bugzilla::Attachment" %]
+    attachment
+  [% ELSIF class == "Bugzilla::User" %]
     user
   [% ELSIF class == "Bugzilla::Component" %]
     component
@@ -1740,8 +1761,18 @@
     milestone
   [% ELSIF class == "Bugzilla::Status" %]
     status
+  [% ELSIF class == "Bugzilla::Flag" %]
+    flag
+  [% ELSIF class == "Bugzilla::FlagType" %]
+    flagtype
   [% ELSIF class == "Bugzilla::Field" %]
     field
+  [% ELSIF class == "Bugzilla::Group" %]
+    group
+  [% ELSIF class == "Bugzilla::Product" %]
+    product
+  [% ELSIF class == "Bugzilla::Search::Saved" %]
+    saved search
   [% ELSIF ( matches = class.match('^Bugzilla::Field::Choice::(.+)') ) %]
     [% SET field_name = matches.0 %]
     [% field_descs.$field_name FILTER html %]

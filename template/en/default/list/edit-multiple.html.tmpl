@@ -28,12 +28,15 @@
 <input type="hidden" name="token" value="[% token FILTER html %]">
 
 <script type="text/javascript">
-  var numelements = document.forms.changeform.elements.length;
   function SetCheckboxes(value) {
-      var item;
-      for (var i=0 ; i<numelements ; i++) {
-          item = document.forms.changeform.elements[i];
-          item.checked = value;
+      var elements = document.forms.changeform.getElementsByTagName('input'),
+          numelements = elements.length,
+          item, i;
+      for (i = 0; i < numelements; i++) {
+          item = elements[i];
+          if (item.type === 'checkbox' && item.name.match(/^id_/)) {
+            item.checked = value;
+          }
       }
   }
   document.write(' <input type="button" name="uncheck_all" value="Uncheck All" onclick="SetCheckboxes(false);">');
@@ -137,7 +140,7 @@
     <th><label for="bug_status">Status:</label></th>
     <td colspan="3">[% PROCESS status_section %]</td>
   </tr>
-  [% IF user.in_group(Param("timetrackinggroup")) %]
+  [% IF user.is_timetracker %]
     <tr>
       <th><label for="estimated_time">Estimated Hours:</label></th>
       <td>
@@ -290,7 +293,10 @@
   <input type="checkbox" name="commentprivacy" value="1"
          id="newcommentprivacy"
          onClick="updateCommentTagControl(this, form)"/>
-  <label for="newcommentprivacy">Private</label>
+   <label for="newcommentprivacy">
+     Make comment private (visible only to members of the
+     <strong>[% Param('insidergroup') FILTER html %]</strong> group)
+   </label>
 [% END %]
 <br>
 [% INCLUDE global/textarea.html.tmpl
@@ -300,6 +306,8 @@
   maxrows = 25
   cols    = constants.COMMENT_COLS
 %]<br>
+
+[% Hook.process('before_groups') %]
 
 [% IF groups.size > 0 %]
 
@@ -362,7 +370,7 @@
     </option>
     [% FOREACH menuitem = menuitems %]
       [% IF property %][% menuitem = menuitem.$property %][% END %]
-      <option value="[% menuitem FILTER html %]">[% menuitem FILTER html %]</option>
+      <option value="[% menuitem FILTER html %]">[% display_value(menuname, menuitem) FILTER html %]</option>
     [% END %]
   </select>
 [% END %]
@@ -381,7 +389,7 @@
   
     [% FOREACH bug_status = new_bug_statuses %]
       <option value="[% bug_status.name FILTER html %]">
-        [% get_status(bug_status.name) FILTER html %]
+        [% display_value("bug_status", bug_status.name) FILTER html %]
       </option>
       [% IF !bug_status.is_open %]
         [% filtered_status =  bug_status.name FILTER js %]
@@ -402,7 +410,7 @@
     [% FOREACH r = resolutions %]
       [% NEXT IF !r %]
       [% NEXT IF r == "DUPLICATE" || r == "MOVED" %]
-      <option value="[% r FILTER html %]">[% get_resolution(r) FILTER html %]</option>
+      <option value="[% r FILTER html %]">[% display_value("resolution", r) FILTER html %]</option>
     [% END %]
   </select>
   </span>

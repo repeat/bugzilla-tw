@@ -20,7 +20,7 @@
 
 [% PROCESS global/variables.none.tmpl %]
 [% filtered_summary = bugsummary FILTER html %]
-[% header = BLOCK %]瀏覽 [%+ "$terms.Bug $bug.bug_id" FILTER bug_link(bug.bug_id) FILTER none %] 的所有附件[% END %]
+[% header = BLOCK %]瀏覽 [%+ "$terms.Bug $bug.id" FILTER bug_link(bug) FILTER none %] 的所有附件[% END %]
 
 [% title = BLOCK %]
   瀏覽 [% terms.Bug %] [%+ bug.bug_id FILTER html %] 的所有附件
@@ -30,6 +30,7 @@
   title = title
   header = header
   subheader = filtered_summary
+  style_urls = ['skins/standard/create_attachment.css']
 %]
 
 <br>

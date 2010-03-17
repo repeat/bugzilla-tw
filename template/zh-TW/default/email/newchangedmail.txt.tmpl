@@ -20,7 +20,7 @@
 
 [% PROCESS "global/variables.none.tmpl" %]
 From: [% Param('mailfrom') %]
-To: [% to %]
+To: [% to_user.email %]
 Subject: [[% terms.Bug %] [%+ bugid %]] [% IF isnew %]新增[% ELSE %]變更[% END %]：[%+ summary %]
 X-Bugzilla-Reason: [% reasonsheader %]
 X-Bugzilla-Type: [% isnew ? 'new' : 'changed' %]
@@ -50,7 +50,7 @@ X-Bugzilla-Changed-Fields: [% changedfields %]
 [%- IF comment.count %]
 --- [% comment.time FILTER time(undef, to_user.timezone) %] [%+ comment.author.identity %] 的意見 #[% comment.count %] ---
 [% END %]
-[%+ FILTER remove('^X') %][% PROCESS bug/format_comment.txt.tmpl %][% END %]
+[%+ comment.body_full({ is_bugmail => 1, wrap => 1 }) %]
 [% END %]
 
 -- [%# Protect the trailing space of the signature marker %]

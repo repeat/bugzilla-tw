@@ -46,6 +46,14 @@
   [% ELSIF error == "attachment_already_obsolete" %]
     附件 #[% attach_id FILTER html %] ([% description FILTER html %])已被廢棄。
 
+  [% ELSIF error == "attachment_local_storage_disabled" %]
+    [% title = "儲存附件功能已停用" %]
+    你無法將附件儲存於伺服器端。此功能已被停用。
+
+  [% ELSIF error == "attachment_url_disabled" %]
+    [% title = "附加網址功能已停用" %]
+    你無法附加網址。此功能已被停用。
+
   [% ELSIF error == "auth_invalid_email" %]
     [% title = "無效的電子郵件地址" %]
     在試圖建立或更新你的帳號的時候，我們收到了一個無法通過電子郵件語法檢查的地址
@@ -90,10 +98,6 @@
   [% ELSIF error == "chart_file_open_fail" %]
     無法開啟圖表檔案 <tt>[% filename FILTER html %]</tt> 。
 
-  [% ELSIF error == "chart_lines_not_installed" %]
-    [% admindocslinks = {'installation.html#install-perlmodules' => '圖表功能需安裝 Perl 模組'} %]
-    在 Chart::Lines 此 Perl 模組安裝前，圖表功能無法使用。執行 checksetup.pl 以獲得安裝指引。
-
   [% ELSIF error == "column_not_null_without_default" %]
     新增欄位 [% name FILTER html %] 失敗：
     <br>除非你在參數 <code>$init_value</code> 中做設定，否則你不能在現有的表格中加入沒有預設值的 NOT NULL 欄位。
@@ -105,6 +109,23 @@
   [% ELSIF error == "comma_operator_deprecated" %]
     [% title = "SQL 查詢發生內部錯誤" %]
     在建立內含 JOIN 的查詢時，SQL 查詢發生內部錯誤。
+
+  [% ELSIF error == "comment_extra_data_not_allowed" %]
+    你嘗試將 <code>extra_data</code> 欄位設定為
+    '[% extra_data FILTER html %]' ，但是類別 [% type FILTER html %]
+    的意見不允許 <code>extra_data</code> 此參數。
+
+  [% ELSIF error == "comment_extra_data_required" %]
+    類別 [% type FILTER html %] 的意見需要設定
+    <code>extra_data</code> 此參數。
+
+  [% ELSIF error == "comment_extra_data_not_numeric" %]
+    你嘗試將 <code>extra_data</code> 欄位設定為
+    '[% extra_data FILTER html %]' ，但是類別 [% type FILTER html %]
+    的意見需要設定數字的 <code>extra_data</code> 參數。
+
+  [% ELSIF error == "comment_type_invalid" %]
+    '[% type FILTER html %]' is not a valid comment type.
 
   [% ELSIF error == "cookies_need_value" %]
     每個 cookie 都必須要有一個數值。
@@ -120,12 +141,41 @@
       你必須設定 "auth_env_email" 參數到包含使用者的電子郵件地址的該環境變數名稱中。
     [% END %]
 
-  [% ELSIF error == "extension_invalid" %]
-    在擴充套件 [% extension FILTER html %] 執行 [% name FILTER html %] 時發生錯誤： [% errstr FILTER html %]
+  [% ELSIF error == "extension_must_be_subclass" %]
+    來自 <code>[% filename FILTER html %]</code> 的 <code>[% package FILTER html %]</code>
+    並不是 <code>[% class FILTER html %]</code> 的 subclass 。
+
+  [% ELSIF error == "extension_must_return_name" %]
+    <code>[% extension FILTER html %]</code> 回傳了
+    <code>[% returned FILTER html %]</code> ，但這不是個有效的附加元件名稱。
+    附加元件必須要回傳它們的名稱，而不是 <code>1</code> 或數字。
+    詳情請參閱
+    <a href="[% docs_urlbase FILTER html %]api/Bugzilla/Extension.html">Bugzilla::Extension</a> 。
+
+  [% ELSIF error == "extension_no_name" %]
+    並未在（自 <code>[% filename FILTER html %]</code> 載入的）
+    <code>[% package FILTER html %]</code> 中找到
+    <code>NAME</code> method 。
+    這代表附加元件至少有以下其中一項問題：
+
+    <ul>
+      <li><code>[% filename FILTER html %]</code> 並未定義
+        <code>[% package FILTER html %]</code> package 。</li>
+      <li><code>[% package FILTER html %]</code> 並未定義
+        <code>NAME</code> method （或是 <code>NAME</code> method
+        回傳的是空字串）。</li>
+    </ul>
 
   [% ELSIF error == "extern_id_conflict" %]
     在資料庫中， '[% username FILTER html %]' 對應到外部編號
     '[% extern_id FILTER html %]' ，但是你的帳號來源說 '[% extern_user FILTER html %]' 擁有該外部編號。
+
+  [% ELSIF error == "feature_disabled" %]
+    這台機器上的 [% terms.Bugzilla %] 並不允許 [% install_string("feature_$feature") FILTER html %] 這項功能。
+    [% IF user.in_group('admin') %]
+      如果你想要啟用此項功能，請執行
+      <kbd>checksetup.pl</kbd> 以確認啟用此功能所必須要的最低需求。
+    [% END %]
 
   [% ELSIF error == "field_choice_must_use_type" %]
     當你在 <code>Bugzilla::Field::Choice</code> 呼叫一個 class method
@@ -133,12 +183,16 @@
     來產生正確的 class ，而無法直接透過 <code>Bugzilla::Field::Choice</code>
     呼叫 class method 。
 
-  [% ELSIF error == "field_type_mismatch" %]
-    無法同時處理 <code>[% field FILTER html %]</code> 以及 <code>[% type FILTER html %]</code> 。
-
   [% ELSIF error == "field_not_custom" %]
     '[% field.description FILTER html %]' ([% field.name FILTER html %])
     並非自訂欄位。
+
+  [% ELSIF error == "field_type_mismatch" %]
+    無法同時處理 <code>[% field FILTER html %]</code> 以及 <code>[% type FILTER html %]</code> 。
+
+  [% ELSIF error == "field_type_not_specified" %]
+    [% title = "未指定欄位種類" %]
+    在新增自訂欄位時，你必須指定欄位的種類。
 
   [% ELSIF error == "flag_requestee_disabled" %]
     [% title = "無法要求特定的人設定旗標" %]
@@ -160,17 +214,10 @@
   [% ELSIF error == "flag_type_target_type_invalid" %]
     目標種類既非 <em>[% terms.bug %]</em> ，也不是<em>附件</em>，而是 <em>[% target_type FILTER html %]</em> 。
 
-  [% ELSIF error == "flags_not_available" %]
-    [% title = "不允許編輯旗標" %]
-    [% IF type == "b" %]
-      當一次變更數個 [% terms.bugs %] 時，無法設定或變更旗標。
-    [% ELSE %]
-      在建立新附件時，參照已存在的旗標是無效的。
-    [% END %]
-
-  [% ELSIF error == "gd_not_installed" %]
-    [% admindocslinks = {'installation.html#install-perlmodules' => '圖表功能必須安裝 Perl 模組'} %]
-    在 GD Perl 模組安裝前，圖表功能無法使用。執行 checksetup.pl 以瞭解如何安裝。
+  [% ELSIF error == "flag_unexpected_object" %]
+    [% title = "無法被辨認的物件" %]
+    無法對種類是 [% caller FILTER html %] 的物件設定旗標。
+    旗標僅能設定於 [% terms.bugs %] 和附件上。
 
   [% ELSIF error == "illegal_content_type_method" %]
     送出的表單因故損壞。標明如何決定內容類別的欄位
@@ -188,16 +235,6 @@
   [% ELSIF error == "invalid_attach_id_to_obsolete" %]
     你想要廢棄的附件編號其中之一（[% attach_id FILTER html %]）無效。
 
-  [% ELSIF error == "invalid_column_name_cookie" %]
-    [% title = "無效的欄位名稱" %]
-     在你的 cookie 中所指定的自訂排序順序含有無效的欄位名稱
-     <em>[% fragment FILTER html %]</em>。
-     Cookie 已被清除。
-
-  [% ELSIF error == "invalid_column_name_form" %]
-    [% title = "無效的欄位名稱" %]
-     你所送出的自訂排序中，含有無效的欄位名稱 <em>[% fragment FILTER html %]</em> 。
-
   [% ELSIF error == "invalid_customfield_type" %]
     [% title = "無效的欄位種類" %]
     <em>[% type FILTER html %]</em> 並非有效的欄位種類。
@@ -205,6 +242,12 @@
   [% ELSIF error == "invalid_dimensions" %]
     [% title = "無效的維度" %]
     所指定的寬度或高度並非正整數。
+
+[% ELSIF error == "invalid_feature" %]
+    [% title = "無效的功能名稱" %]
+    [% feature FILTER html %] 並非有效的功能名稱。請參考
+    <code>Bugzilla::Install::Requirements</code> 的
+    <code>OPTIONAL_MODULES</code> 來尋找有效的名稱。
 
   [% ELSIF error == "invalid_flag_association" %]
     [% title = "無效的旗標關連" %]
@@ -248,10 +291,6 @@
     在 job 排程中插入 <code>[% job FILTER html %]</code> 時，出現下列錯誤訊息：
     [% errmsg FILTER html %]
 
-  [% ELSIF error == "jobqueue_not_configured" %]
-    使用 job 排程系統必須安裝特定的 Perl 模組。請執行
-    <code>checksetup.pl</code> 檢查你少安裝了什麼。
-
   [% ELSIF error == "jobqueue_no_job_mapping" %]
     <code>Bugzilla::JobQueue</code> 並未被指派來處理
     "[% job FILTER html %]" 。你必須在
@@ -272,7 +311,11 @@
 
   [% ELSIF error == "ldap_search_error" %]
     在 LDAP 嘗試搜尋 &quot;[% username FILTER html %]&quot; 時，出現錯誤：
-   <code>[% errstr FILTER html %]</code>
+    [% IF errstr %]
+      <code>[% errstr FILTER html %]</code>
+    [% ELSE %]
+      在 LDAP 中找不到使用者
+    [% END %]
 
   [% ELSIF error == "ldap_server_not_defined" %]
     LDAP 伺服器的認證未被定義。
@@ -303,11 +346,11 @@
     需要輸入有效的智語編號。
 
   [% ELSIF error == "no_manual_moved" %]
-    你不能將一個 [% terms.bug %] 的解決方案設定為已搬移 (MOVED) ，但不搬移它。
+    你不能將一個 [% terms.bug %] 的解決方案設定為 [% display_value("resolution", "MOVED") FILTER html %] ，但不搬移它。
 
   [% ELSIF error == "no_open_bug_status" %]
     [% title = "$terms.Bug 無法被確認" %]
-    沒有有效的方式可以讓狀態為[% get_status("UNCONFIRMED") FILTER html %]的
+    沒有有效的方式可以讓狀態為 [%+ display_value("bug_status", "UNCONFIRMED") FILTER html %] 的
     [%+ terms.bug %] 成為開啟的狀態。
 
   [% ELSIF error == "not_in_transaction" %]
@@ -320,8 +363,8 @@
 
   [% ELSIF error == "param_must_be_numeric" %]
     [% title = "無效的參數。" %]
-    對 [% function FILTER html %] 設定了無效的參數。
-    必須是數字。
+    對 <code>[% function FILTER html %]</code> 設定了無效的參數
+    <code>[% param FILTER html %]</code> ：必須是數字。
 
   [% ELSIF error == "param_required" %]
     [% title = "未輸入參數" %]
@@ -375,11 +418,6 @@
 
   [% ELSIF error == "setting_value_invalid" %]
     所設定的數值 "<code>[% value FILTER html %]</code>" 並不在設定 <em>[% name FILTER html %]</em> 的有效數值清單中。
-
-  [% ELSIF error == "soap_not_installed" %]
-    [% admindocslinks = {'installation.html#install-perlmodules' => '安裝Perl模組'} %]
-    未安裝 SOAP::Lite Perl 模組時， XMLRPC 介面無法使用。
-    執行 checksetup.pl 以瞭解如何安裝。
 
   [% ELSIF error == "token_generation_error" %]
     Token 產生系統發生嚴重錯誤。

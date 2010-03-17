@@ -117,6 +117,16 @@
     </td>
   </tr>
 
+  <tr>
+    <td valign="top" align="right">
+      即使搜尋結果沒有任何 [% terms.bugs %] ，仍然送出訊息：
+    </td>
+    <td colspan="2">
+      <input type="checkbox" name="event_[% event.key %]_mailifnobugs"
+        [%- IF event.value.mailifnobugs == 1 %] checked [% END %]>
+    </td>
+  </tr>
+
   [% IF event.value.schedule.size == 0 %]
 
     <tr>

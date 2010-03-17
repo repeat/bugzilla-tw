@@ -34,30 +34,34 @@
 [% END %]
 
 <div class="navigation">
-[% IF bug_list && bug_list.size > 0 %]
-  [% this_bug_idx = lsearch(bug_list, bug.bug_id) %]
+[% IF last_bug_list.size > 0 %]
+  [% this_bug_idx = lsearch(last_bug_list, bug.id) %]
   <b>[% terms.Bug %] 清單：</b>
   [% IF this_bug_idx != -1 %]
-    ([% bug_list.size %] 個中的第 [% this_bug_idx + 1 %] 個)
+    ([% last_bug_list.size %] 個中的第 [% this_bug_idx + 1 %] 個)
   [% END %]
 
-[% IF this_bug_idx != -1 %]
-  <a href="show_bug.cgi?id=[% bug_list.first %]">第一個</a>
-  <a href="show_bug.cgi?id=[% bug_list.last %]">最後一個</a>
-[% END %]
+  [% IF this_bug_idx != -1 %]
+    <a href="show_bug.cgi?id=
+             [%- last_bug_list.first FILTER url_quote %]">第一個</a>
+    <a href="show_bug.cgi?id=
+             [%- last_bug_list.last FILTER url_quote %]">最後一個</a>
+  [% END %]
 
   [% IF bug.bug_id %]
     [% IF this_bug_idx != -1 %]
       [% IF this_bug_idx > 0 %]
         [% prev_bug = this_bug_idx - 1 %]
-        <a href="show_bug.cgi?id=[% bug_list.$prev_bug %]">前一個</a>
+        <a href="show_bug.cgi?id=
+                 [%- last_bug_list.$prev_bug FILTER url_quote %]">前一個</a>
       [% ELSE %]
         <i><font color="#777777">前一個</font></i>
       [% END %]
 
-      [% IF this_bug_idx + 1 < bug_list.size %]
+      [% IF this_bug_idx + 1 < last_bug_list.size %]
         [% next_bug = this_bug_idx + 1 %]
-        <a href="show_bug.cgi?id=[% bug_list.$next_bug %]">下一個</a>
+        <a href="show_bug.cgi?id=
+                 [%- last_bug_list.$next_bug FILTER url_quote %]">下一個</a>
       [% ELSE %]
         <i><font color="#777777">下一個</font></i>
       [% END %]
@@ -70,7 +74,6 @@
 
   &nbsp;&nbsp;<a href="buglist.cgi?regetlastlist=1">顯示上次的搜尋結果</a>
 [% ELSE %]
-  [%# Either !bug_list || bug_list.size <= 0 %]
   [%# With no list, don't show link to search results %]
   <i><font color="#777777">第一個</font></i>
   <i><font color="#777777">最後一個</font></i>

@@ -31,13 +31,9 @@
 
 [% message = BLOCK %]
   [% IF    message_tag == "account_created" %]
-    [% title = "已建立使用者 $otheruser.login" %]
-    已成功建立新的帳號 [% otheruser.login FILTER html %] 。
+    已成功建立帳號 [% otheruser.login FILTER html %] 。
     [% IF groups.size %]
       若要編輯群組設定，使用以下的表單。
-    [% END %]
-    [% IF login_info %]
-      你現在可以到<a href="index.cgi">登入</a>頁面，進入 [% terms.Bugzilla %] 。
     [% END %]
 
   [% ELSIF message_tag == "account_creation_canceled" %]
@@ -266,6 +262,11 @@
     [%+ new_email FILTER html %] 的要求。<br>
     已回復原有帳號的設定。
 
+  [% ELSIF message_tag == "extension_created" %]
+    已在 [% path FILTER html %] 新增名為 [% name FILTER html %] 的附加元件。
+    請確認你已在程式中將 "YOUR NAME" 和 "YOUR EMAL ADDRESS" 更換成
+    你的姓名和電子郵件地址。
+
   [% ELSIF message_tag == "field_value_created" %]
     [% title = "已建立新的欄位值" %]
     已將 <em>[% value.name FILTER html %]</em> 新增為欄位
@@ -334,10 +335,10 @@
     [% field_descs.$field_name FILTER html %]
 
   [% ELSIF message_tag == "get_resolution" %]
-    [% get_resolution(resolution) FILTER html %]
+    [% display_value("resolution", resolution) FILTER html %]
 
   [% ELSIF message_tag == "get_status" %]
-    [% get_status(status) FILTER html %]
+    [% display_value("bug_status", status) FILTER html %]
 
   [% ELSIF message_tag == "group_created" %]
     [% title = "已建立新群組" %]
@@ -423,6 +424,11 @@
       並未對群組 '[% group.name FILTER html %]' 做任何變更。
     [% END %]
 
+  [% ELSIF message_tag == "invalid_column_name" %]
+    所指定的自訂排序包含無效的欄位名稱：
+    <em>[% invalid_fragments.join(', ') FILTER html %]</em> 。
+    已從排序列表中移除這些無效的欄位名稱。
+
   [% ELSIF message_tag == "job_queue_depth" %]
     排程中有 [% count FILTER html %] 個 job 。
 
@@ -467,6 +473,44 @@
   [% ELSIF message_tag == "login_changed" %]
     [% title = "$terms.Bugzilla 帳號已變更" %]
     你的 [% terms.Bugzilla %] 帳號已變更。
+
+  [% ELSIF message_tag == "migrate_component_created" %]
+    已建立子產品： [% comp.name FILTER html %]
+    (產品是 [% product.name FILTER html %])
+
+  [% ELSIF message_tag == "migrate_creating_bugs" %]
+    新增 [% terms.bugs %] 中…
+
+  [% ELSIF message_tag == "migrate_field_created" %]
+    新的自訂欄位： [% field.description FILTER html %]
+    ([% field.name FILTER html %])
+
+  [% ELSIF message_tag == "migrate_product_created" %]
+    已建立產品： [% created.name FILTER html %]
+
+  [% ELSIF message_tag == "migrate_reading_bugs" %]
+    讀取 [% terms.bugs %] 中…
+
+  [% ELSIF message_tag == "migrate_reading_products" %]
+    讀取產品中…
+
+  [% ELSIF message_tag == "migrate_reading_users" %]
+    讀取使用者中…
+
+  [% ELSIF message_tag == "migrate_translating_bugs" %]
+    將 [% terms.bug %] 的數值轉換為適合
+    [%+ terms.Bugzilla %] 中…
+
+  [% ELSIF message_tag == "migrate_user_created" %]
+    已建立使用者： [% created.email FILTER html %]
+    [% IF password %] 密碼： [% password FILTER html %][% END %]
+
+  [% ELSIF message_tag == "migrate_value_created" %]
+    [% IF product.defined %]
+      [% product.name FILTER html %]
+    [% END %]
+    已建立 [%+ field_descs.${field.name} FILTER html %] 的數值：
+    [% value FILTER html %]
 
   [% ELSIF message_tag == "milestone_created" %]
     [% title = "已建立里程碑" %]
@@ -705,9 +749,12 @@
       [%+ series.name FILTER html %]</em> 。
       注意：在此一系列有足夠的資料可以產生圖表之前，你需要等
       [%+ series.frequency * 2 %] 天左右。
-      <br><br>
-      回到上一頁，或者
-      <a href="query.cgi?format=create-series">建立另一個系列</a>。
+
+  [% ELSIF message_tag == "series_deleted" %]
+    [% title = "系列已刪除" %]
+    已刪除 <em>[% series.category FILTER html %] /
+      [%+ series.subcategory FILTER html %] /
+      [%+ series.name FILTER html %]</em> 。
 
   [% ELSIF message_tag == "shutdown" %]
     [% title = "$terms.Bugzilla 已關閉" %]
@@ -742,19 +789,30 @@
 
   [% ELSIF message_tag == "version_updated" %]
     [% title = "已更新版本" %]
-    已將版本更名為 <em>[% version.name FILTER html %]</em> 。
+    [% IF changes.size %]
+      [% IF changes.value.defined %]
+        已將版本更名為 <em>[% version.name FILTER html %]</em> 。
+      [% END %]
+    [% ELSE %]
+      並未對版本 <em>[% version.name FILTER html %]</em> 做出變更。
+    [% END %]
 
   [% ELSIF message_tag == "workflow_updated" %]
     工作流程已更新。
 
-  [% ELSE %]
-    [%# Give sensible error if error functions are used incorrectly.
-      #%]
+  [% END %]
+[% END %]
+
+[% IF !message %]
+  [% message = Hook.process('messages') %]
+[% END %]
+
+[%# Give sensible error if the message function is used incorrectly. #%]
+[% IF !message %]
+  [% message = BLOCK %]
     你不正確的使用 [% terms.Bugzilla %] 的訊息功能。你輸入了字串 '[% cancelaction %]' 。正確的用法是輸入一個標籤，並且在
     messages.html.tmpl 檔案中定義該標籤。<br>
     <br>
     如果你是一個 [% terms.Bugzilla %] 的使用者，但卻看到此一訊息時，請將它轉寄給 [% Param('maintainer') %] 。
-
-
   [% END %]
 [% END %]

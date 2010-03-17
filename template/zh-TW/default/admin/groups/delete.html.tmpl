@@ -19,18 +19,14 @@
   #                 Joel Peshkin <bugreport@peshkin.net>
   #                 Jacob Steenhagen <jake@bugzilla.org>
   #                 Vlad Dascalu <jocuri@softhome.net>
+  #                 Max Kanat-Alexander <mkanat@bugzilla.org>
   #%]
 
 [%# INTERFACE:
-  # gid: number. The group ID.
-  # name: string. The name of the group.
-  # description: string. The description of the group.
-  # hasusers: boolean int. True if the group includes users in it.
-  # hasbugs: boolean int. True if the group includes bugs in it.
-  # hasproduct: boolean int. True if the group is binded to a product.
-  # hasflags: boolean int. True if the group is used by a flag type.
-  # shared_queries: int. Number of saved searches being shared with this group.
-  # buglist: string. The list of bugs included in this group.
+  # group: A Bugzilla::Group object representing the group that is
+  #        about to be deleted.
+  # shared_queries: int; The number of queries being shared with this
+  #                 group.
   #%]
 
 
@@ -46,45 +42,90 @@
     <th>描述</th>
   </tr>
   <tr>
-    <td>[% gid FILTER html %]</td>
-    <td>[% name FILTER html %]</td>
-    <td>[% description FILTER html_light %]</td>
+    <td>[% group.id FILTER html %]</td>
+    <td>[% group.name FILTER html %]</td>
+    <td>[% group.description FILTER html_light %]</td>
   </tr>
 </table>
 
 <form method="post" action="editgroups.cgi">
-  [% IF hasusers %]
-    <p><b>還有至少一位使用者屬於此群組。<br>
-       你無法在群組中還有使用者時刪除它。</b>
+  [% IF group.members_non_inherited.size %]
+    <p><b>[% group.members_non_inherited.size FILTER html %]
+      位使用者直屬於此群組。你無法在群組中還有使用者時刪除它。</b>
 
-    <br><a href="editusers.cgi?action=list&groupid=[% gid FILTER html %]&grouprestrict=1">顯示有哪些使用者</a>
-    - <input type="checkbox" name="removeusers">刪除此群組中的所有使用者。</p>
+    <br><a href="editusers.cgi?action=list&amp;groupid=
+                 [%- group.id FILTER url_quote %]&amp;grouprestrict=1">顯示有哪些使用者</a>
+    - <label><input type="checkbox" name="removeusers">刪除此群組中的所有使用者。</label></p>
   [% END %]
 
-  [% IF hasbugs %]
-    <p><b>還有至少一個 [% terms.bug %] 回報屬於只有此群組可瀏覽。<br>
-       你無法在群組中還有[% terms.bugs %]時刪除它。</b>
+  [% IF group.bugs.size %]
+    <p><b>[% group.bugs.size FILTER html %] 個 [% terms.bug %] 回報屬於只有此群組可瀏覽。
+     你無法在群組中還有[% terms.bugs %]時刪除它。</b>
 
-    <br><a href="buglist.cgi?bug_id=[% buglist FILTER html %]">顯示有哪些 [% terms.bugs %]</a>
-    - <input type="checkbox" name="removebugs">刪除此群組中所有的[% terms.bugs %]限制。</p>
+    <br><a href="buglist.cgi?field0-0-0=bug_group&amp;type0-0-0=equals&amp;value0-0-0=
+                 [%- group.name FILTER url_quote %]">顯示有哪些 [% terms.bugs %]</a>
+    - <label><input type="checkbox" name="removebugs">刪除此群組中所有的[% terms.bugs %]限制。</label><p>
 
     <p><b>注意：</b>這可能會使不公開的[% terms.bugs %]變為公開。<br>
        <b>強烈</b>建議在勾選前，先瀏覽在此群組中的[% terms.bugs %]。</p>
   [% END %]
 
-  [% IF hasproduct %]
-    <p><b>此群組和產品 <u>[% name FILTER html %]</u> 仍有關係。<br>
-       當群組和產品仍有關係時，你無法刪除它。</b>
+  [% IF group.products.size %]
+    <p><b>此群組和以下產品仍有關係：</b></p>
+    [% SET any_hidden = 0 %]
+    <ul>
+      [% FOREACH data = group.products %]
 
-    <br><input type="checkbox" name="unbind">刪除此群組，並將產品 <U>[% name FILTER html %]</U> 變更為公開可見。</p>
+        [% SET active = [] %]
+        [% FOREACH control = data.controls.keys.sort %]
+          [% NEXT IF !data.controls.$control %]
+          [% IF control == 'othercontrol' OR control == 'membercontrol' %]
+            [% SWITCH data.controls.$control %]
+              [% CASE constants.CONTROLMAPMANDATORY %]
+                [% SET type = "Mandatory" %]
+              [% CASE constants.CONTROLMAPSHOWN %]
+                [% SET type = "Shown" %]
+              [% CASE constants.CONTROLMAPDEFAULT %]
+                [% SET type = "Default" %]
+            [% END %]
+            [% active.push("$control: $type") %]
+          [% ELSE %]
+            [% active.push(control) %]
+          [% END %]
+        [% END %]
+
+        [% SET hidden = 0 %]
+        [% IF data.controls.othercontrol == constants.CONTROLMAPMANDATORY
+              AND data.controls.membercontrol == constants.CONTROLMAPMANDATORY
+              AND data.controls.entry
+        %]
+          [% SET hidden = 1 %]
+        [% END %]
+
+        <li><a href="editproducts.cgi?action=editgroupcontrols&amp;product=
+                    [%- data.product.name FILTER url_quote %]">
+          [%- data.product.name FILTER html %]</a>
+          ([% active.join(', ') FILTER html %])
+          [% IF hidden %]
+            <strong>警告：此產品目前設定為隱藏。刪除此群組將導致此產品變為公開。
+            </strong>
+          [% END %]</li>
+      [% END %]
+    </ul>
+
+    <p><label><input type="checkbox" name="unbind">刪除此群組，並移除這些權限控管。</label></p>
   [% END %]
 
-  [% IF hasflags %]
+  [% IF group.flag_types.size %]
     <p><b>此群組限制誰可以對特定類型的旗標做變更。<br>
        你無法在使用旗標類型時刪除此群組。</b>
 
-    <br><a href="editflagtypes.cgi?action=list&group=[% gid FILTER html %]">顯示有哪些類型</a>
+    <br><a href="editflagtypes.cgi?action=list&amp;group=[% gid FILTER html %]">顯示有哪些類型</a>
     - <input type="checkbox" name="removeflags">刪除此群組中的所有旗標類型。</p>
+
+    <br><a href="editflagtypes.cgi?action=list&amp;group=
+                 [%- group.id FILTER url_quote %]">顯示有哪些類型</a>
+    - <label><input type="checkbox" name="removeflags">刪除此群組中的所有旗標類型。</label></p>
   [% END %]
 
   [% IF shared_queries %]
@@ -97,14 +138,16 @@
   <h2>確認</h2>
 
   <p>你確定要刪除此一群組嗎？</p>
-  [% IF (hasusers || hasbugs || hasproduct || hasflags) %]
+  [% IF group.users.size || group.bugs.size || group.products.size
+        || group.flags.size
+  %]
     <p><b>你必須勾選以上所有勾選框，或更正已指出的問題後，才能繼續。</b></p>
   [% END %]
 
   <p>
     <input type="submit" id="delete" value="是的，刪除">
     <input type="hidden" name="action" value="delete">
-    <input type="hidden" name="group" value="[% gid FILTER html %]">
+    <input type="hidden" name="group" value="[% group.id FILTER html %]">
     <input type="hidden" name="token" value="[% token FILTER html %]">
   </p>
 </form>

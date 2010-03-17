@@ -153,6 +153,7 @@ function doOnSelectProduct(selectmode) {
     <td colspan="4">
       <table>
         <tr>
+        [% Hook.process('before_selects_top') %]
         [% IF Param('useclassification') %]
           <td valign="top">
             <table>
@@ -252,6 +253,7 @@ function doOnSelectProduct(selectmode) {
             </table>
           </td>
         [% END %]
+        [% Hook.process('after_selects_top') %]
         </tr>
       </table>
     </td>
@@ -259,18 +261,24 @@ function doOnSelectProduct(selectmode) {
 
 [%# *** Comment URL Whiteboard Keywords *** %]
 
-  [% FOREACH field = [
+  [% SET freetext_fields = [
     { name => "longdesc", description => "描述或意見 (<u>C</u>)",
       accesskey => 'c' },
     { name => "bug_file_loc", description => "網址 (<u>U</u>)",
       accesskey => 'u' },
     { name => "status_whiteboard", description => "狀態白板 (<u>W</u>)",
-      accesskey => 'w' } ] %]
+      accesskey => 'w' }
+  ] %]
 
-    [% UNLESS field.name == 'status_whiteboard' AND NOT Param('usestatuswhiteboard') %]
+  [% Hook.process('before_freetext_fields') %]
+  [% FOREACH field = freetext_fields %]
+    [% NEXT IF field.name == 'status_whiteboard'
+               AND NOT Param('usestatuswhiteboard')
+    %]
     <tr>
       <th align="right">
-        <label for="[% field.name %]" accesskey="[% field.accesskey %]">[% field.description %]</label>：
+        <label for="[% field.name %]"
+               accesskey="[% field.accesskey %]">[% field.description %]</label>：
       </th>
       <td>
         [% type = field.name _ "_type" %]
@@ -283,10 +291,9 @@ function doOnSelectProduct(selectmode) {
       </td>
       <td></td>
     </tr>
-    [% END %]
   [% END %]
 
-  [% IF have_keywords %]
+  [% IF use_keywords %]
     <tr>
       <th align="right">
         <label for="keywords" accesskey="k"><a href="describekeywords.cgi">關鍵字 (<u>K</u>)</a></label>：
@@ -305,7 +312,7 @@ function doOnSelectProduct(selectmode) {
   [% END %]
 
   [%# Deadline %]
-  [% IF user.in_group(Param("timetrackinggroup")) %]
+  [% IF user.is_timetracker %]
     <tr>
       <th align="right">
         <label for="deadlinefrom" accesskey="l">截止期限 (<u>L</u>)</label>：
@@ -317,10 +324,12 @@ function doOnSelectProduct(selectmode) {
                   value="[% default.deadlineto.0 FILTER html %]">
       </td>
       <td>
-        <small>(YYYY-MM-DD)</small>
+        <small>(YYYY-MM-DD 或相對的日期)</small>
       </td>
     </tr>
   [% END %]
+
+  [% Hook.process('after_freetext_fields') %]
 
 </table>
 
@@ -330,6 +339,7 @@ function doOnSelectProduct(selectmode) {
 
 <table>
   <tr>
+    [% Hook.process('before_selects_bottom') %]
     <td>
       <table>
         <tr>
@@ -408,6 +418,7 @@ function doOnSelectProduct(selectmode) {
         </tr>
       </table>
     </td>
+    [% Hook.process('after_selects_bottom') %]
   </tr>
 </table>
 
@@ -524,9 +535,9 @@ function doOnSelectProduct(selectmode) {
 <table>
   <tr>
     <td>
-      <select name="bugidtype">
-        <option value="include"[% " selected" IF default.bugidtype.0 == "include" %]>只包括</option>
-        <option value="exclude"[% " selected" IF default.bugidtype.0 == "exclude" %]>不包括</option>
+      <select name="bug_id_type">
+        <option value="anyexact"[% " selected" IF default.bug_id_type.0 == "anyexact" %]>只包括</option>
+        <option value="nowords"[% " selected" IF default.bug_id_type.0 == "nowords" %]>不包括</option>
       </select>
       <label for="bug_id">[% terms.bugs %] 編號為</label>：
     </td>
@@ -612,17 +623,20 @@ function doOnSelectProduct(selectmode) {
   <td align="left">
     <select name="[% sel.name %]" id="[% sel.name %]"
             multiple="multiple" size="[% sel.size %]">
-      [% FOREACH name = ${sel.name} %]
-        <option value="[% name FILTER html %]"
-          [% " selected" IF lsearch(default.${sel.name}, name) != -1 %]>
-          [% IF sel.name == "bug_status" %]
-            [% get_status(name) FILTER html %]
-          [% ELSIF sel.name == "resolution" %]
-            [% get_resolution(name) FILTER html %]
-          [% ELSE %]
-            [% name FILTER html %]
-          [% END %]
-        </option>
+      [% FOREACH value = ${sel.name} %]
+        [% IF value.id %]
+          [%# This only applies for Resolution really %]
+          [% v = value.name OR '---' -%]
+          <option value="[% v FILTER html %]"
+            [% " selected" IF lsearch(default.${sel.name}, v) != -1 %]>
+            [% display_value(sel.name, value.name) FILTER html %]
+          </option>
+        [% ELSE %]
+          <option value="[% value OR '---' FILTER html %]"
+            [% " selected" IF lsearch(default.${sel.name}, value) != -1 %]>
+            [% display_value(sel.name, value) FILTER html %]
+          </option>
+        [% END %]
       [% END %]
     </select>
   </td>

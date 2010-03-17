@@ -48,7 +48,7 @@
     <th>&nbsp;</th>
     [% FOREACH status = statuses %]
       <th class="col-header[% status.is_open ? " open-status" : " closed-status" %]">
-        [% status.name FILTER html %]
+        [% display_value("bug_status", status.name) FILTER html %]
       </th>
     [% END %]
   </tr>
@@ -58,14 +58,14 @@
   [% FOREACH status = p.merge(statuses) %]
     <tr class="highlight">
       <th align="right" class="[% status.is_open ? "open-status" : "closed-status" %]">
-        [% status.name FILTER html %]
+        [% display_value("bug_status", status.name) FILTER html %]
       </th>
 
       [% FOREACH new_status = statuses %]
         [% IF workflow.${status.id}.${new_status.id}.defined %]
           <td align="center" class="checkbox-cell
               [% " checked" IF workflow.${status.id}.${new_status.id} %]"
-              title="From [% status.name FILTER html %] to [% new_status.name FILTER html %]">
+              title="從 [% status.name FILTER html %] 到 [% new_status.name FILTER html %]">
             <input type="checkbox" name="c_[% status.id %]_[% new_status.id %]"
                    id="c_[% status.id %]_[% new_status.id %]" onclick="toggle_cell(this)"
               [% " checked='checked'" IF workflow.${status.id}.${new_status.id} %]>

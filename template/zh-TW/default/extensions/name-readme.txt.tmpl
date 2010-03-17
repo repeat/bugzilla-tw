@@ -1,0 +1,36 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Everything Solved, Inc.
+  # Portions created by the Initial Developer are Copyright (C) 2009 the
+  # Initial Developer. All Rights Reserved.
+  #
+  # Contributor(s):
+  #   Max Kanat-Alexander <mkanat@bugzilla.org>
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+一般的模版放在這個目錄下。
+你可以用類似以下的方式載入它們：
+
+use B[% %]ugzilla::Error;
+my $template = B[% %]ugzilla->template;
+$template->process('[% name FILTER lower %]/some-template.html.tmpl')
+  or ThrowTemplateError($template->error());
+
+這樣就可以載入此目錄中的 some-template.html.tmpl 檔案。
+
+注意：你的模版完整路徑不可以和已存在的 [% terms.Bugzilla %] 模版
+或其他附加元件衝突，否則你的模版有可能會把其他模版覆蓋掉。
+因此我們建立了 '[% name FILTER lower %]' 這個目錄，這樣你就可以
+把你的模版放在這裡，以避免衝突。

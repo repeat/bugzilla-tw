@@ -45,12 +45,6 @@
 
 [% IF Param('usetargetmilestone') -%]
   <tr>
-    <th align="right">描述此產品里程碑的網址：</th>
-    <td><input type="text" size="64" maxlength="255" name="milestoneurl"
-               value="[% product.milestoneurl FILTER html %]">
-    </td>
-  </tr>
-  <tr>
     <th align="right">預設里程碑：</th>
     <td>
       [% IF product.milestones.size %]
@@ -70,42 +64,48 @@
 [% END %]
 
 <tr>
-  <th align="right">不允許回報 [% terms.bug %] ：</th>
-  <td><input type="checkbox" name="disallownew" value="1"
-       [% IF product.disallownew == "1" %]
-             checked="checked"[% END %]>
+  <th align="right">允許回報 [% terms.bug %] ：</th>
+  <td><input type="checkbox" name="is_active" value="1"
+       [% ' checked="checked"' IF product.is_active %]>
+  </td>
+</tr>
+<tr>
+  <th align="right">
+    <label for="allows_unconfirmed">在此產品中允許
+      [%+ display_value('bug_status', 'UNCONFIRMED') FILTER html %] 狀態：
+    </label>
+  </th>
+  <td><input type="checkbox" id="allows_unconfirmed" name="allows_unconfirmed"
+             [% ' checked="checked"' IF product.allows_unconfirmed %]
+             [% IF Param('usevotes') %]
+               onchange="bz_toggleClass('votes_to_confirm_container',
+                                        'bz_default_hidden')"
+             [% END %]>
+    [% IF Param('usevotes') %]
+      <span id="votes_to_confirm_container"
+            [% ' class="bz_default_hidden"' IF !product.allows_unconfirmed %]>
+        當 [% terms.bugs %] 達到
+        <input size="3" maxlength="5" name="votestoconfirm" id="votestoconfirm"
+               value="[% product.votes_to_confirm FILTER html %]">
+         票時，自動確認它們。（設定為 0 即可停用自動確認的功能。）
+      </span>
+    [% END %]
   </td>
 </tr>
 
-[% IF !Param('usevotes') %]
-<tr class="param_disabled">
-  <td colspan="2"
-      style="font-family: arial; font-style: italic; font-size: 0.7em; text-align: center;">
-    'usevotes' 參數目前設為「關」。這些設定將會在參數下次啟用時生效。</td>
-</tr>
+[% IF Param('usevotes') %]
+  <tr>
+    <th align="right">每人最多幾票：</th>
+    <td><input size="5" maxlength="5" name="votesperuser" id="votesperuser"
+               value="[% product.votesperuser FILTER html %]">
+    </td>
+  </tr>
+  <tr>
+    <th align="right">
+      每人每個 [% terms.bug %] 最多幾票：
+    </th>
+    <td><input size="5" maxlength="5" name="maxvotesperbug" id="maxvotesperbug"
+               value="[% product.maxvotesperbug FILTER html %]">
+    </td>
+  </tr>
 [% END %]
-<tr [% IF !Param('usevotes') %]class="param_disabled" [% END %]>
-  <th align="right">每人最多幾票：</th>
-  <td><input size="5" maxlength="5" name="votesperuser"
-             value="[% product.votesperuser FILTER html %]">
-  </td>
-</tr>
-<tr [% IF !Param('usevotes') %]class="param_disabled" [% END %]>
-  <th align="right">
-    每人每個 [% terms.bug %] 最多幾票：
-  </th>
-  <td><input size="5" maxlength="5" name="maxvotesperbug"
-             value="[% product.maxvotesperbug FILTER html %]">
-  </td>
-</tr>
-<tr [% IF !Param('usevotes') %]class="param_disabled" [% END %]>
-  <th align="right">
-    確認的門檻：
-  </th>
-  <td>
-    輸入在此產品中，一個 [% terms.bug %] 需要幾票才能自動解除<a
-    href="page.cgi?id=fields.html#status">[% get_status("UNCONFIRMED") FILTER html %]</a>的狀態。<br>
-    <input size="5" maxlength="5" name="votestoconfirm"
-           value="[% product.votestoconfirm FILTER html %]">
-  </td>
-</tr>

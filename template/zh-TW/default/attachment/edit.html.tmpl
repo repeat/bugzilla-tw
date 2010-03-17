@@ -36,135 +36,14 @@
   header = header
   subheader = subheader
   doc_section = "attachments.html"
+  javascript_urls = ['js/attachment.js']
+  style_urls = ['skins/standard/create_attachment.css']
 %]
 
 [%# No need to display the Diff button and iframe if the attachment is not a patch. %]
-[% patchviewerinstalled = (patchviewerinstalled && attachment.ispatch) %]
-
-<script type="text/javascript">
-  <!--
-  var prev_mode = 'raw';
-  var current_mode = 'raw';
-  var has_edited = 0;
-  var has_viewed_as_diff = 0;
-  function editAsComment()
-    {
-      switchToMode('edit');
-      has_edited = 1;
-    }
-  function undoEditAsComment()
-    {
-      switchToMode(prev_mode);
-    }
-  function redoEditAsComment()
-    {
-      switchToMode('edit');
-    }
-[% IF patchviewerinstalled %]
-  function viewDiff()
-    {
-      switchToMode('diff');
-
-      // If we have not viewed as diff before, set the view diff frame URL
-      if (!has_viewed_as_diff) {
-        var viewDiffFrame = document.getElementById('viewDiffFrame');
-        viewDiffFrame.src =
-            'attachment.cgi?id=[% attachment.id %]&action=diff&headers=0';
-        has_viewed_as_diff = 1;
-      }
-    }
-[% END %]
-  function viewRaw()
-    {
-      switchToMode('raw');
-    }
-
-  function switchToMode(mode)
-    {
-      if (mode == current_mode) {
-        alert('切換到同一模式！這不應該發生。');
-        return;
-      }
-
-      // Switch out of current mode
-      if (current_mode == 'edit') {
-        hideElementById('editFrame');
-        hideElementById('undoEditButton');
-      } else if (current_mode == 'raw') {
-        hideElementById('viewFrame');
-[% IF patchviewerinstalled %]
-        hideElementById('viewDiffButton');
-[% END %]
-        hideElementById(has_edited ? 'redoEditButton' : 'editButton');
-        hideElementById('smallCommentFrame');
-      } else if (current_mode == 'diff') {
-[% IF patchviewerinstalled %]
-        hideElementById('viewDiffFrame');
-[% END %]
-        hideElementById('viewRawButton');
-        hideElementById(has_edited ? 'redoEditButton' : 'editButton');
-        hideElementById('smallCommentFrame');
-      }
-
-      // Switch into new mode
-      if (mode == 'edit') {
-        showElementById('editFrame');
-        showElementById('undoEditButton');
-      } else if (mode == 'raw') {
-        showElementById('viewFrame');
-[% IF patchviewerinstalled %]
-        showElementById('viewDiffButton');
-[% END %]
-        showElementById(has_edited ? 'redoEditButton' : 'editButton');
-        showElementById('smallCommentFrame');
-      } else if (mode == 'diff') {
-[% IF patchviewerinstalled %]
-        showElementById('viewDiffFrame');
-[% END %]
-        showElementById('viewRawButton');
-        showElementById(has_edited ? 'redoEditButton' : 'editButton');
-        showElementById('smallCommentFrame');
-      }
-
-      prev_mode = current_mode;
-      current_mode = mode;
-    }
-
-  function hideElementById(id)
-  {
-    var elm = document.getElementById(id);
-    if (elm) {
-      elm.style.display = 'none';
-    }
-  }
-
-  function showElementById(id, val)
-  {
-    var elm = document.getElementById(id);
-    if (elm) {
-      if (!val) val = 'inline';
-      elm.style.display = val;
-    }
-  }
-
-  function normalizeComments()
-  {
-    // Remove the unused comment field from the document so its contents
-    // do not get transmitted back to the server.
-
-    var small = document.getElementById('smallCommentFrame');
-    var big = document.getElementById('editFrame');
-    if ( (small) && (small.style.display == 'none') )
-    {
-      small.parentNode.removeChild(small);
-    }
-    if ( (big) && (big.style.display == 'none') )
-    {
-      big.parentNode.removeChild(big);
-    }
-  }
-  //-->
-</script>
+[% use_patchviewer = (feature_enabled('patch_viewer') && attachment.ispatch) %]
+[% can_edit = attachment.validate_can_edit %]
+[% editable_or_hide = can_edit ? "" : " bz_hidden_option" %]
 
 <form method="post" action="attachment.cgi" onsubmit="normalizeComments();">
   <input type="hidden" name="id" value="[% attachment.id %]">
@@ -178,17 +57,22 @@
   <table class="attachment_info" width="100%">
 
     <tr>
-      <td width="25%">
-        <small>
-        <b><label for="description">描述</label>：</b><br>
+      <td id="attachment_attributes">
+        <div id="attachment_description">
+          <label for="description">描述</label>：
           [% INCLUDE global/textarea.html.tmpl
             id             = 'description'
             name           = 'description'
             minrows        = 3
             cols           = 25
             wrap           = 'soft'
+            classes        = 'block' _ editable_or_hide
             defaultcontent = attachment.description
-          %]<br>
+          %]
+          [% IF !can_edit %]
+            [%+ attachment.description FILTER wrap_comment(25) FILTER html %]
+          [% END %]
+        </div>
 
         [% IF attachment.isurl %]
             <input type="hidden" name="filename"
@@ -196,64 +80,104 @@
             <input type="hidden" name="contenttypeentry"
                    value="[% attachment.contenttype FILTER html %]">
         [% ELSE %]
-          <b><label for="filename">檔名</label>：</b><br>
-            <input type="text" size="20" id="filename" name="filename"
-                   value="[% attachment.filename FILTER html %]"><br>
-          <b>大小：</b>
-          [% IF attachment.datasize %]
-            [%+ attachment.datasize FILTER unitconvert %]
-          [% ELSE %]
-            <em>已刪除</em>
-          [% END %]<br>
+          <div id="attachment_filename">
+            <label for="filename">檔名：</label>
+            <input type="text" size="20"  class="block[% editable_or_hide %]"
+                   id="filename" name="filename"
+                   value="[% attachment.filename FILTER html %]">
+            [% IF !can_edit %]
+              [%+ attachment.filename FILTER truncate(25) FILTER html %]
+            [% END %]
+          </div>
 
-          <b><label for="contenttypeentry">MIME 類別</label>：</b><br>
-            <input type="text" size="20"
+          <div id="attachment_mimetype">
+            <label for="contenttypeentry">MIME 類別：</label>
+            <input type="text" size="20" class="block[% editable_or_hide %]"
                    id="contenttypeentry" name="contenttypeentry"
-                   value="[% attachment.contenttype FILTER html %]"><br>
+                   value="[% attachment.contenttype FILTER html %]">
+            [% IF !can_edit %]
+              [%+ attachment.contenttype FILTER truncate(25) FILTER html %]
+            [% END %]
+          </div>
 
-          <input type="checkbox" id="ispatch" name="ispatch" value="1"
-                 [%+ 'checked="checked"' IF attachment.ispatch %]>
-          <label for="ispatch">patch</label>
+          <div id="attachment_size">
+            <span class="label">大小：</span>
+            [% IF attachment.datasize %]
+              [%+ attachment.datasize FILTER unitconvert %]
+            [% ELSE %]
+              <em>已刪除</em>
+            [% END %]
+          </div>
+
+          <div id="attachment_creator">
+            <span class="label">Creator:</span>
+            [%+ INCLUDE global/user.html.tmpl who = attachment.attacher %]
+          </div>
+
+          <div id="attachment_ispatch">
+            <input type="checkbox" id="ispatch" name="ispatch" value="1"
+                   [%+ IF !can_edit %]class="bz_hidden_option"[% END %]
+                   [%+ 'checked="checked"' IF attachment.ispatch %]>
+            [% IF can_edit %]
+              <label for="ispatch">Patch</label>
+            [% ELSE %]
+              <span class="label">是否為 Patch ：</span>
+              [%+ attachment.ispatch ? "是" : "否" %]
+            [% END %]
+          </div>
         [% END %]
+
+        <div id="attachment_isobsolete">
           <input type="checkbox" id="isobsolete" name="isobsolete" value="1"
+                 [%+ IF !can_edit %]class="bz_hidden_option"[% END %]
                  [%+ 'checked="checked"' IF attachment.isobsolete %]>
-          <label for="isobsolete">已廢棄的附件</label>
-          [% IF (Param("insidergroup") && user.in_group(Param("insidergroup"))) %]
-            <input type="checkbox" id="isprivate" name="isprivate" value="1"
-                   [% " checked" IF attachment.isprivate %]>
-            <label for="isprivate">不公開</label><br>
+          [% IF can_edit %]
+            <label for="isobsolete">已廢棄的附件</label>
+          [% ELSE %]
+            <span class="label">是否已廢棄：</span>
+            [%+ attachment.isobsolete ? "是" : "否" %]
           [% END %]
-          <br>
-        </small>
+        </div>
+
+        [% IF user.is_insider %]
+          <div id="attachment_isprivate">
+            <input type="checkbox" id="isprivate" name="isprivate" value="1"
+                   [%+ IF !can_edit %]class="bz_hidden_option"[% END %]
+                   [%+ 'checked="checked"' IF attachment.isprivate %]>
+            [% IF can_edit %]
+              <label for="isprivate">不公開（僅
+                <strong>[% Param('insidergroup') FILTER html %]</strong> 群組可見）
+              </label>
+            [% ELSE %]
+              <span class="label">是否為不公開：</span>
+              [%+ attachment.isprivate ? "是" : "否" %]
+            [% END %]
+          </div>
+        [% END %]
 
         [% IF attachment.flag_types.size > 0 %]
-          [% PROCESS "flag/list.html.tmpl" bug_id = attachment.bug_id
-                                           attach_id = attachment.id
-                                           flag_types = attachment.flag_types
-           %]<br>
+          <div id="attachment_flags">
+            [% PROCESS "flag/list.html.tmpl" bug_id = attachment.bug_id
+                                             attach_id = attachment.id
+                                             flag_types = attachment.flag_types
+            %]
+          </div>
         [% END %]
 
-        <div id="smallCommentFrame">
-          <b><small>對於 [%+ terms.bug %] 的<label for="comment">意見</label>：</small></b><br>
+        [% IF user.id %]
+          <div id="smallCommentFrame">
+            <label for="comment">（對 [% terms.bug %] ）的意見：</label>
             [% INCLUDE global/textarea.html.tmpl
               id      = 'comment'
               name    = 'comment'
               minrows = 5
               cols    = 25
               wrap    = 'soft'
-            %]<br>
-        </div>
+              classes = 'block'
+            %]
+          </div>
 
-        <input type="submit" value="送出" id="update"><br><br>
-        <strong>動作：</strong>
-        <a href="attachment.cgi?id=[% attachment.id %]">瀏覽</a>
-        [% IF attachment.ispatch && patchviewerinstalled %]
-         | <a href="attachment.cgi?id=[% attachment.id %]&amp;action=diff">比較差異</a>
-        [% END %]
-        [% IF Param("allow_attachment_deletion")
-              && user.in_group('admin')
-              && attachment.datasize > 0 %]
-          | <a href="attachment.cgi?id=[% attachment.id %]&amp;action=delete">刪除</a>
+          <input type="submit" value="送出" id="update"><br><br>
         [% END %]
       </td>
 
@@ -298,17 +222,20 @@
           </iframe>
           <script type="text/javascript">
             <!--
+            var patchviewerinstalled = 0;
+            var attachment_id = [% attachment.id %];
             if (typeof document.getElementById == "function") {
-[% IF patchviewerinstalled %]
+[% IF use_patchviewer %]
+              var patchviewerinstalled = 1;
               document.write('<iframe id="viewDiffFrame" style="height: 400px; width: 100%; display: none;"><\/iframe>');
 [% END %]
-              document.write('<button type="button" id="editButton" onclick="editAsComment();">以編輯附件方式做為意見<\/button>');
-              document.write('<button type="button" id="undoEditButton" onclick="undoEditAsComment();" style="display: none;">回復<\/button>');
-              document.write('<button type="button" id="redoEditButton" onclick="redoEditAsComment();" style="display: none;">重做以編輯附件方式做為意見<\/button>');
-[% IF patchviewerinstalled %]
-              document.write('<button type="button" id="viewDiffButton" onclick="viewDiff();">以比較差異方式瀏覽附件<\/button>');
+              document.write('<button type="button" id="editButton" onclick="editAsComment(patchviewerinstalled);">以編輯附件方式做為意見<\/button>');
+              document.write('<button type="button" id="undoEditButton" onclick="undoEditAsComment(patchviewerinstalled);" style="display: none;">回復<\/button>');
+              document.write('<button type="button" id="redoEditButton" onclick="redoEditAsComment(patchviewerinstalled);" style="display: none;">重做以編輯附件方式做為意見<\/button>');
+[% IF use_patchviewer %]
+              document.write('<button type="button" id="viewDiffButton" onclick="viewDiff(attachment_id, patchviewerinstalled);">以比較差異方式 (Diff) 瀏覽附件<\/button>');
 [% END %]
-              document.write('<button type="button" id="viewRawButton" onclick="viewRaw();" style="display: none;">以原始格式瀏覽附件<\/button>');
+              document.write('<button type="button" id="viewRawButton" onclick="viewRaw(patchviewerinstalled);" style="display: none;">以原始格式瀏覽附件<\/button>');
             }
             //-->
           </script>
@@ -324,12 +251,25 @@
           </b></p>
         </td>
       [% END %]
-
     </tr>
-
   </table>
+</form>
 
-  在這個 [% terms.Bug %] 裡的附件：
+<div id="attachment_actions">
+  <span class="label">動作：</span>
+  <a href="attachment.cgi?id=[% attachment.id %]">檢視</a>
+  [% IF use_patchviewer %]
+    | <a href="attachment.cgi?id=[% attachment.id %]&amp;action=diff">比較差異 (Diff)</a>
+  [% END %]
+  [% IF Param("allow_attachment_deletion")
+        && user.in_group('admin')
+        && attachment.datasize > 0 %]
+    | <a href="attachment.cgi?id=[% attachment.id %]&amp;action=delete">刪除</a>
+  [% END %]
+</div>
+
+<div id="attachment_list">
+  在 [% "$terms.bug ${attachment.bug_id}" FILTER bug_link(attachment.bug_id) FILTER none %] 裡的附件：
   [% FOREACH a = attachments %]
     [% IF a == attachment.id %]
       [%+ a %]
@@ -338,9 +278,8 @@
     [% END %]
     [% " |" UNLESS loop.last() %]
   [% END %]
+</div>
 
-</form>
-
-<br>
+[% Hook.process('end') %]
 
 [% PROCESS global/footer.html.tmpl %]

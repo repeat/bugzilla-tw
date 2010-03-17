@@ -31,15 +31,10 @@
 
 [% message = BLOCK %]
   [% IF    message_tag == "account_created" %]
-    [% title = "User $otheruser.login created" %]
-    A new user account [% otheruser.login FILTER html %] has been created
+    The user account [% otheruser.login FILTER html %] has been created
     successfully.
     [% IF groups.size %]
       You may want to edit the group settings now, using the form below.
-    [% END %]
-    [% IF login_info %]
-      You can now go to the <a href="index.cgi">Log In</a> page to enter
-      this [% terms.Bugzilla %] installation.
     [% END %]
 
   [% ELSIF message_tag == "account_creation_canceled" %]
@@ -284,7 +279,12 @@
     The request to change the email address for the
     account [%+ old_email FILTER html %] to 
     [%+ new_email FILTER html %] has been canceled.
-   Your old account settings have been reinstated.
+    Your old account settings have been reinstated.
+
+  [% ELSIF message_tag == "extension_created" %]
+    An extension named [% name FILTER html %] has been created
+    in [% path FILTER html %]. Make sure you change "YOUR NAME" and 
+    "YOUR EMAIL ADDRESS" in the code to your name and your email address.
 
   [% ELSIF message_tag == "field_value_created" %]
     [% title = "New Field Value Created" %]
@@ -351,10 +351,10 @@
     [% field_descs.$field_name FILTER html %]
 
   [% ELSIF message_tag == "get_resolution" %]
-    [% get_resolution(resolution) FILTER html %]
+    [% display_value("resolution", resolution) FILTER html %]
 
   [% ELSIF message_tag == "get_status" %]
-    [% get_status(status) FILTER html %]
+    [% display_value("bug_status", status) FILTER html %]
 
   [% ELSIF message_tag == "group_created" %]
     [% title = "New Group Created" %]
@@ -441,6 +441,11 @@
       group.
     [% END %]
 
+  [% ELSIF message_tag == "invalid_column_name" %]
+    The custom sort order specified contains one or more invalid
+    column names: <em>[% invalid_fragments.join(', ') FILTER html %]</em>.
+    They have been removed from the sort list.
+
   [% ELSIF message_tag == "job_queue_depth" %]
     [% count FILTER html %] jobs in the queue.
 
@@ -490,6 +495,44 @@
   [% ELSIF message_tag == "login_changed" %]
     [% title = "$terms.Bugzilla Login Changed" %]
     Your [% terms.Bugzilla %] login has been changed.
+
+  [% ELSIF message_tag == "migrate_component_created" %]
+    Component created: [% comp.name FILTER html %]
+    (in [% product.name FILTER html %])
+
+  [% ELSIF message_tag == "migrate_creating_bugs" %]
+    Creating [% terms.bugs %]...
+
+  [% ELSIF message_tag == "migrate_field_created" %]
+    New custom field: [% field.description FILTER html %]
+    ([% field.name FILTER html %])
+
+  [% ELSIF message_tag == "migrate_product_created" %]
+    Product created: [% created.name FILTER html %]
+
+  [% ELSIF message_tag == "migrate_reading_bugs" %]
+    Reading [% terms.bugs %]...
+
+  [% ELSIF message_tag == "migrate_reading_products" %]
+    Reading products...
+
+  [% ELSIF message_tag == "migrate_reading_users" %]
+    Reading users...
+
+  [% ELSIF message_tag == "migrate_translating_bugs" %]
+    Converting [% terms.bug %] values to be appropriate for 
+    [%+ terms.Bugzilla %]...
+
+  [% ELSIF message_tag == "migrate_user_created" %]
+    User created: [% created.email FILTER html %]
+    [% IF password %] Password: [% password FILTER html %][% END %]
+
+  [% ELSIF message_tag == "migrate_value_created" %]
+    [% IF product.defined %]
+      [% product.name FILTER html %]
+    [% END %]
+    [%+ field_descs.${field.name} FILTER html %] value
+    created: [% value FILTER html %]
 
   [% ELSIF message_tag == "milestone_created" %]
     [% title = "Milestone Created" %]
@@ -742,10 +785,14 @@
       has been created. Note that you may need to wait up to 
       [%+ series.frequency * 2 %] days before there will be enough data for a
       chart of this series to be produced.
-      <br><br>
-      Go back or 
-      <a href="query.cgi?format=create-series">create another series</a>.
-    
+
+  [% ELSIF message_tag == "series_deleted" %]
+    [% title = "Series Deleted" %]
+    The series <em>[% series.category FILTER html %] /
+      [%+ series.subcategory FILTER html %] /
+      [%+ series.name FILTER html %]</em>
+      has been deleted.
+
   [% ELSIF message_tag == "shutdown" %]
     [% title = "$terms.Bugzilla is Down" %]
     [% Param("shutdownhtml") %]
@@ -782,20 +829,31 @@
 
   [% ELSIF message_tag == "version_updated" %]
     [% title = "Version Updated" %]
-    Version renamed as <em>[% version.name FILTER html %]</em>.
+    [% IF changes.size %]
+      [% IF changes.value.defined %]
+        Version renamed to <em>[% version.name FILTER html %]</em>.
+      [% END %]
+    [% ELSE %]
+      No changes made to version <em>[% version.name FILTER html %]</em>.
+    [% END %]
 
   [% ELSIF message_tag == "workflow_updated" %]
     The workflow has been updated.
+  [% END %]
+[% END %]
 
-  [% ELSE %]
-    [%# Give sensible error if error functions are used incorrectly.
-      #%]        
+[% IF !message %]
+  [% message = Hook.process('messages') %]
+[% END %]
+
+[%# Give sensible error if the message function is used incorrectly. #%]
+[% IF !message %]
+  [% message = BLOCK %]
     You are using [% terms.Bugzilla %]'s messaging functions incorrectly. You
     passed in the string '[% message_tag %]'. The correct use is to pass
     in a tag, and define that tag in the file messages.html.tmpl.<br>
     <br>
-    If you are a [% terms.Bugzilla %] end-user seeing this message, please 
+    If you are a [% terms.Bugzilla %] end-user seeing this message, please
     save this page and send it to [% Param('maintainer') %].
-    
   [% END %]
 [% END %]
