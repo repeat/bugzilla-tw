@@ -33,11 +33,20 @@
     checking_dbd      => '檢查可用的 perl DBD 模組...',
     checking_optional => '下列 perl 模組是選用的：',
     checking_modules  => '檢查 perl 模組中...',
+    commands_dbd      => <<EOT,
+你必須執行以下指令之一（視你使用的資料庫而定）：
+EOT
+    commands_optional => '安裝選用模組的指令：',
+    commands_required => <<EOT,
+安裝必備模組的指令（你「必須」執行所有的指令後，重新執行
+checksetup.pl ）：
+EOT
     done => '完成。',
-    header => "* 這是在 ##os_name## ##os_ver##，perl ##perl_ver##上執行的 Bugzilla ##bz_ver##。",
+    header => "* 這是在 ##os_name## ##os_ver## ，\n"
+            . "* Perl ##perl_ver## 上執行的 Bugzilla ##bz_ver## 。",
     install_all => <<EOT,
 
-如要試著使用單一指令自動安裝所有必需要及選用的模組，執行：
+如要試著使用單一指令自動安裝所有必備及選用的模組，執行：
 
   ##perl## install-module.pl --all
 
@@ -54,10 +63,58 @@ EOT
 ##needed## 。現在它設定為 ##current## 。
 你可以在 MySQL 設定檔中的 [mysqld] 段落中找到此參數。
 EOT
+    min_version_required => "最低版本需求： ",
+
+# Note: When translating these "modules" messages, don't change the formatting
+# if possible, because there is hardcoded formatting in
+# Bugzilla::Install::Requirements to match the box formatting.
+    modules_message_db => <<EOT,
+***********************************************************************
+* 存取資料庫                                                          *
+***********************************************************************
+* 為了要存取資料庫， Bugzilla 需要在你所執行的資料庫中安裝正確的      *
+* "DBD" 模組。請在以下指令中找出正確的指令，以在資料庫中安裝適當      *
+* 的模組。                                                            *
+EOT
+    modules_message_optional => <<EOT,
+***********************************************************************
+* 選用的模組                                                          *
+***********************************************************************
+* 有些 Perl 模組並非安裝 Bugzilla 所必備，然而安裝最新版本的某些      *
+* 模組可以讓你擁有額外的功能。                                        *
+*                                                                     *
+* 你不一定要安裝的選用模組，以及它們所啟用的功能名稱列表如下。        *
+* 在列表的下方則是安裝每一模組所使用的指令。                          *
+EOT
+    modules_message_required => <<EOT,
+***********************************************************************
+* 必備的模組                                                          *
+***********************************************************************
+* Bugzilla 要求你安裝某些 Perl 模組。原因可能是你並未安裝這些模組，   *
+* 或是版本過舊，需要更新。下方是安裝這些模組所需要用的指令。          *
+EOT
+
     module_found => "找到版本 v##ver##",
     module_not_found => "沒有找到",
     module_ok => 'OK',
     module_unknown_version => "找到未知的版本",
+    ppm_repo_add => <<EOT,
+***********************************************************************
+* 給 Windows 使用者                                                   *
+***********************************************************************
+* 如要安裝以下模組，你必須先以 Administrator （系統管理員）的身份     *
+* 執行以下指令：                                                      *
+*                                                                     *
+*   ppm repo add theory58S ##theory_url##
+EOT
+    ppm_repo_up => <<EOT,
+*                                                                     *
+* 然後你必須要再以 Administrator 的身份執行：                         *
+*                                                                     *
+*   ppm repo up theory58S                                             *
+*                                                                     *
+* 重複以上指令，一直到你在已顯示的列表上方看到 "theory58S" 字樣。     *
+EOT
     template_precompile   => "預先編譯模版中...",
     template_removing_dir => "刪除存在的已編譯模版中...",
 );

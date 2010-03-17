@@ -28,7 +28,7 @@
 %]
 
 <p>
-  [% IF flag_type.flag_count %]
+[% IF flag_type.flag_count %]
     目前在類型 [% flag_type.name FILTER html %] 下有 [% flag_type.flag_count %]
     種旗標。如果你刪除此一旗標類型，這些旗標也都會被刪除。
   [% END %]
@@ -38,7 +38,6 @@
   [%- token FILTER html %]">停用</a>。如果選擇停用，那麼此一旗標類型
   [%- IF flag_type.flag_count %]以及這些旗標[% END %]仍會儲存在資料庫中，但不會在
   [% terms.Bugzilla %] 使用者介面裡顯示。
-
 </p>
 
 <table>

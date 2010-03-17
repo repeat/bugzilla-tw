@@ -33,13 +33,14 @@
   <table border="0" cellpadding="4" cellspacing="0">
     <tr>
       <th align="right"><label for="value">數值：</label></th>
-      <td><input id="value" size="30" maxlength="60" name="value"
-                 value=""></td>
+      <td>
+        <input id="value" name="value" size="30"
+               maxlength="[% constants.MAX_FIELD_VALUE_SIZE FILTER none %]">
+      </td>
     </tr>
     <tr>
       <th align="right"><label for="sortkey">排序鍵：</label></th>
-      <td><input id="sortkey" size="10" maxlength="20" name="sortkey"
-                 value=""></td>
+      <td><input id="sortkey" name="sortkey" size="6" maxlength="6"></td>
     </tr>
     [% IF field.name == "bug_status" %]
       <tr>
@@ -55,6 +56,27 @@
         <th>&nbsp;</th>
         <td>
           注意：開啟／關閉的屬性僅能於建立狀態時設定。之後無法編輯。
+        </td>
+      </tr>
+    [% END %]
+    [% IF field.value_field %]
+      <tr>
+        <th align="right">
+          <label for="visibility_value_id">只在
+           [%+ field.value_field.description FILTER html %] 設定為以下數值時出現：
+          </label>
+        </th>
+        <td>
+          <select name="visibility_value_id" id="visibility_value_id">
+            <option></option>
+            [% FOREACH field_value = field.value_field.legal_values %]
+              [% NEXT IF field_value.name == '' %]
+              <option value="[% field_value.id FILTER none %]">
+                [%- field_value.name FILTER html -%]
+              </option>
+            [% END %]
+          </select>
+          <small>（若不設定，則此數值將永遠顯示。）</small>
         </td>
       </tr>
     [% END %]

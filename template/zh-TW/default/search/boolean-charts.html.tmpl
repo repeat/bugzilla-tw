@@ -18,86 +18,33 @@
   # Contributor(s): Gervase Markham <gerv@gerv.net>
   #%]
 
-[% fields = [
-  { name => "noop", description => "---" } ,
-  { name => "alias", description => "別名是" } ,
-  { name => "assigned_to", description => "負責人" } ,
-  { name => "attachments.submitter", description => "附件附加者" } ,
-  { name => "attach_data.thedata", description => "附件資料" } ,
-  { name => "attachments.description", description => "附件描述" } ,
-  { name => "attachments.filename", description => "附件檔名" } ,
-  { name => "attachments.isurl", description => "附件是網址" } ,
-  { name => "attachments.isobsolete", description => "已廢棄的附件" } ,
-  { name => "attachments.ispatch", description => "附件是patch" } ,
-  { name => "attachments.isprivate", description => " 附件不公開 " } ,
-  { name => "attachments.mimetype", description => "附件的 MIME 類別" } ,
-  { name => "blocked", description => "會擋掉這些 $terms.bug" } ,
-  { name => "bug_id", description => "$terms.Bug 編號" } ,
-  { name => "cc", description => "寄件副本清單" } ,
-  { name => "cclist_accessible", description => "可瀏覽的寄件副本清單" } ,
-  { name => "classification", description => "分類" } ,
-  { name => "longdesc", description => "子產品" } ,
-  { name => "longdescs.isprivate", description => "意見不公開" } ,
-  { name => "commenter", description => "提供意見者" } ,
-  { name => "component", description => "子產品" } ,
-  { name => "content", description => "內容" } ,
-  { name => "creation_ts", description => "建立日期" } ,
-  { name => "days_elapsed", description => "自前次變更 $terms.bug 後幾天" } ,
-  { name => "deadline", description => "截止期限" } ,
-  { name => "dependson", description => "要先修好這些 $terms.bug" } ,
-  { name => "estimated_time", description => "估計時數" } ,
-  { name => "everconfirmed", description => "是否已確認" } ,
-  { name => "flagtypes.name", description => "旗標" } ,
-  { name => "requestees.login_name", description => "被要求設定旗標者" } ,
-  { name => "setters.login_name", description => "旗標設定者" } ,
-  { name => "bug_group", description => "群組" } ,
-  { name => "work_time", description => "已工作時數" } ,
-  { name => "keywords", description => "關鍵字" } ,
-  { name => "delta_ts", description => "最後變更日期" } ,
-  { name => "op_sys", description => "作業系統／版本" } ,
-  { name => "percentage_complete", description => "完成百分比" } ,
-  { name => "rep_platform", description => "硬體平台" } ,
-  { name => "priority", description => "優先程度" } ,
-  { name => "product", description => "產品" } ,
-  { name => "qa_contact", description => "QA 連絡人" } ,
-  { name => "remaining_time", description => "剩餘時數" } ,
-  { name => "reporter", description => "回報者" } ,
-  { name => "reporter_accessible", description => "可瀏覽的回報者" } ,
-  { name => "resolution", description => "解決方案" } ,
-  { name => "bug_severity", description => "嚴重等級" } ,
-  { name => "bug_status", description => "狀態" } ,
-  { name => "status_whiteboard", description => "狀態白板" } ,
-  { name => "short_desc", description => "摘要" } ,
-  { name => "target_milestone", description => "目標里程碑" } ,
-  { name => "owner_idle_time", description => "負責人開始處理後經過的時間" } ,
-  { name => "bug_file_loc", description => "網址" } ,
-  { name => "version", description => "版本" } ,
-  { name => "votes", description => "票數" } ] %]
+[% PROCESS "global/field-descs.none.tmpl" %]
 
 [% types = [
-  { name => "noop", description => "---" },
-  { name => "equals", description => "等於" },
-  { name => "notequals", description => "不等於" },
-  { name => "anyexact", description => "等於任何一個字串" },
-  { name => "substring", description => "包含該字串" },
-  { name => "casesubstring", description => "包含該字串 (大小寫符合)" },
-  { name => "notsubstring", description => "不包含該字串" },
-  { name => "anywordssubstr", description => "包含任一字串" },
-  { name => "allwordssubstr", description => "包含所有字串" },
-  { name => "nowordssubstr", description => "不包含任一字串" },
-  { name => "regexp", description => "包含正規表達式" },
-  { name => "notregexp", description => "不包含正規表達式" },
-  { name => "lessthan", description => "小於" },
-  { name => "greaterthan", description => "大於" },
-  { name => "anywords", description => "包含任何一個字" },
-  { name => "allwords", description => "包含所有字" },
-  { name => "nowords", description => "不包含任何字" },
-  { name => "changedbefore", description => "在...之前被變更" },
-  { name => "changedafter", description => "在...之後被變更" },
-  { name => "changedfrom", description => "從...變更" },
-  { name => "changedto", description => "變更為..." },
-  { name => "changedby", description => "被...變更" },
-  { name => "matches", description => "符合" } ] %]
+  "noop",
+  "equals",
+  "notequals",
+  "anyexact",
+  "substring",
+  "casesubstring",
+  "notsubstring",
+  "anywordssubstr",
+  "allwordssubstr",
+  "nowordssubstr",
+  "regexp",
+  "notregexp",
+  "lessthan",
+  "greaterthan",
+  "anywords",
+  "allwords",
+  "nowords",
+  "changedbefore",
+  "changedafter",
+  "changedfrom",
+  "changedto",
+  "changedby",
+  "matches"
+] %]
 
   <p>
     <strong>
@@ -136,12 +83,9 @@
           [% END %]
         </select>
 
-        <select name="[% "type${chartnum}-${rownum}-${colnum}" %]">
-          [% FOREACH type = types %]
-            <option value="[% type.name %]"
-              [%- " selected" IF type.name == col.type %]>[% type.description %]</option>
-          [% END %]
-        </select>
+        [% INCLUDE "search/type-select.html.tmpl"
+           name = "type${chartnum}-${rownum}-${colnum}",
+           types = types, selected = col.type %]
 
         <input name="[% "value${chartnum}-${rownum}-${colnum}" %]"
                value="[% col.value FILTER html %]">

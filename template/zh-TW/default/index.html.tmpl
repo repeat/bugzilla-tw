@@ -19,6 +19,7 @@
   # Contributor(s): Terry Weissman <terry@mozilla.org>
   #                 Jacob Steenhagen <jake@bugzilla.org>
   #                 Vitaly Harisov  <vitaly@rathedg.com>
+  #                 Guy Pyrzak <guy.pyrzak@gmail.com>
   #%]
 
 [%# INTERFACE:
@@ -33,27 +34,49 @@
    header = "首頁"
    header_addl_info = "版本 $constants.BUGZILLA_VERSION"
    style_urls = [ 'skins/standard/index.css' ]
-   onload = 'document.forms[\'f\'].quicksearch.focus();'
 %]
 
 
 <script type="text/javascript">
 <!--
-function addSidebar() {
-  if ((typeof window.sidebar == "object") && (typeof window.sidebar.addPanel == "function"))
-  {
-    var sidebarname=window.location.host;
-    if (!/bug/i.test(sidebarname))
-      sidebarname="[% terms.Bugzilla %] "+sidebarname;
-    window.sidebar.addPanel (sidebarname, "[% urlbase FILTER html %]sidebar.cgi", "");
+function onLoadActions() {
+  quicksearchHelpText('quicksearch_main', 'show');
+  if( window.external.AddSearchProvider ){
+    YAHOO.util.Dom.removeClass('quicksearch_plugin', 'bz_default_hidden');
   }
-  else
-  {
-    var rv = window.confirm ("你的瀏覽器並不支援側邊欄延伸元件。你要現在升級嗎？");
-    if (rv)
-      document.location.href = "http://www.mozilla.org/";
+  document.getElementById('quicksearch_top').focus();
+}
+function addSidebar() {
+  var sidebarname=window.location.host;
+  if (!/bug/i.test(sidebarname))
+    sidebarname="[% terms.Bugzilla %] "+sidebarname;
+  window.sidebar.addPanel (sidebarname, "[% urlbase FILTER html %]sidebar.cgi", "");
+}
+var quicksearch_message = "輸入 [% terms.bug %] 的編號或字串進行搜尋";
+
+function checkQuicksearch( form ) {
+  if (form.quicksearch.value == '' || form.quicksearch.value == quicksearch_message ) {
+    alert('請至少先輸入一個以上的字串進行搜尋。');
+    return false;
+  }
+  return true;
+}
+
+function quicksearchHelpText(el_id, action){
+  var el = document.getElementById(el_id);
+  if ( action == "show") {
+    if( el.value == "" ) {
+      el.value = quicksearch_message
+      YAHOO.util.Dom.addClass(el, "quicksearch_help_text");
+    }
+  } else {
+    if( el.value == quicksearch_message ) {
+      el.value = "";
+      YAHOO.util.Dom.removeClass(el, "quicksearch_help_text");
+    }
   }
 }
+    YAHOO.util.Event.onDOMReady(onLoadActions);
 //-->
 </script>
 
@@ -70,8 +93,7 @@ function addSidebar() {
       新版本釋出日期： [% release.data.date FILTER html %] 。</p>
 
       <p class="notice">此一訊息僅對有管理權限的使用者顯示。
-      你可以在<a
-      href="editparams.cgi?section=core#upgrade_notification">參數設定</a>頁設定此通知。</p>
+      你可以在<a href="editparams.cgi?section=core#upgrade_notification">參數設定</a>頁設定此通知。</p>
     [% ELSIF release.error == "missing_package" %]
       <p>並未安裝 '[% release.package FILTER html %]' 。此元件是<a
       href="editparams.cgi?section=core#upgrade_notification">在有新版本釋出時通知你用的</a>。</p>
@@ -92,56 +114,64 @@ function addSidebar() {
 [% END %]
 
 <div id="page-index">
-  <div class="intro"></div>
+  <table>
+    <tr>
+      <td>
+        <h1 id="welcome">歡迎來到 [% terms.Bugzilla %]</h1>
+        <div class="intro">[% Hook.process('intro') %]</div>
+        <a id="enter_bug" class="bz_common_actions"
+           href="enter_bug.cgi"><span>回報 [% terms.Bug %]</span></a>
 
-  <p>歡迎來到 [% terms.Bugzilla %] 。要瞭解這個版本的 [% terms.Bugzilla %] 有什麼新功能，請參考<a
-     href="page.cgi?id=release-notes.html">版本資訊</a>！你也可以藉由閱讀
-     <a href="[% docs_urlbase FILTER html %]using.html">
-     [%- terms.Bugzilla %] 使用者說明</a>來瞭解更多關於 [%+ terms.Bugzilla %] 的資訊，以及如何使用它。
-  </p>
+        <a id="query" class="bz_common_actions"
+           href="query.cgi"><span>搜尋</span></a>
 
-  <p>最常幹的事：</p>
-  <ul>
-    <li id="query"><a href="query.cgi">搜尋已存在的 [% terms.bug %] 回報</a></li>
-    <li id="enter-bug"><a href="enter_bug.cgi">輸入一個新的 [% terms.bug %] 回報</a></li>
-    <li id="report"><a href="report.cgi">統計報表及圖表</a></li>
-[% IF user.id %]
-    <li id="userprefs"><a href="userprefs.cgi">變更密碼或使用者偏好設定</a></li>
-  [% IF user.authorizer.can_logout %]
-    <li id="logout"><a href="relogin.cgi">登出 [% user.login FILTER html %]</a></li>
-  [% END %]
-[% ELSIF user.authorizer.can_login %]
-  </ul>
-    [% PROCESS "account/auth/login-small.html.tmpl" %]
-  <ul>
-  [% IF Param('createemailregexp') && user.authorizer.user_can_create_account %]
-    <li id="account"><a href="createaccount.cgi">建立新的 [% terms.Bugzilla %] 帳號</a></li>
-  [% END %]
-[% END %]
-    <li id="sidebar"><a href="javascript:addSidebar()">加到側欄</a>（需要 Mozilla 系列的瀏覽器，例如 Mozilla Firefox ）</li>
-    <li id="quick_search_plugin">
-      <a href="javascript:window.external.AddSearchProvider('[% urlbase FILTER html %]search_plugin.cgi')">安裝快速搜尋插件</a>（需要 Firefox 2 或 Internet Explorer 7 ）
-    </li>
+        <a id="account" class="bz_common_actions"
+          [% IF user.id %]
+            href="userprefs.cgi"><span>使用者偏好設定</span></a>
+          [% ELSIF Param('createemailregexp')
+                   && user.authorizer.user_can_create_account
+          %]
+            href="createaccount.cgi"><span>建立新帳號</span></a>
+          [% ELSE %]
+            href="?GoAheadAndLogIn=1"><span>登入</span></a>
+          [% END %]
 
-
-    [%# List items of links to more things users can do on this installation. %]
-    [% Hook.process("links") %]
-
-  </ul>
-
-  <form id="f" name="f" action="buglist.cgi" method="get"
-        onsubmit="if (this.quicksearch.value == '')
-                  { alert('請輸入至少一個搜尋字串。');
-                    return false; } return true;">
-  <div>
-    <p>輸入[% terms.abug %]編號或是一些搜尋字串：</p>
-    <input id="quicksearch" type="text" name="quicksearch">
-    <input id="find" type="submit" value="尋找">
-    <a href="page.cgi?id=quicksearch.html">[求助]</a>
-  </div>
-  </form>
-
-  <div class="outro"></div>
+        <form id="quicksearchForm" name="quicksearchForm" action="buglist.cgi"
+              onsubmit="return checkQuicksearch(this);">
+          <div>
+            <input id="quicksearch_main" type="text" name="quicksearch"
+              onfocus="quicksearchHelpText(this.id, 'hide');"
+              onblur="quicksearchHelpText(this.id, 'show');"
+            >
+            <input id="find" type="submit" value="快速搜尋">
+            <ul class="additional_links" id="quicksearch_links">
+              <li>
+                <a href="page.cgi?id=quicksearch.html">快速搜尋說明</a>
+              </li>
+              <li class="bz_default_hidden" id="quicksearch_plugin">
+                |
+                <a href="javascript:window.external.AddSearchProvider('[% urlbase FILTER html %]search_plugin.cgi')">
+                 安裝快速搜尋插件
+                </a>
+              </li>
+            </ul>
+            <ul class="additional_links">
+              <li>
+                <a href="[% docs_urlbase FILTER html %]using.html">
+                  [%- terms.Bugzilla %] 使用者說明
+                </a>
+                &nbsp;|
+              </li>
+              <li>
+                <a href="page.cgi?id=release-notes.html">版本資訊</a>
+              </li>
+            </ul>
+          </div>
+        </form>
+	<div class="outro">[% Hook.process('outro') %]</div>
+      </td>
+    </tr>
+  </table>
 </div>
 
 [% PROCESS global/footer.html.tmpl %]

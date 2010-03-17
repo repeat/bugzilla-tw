@@ -29,7 +29,7 @@
   [%+ "$terms.Bug $attachment.bug_id" FILTER bug_link(attachment.bug_id) FILTER none %]
   附件 [% attachment.id %] 的詳細內容
 [% END %]
-[% subheader = BLOCK %][% bugsummary FILTER html %][% END %]
+[% subheader = BLOCK %][% attachment.bug.short_desc FILTER html %][% END %]
 
 [% PROCESS global/header.html.tmpl
   title = title
@@ -226,9 +226,11 @@
           <br>
         </small>
 
-        [% IF flag_types.size > 0 %]
+        [% IF attachment.flag_types.size > 0 %]
           [% PROCESS "flag/list.html.tmpl" bug_id = attachment.bug_id
-                                           attach_id = attachment.id %]<br>
+                                           attach_id = attachment.id
+                                           flag_types = attachment.flag_types
+           %]<br>
         [% END %]
 
         <div id="smallCommentFrame">
@@ -249,7 +251,7 @@
          | <a href="attachment.cgi?id=[% attachment.id %]&amp;action=diff">比較差異</a>
         [% END %]
         [% IF Param("allow_attachment_deletion")
-              && user.groups.admin
+              && user.in_group('admin')
               && attachment.datasize > 0 %]
           | <a href="attachment.cgi?id=[% attachment.id %]&amp;action=delete">刪除</a>
         [% END %]

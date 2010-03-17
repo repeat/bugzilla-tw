@@ -29,7 +29,7 @@
 [% cgi = Bugzilla.cgi %]
 
 [% PROCESS global/header.html.tmpl
-   title = "輸入${terms.ABug}"
+   title = "輸入 $terms.Bug"
    onload = "PutDescription()"
    style = "#somebugs { width: 100%; height: 500px }"
  %]
@@ -121,7 +121,7 @@ function PutDescription() {
   </form>
 
 <p>
-  檢視搜尋結果。如果顯示<tt><b>[% terms.zeroSearchResults %]</b></tt>的訊息，代表 [% terms.Bugzilla %] 沒找到符合的 [% terms.bugs %] 。看有沒有打錯字，或試試其他關鍵字。如果你找到[% terms.abug %]看起來有點像你遇到的，請在後頭加上一些資訊，而不是開一個新的 [% terms.bug %] 。
+  檢視搜尋結果。如果顯示<tt><b>[% terms.zeroSearchResults %]</b></tt>的訊息，代表 [% terms.Bugzilla %] 沒找到符合的 [% terms.bugs %] 。看有沒有打錯字，或試試其他關鍵字。如果你找到的 [% terms.bug %] 看起來有點像你遇到的，請在後頭加上一些資訊，而不是新增一個 [% terms.bug %] 。
 </p>
 
 

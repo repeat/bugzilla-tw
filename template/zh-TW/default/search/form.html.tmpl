@@ -20,6 +20,8 @@
   #                 Gervase Markham <gerv@gerv.net>
   #%]
 
+[% PROCESS "global/field-descs.none.tmpl" %]
+
 <script type="text/javascript">
 
 var first_load = true;         [%# is this the first time we load the page? %]
@@ -103,20 +105,16 @@ function doOnSelectProduct(selectmode) {
 
 </script>
 
-
-[% PROCESS global/variables.none.tmpl %]
-
-[% query_variants = [
-  { value => "allwordssubstr", description => "包含所有的字或字串" },
-  { value => "anywordssubstr", description => "包含任何一個字或字串" },
-  { value => "substring", description => "包含該字串" },
-  { value => "casesubstring", description => "包含該字串 (符合大小寫)" },
-  { value => "allwords", description => "包含所有字" },
-  { value => "anywords", description => "包含任何一個字" },
-  { value => "regexp", description => "符合正規表達式" },
-  { value => "notregexp", description => "不符合正規表達式" } ] %]
-
-[% PROCESS "global/field-descs.none.tmpl" %]
+[% query_types = [
+  "allwordssubstr",
+  "anywordssubstr",
+  "substring",
+  "casesubstring",
+  "allwords",
+  "anywords",
+  "regexp",
+  "notregexp"
+] %]
 
 [%# If we resubmit to ourselves, we need to know if we are using a format. %]
 [% thisformat = query_format != '' ? query_format : format %]
@@ -130,12 +128,9 @@ function doOnSelectProduct(selectmode) {
       <label for="short_desc" accesskey="s">摘要 (<u>S</u>)</label>：
     </th>
     <td>
-      <select name="short_desc_type">
-      [% FOREACH qv = query_variants %]
-        <option value="[% qv.value %]"
-          [% " selected" IF default.short_desc_type.0 == qv.value %]>[% qv.description %]</option>
-      [% END %]
-      </select>
+    [% INCLUDE "search/type-select.html.tmpl"
+       name = "short_desc_type",
+       types = query_types, selected = default.short_desc_type.0 %]
     </td>
     <td>
       <input name="short_desc" id="short_desc" size="40"
@@ -265,7 +260,7 @@ function doOnSelectProduct(selectmode) {
 [%# *** Comment URL Whiteboard Keywords *** %]
 
   [% FOREACH field = [
-    { name => "long_desc", description => "描述或意見 (<u>C</u>)",
+    { name => "longdesc", description => "描述或意見 (<u>C</u>)",
       accesskey => 'c' },
     { name => "bug_file_loc", description => "網址 (<u>U</u>)",
       accesskey => 'u' },
@@ -278,13 +273,10 @@ function doOnSelectProduct(selectmode) {
         <label for="[% field.name %]" accesskey="[% field.accesskey %]">[% field.description %]</label>：
       </th>
       <td>
-        <select name="[% field.name %]_type">
-        [% FOREACH qv = query_variants %]
-          [% type = "${field.name}_type" %]
-          <option value="[% qv.value %]"
-            [% " selected" IF default.$type.0 == qv.value %]>[% qv.description %]</option>
-        [% END %]
-        </select>
+        [% type = field.name _ "_type" %]
+        [% INCLUDE "search/type-select.html.tmpl"
+           name = type,
+           types = query_types, selected = default.$type.0 %]
       </td>
       <td><input name="[% field.name %]" id="[% field.name %]" size="40"
                  value="[% default.${field.name}.0 FILTER html %]">
@@ -300,17 +292,10 @@ function doOnSelectProduct(selectmode) {
         <label for="keywords" accesskey="k"><a href="describekeywords.cgi">關鍵字 (<u>K</u>)</a></label>：
       </th>
       <td>
-        <select name="keywords_type">
-        [% FOREACH qv = [
-          { name => "allwords", description => "包含所有關鍵字" },
-          { name => "anywords", description => "包含任一關鍵字" },
-          { name => "nowords",  description => "不包含任何關鍵字" } ] %]
-
-          <option value="[% qv.name %]"
-            [% " selected" IF default.keywords_type.0 == qv.name %]>
-            [% qv.description %]</option>
-        [% END %]
-        </select>
+      [% INCLUDE "search/type-select.html.tmpl"
+         name = "keywords_type",
+         types = ['allwords', 'anywords', 'nowords'],
+         selected = default.keywords_type.0 %]
       </td>
       <td>
         <input name="keywords" id="keywords" size="40"

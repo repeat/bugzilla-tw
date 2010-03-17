@@ -87,8 +87,20 @@
         [% "除了已加入的意見之外，" IF comments.size > start_at %]這將會覆寫以上的變更。
     </form>
   </li>
+      [% IF cgi.param("comment") %]
+    <li>
+      <form method="post" action="process_bug.cgi">
+        <input type="hidden" name="id" value="[% cgi.param("id") FILTER html %]">
+        <input type="hidden" name="delta_ts" value="[% bug.delta_ts FILTER html %]">
+        <input type="hidden" name="comment" value="[% cgi.param("comment") FILTER html %]">
+        <input type="hidden" name="commentprivacy" value="[% cgi.param("commentprivacy") FILTER html %]">
+	<input type="hidden" name="token" value="[% cgi.param("token") FILTER html %]">
+        <input type="submit" id="process_comment" value="只送出我所留下的意見">
+      </form>
+    </li>
+  [% END %]
   <li>
-    刪除我做的變更，並[%+ "重新瀏覽 $terms.bug $bug.id 。" FILTER bug_link(bug.id) FILTER none %]
+    刪除我做的變更，並[% "重新瀏覽 $terms.bug $bug.id 。" FILTER bug_link(bug.id) FILTER none %]
   </li>
 </ul>
 

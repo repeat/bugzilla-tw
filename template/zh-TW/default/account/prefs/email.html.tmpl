@@ -31,7 +31,6 @@
   #               below), keyed by reasonname (e.g. comments; again, see
   #               below). The value is a boolean - true if the user is
   #               receiving mail for that reason when in that role.
-  # Also references the 'supportwatchers' Param.
   #%]
 
 [% PROCESS global/variables.none.tmpl %]
@@ -40,7 +39,7 @@
 [% usevotes = Param('usevotes') %]
 
 <p>
-如果你不想要收到 [% terms.bugs %] 變更狀態的通知信，你可以用以下設定來過濾部份或全部的通知信。
+如果你不想要收到 [% terms.bug %] 變更狀態的通知信，你可以用以下設定來過濾部份或全部的通知信。
 </p>
 
 <script type="text/javascript">
@@ -115,6 +114,8 @@ document.write('<input type="button" value="全不選" onclick="SetCheckboxes(fa
 [% events = [
     { id = constants.EVT_ADDED_REMOVED,
       description = "被加入某個 $terms.bug ，或自某個 $terms.bug 中刪除" },
+    { id = constants.EVT_BUG_CREATED,
+      description = "建立了一個新的 $terms.bug " },
     { id = constants.EVT_OPENED_CLOSED,
       description = " $terms.bug 已解決或再開啟 (REOPENED)" },
     { id = constants.EVT_PROJ_MANAGEMENT,
@@ -258,7 +259,6 @@ document.write('<input type="button" value="全不選" onclick="SetCheckboxes(fa
   [% END %]
 [% END %]
 
-[% IF Param('supportwatchers') %]
 <hr>
 <b>監控使用者</b>
 
@@ -296,8 +296,6 @@ document.write('<input type="button" value="全不選" onclick="SetCheckboxes(fa
     <i>無</i>
   [% END %]
 </p>
-
-[% END %]
 
 <hr>
 

@@ -108,36 +108,25 @@
     [% title = "已刪除使用者 $otheruser.login" %]
     已成功刪除使用者 [% otheruser.login FILTER html %] 。
 
+  [% ELSIF message_tag == "account_disabled" %]
+    使用者帳號 [% account FILTER html %] 已停用，所以你無法變更他的密碼。
+
   [% ELSIF message_tag == "attachment_creation_failed" %]
     成功建立 [% terms.bug %] ，但無法建立附件。
     請以下方的"新增附件"連結再次新增附件。
 
-  [% ELSIF message_tag == "bug_confirmed_by_votes" %]
-    *** 此 [% terms.bug %] 已經由投票確認。 ***
-
-  [% ELSIF message_tag == "bug_duplicate_of" %]
-    *** 此 [% terms.bug %] 被標記為和 [% terms.bug %] [%+ dupe_of FILTER html %]重複。 ***
-
-  [% ELSIF message_tag == "bug_has_duplicate" %]
-    *** [% terms.Bug %] [%+ dupe FILTER html %] 被標記為和此 [% terms.bug %] 重複。 ***
-
-  [% ELSIF message_tag == "bug_moved_to" %]
-    <p>[% terms.Bug %] 搬移至 [% Param("move-to-url") FILTER html %]。</p>
-    <p>如果搬移成功， [% login FILTER html %] 將會收到一封信，包括在另一個資料庫中的新
-    [% terms.bug %] 編號。<br>
-    如果都沒什麼問題，請把這個 [% terms.bug %] 標記為已認證 (VERIFIED)，並在新的
-    [% terms.bug %]裡貼上舊的 [% terms.bug %] 連結。否則，請將這個 [% terms.bug %] 標記為再開啟
-    (REOPENED)。
+  [% ELSIF message_tag == "bug_group_description" %]
+    瀏覽 [% product.name FILTER html %] 產品的 [% terms.bugs %]
 
   [% ELSIF message_tag == "buglist_adding_field" %]
-    [% title = "新增欄位至搜尋頁中..." %]
+    [% title = "新增欄位至搜尋頁中…" %]
     [% link  = "如果此頁面並未自動更新，請點選此連結。" %]
 
   [% ELSIF message_tag == "buglist_new_default_query" %]
     已新增預設搜尋。你也可以將任何搜尋的結果設為書籤。
 
   [% ELSIF message_tag == "buglist_new_named_query" %]
-    [% title = "搜尋已建立" %]
+    [% title = "已建立搜尋" %]
     已將搜尋結果儲存為 <code><a
      href="buglist.cgi?cmdtype=runnamed&amp;namedcmd=[% queryname FILTER url_quote %]"
     >[% queryname FILTER html %]</a></code> 。
@@ -155,7 +144,7 @@
     [% END %]
 
   [% ELSIF message_tag == "buglist_updated_named_query" %]
-    [% title = "搜尋已更新" %]
+    [% title = "已更新搜尋" %]
     已更新你的搜尋「<code><a
       href="buglist.cgi?cmdtype=runnamed&amp;namedcmd=[% queryname FILTER url_quote %]"
       >[% queryname FILTER html %]</a></code>」。
@@ -171,25 +160,29 @@
 
   [% ELSIF message_tag == "classification_deleted" %]
     [% title = "已刪除分類" %]
-    已刪除分類 <em>[% classification FILTER html %]</em> 。
+    已刪除分類 <em>[% classification.name FILTER html %]</em> 。
 
   [% ELSIF message_tag == "classification_updated" %]
-    [% IF updated_classification || updated_description || updated_sortkey %]
-      [% title = "已更新分類" %]
-      已儲存對分類 <em>[% classification FILTER html %]</em> 所做出的變更：
+    [% title = "已更新分類" %]
+    [% IF changes.keys.size %]
+      已儲存對分類 <em>[% classification.name FILTER html %]</em> 所做出的變更：
       <ul>
-        [% IF updated_classification %]
-          <li>分類名稱已更新</li>
+        [% IF changes.name.defined %]
+          <li>名稱已更新為 '[% classification.name FILTER html %]'</li>
         [% END %]
-        [% IF updated_description %]
-          <li>描述已更新</li>
+        [% IF changes.description.defined %]
+          [% IF classification.description %]
+            <li>描述已更新為 '[% classification.description FILTER html %]'</li>
+          [% ELSE %]
+            <li>描述已刪除</li>
+          [% END %]
         [% END %]
-        [% IF updated_sortkey %]
-          <li>排序鍵已更新</li>
+        [% IF changes.sortkey.defined %]
+          <li>排序鍵已更新為 '[% classification.sortkey FILTER html %]'</li>
         [% END %]
       </ul>
     [% ELSE %]
-      並未對分類 <em>[% classification FILTER html %]</em> 做出任何變更。
+      並未對分類 <em>[% classification.name FILTER html %]</em> 做出任何變更。
     [% END %]
 
   [% ELSIF message_tag == "component_created" %]
@@ -275,7 +268,7 @@
 
   [% ELSIF message_tag == "field_value_created" %]
     [% title = "已建立新的欄位值" %]
-    已將 <em>[% value FILTER html %]</em> 新增為欄位
+    已將 <em>[% value.name FILTER html %]</em> 新增為欄位
     <em>[% field.description FILTER html %]</em>
     (<em>[% field.name FILTER html %]</em>) 的合法選項。
     [% IF field.name == "bug_status" %]
@@ -287,27 +280,46 @@
     [% title = "已刪除欄位值" %]
     已刪除欄位 <em>[% field.description FILTER html %]</em>
     (<em>[% field.name FILTER html %]</em>) 的值
-    <em>[% value FILTER html %]</em> 。
+    <em>[% value.name FILTER html %]</em> 。
 
   [% ELSIF message_tag == "field_value_updated" %]
     [% title = "已更新欄位值" %]
-    [% IF updated_value || updated_sortkey %]
+    [% IF changes.keys.size %]
       已儲存對欄位 <em>[% field.description FILTER html %]</em>
       (<em>[% field.name FILTER html %]</em>)
-      的值  <em>[% value FILTER html %]</em> 所做的變更：
+      的值 <em>[% value_old FILTER html %]</em> 所做的變更：
       <ul>
-        [% IF updated_value %]
-          <li>已更新欄位值為 <em>[% value FILTER html %]</em></li>
-          [% IF default_value_updated %]
-            (注意：此為此欄位的預設值。所有指向預設值的參照將會指向此新數值)
-          [% END %]
+        [% IF changes.value %]
+          <li>已更新欄位值為
+            <em>[% changes.value.1 FILTER html %]</em> 。
+            [% IF value.is_default %]
+              （注意：此為此欄位的預設值。所有指向預設值的參照將會指向此新數值。）
+            [% END %]
+          </li>
         [% END %]
-        [% IF updated_sortkey %]
-          <li>欄位值排序鍵更新為 <em>[% sortkey FILTER html %]</em></li>
+        [% IF changes.sortkey %]
+          <li>排序鍵更新為
+            <em>[% changes.sortkey.1 FILTER html %]</em> 。
+          </li>
+        [% END %]
+        [% IF changes.visibility_value_id %]
+          [% IF value.visibility_value.defined %]
+            <li>只在
+              [%+ value.field.value_field.description FILTER html %]
+              設定為
+              '[%+ value.visibility_value.name FILTER html %]'
+              時出現。
+            </li>
+          [% ELSE %]
+            <li>無論
+              [%+ value.field.value_field.description FILTER html %]
+              設定為何，此欄位將永遠顯示。
+            </li>
+          [% END %]
         [% END %]
       </ul>
     [% ELSE %]
-      並未對欄位值 <em>[% value FILTER html %]</em> 做出變更。
+      並未對欄位值 <em>[% value_old FILTER html %]</em> 做出變更。
     [% END %]
 
   [% ELSIF message_tag == "flag_cleared" %]
@@ -410,6 +422,9 @@
     [% ELSE %]
       並未對群組 '[% group.name FILTER html %]' 做任何變更。
     [% END %]
+
+  [% ELSIF message_tag == "job_queue_depth" %]
+    排程中有 [% count FILTER html %] 個 job 。
 
   [% ELSIF message_tag == "keyword_created" %]
     [% title = "已建立新的關鍵字" %]
@@ -514,21 +529,21 @@
     已更新你的密碼。
 
   [% ELSIF message_tag == "flag_type_created" %]
-    [% title = "已新增旗標類型" %]
+    [% title = BLOCK %]已新增旗標類型 '[% name FILTER html %]'[% END %]
     已新增旗標類型 <em>[% name FILTER html %]</em> 。
 
   [% ELSIF message_tag == "flag_type_changes_saved" %]
-    [% title = "旗標類型的變更已儲存" %]
-    對旗標類型 <em>[% name FILTER html %]</em>
-    所做的變更已儲存。
+    [% title = BLOCK %]已儲存對旗標類型 '[% name FILTER html %]' 的變更[% END %]
+    已儲存對旗標類型 <em>[% name FILTER html %]</em>
+    所做的變更。
 
   [% ELSIF message_tag == "flag_type_deleted" %]
-    [% title = "旗標類型已刪除" %]
-    旗標類型 <em>[% name FILTER html %]</em> 已刪除。
+    [% title = BLOCK %]已刪除旗標類型 '[% name FILTER html %]'[% END %]
+    已刪除旗標類型 <em>[% name FILTER html %]</em> 。
 
   [% ELSIF message_tag == "flag_type_deactivated" %]
-    [% title = "停用旗標類型" %]
-    旗標類型 <em>[% flag_type.name FILTER html %]</em> 已被停用。
+    [% title = BLOCK %]已停用旗標類型 '[% flag_type.name FILTER html %]'[% END %]
+    已停用旗標類型 <em>[% flag_type.name FILTER html %]</em> 。
 
   [% ELSIF message_tag == "install_admin_get_email" %]
     輸入管理者的電子郵件地址：
@@ -573,6 +588,25 @@
   [% ELSIF message_tag == "install_fk_drop" %]
     移除 foreign key ： [% table FILTER html %].[% column FILTER html %] -&gt; [% fk.TABLE FILTER html %].[% fk.COLUMN FILTER html %]...
 
+  [% ELSIF message_tag == "install_fk_invalid" %]
+    <u>錯誤：</u>在 table '[% table FILTER html %]' 中的 '[% column FILTER html %]'
+    欄位含有無效的數值。（這些數值並不存在於
+    table '[% foreign_table FILTER html %]' 的 '[% foreign_column FILTER html %]'
+    欄位中。）
+
+    在繼續執行 checksetup 之前，你必須要修正這些數值。修正的方法包括將他們自資料庫中刪除，或者是把
+    table '[% table FILTER html %]' 的 '[% column FILTER html %]' 欄位的數值指向
+    '[% foreign_table FILTER html %].[% foreign_column FILTER html %]' 的有效數值。
+
+    來自欄位 '[% table FILTER html %].[% column FILTER html %]' 中，有問題的數值如下：
+    [%+ values.join(', ') FILTER html %]
+
+  [% ELSIF message_tag == "install_fk_invalid_fixed" %]
+    <b><u>警告：</u></b>在 [% table FILTER html %].[% column FILTER html %]
+    裡已經有無效的數值被[% IF action == 'delete' %]刪除[% ELSE %]設定為
+    NULL [% END %]：
+    [%+ values.join(', ') FILTER html %]
+
   [% ELSIF message_tag == "install_group_create" %]
     新增 [% name FILTER html %] 群組...
 
@@ -580,13 +614,14 @@
     新增使用者設定： '[% name FILTER html %]'
 
   [% ELSIF message_tag == "install_table_drop" %]
-    刪除表格 '[% name FILTER html %]'...
+    刪除 table '[% name FILTER html %]' 中...
 
   [% ELSIF message_tag == "install_table_rename" %]
-    將 '[% old FILTER html %]' 表格更名為 '[% new FILTER html %]'...
+    將 table '[% old FILTER html %]' 更名為 '[% new FILTER html %]' 中...
 
   [% ELSIF message_tag == "install_urlbase_default" %]
-    你現在已安裝 [% terms.Bugzilla %] 。請瀏覽「參數設定」頁面（在管理者帳號的頁尾有連結），以確保所有設定都正確，包括將
+    你現在已安裝 [% terms.Bugzilla %]
+    。請瀏覽「參數設定」頁面（在管理者帳號的頁尾有連結），以確保所有設定都正確，包括將
     'urlbase' 選項設定為正確的網址。
 
   [% ELSIF message_tag == "install_reset_password" %]
@@ -600,14 +635,14 @@
     <b><u>警告！</u></b>你沒有在 localconfig 輸入 "webservergroup" 參數。
     <br>這代表著某些需要以你和網頁伺服器編輯的檔案和目錄，變成所有人都可以寫入，
     <br>此外，其他檔案（包括儲存你的資料庫密碼的 localconfig 檔案），變成所有人都可以讀取。
-    <br>這代表著擁有瀏覽這台機器的<u>任何人</u>可以對你安裝的 [%+ terms.Bugzilla %]
+    <br>這代表著擁有瀏覽這台機器的<u>任何人</u>可以對你安裝的 [% terms.Bugzilla %]
     做任何事情，甚至也可以執行任何 Perl 程式。
 
     你真的，真的，真的需要變更此項設定。
     ****************************************************************************
 
   [% ELSIF message_tag == "install_webservergroup_not_in" %]
-    警告：你在 localconfig 中輸入了 "webservergroup" 參數的值，但是你
+    <b><u>警告：</u></b>你在 localconfig 中輸入了 "webservergroup" 參數的值，但是你
     <br>a) 並沒有將這個 script 以 [% constants.ROOT_USER FILTER html %] 執行；或者你
     <br>b) 並不是該群組的成員。
     <br>這將造成權限問題，並降低安全性。
@@ -616,7 +651,7 @@
     或是刪除 "webservergroup" 參數的值。
 
   [% ELSIF message_tag == "install_webservergroup_windows" %]
-    警告：你將 webservergroup 設定在 [% constants.bz_locations.localconfig FILTER html %] 中。
+    <b><u>警告：</u></b>你將 webservergroup 設定在 [% constants.bz_locations.localconfig FILTER html %] 中。
     <br>若在 Windows 下執行，這樣設定並不會有任何安全性。
     <br>請確認在你的 [% terms.Bugzilla %] 目錄的檔案權限是否適合你的系統，並避免不必要的寫入權限。
 
@@ -651,13 +686,16 @@
   [% ELSIF message_tag == "series_all_closed" %]
     全部關閉
 
+  [% ELSIF message_tag == "series_subcategory" %]
+    -全部-
+
   [% ELSIF message_tag == "sudo_started" %]
     [% title = "已開始 sudo" %]
       已開始 sudo 。除非你主動登出，否則接下來的 6 個小時，所有的動作都是以 sudo 的權限進行。
-      被 sudo 的使用者：[% target FILTER html %]。
+      被 sudo 的使用者： [% target FILTER html %] 。
 
   [% ELSIF message_tag == "sudo_ended" %]
-    [% title = "已結束 sudo " %]
+    [% title = "已結束 sudo" %]
       已結束 sudo 。接下來你所做的任何動作，都是以你自己的身份進行。
 
   [% ELSIF message_tag == "series_created" %]

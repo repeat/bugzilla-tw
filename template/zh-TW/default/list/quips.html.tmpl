@@ -37,7 +37,7 @@
   <p>
     <font color="red">
       已新增智語 '<tt>[% added_quip FILTER html %]</tt>'。
-      [% IF Param("quip_list_entry_control") == "moderated" AND !user.groups.admin %]
+      [% IF Param("quip_list_entry_control") == "moderated" AND !user.in_group('admin') %]
         在通過審核之後就會立即使用它。
       [% END %]
     </font>
@@ -64,7 +64,7 @@
 [% IF Param("quip_list_entry_control") != "closed" %]
   <p>
     你可以加長智語的清單。只要輸入聰明的、有趣的，甚至無聊的句子（但請勿輸入十八禁的或具有攻擊性的句子），然後按下「送出」鍵即可。
-    [% IF Param("quip_list_entry_control") == "moderated" AND !user.groups.admin %]
+    [% IF Param("quip_list_entry_control") == "moderated" AND !user.in_group('admin') %]
       注意：在智語被採用前，將先接受審核。
     [% END %]
   </p>

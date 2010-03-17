@@ -33,7 +33,6 @@
   #                  it was affected by an old Bugzilla bug.)
   #%]
 
-[% PROCESS global/variables.none.tmpl %]
 [% PROCESS "global/field-descs.none.tmpl" %]
 
 [% PROCESS bug/time.html.tmpl %]
@@ -61,7 +60,7 @@
     [% FOREACH operation = operations %]
       <tr>
         <td rowspan="[% operation.changes.size %]" valign="top">
-          [% operation.who FILTER html %]
+          [% operation.who FILTER email FILTER html %]
         </td>
         <td rowspan="[% operation.changes.size %]" valign="top">
           [% operation.when FILTER time %]
@@ -73,7 +72,7 @@
                 <a href="attachment.cgi?id=[% change.attachid %]">
                 Attachment #[% change.attachid %]</a>
               [% END %]
-              [%+ change.field %]
+              [%+ field_descs.${change.fieldname} FILTER html %]
             </td>
             <td>
               [% IF change.removed.defined %]
@@ -89,7 +88,7 @@
                          change.fieldname == 'dependson' %]
                   [% change.removed FILTER bug_list_link FILTER none %]
                 [% ELSE %]
-                  [% change.removed FILTER html %]
+                  [% change.removed FILTER email FILTER html %]
                 [% END %]
               [% ELSE %]
                 &nbsp;
@@ -109,7 +108,7 @@
                          change.fieldname == 'dependson' %]
                   [% change.added FILTER bug_list_link FILTER none %]
                 [% ELSE %]
-                  [% change.added FILTER html %]
+                  [% change.added FILTER email FILTER html %]
                 [% END %]
               [% ELSE %]
                 &nbsp;

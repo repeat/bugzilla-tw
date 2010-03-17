@@ -15,10 +15,8 @@
   #%]
 
 [%# INTERFACE:
-  #      removed_na: array of hashes; groups not applicable for the product.
-  # added_mandatory: array of hashes; groups mandatory for the product.
-  #  classification: Bugzilla::Classification object;  product classification.
-  #         product: Bugzilla::Product object; the product.
+  # product: Bugzilla::Product object; the product.
+  # changes: Hashref with changes made to the product group controls.
   #%]
 
 [% title = BLOCK %]
@@ -29,19 +27,19 @@
   title = title
 %]
 <p>
-[% IF removed_na.size > 0 %]
-  [% FOREACH g = removed_na %]
+[% IF changes.group_controls.now_na.size %]
+  [% FOREACH g = changes.group_controls.now_na %]
     從群組 '[% g.name FILTER html %]' 中刪除 [% terms.bugs %] ，因已不再適用這項產品的權限。
     <p>
-    已刪除 [% g.bug_count FILTER html %] 個 [%+ terms.bugs %] 。<p>
+    已刪除 [% g.bug_count FILTER html %] 個 [% terms.bugs %] 。<p>
   [% END %]
 [% END %]
 
-[% IF added_mandatory.size > 0 %]
-  [% FOREACH g = added_mandatory %]
+[% IF changes.group_controls.now_mandatory.size %]
+  [% FOREACH g = changes.group_controls.now_mandatory %]
     在群組 '[% g.name FILTER html %]' 新增 [% terms.bugs %] 中，因已適用此項產品的權限。
     <p>
-    已新增 [% g.bug_count FILTER html %] 個 [%+ terms.bugs %] 。<p>
+    已新增 [% g.bug_count FILTER html %] 個 [% terms.bugs %] 。<p>
   [% END %]
 [% END %]
 

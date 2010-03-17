@@ -69,8 +69,8 @@
     <td>
       [% IF otheruser.groups.size %]
         <ul>
-          [% FOREACH group = otheruser.groups.keys %]
-            <li>[% group FILTER html %]</li>
+          [% FOREACH group = otheruser.groups %]
+            <li>[% group.name FILTER html %]</li>
           [% END %]
         </ul>
       [% ELSE %]
@@ -113,17 +113,17 @@
             [% otheruser.login FILTER html %]
             <a href="buglist.cgi?field0-0-0=attachments.submitter&type0-0-0=equals&value0-0-0=
                [%- otheruser.login FILTER url_quote %]"
-               >已送出了 [%+ attachments %] 個附件</a>。如果你刪除此使用者帳號，資料庫的記錄將不一致，導致這
-               [% attachments %] 個附件不再出現於 [% terms.bugs %] 中。
+               >已送出了 [% attachments %] 個附件</a>。如果你刪除此使用者帳號，資料庫的記錄將不一致，導致這
+               [%+ attachments %] 個附件不再出現於 [% terms.bugs %] 中。
           </li>
         [% END %]
         [% IF reporter %]
           <li>
             [% otheruser.login FILTER html %]
             <a href="buglist.cgi?emailreporter1=1&amp;emailtype1=exact&amp;email1=
-               [%- otheruser.login FILTER url_quote %]">回報了 [%+ reporter %] 個 [%+ terms.bugs %]</a>
+               [%- otheruser.login FILTER url_quote %]">回報了 [% reporter %] 個 [% terms.bugs %]</a>
                。如果你刪除該使用者，資料庫的記錄將不一致，導致這
-               [% reporter %] 個 [% terms.bug %] 不再出現在 [% terms.bug %] 清單中。
+               [%+ reporter %] 個 [% terms.bug %] 不再出現在 [% terms.bug %] 清單中。
           </li>
         [% END %]
         [% IF bugs_activity %]
@@ -131,16 +131,16 @@
             [% otheruser.login FILTER html %] 曾對 [% terms.bugs %]
             做出變更。如果你刪除該使用者，資料庫中的 [% terms.bugs %]
             活動記錄將不一致，導致這 [% bugs_activity %] 項變更不再出現在
-            [% terms.bug %] 活動記錄中。
+            [%+ terms.bug %] 活動記錄中。
           </li>
         [% END %]
         [% IF flags.setter %]
           <li>
             [% otheruser.login FILTER html %] 曾經<a
               href="buglist.cgi?field0-0-0=setters.login_name&amp;type0-0-0=equals&amp;value0-0-0=
-              [%- otheruser.login FILTER url_quote %]">設定或要求設定 [%+ flags.setter %]
-              個旗標</a>。如果你刪除該使用者，資料庫中的旗標記錄將不一致，導致這
-              [% flags.setter %] 個旗標不再正確地顯示。
+              [%- otheruser.login FILTER url_quote %]">設定或要求設定
+              [%+ flags.setter %] 個旗標</a>。如果你刪除該使用者，資料庫中的旗標記錄將不一致，導致這
+              [%+ flags.setter %] 個旗標不再正確地顯示。
           </li>
         [% END %]
         [% IF longdescs %]
@@ -149,7 +149,7 @@
               href="buglist.cgi?emaillongdesc1=1&amp;emailtype1=exact&amp;email1=
               [%- otheruser.login FILTER url_quote %]">對 [% terms.bugs %] 發表過
               [%+ longdescs %] 次意見</a>。如果你刪除該使用者，資料庫中的意見記錄將不一致，導致這
-              [% longdescs %] 個意見無法再瀏覽。
+              [%+ longdescs %] 個意見無法再瀏覽。
           </li>
         [% END %]
         [% IF profiles_activity %]
@@ -174,7 +174,7 @@
           <li>
             [% otheruser.login FILTER html %]
             <a href="buglist.cgi?emailassigned_to1=1&amp;emailqa_contact1=1&amp;emailtype1=exact&amp;email1=
-               [%- otheruser.login FILTER url_quote %]">是 [%+ assignee_or_qa %] 個 [%+ terms.bugs %]</a>
+               [%- otheruser.login FILTER url_quote %]">是 [% assignee_or_qa %] 個 [% terms.bugs %]</a>
                的預設負責人或 QA 連絡人。如果你刪除該使用者，將會自動設回預設的負責人或預設的 QA 連絡人。
           </li>
         [% END %]
@@ -182,7 +182,7 @@
           <li>
             [% otheruser.login FILTER html %]
             <a href="buglist.cgi?emailcc1=1&amp;emailtype1=exact&amp;email1=
-               [%- otheruser.login FILTER url_quote %]">在 [%+ cc %] 個 [%+ terms.bugs %]</a>
+               [%- otheruser.login FILTER url_quote %]">在 [% cc %] 個 [% terms.bugs %]</a>
                的寄件副本清單中。如果你刪除該使用者，將會自動自寄件副本清單中刪除。
           </li>
         [% END %]
@@ -207,12 +207,14 @@
         [% END %]
         [% IF namedqueries %]
           <li>
-            [% otheruser.login FILTER html %] 有 [%+ namedqueries FILTER html %]
+            [% otheruser.login FILTER html %] 有 [% namedqueries FILTER html %]
             個[% '已分享的' IF namedquery_group_map %]自訂搜尋名稱，將和該使用者一併刪除。
             [% IF namedquery_group_map %]
-              [% IF namedqueries > 1 %]其中有 [%+ namedquery_group_map FILTER html %]
-              個是已分享的自訂搜尋。[% END %]其他使用者將不再可以使用這
-              [% namedquery_group_map %] 個已分享的自訂搜尋名稱。
+              [% IF namedqueries > 1 %]
+                在那之中，有 [% namedquery_group_map FILTER html %]
+                個是已分享的自訂搜尋。
+              [% END %]
+              其他使用者將不再可以使用這 [% namedquery_group_map %] 個已分享的自訂搜尋名稱。
             [% END %]
           </li>
         [% END %]
@@ -223,38 +225,38 @@
         [% END %]
         [% IF series %]
           <li>
-            [% otheruser.login FILTER html %] 建立了 [%+ series %] 個系列，將和該使用者一併刪除。
+            [% otheruser.login FILTER html %] 建立了 [% series %] 個系列，將和該使用者一併刪除。
           </li>
         [% END %]
         [% IF quips %]
           <li>
             [% otheruser.login FILTER html %] 送出了 [% quips %] 條智語。如果你刪除此使用者帳號，這
-            [% quips %] 條智語將不再有作者，但仍會顯示。
+            [%+ quips %] 條智語將不再有作者，但仍會顯示。
           </li>
         [% END %]
         [% IF votes %]
           <li>
-            [% otheruser.login FILTER html %] 曾對 [%+ votes %] 個 [%+ terms.bugs %]
+            [% otheruser.login FILTER html %] 曾對 [% votes %] 個 [% terms.bugs %]
             投過票。如果你刪除該使用者，則該使用者的投票將和該使用者一併刪除。
           </li>
         [% END %]
         [% IF watch.watched || watch.watcher %]
           <li>
             [% otheruser.login FILTER html %]
-            [% IF watch.watched %]被 [%+ watch.watched %] 位使用者監控中[% END %]
-            [% IF watch.watcher %][%+ '，並' IF watch.watched %]監控 [%+ watch.watcher %]
-            位使用者中[% END %]。所有的相關監控將和該使用者一併刪除。
+            [% IF watch.watched %]被 [% watch.watched %] 位使用者監控中[% END %]
+            [% IF watch.watcher %][% '，並' IF watch.watched %]監控 [% watch.watcher %]
+            位使用者中[% END %]。所有相關的監控將和該使用者一併刪除。
           </li>
         [% END %]
         [% IF whine_events %]
           <li>
-            [% otheruser.login FILTER html %] 排定了 [%+ whine_events %] 項訂閱。相關訂閱將和該使用者一併刪除。
+            [% otheruser.login FILTER html %] 排定了 [% whine_events %] 項訂閱。相關訂閱將和該使用者一併刪除。
           </li>
         [% END %]
         [% IF whine_schedules %]
           <li>
             [% otheruser.login FILTER html %] 是
-              [%+ whine_schedules %] 項訂閱的收件者之一。對應到寄送此帳號的排程將被刪除，但不會變更訂閱的內容。
+            [% whine_schedules %] 項訂閱的收件者之一。對應到寄送此帳號的排程將被刪除，但不會變更訂閱的內容。
           </li>
         [% END %]
       </ul>

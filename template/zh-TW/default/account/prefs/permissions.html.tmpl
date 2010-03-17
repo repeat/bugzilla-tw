@@ -64,7 +64,7 @@
         你的帳號沒有被設定任何權限。
       [% END %]
 
-      [% IF user.groups.editusers %]
+      [% IF user.in_group('editusers') %]
         <br>
         你擁有 editusers 的權限。你可以開啟或關閉所有使用者的所有權限。
       [% ELSIF set_bits.size %]
@@ -80,7 +80,7 @@
           </table>
       [% END %]
 
-      [% IF user.groups.bz_sudoers %]
+      [% IF user.in_group('bz_sudoers') %]
         <br>
         你是 <b>bz_sudoers</b> 群組的成員，因此你可以<a href="relogin.cgi?action=prepare-sudo">以其他使用者身份進行操作</a>。
       [% END %]

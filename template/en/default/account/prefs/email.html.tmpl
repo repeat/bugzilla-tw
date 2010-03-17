@@ -31,7 +31,6 @@
   #               below), keyed by reasonname (e.g. comments; again, see
   #               below). The value is a boolean - true if the user is
   #               receiving mail for that reason when in that role.
-  # Also references the 'supportwatchers' Param.
   #%]
 
 [% PROCESS global/variables.none.tmpl %]
@@ -119,6 +118,8 @@ document.write('<input type="button" value="Disable All Mail" onclick="SetCheckb
 [% events = [
     { id = constants.EVT_ADDED_REMOVED,
       description = "I'm added to or removed from this capacity" },
+    { id = constants.EVT_BUG_CREATED,
+      description = "A new $terms.bug is created" },
     { id = constants.EVT_OPENED_CLOSED,
       description = "The $terms.bug is resolved or reopened" },
     { id = constants.EVT_PROJ_MANAGEMENT,
@@ -262,7 +263,6 @@ document.write('<input type="button" value="Disable All Mail" onclick="SetCheckb
   [% END %]
 [% END %]
 
-[% IF Param('supportwatchers') %]
 <hr>
 <b>User Watching</b>
 
@@ -303,8 +303,6 @@ You are currently not watching any users.
     <i>No one</i>
   [% END %]
 </p>
-
-[% END %]
 
 <hr>
 

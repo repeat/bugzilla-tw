@@ -14,7 +14,7 @@
   #%]
 
 [%# INTERFACE:
-  # none
+  # field: Bugzila::Field; the current field being edited
   #%]
 
 [% PROCESS "global/field-descs.none.tmpl" %]
@@ -23,21 +23,16 @@
   編輯自訂欄位 '[% field.name FILTER html %]' ([% field.description FILTER html %])
 [% END %]
 
+[% javascript = BLOCK %]
+  [% INCLUDE "admin/custom_fields/cf-js.js.tmpl" %]
+[% END %]
+
 [% PROCESS global/header.html.tmpl
            title = title
            onload = "toggleCheckbox(document.getElementById('enter_bug'), 'new_bugmail');"
+           javascript_urls = [ 'js/util.js' ]
            doc_section = "custom-fields.html#edit-custom-fields"
 %]
-
-<script type="text/javascript">
-  <!--
-  // Disable a checkbox based on the state of another one.
-  function toggleCheckbox(this_checkbox, other_checkbox_id) {
-    var other_checkbox = document.getElementById(other_checkbox_id);
-    other_checkbox.disabled = !this_checkbox.checked;
-  }
-  //-->
-</script>
 
 <p>
   「描述」是一個用來描述欄位，而且非常短的字串。將會在使用者介面使用它來當作這個自訂欄位的標籤。
@@ -81,16 +76,61 @@
         <input type="text" id="sortkey" name="sortkey" size="6" maxlength="6"
                value="[% field.sortkey FILTER html %]">
       </td>
-
-      <th>&nbsp;</th>
-      <td>&nbsp;</td>
+      <th align="right">
+        <label for="visibility_field_id">當符合下列條件時，欄位才會出現：</label>
+      </th>
+      <td>
+        <select name="visibility_field_id" id="visibility_field_id"
+                onchange="onChangeVisibilityField()">
+          <option></option>
+          [% FOREACH sel_field = Bugzilla.get_fields({ is_select => 1 }) %]
+            [% NEXT IF sel_field.id == field.id %]
+            <option value="[% sel_field.id FILTER html %]"
+             [% ' selected="selected"'
+                IF sel_field.id == field.visibility_field.id %]>
+              [% sel_field.description FILTER html %]
+              ([% sel_field.name FILTER html %])
+            </option>
+          [% END %]
+        </select>
+        <label for="visibility_value_id"><strong>設定為：</strong></label>
+        <select name="visibility_value_id" id="visibility_value_id">
+          [% FOREACH value = field.visibility_field.legal_values %]
+            <option value="[% value.id FILTER html %]"
+             [% ' selected="selected"'
+                IF field.visibility_value.id == value.id %]>
+              [% value.name FILTER html %]
+            </option>
+          [% END %]
+        </select>
+      </td>
     </tr>
-    [% IF field.type == constants.FIELD_TYPE_SINGLE_SELECT
-          || field.type == constants.FIELD_TYPE_MULTI_SELECT %]
+    [% IF field.is_select %]
       <tr>
         <th>&nbsp;</th>
-        <td colspan="3">
+        <td>
           <a href="editvalues.cgi?field=[% field.name FILTER url_quote %]">編輯此自訂欄位的有效數值</a>。
+        </td>
+
+        <th>
+          <label for="value_field_id">
+            控制欄位值是否在此欄位中出現的欄位：
+          </label>
+        </th>
+
+        <td>
+          <select name="value_field_id" id="value_field_id">
+            <option></option>
+            [% FOREACH sel_field = Bugzilla.get_fields({ is_select => 1 }) %]
+              [% NEXT IF sel_field.id == field.id %]
+              <option value="[% sel_field.id FILTER html %]"
+               [% ' selected="selected"'
+                  IF sel_field.id == field.value_field.id %]>
+                [% sel_field.description FILTER html %]
+                ([% sel_field.name FILTER html %])
+              </option>
+            [% END %]
+          </select>
         </td>
       </tr>
     [% END %]

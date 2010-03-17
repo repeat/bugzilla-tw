@@ -60,10 +60,7 @@
 'search/boolean-charts.html.tmpl' => [
   '"field${chartnum}-${rownum}-${colnum}"',
   '"value${chartnum}-${rownum}-${colnum}"',
-  '"type${chartnum}-${rownum}-${colnum}"',
   'field.name',
-  'type.name',
-  'type.description',
   '"${chartnum}-${rownum}-${newor}"',
   '"${chartnum}-${newand}-0"',
   'newchart',
@@ -71,7 +68,6 @@
 ],
 
 'search/form.html.tmpl' => [
-  'qv.value',
   'qv.name',
   'qv.description',
   'field.name',
@@ -147,13 +143,6 @@
   'cumulate',
 ],
 
-'reports/duplicates.rdf.tmpl' => [
-  'template_version',
-  'bug.id',
-  'bug.count',
-  'bug.delta',
-],
-
 'reports/chart.html.tmpl' => [
   'width',
   'height',
@@ -182,10 +171,6 @@
 
 'reports/edit-series.html.tmpl' => [
   'default.series_id',
-],
-
-'list/change-columns.html.tmpl' => [
-  'column',
 ],
 
 'list/edit-multiple.html.tmpl' => [
@@ -312,7 +297,6 @@
   '" colspan=\"$colspan\"" IF colspan',
   '" size=\"$size\"" IF size',
   '" maxlength=\"$maxlength\"" IF maxlength',
-  'flag.status',
   '" spellcheck=\"$spellcheck\"" IF spellcheck',
 ],
 
@@ -343,6 +327,10 @@
   'subtotal FILTER format("%.2f")',
   'work_time FILTER format("%.2f")',
   'global.total FILTER format("%.2f")',
+  'global.remaining FILTER format("%.2f")',
+  'global.estimated FILTER format("%.2f")',
+  'bugs.$id.remaining_time FILTER format("%.2f")',
+  'bugs.$id.estimated_time FILTER format("%.2f")',
 ],
 
 
@@ -387,7 +375,6 @@
 
 'bug/activity/table.html.tmpl' => [
   'change.attachid',
-  'change.field',
 ],
 
 'attachment/create.html.tmpl' => [
@@ -432,8 +419,6 @@
   'bugid',
   'oldid',
   'newid',
-  'style',
-  'javascript',
   'patch.id',
 ],
 
@@ -458,6 +443,11 @@
   'link_uri'
 ],
 
+'admin/custom_fields/cf-js.js.tmpl' => [
+  'constants.FIELD_TYPE_SINGLE_SELECT',
+  'constants.FIELD_TYPE_MULTI_SELECT',
+],
+
 'admin/params/common.html.tmpl' => [
   'sortlist_separator',
 ],
@@ -467,19 +457,14 @@
 ],
 
 'admin/products/groupcontrol/edit.html.tmpl' => [
-  'group.bugcount',
   'group.id',
-  'const.CONTROLMAPNA',
-  'const.CONTROLMAPSHOWN',
-  'const.CONTROLMAPDEFAULT',
-  'const.CONTROLMAPMANDATORY',
+  'constants.CONTROLMAPNA',
+  'constants.CONTROLMAPSHOWN',
+  'constants.CONTROLMAPDEFAULT',
+  'constants.CONTROLMAPMANDATORY',
 ],
 
 'admin/products/list.html.tmpl' => [
-  'classification_url_part',
-],
-
-'admin/products/confirm-delete.html.tmpl' => [
   'classification_url_part',
 ],
 
@@ -554,8 +539,8 @@
   'new_status.id',
 ],
 
-'account/login.html.tmpl' => [
-  'target',
+'account/auth/login-small.html.tmpl' => [
+  'qs_suffix',
 ],
 
 'account/prefs/email.html.tmpl' => [

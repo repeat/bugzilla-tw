@@ -1,0 +1,60 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Marc Schumann.
+  # Portions created by Marc Schumann are Copyright (c) 2008 Marc Schumann.
+  # All rights reserved.
+  #
+  # Contributor(s): Marc Schumann <wurblzap@gmail.com>
+  #%]
+
+[%# NOTE: Everywhere you use this template, you must call
+  # "FILTER remove('^X')" on the result. This is unfortunately the only way
+  # to preserve leading whitespace in comments.
+  #%]
+
+[%# INTERFACE:
+  #   comment: A hash containing comment information.
+  #              count:           The comment number (on the bug it belongs to)
+  #              author:          The Bugzilla::User object of the comment's
+  #                               author
+  #              time:            The time at which the comment has been
+  #                               committed
+  #              body:            The comment text
+  #              type:            One of the CMT_* constants (not given if none
+  #                               applies)
+  #              extra_data:      Extra data (type specific)
+  #              already_wrapped: Determines whether the comment is pre-wrapped
+  #%]
+
+[% PROCESS 'global/field-descs.none.tmpl' %]
+
+[%- IF comment.type == constants.CMT_DUPE_OF -%]
+X[% comment.body %]
+
+*** 此 [% terms.bug %] 被標記為和 [% terms.bug %] [%+ comment.extra_data %] 重複。 ***
+[% ELSIF comment.type == constants.CMT_HAS_DUPE %]
+*** [% terms.Bug %] [%+ comment.extra_data %] 被標記為和此 [% terms.bug %] 重複。 ***
+[% ELSIF comment.type == constants.CMT_POPULAR_VOTES %]
+*** 此 [% terms.bug %] 已經由投票確認。 ***
+[% ELSIF comment.type == constants.CMT_MOVED_TO %]
+X[% comment.body %]
+
+[%+ terms.Bug %] 搬移至 [% Param("move-to-url") %] 。
+如果搬移成功， [% comment.extra_data %] 會收到一封通知信，內容包含在
+另一資料庫中的新 [% terms.bug %] 編號。
+如果沒什麼問題，請把此 [% terms.bug %] 標記為
+[%+ get_status('VERIFIED') %] ，並將網址貼到新的 [% terms.bug %] 中。
+否則，請將此 [% terms.bug %] 再度開啟。
+[%- ELSE -%]
+X[%- comment.body %]
+[% END %]

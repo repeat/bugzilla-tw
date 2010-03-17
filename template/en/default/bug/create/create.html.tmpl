@@ -32,9 +32,8 @@
   title = title
   style_urls = [ 'skins/standard/create_attachment.css',
                  'skins/standard/yui/calendar.css' ]
-  javascript_urls = [ "js/attachment.js", "js/util.js",
-                      "js/yui/yahoo-dom-event.js", "js/yui/calendar.js",
-                      "js/field.js" ]
+  javascript_urls = [ "js/attachment.js", "js/util.js", "js/yui/calendar.js",
+                      "js/field.js", "js/yui/cookie.js", "js/TUI.js" ]
 %]
 
 <script type="text/javascript">
@@ -159,8 +158,22 @@ function handleWantsAttachment(wants_attachment) {
     }
 }
 
+
+TUI_alternates['expert_fields'] = 'Show Advanced Fields';
+// Hide the Advanced Fields by default, unless the user has a cookie
+// that specifies otherwise.
+TUI_hide_default('expert_fields');
+
 -->
 </script>
+
+[% USE Bugzilla %]
+[% SET select_fields = {} %]
+[% FOREACH field = Bugzilla.get_fields(
+  { type => constants.FIELD_TYPE_SINGLE_SELECT, custom => 0 })
+%]
+  [% select_fields.${field.name} = field %]
+[% END %]
 
 <form name="Create" id="Create" method="post" action="post_bug.cgi"
       enctype="multipart/form-data">
@@ -179,7 +192,16 @@ function handleWantsAttachment(wants_attachment) {
   </tr>
 
   <tr>
-    <td colspan="4">&nbsp;</td>
+    <td colspan="4">
+        <a id="expert_fields_controller" class="controller bz_default_hidden"
+            href="javascript:TUI_toggle_class('expert_fields')">Hide
+        Advanced Fields</a>
+      [%# Show the link if the browser supports JS %]
+      <script type="text/javascript">
+          YAHOO.util.Dom.removeClass('expert_fields_controller', 
+                                     'bz_default_hidden');
+      </script>
+    </td>
   </tr>
 
   <tr>
@@ -247,18 +269,21 @@ function handleWantsAttachment(wants_attachment) {
       </select>
     </td>
 
-    [% sel = { description => 'Severity', name => 'bug_severity' } %]
-    [% INCLUDE select %]
+    [% INCLUDE bug/field.html.tmpl
+      bug = default, field = select_fields.bug_severity, editable = 1, 
+      value = default.bug_severity %]
   </tr>
 
   <tr>
-    [% sel = { description => 'Platform', name => 'rep_platform' } %]
-    [% INCLUDE select %]
+    [% INCLUDE bug/field.html.tmpl
+      bug = default, field = select_fields.rep_platform, editable = 1,
+      value = default.rep_platform %]
   </tr>
 
   <tr>
-    [% sel = { description => 'OS', name => 'op_sys' } %]
-    [% INCLUDE select %]
+    [% INCLUDE bug/field.html.tmpl 
+       bug = default, field = select_fields.op_sys, editable = 1, 
+       value = default.op_sys %]
   </tr>
 </tbody>
 
@@ -272,12 +297,11 @@ function handleWantsAttachment(wants_attachment) {
     [% END %]
 
     [% IF Param('letsubmitterchoosepriority') %]
-      [% sel = { description => 'Priority', name => 'priority' } %]
-      [% INCLUDE select %]
+      [% INCLUDE bug/field.html.tmpl
+        bug = default, field = select_fields.priority, editable = 1, 
+        value = default.priority %]
     [% ELSE %]
-      <td colspan="2">
-        <input type="hidden" name="priority" value="[% default.priority FILTER html %]">
-      </td>
+      <td colspan="2">&nbsp;</td>
     [% END %]
   </tr>
 </tbody>
@@ -444,16 +468,21 @@ function handleWantsAttachment(wants_attachment) {
   </tr>
 </tbody>
 
-<tbody>
+<tbody class="expert_fields">
   [% USE Bugzilla %]
 
   [% FOREACH field = Bugzilla.active_custom_fields %]
     [% NEXT UNLESS field.enter_bug %]
     [% SET value = ${field.name}.defined ? ${field.name} : "" %]
     <tr>
-      [% PROCESS bug/field.html.tmpl editable=1 value_span=3 %]
+      [% INCLUDE bug/field.html.tmpl 
+        bug = default, field = field, value = value, editable = 1, 
+        value_span = 3 %]
     </tr>
   [% END %]
+</tbody>
+
+<tbody>
 
   <tr>
     <th>Summary:</th>
@@ -489,7 +518,7 @@ function handleWantsAttachment(wants_attachment) {
   </tr>
 
   [% IF Param("insidergroup") && user.in_group(Param("insidergroup")) %]
-    <tr>
+    <tr class="expert_fields">
       <th>&nbsp;</th>
       <td colspan="3">
         &nbsp;&nbsp;
@@ -501,9 +530,7 @@ function handleWantsAttachment(wants_attachment) {
       </td>
     </tr>
   [% END %]
-</tbody>
 
-<tbody class="expert_fields">
   <tr>
     <th>Attachment:</th>
     <td colspan="3">
@@ -538,7 +565,9 @@ function handleWantsAttachment(wants_attachment) {
       </script>
     </td>
   </tr>
+</tbody>
 
+<tbody class="expert_fields">
   [% IF user.in_group('editbugs', product.id) %]
     [% IF use_keywords %]
       <tr>
@@ -565,7 +594,7 @@ function handleWantsAttachment(wants_attachment) {
   [% END %]
 </tbody>
 
-<tbody>
+<tbody class="expert_fields">
   [% IF group.size %]
   <tr>
     <th>&nbsp;</th>
@@ -592,7 +621,9 @@ function handleWantsAttachment(wants_attachment) {
     </td>
   </tr>
   [% END %]
+</tbody>
 
+<tbody>
   [%# Form controls for entering additional data about the bug being created. %]
   [% Hook.process("form") %]
 
@@ -631,7 +662,7 @@ function handleWantsAttachment(wants_attachment) {
   [% END %]
 
   <td>
-    <select name="[% sel.name %]">
+    <select name="[% sel.name %]" id="[% sel.name %]">
     [%- FOREACH x = ${sel.name} %]
       <option value="[% x FILTER html %]"
         [% " selected=\"selected\"" IF x == default.${sel.name} %]>
@@ -642,6 +673,15 @@ function handleWantsAttachment(wants_attachment) {
         [% END %]</option>
     [% END %]
     </select>
+
+    [% IF sel.name == "bug_status" %]
+       <script type="text/javascript">
+        <!--
+          [%+ INCLUDE "bug/field-events.js.tmpl" 
+                     field = select_fields.bug_status %]
+        //-->
+        </script>
+    [% END %]
   </td>
 [% END %]
 

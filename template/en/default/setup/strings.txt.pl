@@ -33,6 +33,15 @@
     checking_dbd      => 'Checking available perl DBD modules...',
     checking_optional => 'The following Perl modules are optional:',
     checking_modules  => 'Checking perl modules...',
+    commands_dbd      => <<EOT,
+YOU MUST RUN ONE OF THE FOLLOWING COMMANDS (depending on which database
+you use):
+EOT
+    commands_optional => 'COMMANDS TO INSTALL OPTIONAL MODULES:',
+    commands_required => <<EOT,
+COMMANDS TO INSTALL REQUIRED MODULES (You *must* run all these commands
+and then re-run checksetup.pl):
+EOT
     done => 'done.',
     header => "* This is Bugzilla ##bz_ver## on perl ##perl_ver##\n"
             . "* Running on ##os_name## ##os_ver##",
@@ -58,10 +67,63 @@ configuration to at least ##needed##. Currently it is set to ##current##.
 You can set this parameter in the [mysqld] section of your MySQL
 configuration file.
 EOT
+    min_version_required => "Minimum version required: ",
+
+# Note: When translating these "modules" messages, don't change the formatting
+# if possible, because there is hardcoded formatting in 
+# Bugzilla::Install::Requirements to match the box formatting.
+    modules_message_db => <<EOT,
+***********************************************************************
+* DATABASE ACCESS                                                     *
+***********************************************************************
+* In order to access your database, Bugzilla requires that the        *
+* correct "DBD" module be installed for the database that you are     *
+* running. See below for the correct command to run to install the    *
+* appropriate module for your database.                               *
+EOT
+    modules_message_optional => <<EOT,
+***********************************************************************
+* OPTIONAL MODULES                                                    *
+***********************************************************************
+* Certain Perl modules are not required by Bugzilla, but by           *
+* installing the latest version you gain access to additional         *
+* features.                                                           *
+*                                                                     *
+* The optional modules you do not have installed are listed below,    *
+* with the name of the feature they enable. Below that table are the  *
+* commands to install each module.                                    *
+EOT
+    modules_message_required => <<EOT,
+***********************************************************************
+* REQUIRED MODULES                                                    *
+***********************************************************************
+* Bugzilla requires you to install some Perl modules which are either *
+* missing from your system, or the version on your system is too old. *
+* See below for commands to install these modules.                    *
+EOT
+
     module_found => "found v##ver##",
     module_not_found => "not found",
     module_ok => 'ok',
     module_unknown_version => "found unknown version",
+    ppm_repo_add => <<EOT,
+***********************************************************************
+* Note For Windows Users                                              *
+***********************************************************************
+* In order to install the modules listed below, you first have to run * 
+* the following command as an Administrator:                          *
+*                                                                     *
+*   ppm repo add theory58S ##theory_url##
+EOT
+    ppm_repo_up => <<EOT,
+*                                                                     *
+* Then you have to do (also as an Administrator):                     *
+*                                                                     *
+*   ppm repo up theory58S                                             *
+*                                                                     *
+* Do that last command over and over until you see "theory58S" at the *
+* top of the displayed list.                                          *
+EOT
     template_precompile   => "Precompiling templates...",
     template_removing_dir => "Removing existing compiled templates...",
 );

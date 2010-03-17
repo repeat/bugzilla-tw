@@ -31,14 +31,6 @@
   style_urls = ['skins/standard/admin.css']
 %]
 
-[% IF classification %]
-  [% classification_url_part = BLOCK %]&amp;classification=
-    [%- classification.name FILTER url_quote %]
-  [%- END %]
-[% ELSE %]
-  [% classification_url_part = "" %]
-[% END %]
-
 <table border="1" cellpadding="4" cellspacing="0">
   <tr bgcolor="#6666FF">
     <th valign="top" align="left">欄位</th>
@@ -66,9 +58,8 @@
   <tr>
     <td valign="top">產品：</td>
     <td valign="top">
-      <a href="editproducts.cgi?product=[% product.name FILTER url_quote %]
-         [%- classification_url_part %]"
-        >[% product.name FILTER html %]</a>
+      <a href="editproducts.cgi?product=[% product.name FILTER url_quote %]">
+        [%- product.name FILTER html %]</a>
     </td>
   </tr>
   <tr>
@@ -88,9 +79,7 @@
       <td>里程碑網址：</td>
       <td>
         [% IF product.milestone_url %]
-          <a href="[% product.milestone_url FILTER html %]">
-            [%- product.milestone_url FILTER html %]
-          </a>
+          <a href="[% product.milestone_url FILTER html %]">[% product.milestone_url FILTER html %]</a>
         [% ELSE %]
           無
         [% END %]
@@ -112,10 +101,8 @@
   <tr>
     <td>
       [% IF product.components.size > 0 %]
-        <a href="editcomponents.cgi?product=[% product.name FILTER url_quote %]
-           [%- classification_url_part %]"
-           title="編輯產品 '[% product.name FILTER html %]' 的子產品"
-          >子產品：</a>
+        <a href="editcomponents.cgi?product=[% product.name FILTER url_quote %]"
+           title="編輯產品 '[% product.name FILTER html %]' 的子產品">子產品：</a>
       [% ELSE %]
         子產品：
       [% END %]
@@ -146,8 +133,7 @@
   <tr>
     <td>
       [% IF product.versions.size > 0 %]
-        <a href="editversions.cgi?product=[%- product.name FILTER url_quote %]
-           [%- classification_url_part %]">版本：</a>
+        <a href="editversions.cgi?product=[% product.name FILTER url_quote %]">版本：</a>
       [% ELSE %]
         版本：
       [% END %]
@@ -168,9 +154,7 @@
     <tr>
       <td valign="top">
         [% IF product.milestones.size > 0 %]
-          <a href="editmilestones.cgi?product=[%- product.name FILTER url_quote %]
-             [%- classification_url_part -%]"
-            >里程碑：</a>
+          <a href="editmilestones.cgi?product=[% product.name FILTER url_quote %]">里程碑：</a>
         [% ELSE %]
           里程碑：
         [% END %]
@@ -191,12 +175,11 @@
     <td>[% terms.Bugs %] ：</td>
     <td>
       [% IF product.bug_count %]
-        <a href="buglist.cgi?product=[%- product.name FILTER url_quote %]
-           [%- classification_url_part %]"
-           title="列出產品 '[%- product.name FILTER html %]' 的 [% terms.bugs %]"
-          > [% product.bug_count FILTER html %]</a>
+        <a href="buglist.cgi?product=[% product.name FILTER url_quote %]"
+           title="列出產品 '[% product.name FILTER html %]' 的 [% terms.bugs %]">
+          [%- product.bug_count FILTER html %]</a>
       [% ELSE %]
-        none
+        無
       [% END %]
     </td>
   </tr>
@@ -208,7 +191,7 @@
 
   [% IF !Param("allowbugdeletion") %]
 
-    <p>很抱歉，此產品還有 [% product.bug_count FILTER html %] 個 [%+ terms.bugs %] 。
+    <p>很抱歉，此產品還有 [% product.bug_count FILTER html %] 個 [% terms.bugs %] 。
     在你刪除此產品之前，你必須將它[% '們' IF product.bug_count > 1 %]變更至其他產品中。</p>
 
   [% ELSE %]
@@ -238,8 +221,6 @@
     <input type="hidden" name="action" value="delete">
     <input type="hidden" name="product" value="[% product.name FILTER html %]">
     <input type="hidden" name="token" value="[% token FILTER html %]">
-    <input type="hidden" name="classification"
-           value="[% classification.name FILTER html %]">
   </form>
 
 [% END %]

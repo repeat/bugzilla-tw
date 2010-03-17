@@ -24,7 +24,7 @@
 [% INCLUDE global/header.html.tmpl title = "一個 $terms.Bug 的生命週期" %]
 
 <p>
-<b>狀態</b>以及<b>解決方案</b>這兩個欄位定義並記錄[% terms.abug %]的生命週期。
+<b>狀態</b>以及<b>解決方案</b>這兩個欄位定義並記錄一個 [% terms.bug %] 的生命週期。
 </p>
 
 <a name="status"></a>
@@ -148,14 +148,14 @@
           <b>[% get_resolution("INVALID") FILTER html %]</b>
         </dt>
         <dd>
-          描述的問題並不是[% terms.abug %]。
+          描述的問題並不是 [% terms.bug %] 。
         </dd>
 
         <dt>
           <b>[% get_resolution("WONTFIX") FILTER html %]</b>
         </dt>
         <dd>
-          描述的問題的確是[% terms.abug %]，但不打算修復。
+          描述的問題的確是 [% terms.bug %] ，但不打算修復。
         </dd>
 
         <dt>
@@ -163,7 +163,7 @@
         </dt>
         <dd>
           此問題和已存在的 [% terms.bug %]
-          重複了。將[% terms.abug %]標記為重複時，需要輸入該已存在的 [% terms.bug %] 編號。
+          重複了。將一個 [% terms.bug %] 標記為重複時，需要輸入該已存在的 [% terms.bug %] 編號。
         </dd>
 
         <dt>
@@ -186,13 +186,13 @@
 </table>
 
 <h2><a name="importance">重要性</h2>
-[% terms.abug %]的重要性，是由它的<a href="#priority">優先等級</a>及<a href="#bug_severity">嚴重性來描述。
+一個 [% terms.bug %] 的重要性，是由它的<a href="#priority">優先等級</a>及<a href="#bug_severity">嚴重性</a>來描述。
 
 <h2><a name="priority">優先等級</a></h2>
-此欄位描述[% terms.abug %]應該被修復的優先等級。此欄位是讓程式設計師或工程師能夠對他們的工作進行排程，以完成工作。可用的優先等級從 <b>P1</b> （最重要）到 <b>P5</b> （最不重要）。
+此欄位描述 [% terms.bug %] 應該被修復的優先等級。此欄位是讓程式設計師或工程師能夠對他們的工作進行排程，以完成工作。可用的優先等級從 <b>P1</b> （最重要）到 <b>P5</b> （最不重要）。
 
 <h2><a name="bug_severity">嚴重等級</a></h2>
-此欄位描述[% terms.abug %]的嚴重等級。
+此欄位描述 [% terms.bug %] 的嚴重等級。
 
 <table>
   <tr>
@@ -272,5 +272,20 @@
 <p>
 查詢 [% terms.bugs %] 的預設值設定為選擇[% get_status("NEW") FILTER html %] 、[%+ get_status("ASSIGNED") FILTER html %] 以及[% get_status("REOPENED") FILTER html %] 的 [% terms.bugs %] 。如要搜尋已解決或已認證的 [% terms.bugs %] ，記得將狀態欄位選擇適當的選項。
 </p>
+
+[% IF Param("use_see_also") %]
+  <h2><a name="see_also"></a>也請參考</h2>
+
+  <p>此欄位允許你列出其他 [% terms.Bugzilla %] 上的
+    [% terms.bug %] 。你可以在「新增 [% terms.Bug %]
+    回報資訊的網址」欄位中輸入網址，來表示該
+    [% terms.bug %] 和此 [% terms.bug %] 有關。你可以以半型逗號
+    (,) 分隔多筆網址。</p>
+
+  <p>你應該將此欄位正常地用於列出<em>其他</em>
+     [% terms.Bugzilla %] 上的 [% terms.bugs %] 。如要列出安裝在同一機器上的
+     [% terms.bug %] ，最好使用「要先修好這些 [% terms.bug %] 」和「
+     會擋掉這些 [% terms.bug %] 」欄位。</p>
+[% END %]
 
 [% INCLUDE global/footer.html.tmpl %]

@@ -23,7 +23,7 @@ From: [% Param('mailfrom') %]
 To: [% to %]
 Subject: [[% terms.Bug %] [%+ bugid %]] [% IF isnew %]新增[% ELSE %]變更[% END %]：[%+ summary %]
 X-Bugzilla-Reason: [% reasonsheader %]
-X-Bugzilla-Type: newchanged
+X-Bugzilla-Type: [% isnew ? 'new' : 'changed' %]
 X-Bugzilla-Watch-Reason: [% reasonswatchheader %]
 [% IF Param('useclassification') %]
 X-Bugzilla-Classification: [% classification %]
@@ -41,10 +41,19 @@ X-Bugzilla-Changed-Fields: [% changedfields %]
 [%+ threadingmarker %]
 
 [%+ urlbase %]show_bug.cgi?id=[% bugid %]
+[%- IF diffs %]
 
 [%+ diffs %]
+[% END -%]
+[% FOREACH comment = new_comments %]
 
---
+[%- IF comment.count %]
+--- [% comment.time FILTER time(undef, to_user.timezone) %] [%+ comment.author.identity %] 的意見 #[% comment.count %] ---
+[% END %]
+[%+ FILTER remove('^X') %][% PROCESS bug/format_comment.txt.tmpl %][% END %]
+[% END %]
+
+-- [%# Protect the trailing space of the signature marker %]
 可以在 [% urlbase %]userprefs.cgi?tab=email 調整是否收到 [% terms.bug %] 通知信的設定。
 ------- 你會收到這封信是因為： -------
 [% FOREACH relationship = reasons %]

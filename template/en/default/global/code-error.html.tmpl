@@ -145,6 +145,12 @@
     in the database for '[% username FILTER html %]', but your
     account source says that '[% extern_user FILTER html %]' has that ID.
 
+  [% ELSIF error == "field_choice_must_use_type" %]
+    When you call a class method on <code>Bugzilla::Field::Choice</code>,
+    you must call <code>Bugzilla::Field::Choice-&gt;type('some_field')</code>
+    to generate the right class (you can't call class methods directly
+    on Bugzilla::Field::Choice).
+
   [% ELSIF error == "field_type_mismatch" %]
     Cannot seem to handle <code>[% field FILTER html %]</code>
     and <code>[% type FILTER html %]</code> together.
@@ -271,6 +277,21 @@
       given.
     [% END %]
 
+  [% ELSIF error == "jobqueue_insert_failed" %]
+   [% title = "Job Queue Failure" %]
+    Inserting a <code>[% job FILTER html %]</code> job into the Job 
+    Queue failed with the following error: [% errmsg FILTER html %]
+
+  [% ELSIF error == "jobqueue_not_configured" %]
+    Using the job queue system requires that certain Perl modules
+    be installed. Run <code>checksetup.pl</code> to see what modules
+    you are missing.
+
+  [% ELSIF error == "jobqueue_no_job_mapping" %]
+    <code>Bugzilla::JobQueue</code> has not been configured to handle
+    the job "[% job FILTER html %]".  You need to add this job type
+    to the <code>JOB_MAP</code> constant in <code>Bugzilla::JobQueue</code>.
+
   [% ELSIF error == "ldap_bind_failed" %]
     Failed to bind to the LDAP server. The error message was: 
     <code>[% errstr FILTER html %]</code>
@@ -333,6 +354,22 @@
     The function <code>[% function FILTER html %]</code> requires
     a <code>[% param FILTER html %]</code> argument, and that
     argument was not set.
+
+  [% ELSIF error == "params_required" %]
+    [% title = "Missing Parameter" %]
+    The function <code>[% function FILTER html %]</code> requires
+    that you set one of the following parameters:
+    <code>[% params.join(', ') FILTER html %]</code>
+
+  [% ELSIF error == "product_empty_group_controls" %]
+    [% title = "Missing Group Controls" %]
+    New settings must be defined to edit group controls for
+    the [% group.name FILTER html %] group.
+
+  [% ELSIF error == "product_illegal_group_control" %]
+    [% title = "Illegal Group Control" %]
+    '[% value FILTER html %]' is not a legal value for
+    the '[% field FILTER html %]' field.
 
   [% ELSIF error == "protection_violation" %]
     The function <code>[% function FILTER html %]</code> was called

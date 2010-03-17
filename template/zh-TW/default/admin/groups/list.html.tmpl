@@ -66,68 +66,60 @@
   ]
 %]
 
-[% overrides.is_active_bug_group = [ {
-     match_value => "0"
-     match_field => 'is_active_bug_group'
-     override_content => 1
-     content => "&nbsp;"
-   },
-   {
-     match_value => "1"
-     match_field => 'is_active_bug_group'
-     override_content => 1
-     content => "X"
-   }]
-   overrides.userregexp = [ {
-     match_value => ""
-     match_field => 'userregexp'
-     override_content => 1
-     content => "&nbsp;"
-   }]
-   overrides.action = [ {
-     match_value => Param("chartgroup")
-     match_field => 'name'
-     override_content => 1
-     content => "（做為 'chartgroup' ）"
-   },
-   {
-     match_value => Param("insidergroup")
-     match_field => 'name'
-     override_content => 1
-     content => "（做為 'insidergroup' ）"
-   },
-   {
-     match_value => Param("timetrackinggroup")
-     match_field => 'name'
-     override_content => 1
-     content => "（做為 'timetrackinggroup' ）"
-   },
-   {
-     match_value => Param("querysharegroup")
-     match_field => 'name'
-     override_content => 1
-     content => "（做為 'querysharegroup' ）"
-   },
-   {
-     match_value => "1"
-     match_field => 'isbuggroup'
-     override_content => 1
-     content => "刪除"
-     override_contentlink => 1
-     contentlink => del_contentlink
-   }]
-   overrides.type = [ {
-     match_value => "0"
-     match_field => 'isbuggroup'
-     override_content => 1
-     content => "系統"
-   },
-   {
-     match_value => "1"
-     match_field => 'isbuggroup'
-     override_content => 1
-     content => "使用者"
-   }]
+[% overrides.is_active_bug_group = {
+     'is_active_bug_group' => {
+       "0" => {
+          override_content => 1
+          content => "&nbsp;"
+       }
+       "1" => {
+          override_content => 1
+          content => "X"
+       }
+     }
+   }
+
+   overrides.userregexp = {
+     'userregexp' => {
+       "" => {
+         override_content => 1
+         content => "&nbsp;"
+       }
+     }
+   }
+%]
+
+[% FOREACH group IN ["chartgroup", "insidergroup", "timetrackinggroup", "querysharegroup"] %]
+  [% special_group = Param(group) %]
+
+  [% IF special_group %]
+    [% overrides.action.name.$special_group = {
+         override_content => 1
+         content => "（做為 '$group' ）"
+       }
+    %]
+  [% END %]
+[% END %]
+
+[% overrides.action.isbuggroup = {
+     "1" => {
+         override_content => 1
+         content => "刪除"
+         override_contentlink => 1
+         contentlink => del_contentlink
+     }
+   }
+
+   overrides.type.isbuggroup = {
+     "0" => {
+         override_content => 1
+         content => "系統"
+     }
+     "1" => {
+         override_content => 1
+         content => "使用者"
+     }
+   }
 %]
 
 [% PROCESS admin/table.html.tmpl
@@ -141,7 +133,7 @@
 <p>
    <b>名稱</b><br>
    用於 B<!-- -->ugzilla&rarr;user&rarr;in_group() 函數，以及所有自訂的 cgi 檔案中。<br>
-   也可以用於以電子郵件送出 [% terms.bugs %] 時，限制[% terms.abug %]於特定的群組中。
+   也可以用於以電子郵件送出 [% terms.bugs %] 時，限制 [% terms.bug %] 於特定的群組中。
 </p>
 
 <p>

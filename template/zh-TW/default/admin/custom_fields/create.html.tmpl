@@ -19,21 +19,16 @@
 
 [% PROCESS "global/field-descs.none.tmpl" %]
 
+[% javascript = BLOCK %]
+  [% INCLUDE "admin/custom_fields/cf-js.js.tmpl" %]
+[% END %]
+
 [% PROCESS global/header.html.tmpl
            title = "新增自訂欄位"
            onload = "document.getElementById('new_bugmail').disabled = true;"
+           javascript_urls = [ 'js/util.js' ]
            doc_section = "custom-fields.html#add-custom-fields"
 %]
-
-<script type="text/javascript">
-  <!--
-  // Disable a checkbox based on the state of another one.
-  function toggleCheckbox(this_checkbox, other_checkbox_id) {
-    var other_checkbox = document.getElementById(other_checkbox_id);
-    other_checkbox.disabled = !this_checkbox.checked;
-  }
-  //-->
-</script>
 
 <p>
   新增自訂欄位可能會使得 [% terms.Bugzilla %] 變得非常複雜。許多 [% terms.Bugzilla %]
@@ -75,7 +70,7 @@
     <tr>
       <th align="right"><label for="type">種類：</label></th>
       <td>
-        <select id="type" name="type">
+        <select id="type" name="type" onchange="onChangeType(this)">
           [% FOREACH type = field_types.keys %]
             [% NEXT IF type == constants.FIELD_TYPE_UNKNOWN %]
             <option value="[% type FILTER html %]">[% field_types.$type FILTER html %]</option>
@@ -92,8 +87,46 @@
         <input type="text" id="sortkey" name="sortkey" size="6" maxlength="6">
       </td>
 
-      <th>&nbsp;</th>
-      <td>&nbsp;</td>
+      <th align="right">
+        <label for="visibility_field_id">當符合下列條件時，欄位才會出現：</label>
+      </th>
+      <td>
+        <select name="visibility_field_id" id="visibility_field_id"
+                onchange="onChangeVisibilityField()">
+          <option></option>
+          [% FOREACH sel_field = Bugzilla.get_fields({ is_select => 1 }) %]
+            <option value="[% sel_field.id FILTER html %]">
+              [% sel_field.description FILTER html %]
+              ([% sel_field.name FILTER html %])
+            </option>
+          [% END %]
+        </select>
+        <label for="visibility_value_id"><strong>設定為：</strong></label>
+        <select name="visibility_value_id" id="visibility_value_id">
+          <option value=""></option>
+        </select>
+      </td>
+    </tr>
+
+    <tr>
+      <td colspan="2">&nbsp;</td>
+      <th>
+        <label for="value_field_id">
+          控制欄位值是否在此欄位中出現的欄位：
+        </label>
+      </th>
+
+      <td>
+        <select disabled="disabled" name="value_field_id" id="value_field_id">
+          <option></option>
+          [% FOREACH sel_field = Bugzilla.get_fields({ is_select => 1 }) %]
+            <option value="[% sel_field.id FILTER html %]">
+              [% sel_field.description FILTER html %]
+              ([% sel_field.name FILTER html %])
+            </option>
+          [% END %]
+        </select>
+      </td>
     </tr>
   </table>
   <p>

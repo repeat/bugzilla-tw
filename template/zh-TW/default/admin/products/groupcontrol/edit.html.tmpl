@@ -46,23 +46,23 @@
       <th>editbugs</th>
       <th>[% terms.Bugs %]</th>
     </tr>
-    [% FOREACH group = groups %]
-      [% IF group.isactive == 0 AND group.bugcount > 0 %]
+    [% FOREACH group = product.group_controls(1).values.sort("name") %]
+      [% IF !group.group.isactive AND group.bug_count %]
         <tr bgcolor="#bbbbbb">
           <td>
-            [% group.name FILTER html %]
+            [% group.group.name FILTER html %]
           </td>
           <td align="center" colspan=7>
             停用
           </td>
           <td>
-            [% group.bugcount %]
+            [% group.bug_count FILTER html %]
           </td>
         <tr>
       [% ELSIF group.isactive != 0 %]
         <tr>
           <td>
-            [% group.name FILTER html %]
+            [% group.group.name FILTER html %]
           </td>
           <td>
             <input type=checkbox value=1 name=entry_[% group.id %]
@@ -70,48 +70,48 @@
           </td>
           <td>
             <select name="membercontrol_[% group.id %]">
-              <option value=[% const.CONTROLMAPNA %]
+              <option value=[% constants.CONTROLMAPNA %]
                 [% " selected=\"selected\""
-                  IF group.membercontrol == const.CONTROLMAPNA %]
+                  IF group.membercontrol == constants.CONTROLMAPNA %]
                 >不適用 (NA)
               </option>
-              <option value=[% const.CONTROLMAPSHOWN %]
+              <option value=[% constants.CONTROLMAPSHOWN %]
                 [% " selected=\"selected\""
-                  IF group.membercontrol == const.CONTROLMAPSHOWN %]
+                  IF group.membercontrol == constants.CONTROLMAPSHOWN %]
                 >顯示 (SHOWN)
               </option>
-              <option value=[% const.CONTROLMAPDEFAULT %]
+              <option value=[% constants.CONTROLMAPDEFAULT %]
                 [% " selected=\"selected\""
-                  IF group.membercontrol == const.CONTROLMAPDEFAULT %]
+                  IF group.membercontrol == constants.CONTROLMAPDEFAULT %]
                 >預設 (DEFAULT)
               </option>
-              <option value=[% const.CONTROLMAPMANDATORY %]
+              <option value=[% constants.CONTROLMAPMANDATORY %]
                 [% " selected=\"selected\""
-                  IF group.membercontrol == const.CONTROLMAPMANDATORY %]
+                  IF group.membercontrol == constants.CONTROLMAPMANDATORY %]
                 >強制 (MANDATORY)
               </option>
             </select>
           </td>
           <td>
             <select name="othercontrol_[% group.id %]">
-              <option value=[% const.CONTROLMAPNA %]
+              <option value=[% constants.CONTROLMAPNA %]
                 [% " selected=\"selected\""
-                  IF group.othercontrol == const.CONTROLMAPNA %]
+                  IF group.othercontrol == constants.CONTROLMAPNA %]
                 >不適用 (NA)
               </option>
-              <option value=[% const.CONTROLMAPSHOWN %]
+              <option value=[% constants.CONTROLMAPSHOWN %]
                 [% " selected=\"selected\""
-                  IF group.othercontrol == const.CONTROLMAPSHOWN %]
+                  IF group.othercontrol == constants.CONTROLMAPSHOWN %]
                 >顯示 (SHOWN)
               </option>
-              <option value=[% const.CONTROLMAPDEFAULT %]
+              <option value=[% constants.CONTROLMAPDEFAULT %]
                 [% " selected=\"selected\""
-                  IF group.othercontrol == const.CONTROLMAPDEFAULT %]
+                  IF group.othercontrol == constants.CONTROLMAPDEFAULT %]
                 >預設 (DEFAULT)
               </option>
-              <option value=[% const.CONTROLMAPMANDATORY %]
+              <option value=[% constants.CONTROLMAPMANDATORY %]
                 [% " selected=\"selected\""
-                  IF group.othercontrol == const.CONTROLMAPMANDATORY %]
+                  IF group.othercontrol == constants.CONTROLMAPMANDATORY %]
                 >強制 (MANDATORY)
               </option>
             </select>
@@ -133,7 +133,7 @@
             [% " checked=\"checked\"" IF group.editbugs %]>
           </td>
           <td>
-            [% group.bugcount %]
+            [% group.bug_count || 0 FILTER html %]
           </td>
         </tr>
       [% END %]
@@ -247,7 +247,7 @@
     </td>
     <td>
       此產品中的 [% terms.Bugs %] 將會限制僅供此群組使用。此群組的成員才能夠將
-      [% terms.bugs %] 放至群組中。非此群組的成員一開始在此產品中回報[% terms.abug %]時，會強制將
+      [% terms.bugs %] 放至群組中。非此群組的成員一開始在此產品中回報 [% terms.bug %] 時，會強制將
       [% terms.bugs %] 放至此群組中。
     </td>
   </tr>
@@ -286,7 +286,7 @@
     <td>
       此產品中的 [% terms.Bugs %] 將會限制僅供此群組使用，並預設將 [% terms.bugs %]
       放至此群組中。此群組的成員才能夠將 [% terms.bugs %]
-      放至群組中。非此群組的成員一開始在此產品中回報[% terms.abug %]時，會強制將
+      放至群組中。非此群組的成員一開始在此產品中回報 [% terms.bug %] 時，會強制將
       [% terms.bugs %] 放至此群組中。
     </td>
   </tr>

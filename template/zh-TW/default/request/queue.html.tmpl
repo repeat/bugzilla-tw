@@ -31,7 +31,7 @@
     table.requests th { text-align: left; }
     table#filtering th { text-align: right; }
   "
-  onload="var f = document.forms[0]; selectProduct(f.product, f.component, null, null, 'Any');"
+  onload="var f = document.request_form; selectProduct(f.product, f.component, null, null, '任何');"
   javascript_urls=["js/productform.js"]
 %]
 
@@ -40,7 +40,7 @@
 當你登出之後，預設值顯示的是並未限制於某一群組，且未解決的要求。
 </p>
 
-<form action="request.cgi" method="get">
+<form id="request_form" name="request_form" action="request.cgi" method="get">
   <input type="hidden" name="action" value="queue">
 
   <table id="filtering">
@@ -155,7 +155,8 @@
 [% PROCESS global/footer.html.tmpl %]
 
 [% BLOCK start_new_table %]
-  <h3>[% column_headers.$group_field %]：[% (request.$group_field || "無") FILTER html %]</h3>
+  <h3>[% column_headers.$group_field %]：
+    [%+ (request.$group_field || "無") FILTER email FILTER html %]</h3>
   <table class="requests" cellspacing="0" cellpadding="4" border="1">
     <tr>
       [% FOREACH column = display_columns %]
@@ -188,11 +189,11 @@
 [% END %]
 
 [% BLOCK display_requestee %]
-  [% request.requestee FILTER html %]
+  [% request.requestee FILTER email FILTER html %]
 [% END %]
 
 [% BLOCK display_requester %]
-  [% request.requester FILTER html %]
+  [% request.requester FILTER email FILTER html %]
 [% END %]
 
 [% BLOCK display_created %]

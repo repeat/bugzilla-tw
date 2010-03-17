@@ -40,12 +40,12 @@
 </p>
 
 <p id="message">
-  [% IF user.groups.bz_sudoers %]
+  [% IF user.in_group('bz_sudoers') %]
     你是 <b>bz_sudoers</b> 群組的成員之一。你可以使用此功能，對其他使用者進行 sudo 。
   [% ELSE %]
     你並非適當群組的成員。你無法使用此功能。
   [% END %]
-  [% IF user.groups.bz_sudo_protect %]
+  [% IF user.in_group('bz_sudo_protect') %]
     <br>
     你是 <b>bz_sudo_protect</b> 群組的成員之一。其他使用者無法使用此功能對你進行 sudo 。
   [% END %]

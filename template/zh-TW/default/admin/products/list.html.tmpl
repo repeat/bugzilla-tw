@@ -39,14 +39,13 @@
 
 [% edit_contentlink = BLOCK %]
   editproducts.cgi?action=edit&amp;product=%%name%%
-  [%- classification_url_part %]
 [% END %]
 [% delete_contentlink = BLOCK %]
   editproducts.cgi?action=del&amp;product=%%name%%
-  [%- classification_url_part %]
 [% END %]
-[% bug_count_contentlink = BLOCK %]buglist.cgi?product=%%name%%
-  [%- classification_url_part %][% END %]
+[% bug_count_contentlink = BLOCK %]
+  buglist.cgi?product=%%name%%
+[% END %]
 
 
 [% columns = [
@@ -100,18 +99,16 @@
      })
 %]
 
-[% overrides.disallow_new = [ {
-     match_value => "1"
-     match_field => 'disallow_new'
-     override_content => 1
-     content => "否"
-   },
-   {
-     match_value => 0
-     match_field => 'disallow_new'
-     override_content => 1
-     content => "是"
-   }]
+[% overrides.disallow_new.disallow_new = {
+     "1" => {
+       override_content => 1
+       content => "否"
+     },
+     "0" => {
+       override_content => 1
+       content => "是"
+     }
+   }
 %]
 
 [% PROCESS admin/table.html.tmpl

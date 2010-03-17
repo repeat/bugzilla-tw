@@ -42,7 +42,12 @@
 
   mailfrom => "$terms.Bugzilla mail daemon 的電子郵件地址。有些電子郵件系統要求這必須是有效的電子郵件地址。",
 
-  sendmailnow => "若使用早於版本 8.12 的 'sendmail' ，將此選項設為「關」時，可以在使用者介面得到十分明顯的改善，但代價是不會即時寄信。<br>" _
+  use_mailer_queue => "在一個大型的 $terms.Bugzilla 專案上，由於 $terms.Bugzilla 會一次寄送所有信件的緣故，導致更新 $terms.bugs 可能會很慢。<br>" _
+                      "如果你開啟此參數， $terms.Bugzilla 會把所有的信件排程後，於背景執行寄送程序。<br>" _
+                      "開啟此參數前，請確認你已經安裝了在 <code>checksetup.pl</code> 中列出的特定 Perl 模組，並且已執行 <code>jobqueue.pl</code> daemon ，否則 $terms.Bugzilla 並不會寄信。<br>" _
+                      "此參數不是只會影響送出的 $terms.bug 通知信，而是會影響所有 $terms.Bugzilla 的信件。",
+
+  sendmailnow => "若使用早於版本 8.12 的 'sendmail' ，將此選項設為「關」時，可以在使用者介面得到十分明顯的效能改善，代價是不會即時寄信。<br>" _
                  "若使用版本 8.12 以後的 'sendmail' ，則應將此選項設為「開」，因為設為「關」時，並不會有任何效益。<br>" _
                  "使用 'sendmail' 以外的 MTA 的站台<b>必須</b>設為「開」，否則將不會寄送任何 $terms.bug 通知信。",
 

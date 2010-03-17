@@ -14,17 +14,14 @@
   #%]
 
 [%# INTERFACE:
-  # value: string; The field value being deleted.
-  # bug_count: number; The number of bugs that have this field value.
-  # value_count: number; The number of values left for this field, including
-  #              this value.
+  # value: Bugzilla::Field::Choice; The field value being deleted.
+  # value_count: number; The number of values available for this field.
   # field: object; the field the value is being deleted from.
-  # param_name: string; The name of the parameter (defaultxxx) associated
-  #             with the field.
   #%]
 
 [% title = BLOCK %]
-  從 '[% field.description FILTER html %]' ([% field.name FILTER html %]) 欄位中刪除數值 '[% value FILTER html %]'
+  從 '[% field.description FILTER html %]' ([% field.name FILTER html %])
+  欄位中刪除數值 '[% value.name FILTER html %]'
 [% END %]
 
 [% PROCESS global/header.html.tmpl
@@ -43,14 +40,15 @@
 </tr>
 <tr>
   <td valign="top">欄位數值：</td>
-  <td valign="top">[% value FILTER html %]</td>
+  <td valign="top">[% value.name FILTER html %]</td>
 </tr>
 <tr>
   <td valign="top">[% terms.Bugs %] ：</td>
   <td valign="top">
-[% IF bug_count %]
-  <a title="列出 '[% field.description FILTER html %]' 是 '[% value FILTER html %]' 的 [% terms.bugs %]"
-     href="buglist.cgi?[% field.name FILTER url_quote %]=[%- value FILTER url_quote %]">[% bug_count FILTER html %]</a>
+[% IF value.bug_count %]
+  <a title="列出 '[% field.description FILTER html %]' 是 '[% value.name FILTER html %]' 的 [% terms.bugs %]"
+     href="buglist.cgi?[% field.name FILTER url_quote %]=[% value.name FILTER url_quote %]"
+    >[% value.bug_count FILTER html %]</a>
 [% ELSE %]
   無
 [% END %]
@@ -60,26 +58,61 @@
 
 <h2>確認</h2>
 
-[% IF (param_name.defined && Param(param_name) == value) || bug_count || (value_count == 1) %]
+[% IF value.is_default || value.bug_count || (value_count == 1)
+      || value.controls_visibility_of_fields.size
+      || value.controlled_values.size
+%]
 
-  <p>很抱歉，由於下列原因，無法將 '[% value FILTER html %]' 數值從 '[% field.description FILTER html %]' 欄位中刪除：</p>
+  <p>很抱歉，由於下列原因，無法將 '[% value.name FILTER html %]' 數值從 '[% field.description FILTER html %]' 欄位中刪除：</p>
 
   <ul class="warningmessages">
-    [% IF param_name.defined && Param(param_name) == value %]
-      <li>'[% value FILTER html %]' 是 '[% field.description FILTER html %]' 欄位的預設值。
-          [% IF user.groups.tweakparams %]在刪除此數值之前，你必須先<a href="editparams.cgi?section=bugfields#
-            [%- param_name FILTER url_quote %]">調整此欄位的預設值</a>。[% END %]
+    [% IF value.is_default %]
+      <li>'[% value.name FILTER html %]' 是 '[% field.description FILTER html %]' 欄位的預設值。
+        [% IF user.in_group('tweakparams') %]
+          在刪除此數值之前，你必須先<a href="editparams.cgi?section=bugfields">調整此欄位的預設值</a>。
+        [% END %]
+      </li>
     [% END %]
 
-    [% IF bug_count %]
-      <li>有 [% bug_count FILTER html %] 個 [%+ terms.bug %] 使用了此一數值。在刪除此數值之前，你必須先變更<a
-          title="列出 '[% field.description FILTER html %]' 是 '[% value FILTER html %]' 的 [% terms.bugs %]"
-          href="buglist.cgi?[% field.name FILTER url_quote %]=[% value FILTER url_quote %]"
-          >那[% IF bug_count > 1 %]些[% ELSE %]個[% END %] [% terms.bugs %] </a>的數值。
-        [% END %]
+    [% IF value.bug_count %]
+      <li>有 [% value.bug_count FILTER html %] 個 [% terms.bug %]
+          使用了此一數值。在刪除此數值之前，你必須先變更<a
+          title="列出 '[% field.description FILTER html %]' 是
+                '[%+ value.name FILTER html %]' 的 [% terms.bugs %]"
+          href="buglist.cgi?[% field.name FILTER url_quote %]=[% value.name FILTER url_quote %]"
+          >那[% IF value.bug_count > 1 %]些[% ELSE %]個[% END %] [%+ terms.bug %] </a>的數值。
+      </li>
+    [% END %]
 
     [% IF value_count == 1 %]
-      <li>'[% value FILTER html %]' 是 '[%- field.description FILTER html %]' 的最後一個數值，因此無法被刪除。
+      <li>'[% value.name FILTER html %]' 是 '[% field.description FILTER html %]'
+          的最後一個數值，因此無法被刪除。
+      </li>
+    [% END %]
+
+    [% IF value.controls_visibility_of_fields.size %]
+      <li>此數值控制下列欄位的可見性：<br>
+        [% FOREACH field = value.controls_visibility_of_fields %]
+          <a href="editfields.cgi?action=edit&name=[% field.name FILTER url_quote %]"
+            >[% field.description FILTER html %] ([% field.name FILTER html %])</a><br>
+        [% END %]
+      </li>
+    [% END %]
+
+    [% IF value.controlled_values.size %]
+      <li>此數值控制其他欄位的下列數值：<br>
+       [% FOREACH field_name = value.controlled_values.keys %]
+         [% FOREACH controlled = value.controlled_values.${field_name} %]
+           <a href="editvalues.cgi?action=edit&field=
+                    [%- controlled.field.name FILTER url_quote %]&value=
+                    [%- controlled.name FILTER url_quote %]">
+             [% controlled.field.description FILTER html %]
+             ([% controlled.field.name FILTER html %]) ：
+             [%+ controlled.name FILTER html %]</a><br>
+         [% END %]
+       [% END %]
+      </li>
+
     [% END %]
   </ul>
 
@@ -91,7 +124,7 @@
     <input type="submit" value="是的，刪除" id="delete">
     <input type="hidden" name="action" value="delete">
     <input type="hidden" name="field" value="[% field.name FILTER html %]">
-    <input type="hidden" name="value" value="[% value FILTER html %]">
+    <input type="hidden" name="value" value="[% value.name FILTER html %]">
     <input type="hidden" name="token" value="[% token FILTER html %]">
   </form>
 

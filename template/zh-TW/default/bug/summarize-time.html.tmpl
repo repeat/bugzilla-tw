@@ -14,8 +14,6 @@
   #                 Frédéric Buclin <LpSolit@gmail.com>
   #%]
 
-[% USE date %]
-
 [% PROCESS "global/field-descs.none.tmpl" %]
 
 [% title = "的時間統計" %]
@@ -39,7 +37,7 @@
 
 [% IF do_report %]
 
-  [% global.grand_total = 0 %]
+  [% global.grand_total = 0 global.estimated = 0 global.remaining = 0 %]
 
   [% FOREACH workdata = part_list %]
     [%# parts contains date ranges (from, to). %]
@@ -58,6 +56,16 @@
     [% ELSE %]
       [% INCLUDE owner_report %]
     [% END %]
+  [% END %]
+
+  [% IF detailed %]
+    <h4 style="margin: 0">
+      原先估計的 [% global.estimated FILTER format("%.2f") %]
+      小時中，一共剩餘 [% global.remaining FILTER format("%.2f") %] 小時
+      [% IF global.deadline %]
+        （截止期限： [% global.deadline FILTER html %] ）
+      [% END %]
+    </h4>
   [% END %]
 
   [% IF monthly %]
@@ -102,6 +110,7 @@
     [% col = 0 subtotal = 0%]
     [% FOREACH bugdata=ownerdata.nsort("bug_id") %]
         [% bug_id = bugdata.bug_id %]
+        [% INCLUDE calc_bug_total id=bug_id %]
         [% global.bug_count.$bug_id = 1 %]
         [% IF detailed %]
             [% INCLUDE bug_header cid=col id=bug_id bugdata=bugdata extra=1 %]
@@ -140,6 +149,7 @@
 
 [% BLOCK do_one_bug %]
     [% subtotal = 0.00 cid = 0 %]
+    [% INCLUDE calc_bug_total id=id %]
     [% global.bug_count.$id = 1 %]
     [% INCLUDE bug_header id=id %]
 
@@ -181,8 +191,41 @@
           <td align="right" valign="top">[% bugdata.total_time FILTER html %]</td>
         [% END %]
     </tr>
+    [% IF detailed %]
+      <tr class="bug_header[% '2' IF cid % 2 %]">
+        <td>&nbsp;</td>
+        <td colspan="3">
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td width="33%">
+                原先估計時數： [% bugs.$id.estimated_time FILTER format("%.2f") %] 小時
+              </td>
+              <td width="33%">
+                剩餘時數： [% bugs.$id.remaining_time FILTER format("%.2f") %] 小時
+              </td>
+              <td width="33%">
+                截止期限： [% bugs.$id.deadline || "<b>未設定</b>" %]
+              </td>
+            </tr>
+          </table>
+        </td>
+        [% IF extra %]
+          <td>&nbsp;</td>
+        [% END %]
+      </tr>
+   [% END %]
 [% END %]
 
+[% BLOCK calc_bug_total %]
+  [% IF !global.bug_count.$id %]
+    [% global.estimated = global.estimated + bugs.$id.estimated_time %]
+    [% global.remaining = global.remaining + bugs.$id.remaining_time %]
+    [% IF !global.deadline || bugs.$id.deadline &&
+          global.deadline.replace("-", "") < bugs.$id.deadline.replace("-", "") %]
+      [% SET global.deadline = bugs.$id.deadline %]
+    [% END %]
+  [% END %]
+[% END %]
 
 [% BLOCK inactive_report %]
     <h3>不活躍的 [% terms.bugs %]</h3>

@@ -20,7 +20,6 @@
 
 [% PROCESS global/variables.none.tmpl %]
 
-[% expiration_ts = token_ts + (max_token_age * 86400) %]
 From: [% Param('mailfrom') %]
 To: [% emailaddress %]
 Subject: [% terms.Bugzilla %] 要求變更電子郵件地址
@@ -36,5 +35,5 @@ X-Bugzilla-Type: admin
 
 [%+ urlbase %]token.cgi?t=[% token FILTER url_quote %]&a=cxlem
 
-如果你什麼也不做，此項請求將會在 [%+ max_token_age %] 天後
-([%+ time2str("%Y-%m-%d %H:%M:%S", expiration_ts) %]) 失效。
+如果你什麼也不做，此項請求將會在 [% constants.MAX_TOKEN_AGE %] 天後
+([% expiration_ts FILTER time("%Y-%m-%d %H:%M %Z") %]) 失效。

@@ -82,7 +82,7 @@
   [% IF ids.size %]
     ([% IF maxdepth -%]最多到 [% maxdepth %] 層 |[% END -%]<a
      href="buglist.cgi?bug_id=[% ids.join(",") %]">以 [% terms.bug %] 清單方式瀏覽</a>
-    [% IF user.groups.editbugs && ids.size > 1 %]
+    [% IF user.in_group('editbugs') && ids.size > 1 %]
       | <a href="buglist.cgi?bug_id=[% ids.join(",") %]&amp;tweak=1">變更多個</a>
     [% END %])
     <ul class="tree">
@@ -152,9 +152,9 @@
 [% END %]
 
 [% BLOCK buginfo %]
-  [% get_status(bug.bug_status) FILTER html -%] [%+ get_resolution(bug.resolution) FILTER html %];
-  [%-%] assigned to [% bug.assigned_to.login FILTER html %]
-  [%-%][% "; Target: " _ bug.target_milestone IF bug.target_milestone %]
+  [% get_status(bug.bug_status) FILTER html -%] [%+ get_resolution(bug.resolution) FILTER html %] ；
+  [%-%] 分配給 [% bug.assigned_to.login FILTER email FILTER html %] 負責
+  [%-%][% "；目標里程碑： " _ bug.target_milestone IF bug.target_milestone %]
 [% END %]
 
 [%###########################################################################%]

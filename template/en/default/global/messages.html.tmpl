@@ -114,27 +114,18 @@
     The user account [% otheruser.login FILTER html %] has been deleted
     successfully.
 
+  [% ELSIF message_tag == "account_disabled" %]
+    The user account [% account FILTER html %] is disabled, so you
+    cannot change its password.
+
   [% ELSIF message_tag == "attachment_creation_failed" %]
     The [% terms.bug %] was created successfully, but attachment creation
     failed.
     Please add your attachment by clicking the "Add an Attachment" link
     below.
 
-  [% ELSIF message_tag == "bug_confirmed_by_votes" %]
-    *** This [% terms.bug %] has been confirmed by popular vote. ***
-
-  [% ELSIF message_tag == "bug_duplicate_of" %]
-    *** This [% terms.bug %] has been marked as a duplicate of [% terms.bug %] [%+ dupe_of FILTER html %] ***
-
-  [% ELSIF message_tag == "bug_has_duplicate" %]
-    *** [% terms.Bug %] [%+ dupe FILTER html %] has been marked as a duplicate of this [% terms.bug %]. ***
-
-  [% ELSIF message_tag == "bug_moved_to" %]
-    <p>[% terms.Bug %] moved to [% Param("move-to-url") FILTER html %].</p>
-    <p>If the move succeeded, [% login FILTER html %] will receive a mail
-    containing the number of the new [% terms.bug %] in the other database.
-    If all went well, please mark this [% terms.bug %] verified, and paste
-    in a link to the new [% terms.bug %]. Otherwise, reopen this [% terms.bug %].
+  [% ELSIF message_tag == "bug_group_description" %]
+    Access to [% terms.bugs %] in the [% product.name FILTER html %] product
 
   [% ELSIF message_tag == "buglist_adding_field" %]
     [% title = "Adding field to search page..." %]
@@ -181,26 +172,30 @@
 
   [% ELSIF message_tag == "classification_deleted" %]
     [% title = "Classification Deleted" %]
-    The <em>[% classification FILTER html %]</em> classification has been deleted.
+    The <em>[% classification.name FILTER html %]</em> classification has been deleted.
 
   [% ELSIF message_tag == "classification_updated" %]
-    [% IF updated_classification || updated_description || updated_sortkey %]
-      [% title = "Classification Updated" %]
-      Changes to the <em>[% classification FILTER html %]</em> classification
+    [% title = "Classification Updated" %]
+    [% IF changes.keys.size %]
+      Changes to the <em>[% classification.name FILTER html %]</em> classification
       have been saved:
       <ul>
-        [% IF updated_classification %]
-          <li>Classification name updated</li>
+        [% IF changes.name.defined %]
+          <li>Name updated to '[% classification.name FILTER html %]'</li>
         [% END %]
-        [% IF updated_description %]
-          <li>Description updated</li>
+        [% IF changes.description.defined %]
+          [% IF classification.description %]
+            <li>Description updated to '[% classification.description FILTER html %]'</li>
+          [% ELSE %]
+            <li>Description removed</li>
+          [% END %]
         [% END %]
-        [% IF updated_sortkey %]
-          <li>Sortkey updated</li>
+        [% IF changes.sortkey.defined %]
+          <li>Sortkey updated to '[% classification.sortkey FILTER html %]'</li>
         [% END %]
       </ul>
     [% ELSE %]
-      No changes made to <em>[% classification FILTER html %]</em>.
+      No changes made to <em>[% classification.name FILTER html %]</em>.
     [% END %]
 
   [% ELSIF message_tag == "component_created" %]
@@ -293,40 +288,54 @@
 
   [% ELSIF message_tag == "field_value_created" %]
     [% title = "New Field Value Created" %]
-    The value <em>[% value FILTER html %]</em> has been added as a valid choice
-    for the <em>[% field.description FILTER html %]</em>
+    The value <em>[% value.name FILTER html %]</em> has been added as a 
+    valid choice for the <em>[% field.description FILTER html %]</em>
     (<em>[% field.name FILTER html %]</em>) field.
     [% IF field.name == "bug_status" %]
-      You should now visit the <a href="editworkflow.cgi">status workflow page</a>
-      to include your new [% terms.bug %] status.
+      You should now visit the <a href="editworkflow.cgi">status workflow 
+      page</a> to include your new [% terms.bug %] status.
     [% END %]
 
   [% ELSIF message_tag == "field_value_deleted" %]
     [% title = "Field Value Deleted" %]
-    The value <em>[% value FILTER html %]</em> of the
+    The value <em>[% value.name FILTER html %]</em> of the
     <em>[% field.description FILTER html %]</em>
     (<em>[% field.name FILTER html %]</em>) field has been deleted.
 
   [% ELSIF message_tag == "field_value_updated" %]
     [% title = "Field Value Updated" %]
-    [% IF updated_value || updated_sortkey %]
-      Changes to the <em>[% value FILTER html %]</em> value of the
+    [% IF changes.keys.size %]
+      The <em>[% value_old FILTER html %]</em> value of the
       <em>[% field.description FILTER html %]</em>
-      (<em>[% field.name FILTER html %]</em>) field have been changed:
+      (<em>[% field.name FILTER html %]</em>) field has been changed:
       <ul>
-        [% IF updated_value %]
-          <li>Field value updated to <em>[% value FILTER html %]</em></li>
-          [% IF default_value_updated %]
-            (note that this value is the default for this field. All
-            references to the default value will now point to this new value)
-          [% END %]
+        [% IF changes.value %]
+          <li>Field value updated to 
+            <em>[% changes.value.1 FILTER html %]</em>.
+            [% IF value.is_default %]
+              (Note that this value is the default for this field. All
+              references to the default value will now point to this new value.)
+            [% END %]
+          </li>
         [% END %]
-        [% IF updated_sortkey %]
-          <li>Field value sortkey updated to <em>[% sortkey FILTER html %]</em></li>
+        [% IF changes.sortkey %]
+          <li>Sortkey updated to 
+            <em>[% changes.sortkey.1 FILTER html %]</em>.</li>
+        [% END %]
+        [% IF changes.visibility_value_id %]
+          [% IF value.visibility_value.defined %]
+            <li>It only appears when 
+              [%+ value.field.value_field.description FILTER html %] is set to
+              '[%+ value.visibility_value.name FILTER html %]'.</li>
+          [% ELSE %]
+            <li>It now always appears, no matter what 
+              [%+ value.field.value_field.description FILTER html %] is set to.
+            </li>
+          [% END %]
         [% END %]
       </ul>
     [% ELSE %]
-      No changes made to the field value <em>[% value FILTER html %]</em>.
+      No changes made to the field value <em>[% value_old FILTER html %]</em>.
     [% END %]
 
   [% ELSIF message_tag == "flag_cleared" %]
@@ -431,6 +440,9 @@
       You didn't request any change for the '[% group.name FILTER html %]'
       group.
     [% END %]
+
+  [% ELSIF message_tag == "job_queue_depth" %]
+    [% count FILTER html %] jobs in the queue.
 
   [% ELSIF message_tag == "keyword_created" %]
     [% title = "New Keyword Created" %]
@@ -541,20 +553,20 @@
     Your password has been changed.
 
   [% ELSIF message_tag == "flag_type_created" %]
-    [% title = "Flag Type Created" %]
+    [% title = BLOCK %]Flag Type '[% name FILTER html %]' Created[% END %]
     The flag type <em>[% name FILTER html %]</em> has been created.
 
   [% ELSIF message_tag == "flag_type_changes_saved" %]
-    [% title = "Flag Type Changes Saved" %]
+    [% title = BLOCK %]Flag Type '[% name FILTER html %]' Changes Saved[% END %]
     Your changes to the flag type <em>[% name FILTER html %]</em>
     have been saved.
 
   [% ELSIF message_tag == "flag_type_deleted" %]
-    [% title = "Flag Type Deleted" %]
+    [% title = BLOCK %]Flag Type '[% name FILTER html %]' Deleted[% END %]
     The flag type <em>[% name FILTER html %]</em> has been deleted.
 
   [% ELSIF message_tag == "flag_type_deactivated" %]
-    [% title = "Flag Type Deactivated" %]
+    [% title = BLOCK %]Flag Type '[% flag_type.name FILTER html %]' Deactivated[% END %]
     The flag type <em>[% flag_type.name FILTER html %]</em> has been deactivated.
 
   [% ELSIF message_tag == "install_admin_get_email" %]
@@ -600,6 +612,23 @@
 
   [% ELSIF message_tag == "install_fk_drop" %]
     Dropping foreign key: [% table FILTER html %].[% column FILTER html %] -&gt; [% fk.TABLE FILTER html %].[% fk.COLUMN FILTER html %]...
+
+  [% ELSIF message_tag == "install_fk_invalid" %]
+    ERROR: There are invalid values for the [% column FILTER html %] column in the [% table FILTER html %]
+    table. (These values do not exist in the [% foreign_table FILTER html %] table, in the 
+    [% foreign_column FILTER html %] column.)
+
+    Before continuing with checksetup, you will need to fix these values,
+    either by deleting these rows from the database, or changing the values
+    of [% column FILTER html %] in [% table FILTER html %] to point to valid values in [% foreign_table FILTER html %].[% foreign_column FILTER html %].
+
+    The bad values from the [% table FILTER html %].[% column FILTER html %] column are:
+    [%+ values.join(', ') FILTER html %]
+
+  [% ELSIF message_tag == "install_fk_invalid_fixed" %]
+    WARNING: There were invalid values in [% table FILTER html %].[% column FILTER html %]
+    that have been [% IF action == 'delete' %]deleted[% ELSE %]set to NULL[% END %]:
+    [%+ values.join(', ') FILTER html %]
 
   [% ELSIF message_tag == "install_group_create" %]
     Creating group [% name FILTER html %]...
@@ -690,6 +719,9 @@
 
   [% ELSIF message_tag == "series_all_closed" %]
     All Closed
+
+  [% ELSIF message_tag == "series_subcategory" %]
+    -All-
 
   [% ELSIF message_tag == "sudo_started" %]
     [% title = "Sudo session started" %]

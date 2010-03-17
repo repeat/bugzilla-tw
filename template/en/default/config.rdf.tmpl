@@ -107,7 +107,7 @@
   <bz:[% cf.name FILTER html %]>
     <Seq>
       [% FOREACH item = cf.legal_values %]
-        <li>[% item FILTER html %]</li>
+        <li>[% item.name FILTER html %]</li>
       [% END %]
     </Seq>
   </bz:[% cf.name FILTER html %]>
@@ -169,7 +169,7 @@
                   [% FOREACH flag_type = flag_types %]
                     [% NEXT UNLESS flag_type.is_active %]
                     [% all_visible_flag_types.${flag_type.id} = flag_type %]
-                    <li resource="[% urlbase FILTER xml %]flags.cgi?id=[% flag_type.id FILTER url_quote
+                    <li resource="[% urlbase FILTER xml %]flag.cgi?id=[% flag_type.id FILTER url_quote
                         %]&amp;name=[% flag_type.name FILTER url_quote %]" />
                   [% END %]
                 </Seq>
@@ -224,6 +224,10 @@
             <bz:requestable>[% flag_type.is_requestable FILTER html %]</bz:requestable>
             <bz:specifically_requestable>[% flag_type.is_requesteeble FILTER html %]</bz:specifically_requestable>
             <bz:multiplicable>[% flag_type.is_multiplicable FILTER html %]</bz:multiplicable>
+            [% IF user.in_group("editcomponents") %]
+              <bz:grant_group>[% flag_type.grant_group.name FILTER html %]</bz:grant_group>
+              <bz:request_group>[% flag_type.request_group.name FILTER html %]</bz:request_group>
+            [% END %]
           </bz:flag_type>
         </li>
       [% END %]

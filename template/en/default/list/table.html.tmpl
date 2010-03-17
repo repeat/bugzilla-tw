@@ -87,11 +87,11 @@
       [% END %]
       <th colspan="[% splitheader ? 2 : 1 %]" class="first-child">
         [% desc = '' %]
-        [% IF (om = order.match("^bugs\.bug_id( desc)?")) %]
-          [% desc = ' desc' IF NOT om.0 %]
+        [% IF (om = order.match("^bug_id( DESC)?")) %]
+          [% desc = ' DESC' IF NOT om.0 %]
         [% END %]
         <a href="buglist.cgi?
-                  [% urlquerypart FILTER html %]&amp;order=bugs.bug_id[% desc FILTER url_quote %]
+                  [% urlquerypart FILTER html %]&amp;order=bug_id[% desc FILTER url_quote %]
                   [%-#%]&amp;query_based_on=
                   [% defaultsavename OR searchname FILTER url_quote %]">ID</a>
       </th>
@@ -130,20 +130,13 @@
 
 [% BLOCK columnheader %]
   <th colspan="[% splitheader ? 2 : 1 %]">
-    [% IF column.name.match('\s+AS\s+') %]
-      [%# For aliased columns, use their ID for sorting. %]
-      [% column.sortalias = id %]
-    [% ELSE %]
-      [%# Other columns may sort on their name directly. %]
-      [% column.sortalias = column.name %]
-    [% END %]
     [% desc = '' %]
-    [% IF (om = order.match("$column.sortalias( desc)?")) %]
-      [% desc = ' desc' IF NOT om.0 %]
+    [% IF (om = order.match("$id( DESC)?")) %]
+      [% desc = ' DESC' IF NOT om.0 %]
     [% END %]
-    [% order = order.remove("$column.sortalias( desc)?,?") %]
+    [% order = order.remove("\\b$id( DESC)?(,\\s*|\$)") %]
     <a href="buglist.cgi?[% urlquerypart FILTER html %]&amp;order=
-      [% column.sortalias FILTER url_quote %][% desc FILTER url_quote %]
+      [% id FILTER url_quote %][% desc FILTER url_quote %]
       [% ",$order" FILTER url_quote IF order %]
       [%-#%]&amp;query_based_on=
       [% defaultsavename OR searchname FILTER url_quote %]">
@@ -188,6 +181,16 @@
 
     [% FOREACH column = displaycolumns %]
     <td [% 'style="white-space: nowrap"' IF NOT abbrev.$column.wrap %]>
+      [% IF abbrev.$column.maxlength %]
+        <span title="
+          [%- IF column == 'bug_status' %]
+            [%- get_status(bug.$column) FILTER html %]
+          [% ELSIF column == 'resolution' %]
+            [%- get_resolution(bug.$column) FILTER html %]
+          [% ELSE %]
+            [%- bug.$column FILTER html %]
+          [% END %]">
+      [% END %]
       [% IF abbrev.$column.format_value %] 
         [%- bug.$column FILTER format(abbrev.$column.format_value) FILTER html -%] 
       [% ELSIF column == 'actual_time' ||
@@ -198,8 +201,18 @@
         [%- get_status(bug.$column).truncate(abbrev.$column.maxlength, abbrev.$column.ellipsis) FILTER html %]
       [% ELSIF column == 'resolution' %]
         [%- get_resolution(bug.$column).truncate(abbrev.$column.maxlength, abbrev.$column.ellipsis) FILTER html %]
+
+      [%# Display the login name of the user if their real name is empty. %]
+      [% ELSIF column.match('_realname$') && bug.$column == '' %]
+        [% SET login_column = column.remove('_realname$') %]
+        [% bug.${login_column}.truncate(abbrev.$column.maxlength, 
+                                        abbrev.$column.ellipsis) FILTER html %]
+
       [% ELSE %]
         [%- bug.$column.truncate(abbrev.$column.maxlength, abbrev.$column.ellipsis) FILTER html -%]
+      [% END %]
+      [% IF abbrev.$column.maxlength %]
+        </span>
       [% END %]
     </td>
     [% END %]
@@ -210,7 +223,43 @@
     # end the current table. 
     #%]
   [% IF loop.last() || loop.count() % 100 == 0 %]
+    [% IF loop.last() && time_info.time_present == 1 %]
+      [% PROCESS time_summary_line %]
+    [% END %]
     </table>
   [% END %]
 
+[% END %]
+
+
+[% BLOCK time_summary_line %]
+  <tr class="bz_time_summary_line">
+    [% columns_to_span = 1 %]  [%# bugID %]
+    [% IF dotweak %]
+      [% columns_to_span = columns_to_span + 1 %]
+    [% END %]
+    [% FOREACH column = displaycolumns %]
+      [% IF column == 'actual_time' ||
+            column == 'remaining_time' ||
+            column == 'estimated_time' ||
+            column == 'percentage_complete' %]
+        [% IF columns_to_span > 0 %]
+          <td class="bz_total bz_total_label" colspan="
+              [%- columns_to_span FILTER html %]"><b>Totals</b></td>
+          [% columns_to_span = 0 %]
+        [% END %]
+        [% IF column == 'percentage_complete' %]
+          <td class="bz_total">[% time_info.percentage_complete
+              FILTER format(abbrev.$column.format_value) FILTER html %]</td>
+        [% ELSE %]
+          <td class="bz_total">
+            [%- PROCESS formattimeunit time_unit=time_info.$column %]</td>
+        [% END %]
+      [% ELSIF columns_to_span == 0 %] [%# A column following the first total %]
+        <td class="bz_total">&nbsp;</td>
+      [% ELSE %] [%# We haven't gotten to a time column yet, keep computing span %]
+        [% columns_to_span = columns_to_span + 1 %]
+      [% END %]
+    [% END %]
+  </tr>
 [% END %]

@@ -1,9 +1,9 @@
-Bugzilla 3.2.6 繁體中文化語系檔
+Bugzilla 3.4.5 繁體中文化語系檔
 
 常見問題
 
 Q. 是否會釋出 doc/ 的中文化語系檔？
-A. 不會，至少目前不會。
+A. 目前無此打算。
 
 Q. Release Note 沒有中文化？
 A. 參考 Mozilla Firefox 3.5 的 Release Note 的做法，改為維持原(英)文。
@@ -29,15 +29,15 @@ A. 請利用 Google Code 裡的 New Issue 功能 ( http://code.google.com/p/bugz
 
 
 
-Bugzilla 3.2.6 Chinese, traditional (zh-TW) language pack files
+Bugzilla 3.4.5 Chinese, traditional (zh-TW) language pack files
 
 FAQ for non-Chinese speakers
 
 Q. What is the difference between the bugzilla-tw project in SourceForge.net and in Google Code?
 A. The SourceForge.net one seems not maintained by anyone anymore.
 
-Q. Will there be language pack for doc/ ?
-A. No, at least not now.
+Q. Will there be language pack for doc/?
+A. No plans for that.
 
 Q. How to contact the localizer?
 A. Please use "New Issue" in Google Code [http://code.google.com/p/bugzilla-tw/issues/list] and create one.

@@ -169,10 +169,10 @@
     [% END %]
 
   [% ELSIF san_tag == "everconfirmed_start" %]
-    修正 everconfirmed 中。
+    修正 "everconfirmed" 中…
 
   [% ELSIF san_tag == "everconfirmed_end" %]
-    已修正 everconfirmed 。
+    已修正 "everconfirmed" 。
 
   [% ELSIF san_tag == "flag_check_start" %]
     檢查產品及子產品中的錯誤旗標中…
@@ -297,8 +297,13 @@
   [% END %]
 [% END %]
 
-[% san_message FILTER html %]
-
+[% USE Bugzilla %]
+[% IF Bugzilla.usage_mode == constants.USAGE_MODE_CMDLINE %]
+  [% san_message FILTER none %]
+[% ELSE %]
+  [%# Avoid the txt filter in message.txt.tmpl. %]
+  [% san_message FILTER html %]
+[% END %]
 
 [% BLOCK bug_list %]
   [% FOREACH bug_id = badbugs %]

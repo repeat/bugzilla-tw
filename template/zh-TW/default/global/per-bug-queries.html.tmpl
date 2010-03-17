@@ -25,11 +25,9 @@
         var new_query_text = document.getElementById('lob_new_query_text');
 
         if (action == "add") {
-          text.innerHTML = "to";
           new_query_text.style.display = 'inline';
         }
         else {
-          text.innerHTML = "from";
           new_query_text.style.display = 'none';
         }
       }
@@ -63,6 +61,10 @@
         <input type="hidden" name="cmdtype" value="doit">
         <input type="hidden" name="remtype" value="asnamed">
         <input type="hidden" name="list_of_bugs" value="1">
+        <span id="lob_direction">對</span>
+        [%+ terms.bugs %]
+        <input type="text" name="bug_ids" size="12" maxlength="80"
+         [%- " value=\"$bugids\"" IF bugids %]>
         <select id="lob_action" name="action" onchange="update_text();">
           <option value="add">新增</option>
           [% IF lists_of_bugs.size %]
@@ -84,15 +86,11 @@
           </select>
         [% END %]
         <span id="lob_new_query_text">
-          [% "或是新增標籤" IF lists_of_bugs.size %]
+          [% "或新標籤" IF lists_of_bugs.size %]
           <input class="txt" type="text" id="lob_newqueryname"
                  size="20" maxlength="64" name="newqueryname"
                  onkeyup="manage_old_lists();">
         </span>
-        <span id="lob_direction">到</span>
-        [%+ terms.bugs %]
-        <input type="text" name="bug_ids" size="12" maxlength="80"
-         [%- " value=\"$bugids\"" IF bugids %]>
         <input type="submit" value="送出" id="commit_list_of_bugs">
       </form>
     </li></ul>

@@ -127,6 +127,12 @@
     在資料庫中， '[% username FILTER html %]' 對應到外部編號
     '[% extern_id FILTER html %]' ，但是你的帳號來源說 '[% extern_user FILTER html %]' 擁有該外部編號。
 
+  [% ELSIF error == "field_choice_must_use_type" %]
+    當你在 <code>Bugzilla::Field::Choice</code> 呼叫一個 class method
+    時，你必須呼叫 <code>Bugzilla::Field::Choice-&gt;type('some_field')</code>
+    來產生正確的 class ，而無法直接透過 <code>Bugzilla::Field::Choice</code>
+    呼叫 class method 。
+
   [% ELSIF error == "field_type_mismatch" %]
     無法同時處理 <code>[% field FILTER html %]</code> 以及 <code>[% type FILTER html %]</code> 。
 
@@ -167,8 +173,8 @@
     在 GD Perl 模組安裝前，圖表功能無法使用。執行 checksetup.pl 以瞭解如何安裝。
 
   [% ELSIF error == "illegal_content_type_method" %]
-    送出的表單因故損壞。標明如何決定內容類別的欄位「<em>內容類別偵測方法
-    (contenttypemethod)</em>」的值，應該是<em>自動偵側
+    送出的表單因故損壞。標明如何決定內容類別的欄位
+    <em>content method</em> 的值，應該是<em>自動偵側
     (autodetect)</em> 、<em>自清單中選擇
     (list)</em>或<em>手動輸入 (manual)</em> ，但表單收到的卻是
     <em>[% contenttypemethod FILTER html %]</em> 。
@@ -237,6 +243,20 @@
       並未輸入使用者帳號。
     [% END %]
 
+  [% ELSIF error == "jobqueue_insert_failed" %]
+   [% title = "Job 排程失敗" %]
+    在 job 排程中插入 <code>[% job FILTER html %]</code> 時，出現下列錯誤訊息：
+    [% errmsg FILTER html %]
+
+  [% ELSIF error == "jobqueue_not_configured" %]
+    使用 job 排程系統必須安裝特定的 Perl 模組。請執行
+    <code>checksetup.pl</code> 檢查你少安裝了什麼。
+
+  [% ELSIF error == "jobqueue_no_job_mapping" %]
+    <code>Bugzilla::JobQueue</code> 並未被指派來處理
+    "[% job FILTER html %]" 。你必須在
+    <code>Bugzilla::JobQueue</code> 裡把此種 job 類別加入 <code>JOB_MAP</code> 此常數中。
+
   [% ELSIF error == "ldap_bind_failed" %]
     Bind LDAP 伺服器失敗。錯誤訊息為：
     <code>[% errstr FILTER html %]</code>
@@ -282,8 +302,8 @@
   [% ELSIF error == "need_quipid" %]
     需要輸入有效的智語編號。
 
-  [% ELSIF error == "no_manual_moved" %] 
-    你不能將一個 [% terms.bug %] 的解決方案設定為已搬移 (MOVED)而不搬移它。
+  [% ELSIF error == "no_manual_moved" %]
+    你不能將一個 [% terms.bug %] 的解決方案設定為已搬移 (MOVED) ，但不搬移它。
 
   [% ELSIF error == "no_open_bug_status" %]
     [% title = "$terms.Bug 無法被確認" %]
@@ -307,6 +327,21 @@
     [% title = "未輸入參數" %]
     功能 <code>[% function FILTER html %]</code> 需要參數
     <code>[% param FILTER html %]</code> ，但並未設定該參數。
+
+  [% ELSIF error == "params_required" %]
+    [% title = "未輸入參數" %]
+    功能 <code>[% function FILTER html %]</code> 需要你設定
+    以下的參數之一：
+    <code>[% params.join(', ') FILTER html %]</code>
+
+  [% ELSIF error == "product_empty_group_controls" %]
+    [% title = "缺少群組控管" %]
+    必須對 [% group.name FILTER html %] 群組設定新的群組控管權限。
+
+  [% ELSIF error == "product_illegal_group_control" %]
+    [% title = "不合法的群組控管" %]
+    '[% value FILTER html %]' 並不是
+    '[% field FILTER html %]' 欄位的有效數值。
 
   [% ELSIF error == "protection_violation" %]
     功能 <code>[% function FILTER html %]</code> 是由外部

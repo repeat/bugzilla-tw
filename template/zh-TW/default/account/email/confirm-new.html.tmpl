@@ -16,7 +16,7 @@
 [%# INTERFACE:
   # token: string. The token to be used in the user account creation.
   # email: email address of the user account.
-  # date: creation date of the token.
+  # expiration_ts: expiration date of the token.
   #%]
 
 [% title = BLOCK %]以 '[% email FILTER html %]' 建立新帳號[% END %]
@@ -24,7 +24,6 @@
            title = title
            onload = "document.forms['confirm_account_form'].realname.focus();" %]
 
-[% expiration_ts = date + (constants.MAX_TOKEN_AGE * 86400) %]
 <div>
 要建立你的帳號，必須在下方的表單中輸入密碼。你的電子郵件地址以及真實姓名（如果有提供的話）會和你所做的變動一併顯示。
 </div>
@@ -57,7 +56,7 @@
 </form>
 
 <p>
-如果在 <u>[%+ time2str("%Y-%m-%d %H:%M:%S", expiration_ts) %]</u> 之前，未完成此一表單的話，將不會建立此一帳號。
+如果在 <u>[% expiration_ts FILTER time("%Y-%m-%d %H:%M %Z") %]</u> 之前，未完成此一表單的話，將不會建立此一帳號。
 </p>
 
 <p>
