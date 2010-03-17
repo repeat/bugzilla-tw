@@ -28,6 +28,7 @@
 [% PROCESS global/header.html.tmpl
   title = "報告及圖表產生器"
   doc_section = "reporting.html"
+  style_urls = ['skins/standard/reports.css']
 %]
 
 <p>
@@ -37,21 +38,22 @@
 <h2>目前狀態</h2>
 
 <ul>
-  <li>
+  <li id="report_search">
     <strong><a href="query.cgi">搜尋</a></strong> - 列出一組 [% terms.bugs %] 。
   </li>
-  <li>
+  <li id="report_tabular">
     <strong>
       <a href="query.cgi?format=report-table">表格式報告</a>
     </strong> - 以 HTML 或 CSV 格式，產生一、二或三度空間的 [% terms.bug %] 數目表格。
   </li>
   [% IF feature_enabled('graphical_reports') %]
-    <li>
+    <li id="report_graphical">
       <strong>
         <a href="query.cgi?format=report-graph">圖形式報告</a>
       </strong> - 折線圖、長條圖及圓餅圖。
     </li>
   [% END %]
+  [% Hook.process('current_state') %]
 </ul>
 
 [% IF feature_enabled('new_charts') OR feature_enabled('old_charts') %]
@@ -59,18 +61,20 @@
 
   <ul>
   [% IF feature_enabled('old_charts') %]
-    <li>
+    <li id="old_charts">
       <strong><a href="reports.cgi">舊的圖表</a></strong> -
       以資料庫中每一個產品為單位，繪出時間、 [% terms.bugs %] 的狀態和／或解決方案。
     </li>
   [% END %]
   [% IF feature_enabled('new_charts') AND user.in_group(Param("chartgroup")) %]
-    <li>
+    <li id="new_charts">
       <strong><a href="chart.cgi">新的圖表</a></strong> -
       以時間為單位，繪出任何搜尋。功能更為強大。
     </li>
   [% END %]
 </ul>
 [% END %]
+
+[% Hook.process('end') %]
 
 [% PROCESS global/footer.html.tmpl %]

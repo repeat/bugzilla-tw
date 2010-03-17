@@ -19,14 +19,12 @@
   #%]
 
 [%# INTERFACE:
-  # products: an array of product objects this user can see.
-  #
   # sortby: string. the column on which we are sorting the buglist.
   # reverse: boolean. True if we are reversing the current sort.
   # maxrows: integer. Max number of rows to display.
   # changedsince: integer. The number of days ago for the changedsince column.
   # openonly: boolean. True if we are only showing open bugs.
-  # query_products: list of strings. The set of products we check for dups.
+  # product: array of strings. The set of products we check for dups.
   #
   # Additionally, you need to fulfill the interface to
   # duplicates-table.html.tmpl.
@@ -34,9 +32,10 @@
 
 [% PROCESS global/variables.none.tmpl %]
 
-[% IF query_products.size %]
+[% IF product.size %]
   [% title = BLOCK %]
-    產品 [% query_products.join(', ') FILTER html %] 最常回報的 [% terms.Bugs %]
+    產品 [% query_products.join(', ') FILTER html %]
+    最常回報的 [% terms.Bugs %]
   [% END %]
 [% ELSE %]
   [% title = "最常回報的 $terms.Bugs" %]
@@ -44,7 +43,7 @@
 
 [% PROCESS global/header.html.tmpl
    title = title
-   style = ".resolved { background-color: #d9d9d9; color: #000000; }"
+   style_urls = ['skins/standard/duplicates.css']
 %]
 
 <p>
@@ -57,27 +56,26 @@
 
 [%# *** Parameters *** %]
 
-[% bug_ids_string = vis_bug_ids.join(',') %]
+[% bug_ids_string = bug_ids.join(',') %]
 
 <h3><a name="params">變更參數</a></h3>
 
 <form method="get" action="duplicates.cgi">
   <input type="hidden" name="sortby" value="[% sortby FILTER html %]">
-  <input type="hidden" name="reverse" value="[% reverse %]">
-  <input type="hidden" name="bug_id" value="[% bug_ids_string %]">
+  <input type="hidden" name="reverse" value="[% reverse FILTER html %]">
+  <input type="hidden" name="bug_id" value="[% bug_ids_string FILTER html %]">
   <table>
     <tr>
-      <td>在排序或限制時，對...有效：
-          </td>
+      <td>在排序或限制時，對...有效：</td>
       <td>
         <input type="radio" name="sortvisible" id="entirelist" value="0"
-          [%+ "checked" IF NOT sortvisible %]>
+          [% ' checked="checked"' IF NOT sortvisible %]>
         <label for="entirelist">
           整份清單
         </label>
         <br>
         <input type="radio" name="sortvisible" id="visiblelist" value="1"
-          [%+ "checked" IF sortvisible %]>
+          [% ' checked="checked"' IF sortvisible %]>
         <label for="visiblelist">
           目前可見的清單
         </label>
@@ -85,9 +83,9 @@
       <td rowspan="4" valign="top">限制於下列產品：</td>
       <td rowspan="4" valign="top">
         <select name="product" size="5" multiple="multiple">
-          [% FOREACH p = products %]
+          [% FOREACH p = user.get_selectable_products %]
             <option name="[% p.name FILTER html %]"
-            [% " selected" IF lsearch(query_products, p.name) != -1 %]
+            [% ' selected="selected"' IF product.contains(p.name) %]
             >[% p.name FILTER html %]</option>
           [% END %]
         </select>
@@ -95,16 +93,20 @@
      </tr>
 
     <tr>
-      <td>最大列數：</td>
+      <td><label for="maxrows">最大列數：</label></td>
       <td>
-        <input size="4" name="maxrows" value="[% maxrows %]">
+        <input size="4" name="maxrows" id="maxrows"
+	       value="[% maxrows FILTER html %]">
       </td>
     </tr>
 
     <tr>
-      <td>欄位在最近幾天變更：</td>
       <td>
-        <input size="4" name="changedsince" value="[% changedsince %]">天
+        <label for="changedsince">欄位在最近幾天變更：</label>
+      </td>
+      <td>
+        <input size="4" name="changedsince" id="changedsince"
+	       value="[% changedsince FILTER html %]"> 天
       </td>
     </tr>
 
@@ -116,7 +118,7 @@
       </td>
       <td>
         <input type="checkbox" name="openonly" id="openonly" value="1"
-          [%+ "checked" IF openonly %]>
+          [% ' checked="checked"' IF openonly %]>
       </td>
     </tr>
 
@@ -126,10 +128,8 @@
 </form>
 
 <form method="post" action="buglist.cgi">
-  <input type="hidden" name="bug_id" value="[% bug_ids_string %]">
-  <input type="hidden" name="order" value="使用上次的排序">
-  或者以<input type="submit" id="list"
-                                value="[% terms.bug %]清單">呈現即可。
+  <input type="hidden" name="bug_id" value="[% bug_ids_string FILTER html %]">
+  或者以<input type="submit" id="list" value="[% terms.bug %] 清單">呈現即可。
   (注意：順序可能不一樣。)
 </form>
 
@@ -139,12 +139,12 @@
   <a name="explanation">什麼是「最常回報的 [% terms.Bugs %] 」？</a>
 </b>
 
-<blockquote>
-  最常回報的 [% terms.Bugs %] 頁面列出目前狀態為開啟，且最常被回報的 [% terms.bugs %]
-  清單。此清單由 [% terms.Bugzilla %]資料庫每天自動產生，產生方式為計算被直接或間接標記為重複的
-  [% terms.bugs %] 數量。提供此清單的目的是將輸入 [% terms.Bugzilla %] 的重複 [% terms.bugs %]
-  數量減到最低，以省下品保工程師分類 [% terms.bugs %] 的時間。
-</blockquote>
+<p>
+  最常回報的 [% terms.Bugs %] 頁面列出目前狀態為開啟，且最常被回報的
+  [%+ terms.bugs %] 清單。此清單產生方式為計算被直接或間接標記為重複的
+  [%+ terms.bugs %] 數量。提供此清單的目的是將輸入 [% terms.Bugzilla %]
+  的重複 [% terms.bugs %] 數量減到最低，以省下品保工程師分類 [% terms.bugs %] 的時間。
+</p>
 
 <b>我如何使用這份清單？</b>
 
