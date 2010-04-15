@@ -297,7 +297,8 @@
 
   [% ELSIF error == "comment_too_long" %]
     [% title = "Comment Too Long" %]
-    Comments cannot be longer than 65,535 characters.
+    Comments cannot be longer than 
+    [%+ constants.MAX_COMMENT_LENGTH FILTER html %] characters.
 
   [% ELSIF error == "auth_classification_not_enabled" %]
     [% title = "Classification Not Enabled" %]
@@ -1016,6 +1017,10 @@
     [% title = "Login Name Required" %]
     You can't use %user% without being logged in, because %user% refers
     to your login name, which we don't know.
+
+  [% ELSIF error == "login_required" %]
+    [%# Used for non-web-based LOGIN_REQUIRED situations. %]
+    You must log in before using this part of [% terms.Bugzilla %].
 
   [% ELSIF error == "migrate_config_created" %]
     The file <kbd>[% file FILTER html %]</kbd> contains configuration
