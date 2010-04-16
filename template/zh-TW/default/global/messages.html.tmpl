@@ -176,6 +176,7 @@
         [% IF changes.sortkey.defined %]
           <li>排序鍵已更新為 '[% classification.sortkey FILTER html %]'</li>
         [% END %]
+        [% Hook.process('classification_updated_fields') %]
       </ul>
     [% ELSE %]
       並未對分類 <em>[% classification.name FILTER html %]</em> 做出任何變更。
@@ -223,6 +224,8 @@
         [% ELSE %]
           <li>已刪除預設寄件副本清單</li>
         [% END %]
+        [% Hook.process('classification_updated_fields') %]
+        </ul>
       [% END %]
     [% ELSE %]
       並未對 <em>[% comp.name FILTER html %]</em> 做出變更。

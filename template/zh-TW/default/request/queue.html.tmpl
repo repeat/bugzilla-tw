@@ -240,5 +240,7 @@
 [% BLOCK display_buglist %]
   </table>
   [% NEXT UNLESS buglist.keys.size %]
-  <a href="buglist.cgi?bug_id=[% buglist.keys.nsort.join(",") FILTER html %]">（以 [% terms.bug %] 清單方式檢視）</a>
+  <a href="buglist.cgi?bug_id=
+          [%- buglist.keys.nsort.join(",") FILTER html %]">（以
+  [%+ terms.bug %] 清單方式檢視）</a>
 [% END %]

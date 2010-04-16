@@ -23,83 +23,6 @@
 
 [% PROCESS global/variables.none.tmpl %]
 
-[% field_descs = {
-  "[Bug creation]"          => "[建立 $terms.Bug 時]",
-  "actual_time"             => "實際小時數",
-  "alias"                   => "別名",
-  "assigned_to"             => "負責人",
-  "attach_data.thedata"     => "附件資料",
-  "attachments.description" => "附件描述",
-  "attachments.filename"    => "附件檔名",
-  "attachments.mimetype"    => "附件的 MIME 類別",
-  "attachments.ispatch"     => "附件是 patch",
-  "attachments.isobsolete"  => "附件已廢棄",
-  "attachments.isprivate"   => "附件不公開",
-  "attachments.isurl"       => "附件是網址",
-  "attachments.submitter"   => "附件建立者",
-  "blocked"                 => "會擋掉這些 $terms.Bug",
-  "bug_file_loc"            => "網址",
-  "bug_group"               => "群組",
-  "bug_id"                  => "$terms.Bug 編號",
-  "bug_severity"            => "嚴重程度",
-  "bug_status"              => "狀態",
-  "changeddate"             => "修改日期",
-  "cc"                      => "寄件副本",
-  "classification"          => "分類",
-  "cclist_accessible"       => "可用的寄件副本清單",
-  "commenter"               => "意見發表人",
-  "component_id"            => "子產品編號",
-  "component"               => "子產品",
-  "content"                 => "內容",
-  "creation_ts"             => "建立 $terms.Bug 的時間",
-  "deadline"                => "截止期限",
-  "delta_ts"                => "已變更",
-  "dependson"               => "要先修好這些 $terms.Bug",
-  "dup_id"                  => "重複的",
-  "estimated_time"          => "原先估計時間",
-  "everconfirmed"           => "是否確認",
-  "flagtypes.name"          => "旗標",
-  "keywords"                => "關鍵字",
-  "longdesc"                => "意見",
-  "longdescs.isprivate"     => "意見不公開",
-  "newcc"                   => "寄件副本",
-  "op_sys"                  => "作業系統",
-  "opendate"                => "開啟日",
-  "owner_idle_time"         => "自負責人接受後過了多久時間",
-  "percentage_complete"     => "完成度 (%)",
-  "priority"                => "優先程度",
-  "product_id"              => "產品編號",
-  "product"                 => "產品",
-  "qa_contact"              => "QA 連絡人",
-  "remaining_time"          => "剩餘時數",
-  "rep_platform"            => "硬體平台",
-  "reporter"                => "回報者",
-  "reporter_accessible"     => "可瀏覽的回報者",
-  "requestees.login_name"   => "旗標要求者",
-  "resolution"              => "解決方案",
-  "see_also"                => "也請參考",
-  "setters.login_name"      => "旗標設定者",
-  "setting"                 => "設定",
-  "settings"                => "設定",
-  "short_desc"              => "摘要",
-  "status_whiteboard"       => "狀態白板",
-  "target_milestone"        => "目標里程碑",
-  "version"                 => "版本",
-  "votes"                   => "投票",
-  "work_time"               => "已工作時數"
-} %]
-
-[%# Also include any custom fields or fields which don't have a
-    Description here, by copying their Description from the
-    database. If you want to override this for your language
-    or your installation, just use a hook. %]
-[% UNLESS Param('shutdownhtml') %]
-  [% FOREACH bz_field = bug_fields.values %]
-    [% SET field_descs.${bz_field.name} = bz_field.description
-       IF !field_descs.${bz_field.name}.defined %]
-  [% END %]
-[% END %]
-
 [% SET search_descs = {
   "noop"           => "---",
   "equals"         => "等於",
@@ -123,7 +46,8 @@
   "changedfrom"    => "從...變更",
   "changedto"      => "變更為...",
   "changedby"      => "被...變更",
-  "matches"        => "符合"
+  "matches"        => "符合",
+  "notmatches"      => "不符合"
 } %]
 
 [% field_types = {
@@ -176,5 +100,89 @@
     [% value_name FILTER none %]
   [% END %]
 [% END %][% END %]
+
+[% IF in_template_var %]
+  [% vars.terms = terms %]
+
+  [%# field_descs is loaded as a global template variable and cached
+    # across all templates--see VARIABLES in Bugzilla/Template.pm.
+    #%]
+  [% vars.field_descs = {
+    "[Bug creation]"          => "[建立 $terms.Bug 時]",
+    "actual_time"             => "實際小時數",
+    "alias"                   => "別名",
+    "assigned_to"             => "負責人",
+    "attach_data.thedata"     => "附件資料",
+    "attachments.description" => "附件描述",
+    "attachments.filename"    => "附件檔名",
+    "attachments.mimetype"    => "附件的 MIME 類別",
+    "attachments.ispatch"     => "附件是 patch",
+    "attachments.isobsolete"  => "附件已廢棄",
+    "attachments.isprivate"   => "附件不公開",
+    "attachments.isurl"       => "附件是網址",
+    "attachments.submitter"   => "附件建立者",
+    "blocked"                 => "會擋掉這些 $terms.Bug",
+    "bug_file_loc"            => "網址",
+    "bug_group"               => "群組",
+    "bug_id"                  => "$terms.Bug 編號",
+    "bug_severity"            => "嚴重程度",
+    "bug_status"              => "狀態",
+    "changeddate"             => "修改日期",
+    "cc"                      => "寄件副本",
+    "classification"          => "分類",
+    "cclist_accessible"       => "可用的寄件副本清單",
+    "commenter"               => "意見發表人",
+    "component_id"            => "子產品編號",
+    "component"               => "子產品",
+    "content"                 => "內容",
+    "creation_ts"             => "建立 $terms.Bug 的時間",
+    "deadline"                => "截止期限",
+    "delta_ts"                => "已變更",
+    "dependson"               => "要先修好這些 $terms.Bug",
+    "dup_id"                  => "重複的",
+    "estimated_time"          => "原先估計時間",
+    "everconfirmed"           => "是否確認",
+    "flagtypes.name"          => "旗標",
+    "keywords"                => "關鍵字",
+    "longdesc"                => "意見",
+    "longdescs.isprivate"     => "意見不公開",
+    "newcc"                   => "寄件副本",
+    "op_sys"                  => "作業系統",
+    "opendate"                => "開啟日",
+    "owner_idle_time"         => "自負責人接受後過了多久時間",
+    "percentage_complete"     => "完成度 (%)",
+    "priority"                => "優先程度",
+    "product_id"              => "產品編號",
+    "product"                 => "產品",
+    "qa_contact"              => "QA 連絡人",
+    "remaining_time"          => "剩餘時數",
+    "rep_platform"            => "硬體平台",
+    "reporter"                => "回報者",
+    "reporter_accessible"     => "可瀏覽的回報者",
+    "requestees.login_name"   => "旗標要求者",
+    "resolution"              => "解決方案",
+    "see_also"                => "也請參考",
+    "setters.login_name"      => "旗標設定者",
+    "setting"                 => "設定",
+    "settings"                => "設定",
+    "short_desc"              => "摘要",
+    "status_whiteboard"       => "狀態白板",
+    "target_milestone"        => "目標里程碑",
+    "version"                 => "版本",
+    "votes"                   => "投票",
+    "work_time"               => "已工作時數"
+  } %]
+
+  [%# Also include any custom fields or fields which don't have a
+      Description here, by copying their Description from the
+      database. If you want to override this for your language
+      or your installation, just use a hook. %]
+  [% UNLESS Param('shutdownhtml') %]
+    [% FOREACH bz_field = bug_fields.values %]
+      [% SET vars.field_descs.${bz_field.name} = bz_field.description
+         IF !vars.field_descs.${bz_field.name}.defined %]
+    [% END %]
+  [% END %]
+[% END %]
 
 [% Hook.process("end") %]

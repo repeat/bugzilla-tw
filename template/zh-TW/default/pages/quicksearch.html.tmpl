@@ -46,6 +46,7 @@
     [%+ field_descs.product FILTER html %]、
     [%+ field_descs.component FILTER html %]、
     [%+ IF use_keywords %][%+ field_descs.keywords FILTER html %]、[% END %]
+    [%+ IF Param('usebugaliases') %][% field_descs.alias FILTER html %]、[% END %]
     [%+ field_descs.short_desc FILTER html %]、
     [%+ IF Param('usestatuswhiteboard') %][% field_descs.status_whiteboard FILTER html %][% END %]
     以及 [% field_descs.longdesc FILTER html %] 這些欄位搜尋你所輸入的字。</li>

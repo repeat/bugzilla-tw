@@ -285,7 +285,7 @@
 
   [% ELSIF error == "comment_too_long" %]
     [% title = "意見過長" %]
-    意見不能超過 65,535 字元。
+    意見不能超過 [% constants.MAX_COMMENT_LENGTH FILTER html %] 字元。
 
   [% ELSIF error == "auth_classification_not_enabled" %]
     [% title = "分類功能未啟用" %]
@@ -938,6 +938,10 @@
   [% ELSIF error == "login_needed_for_password_change" %]
     [% title = "必須輸入帳號" %]
     如要變更你的密碼，你必須輸入你的帳號。
+
+  [% ELSIF error == "login_required" %]
+    [%# Used for non-web-based LOGIN_REQUIRED situations. %]
+    你必須登入 [% terms.Bugzilla %] ，才能使用該部份功能。
 
   [% ELSIF error == "login_required_for_pronoun" %]
     [% title = "必須輸入帳號" %]
