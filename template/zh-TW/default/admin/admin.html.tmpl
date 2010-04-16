@@ -75,6 +75,8 @@
         <dt id="flags" class="[% class %]"><a href="editflagtypes.cgi">旗標</a></dt>
         <dd class="[% class %]">旗標是對 [% terms.bugs %] 和／或附件所做出的四種自訂狀態：同意、否定、要求和未定義。
         <br>你可以對每個 [% terms.bug %] 設定多種旗標，並定義哪些使用者可以編輯旗標。</dd>
+
+	[% Hook.process('end_links_left') %]
       </dl>
     </td>
 
@@ -107,6 +109,8 @@
         <dt id="whining" class="[% class %]"><a href="editwhines.cgi">訂閱</a></dt>
         <dd class="[% class %]">設定在特定日期及時間執行的查詢，並將結果以電子郵件寄發。
         <br>這是種建立提醒，以及追蹤活動的好方式。</dd>
+
+	[% Hook.process('end_links_right') %]
       </dl>
     </td>
   </tr>
