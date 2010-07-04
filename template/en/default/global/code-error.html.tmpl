@@ -37,17 +37,7 @@
 [% DEFAULT title = "Internal Error" %]
 
 [% error_message = BLOCK %]
-  [% IF    error == "action_unrecognized" %]
-    [% docslinks = {'query.html' => "Searching for $terms.bugs",
-                    'query.html#list' => "$terms.Bug lists"} %]
-    I don't recognize the value (<em>[% action FILTER html %]</em>)
-    of the <em>action</em> variable.
-  
-  [% ELSIF error == "attachment_already_obsolete" %]
-    Attachment #[% attach_id FILTER html %] ([% description FILTER html %]) 
-    is already obsolete.
-
-  [% ELSIF error == "attachment_local_storage_disabled" %]
+  [% IF error == "attachment_local_storage_disabled" %]
     [% title = "Local Storage Disabled" %]
     You cannot store attachments locally. This feature is disabled.
 
@@ -216,10 +206,6 @@
   [% ELSIF error == "illegal_field" %]
     A legal [% field FILTER html %] was not set.
 
-  [% ELSIF error == "inactive_group" %]
-    Attempted to add [% terms.bug %] to the '[% name FILTER html %]'
-    group, which is not used for [% terms.bugs %].
-
   [% ELSIF error == "invalid_attach_id_to_obsolete" %]
      The attachment number of one of the attachments you wanted to obsolete,
      [% attach_id FILTER html %], is invalid.
@@ -281,13 +267,6 @@
     You can't ask a specific person for
     <em>[% type.name FILTER html %]</em>.
   
-  [% ELSIF error == "flag_status_invalid" %]
-    The flag status <em>[% status FILTER html %]</em>
-    [% IF id %]
-      for flag ID #[% id FILTER html %]
-    [% END %]
-    is invalid.
-
   [% ELSIF error == "flag_type_inactive" %]
     [% title = "Inactive Flag Type" %]
     The flag type [% type FILTER html %] is inactive and cannot be used
@@ -370,14 +349,10 @@
   [% ELSIF error == "need_quipid" %]
     A valid quipid is needed.
 
-  [% ELSIF error == "no_manual_moved" %]
-    You cannot set the resolution of [% terms.abug %] to [% display_value("resolution", "MOVED") FILTER html %] without
-    moving the [% terms.bug %].
-
-  [% ELSIF error == "no_open_bug_status" %]
-    [% title = "$terms.Bug Cannot Be Confirmed" %]
-    There is no valid transition from
-    [%+ display_value("bug_status", "UNCONFIRMED") FILTER html %] to an open state.
+  [% ELSIF error == "object_dep_sort_loop" %]
+    There is a loop in VALIDATOR_DEPENDENCIES involving
+    '[%+ field FILTER html %]'. Here are the fields we considered:
+    [%+ considered.join(', ') FILTER html %].
 
   [% ELSIF error == "param_invalid" %]
     [% title = "Invalid Parameter" %]
@@ -431,9 +406,6 @@
     An error occurred while preparing for a RADIUS authentication request:
     <code>[% errstr FILTER html %]</code>.
 
-  [% ELSIF error == "request_queue_group_invalid" %]
-    The group field <em>[% group FILTER html %]</em> is invalid.
-
   [% ELSIF error == "report_axis_invalid" %]
     <em>[% val FILTER html %]</em> is not a valid value for 
     [%+ IF    fld == "x" %]the horizontal axis
@@ -473,13 +445,6 @@
   [% ELSIF error == "undefined_field" %]
     Form field [% field FILTER html %] was not defined.
     
-  [% ELSIF error == "unknown_action" %]
-    [% IF action %]
-       Unknown action [% action FILTER html %]!
-    [% ELSE %]
-       I could not figure out what you wanted to do.
-    [% END %]
-
   [% ELSIF error == "unknown_method" %]
     The requested method '[% method FILTER html %]' was not found.
 
@@ -561,6 +526,9 @@
     </td>
   </tr>
 </table>
+
+<p>Traceback:</p>
+<pre>[% traceback FILTER html_linebreak %]</pre>
 
 [% IF variables %]
   <pre>

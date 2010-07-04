@@ -145,8 +145,6 @@
       delete
     [% ELSIF action == "edit" %]
       add, modify or delete
-    [% ELSIF action == "move" %]
-      move
     [% ELSIF action == "run" %]
       run
     [% ELSIF action == "schedule" %]
@@ -155,6 +153,8 @@
       use
     [% ELSIF action == "approve" %]
       approve
+    [% ELSE %]
+      [% Hook.process('auth_failure_action') %]
     [% END %]
 
     [% IF object == "administrative_pages" %]
@@ -505,7 +505,7 @@
       it controls the visibility of the following fields:
       [%+ fields.join(', ') FILTER html %].
     [% END %]
-    [% ' and ' IF fields.size AND vals.size %]
+    [% ' Also, ' IF fields.size AND vals.size %]
     [% IF vals.size %]
       it controls the visibility of the following field values:
       <ul>
@@ -521,7 +521,8 @@
   [% ELSIF error == "fieldvalue_is_default" %]
     [% title = "Specified Field Value Is Default" %]
     '[% value.name FILTER html %]' is the default value for
-    the '[% field.description FILTER html %]' field and cannot be deleted.
+    the '[% field.description FILTER html %]' field and cannot be deleted
+    or disabled.
     [% IF user.in_group('tweakparams') %]
       You have to <a href="editparams.cgi?section=bugfields#
       [%- param_name FILTER url_quote %]">change</a> the default value first.
@@ -541,9 +542,9 @@
 
   [% ELSIF error == "fieldvalue_not_deletable" %]
     [% title = "Field Value Not Deletable" %]
-    The value '[% value.name FILTER html %]' cannot be removed because
-    it plays some special role for the '[% field.description FILTER html %]' 
-    field.
+    The value '[% value.name FILTER html %]' cannot be removed or
+    disabled, because it plays some special role for the 
+    '[% field.description FILTER html %]' field.
 
   [% ELSIF error == "fieldvalue_reserved_word" %]
     [% title = "Reserved Word Not Allowed" %]
@@ -624,6 +625,14 @@
     is restricted to users in the [% Param("insidergroup") FILTER html %] group,
     and the user you asked isn't in that group.  Please choose someone else
     to ask, or ask an administrator to add the user to the group.
+
+  [% ELSIF error == "flag_status_invalid" %]
+    [% title = "Flag Status Invalid" %]
+    The flag status <em>[% status FILTER html %]</em>
+    [% IF id %]
+      for flag ID #[% id FILTER html %]
+    [% END %]
+    is invalid.
 
   [% ELSIF error == "flag_type_cc_list_invalid" %]
     [% title = "Flag Type CC List Invalid" %]
@@ -741,11 +750,6 @@
     The group [% name FILTER html %] does not exist. Please specify
     a valid group name. Create it first if necessary!
 
-  [% ELSIF error == "illegal_at_least_x_votes" %]
-    [% title = "Your Search Makes No Sense" %]
-    The <em>At least ___ votes</em> field must be a simple number. 
-    You entered <tt>[% value FILTER html %]</tt>, which isn't.
-    
   [% ELSIF error == "illegal_attachment_edit" %]
     [% title = "Unauthorized Action" %]
     You are not authorized to edit attachment [% attach_id FILTER html %].
@@ -781,9 +785,9 @@
       to <em>[% newvalue.join(', ') FILTER html %]</em>
     [% END %]
     , but only
-    [% IF privs < 3 %]
+    [% IF privs < constants.PRIVILEGES_REQUIRED_EMPOWERED %]
       the assignee
-      [% IF privs < 2 %] or reporter [% END %]
+      [% IF privs < constants.PRIVILEGES_REQUIRED_ASSIGNEE %] or reporter [% END %]
       of the [% terms.bug %], or
     [% END %]
     a user with the required permissions may change that field.
@@ -984,9 +988,24 @@
       [%+ constants.LOGIN_LOCKOUT_INTERVAL FILTER html %] minutes.
     [% END %]
 
+  [% ELSIF error == "json_rpc_get_method_required" %]
+    When using JSON-RPC over GET, you must specify a 'method'
+    parameter. See the documentation at
+    [%+ docs_urlbase FILTER html %]api/Bugzilla/WebService/Server/JSONRPC.html
+
+  [% ELSIF error == "json_rpc_invalid_params" %]
+    Could not parse the 'params' argument as valid JSON.
+    Error: [% err_msg FILTER html %]
+    Value: [% params FILTER html %]
+
+  [% ELSIF error == "json_rpc_invalid_callback" %]
+    You cannot use '[% callback FILTER html %]' as your 'callback' parameter.
+    For security reasons, only letters, numbers, and the following
+    characters are allowed in the 'callback' parameter: <code>[]._</code>
+
   [% ELSIF error == "json_rpc_post_only" %]
-    For security reasons, you may only use JSON-RPC with the POST
-    HTTP method.
+    For security reasons, you may only call the '[% method FILTER html %]'
+    method via HTTP POST.
 
   [% ELSIF error == "keyword_already_exists" %]
     [% title = "Keyword Already Exists" %]
@@ -1145,11 +1164,6 @@
     A valid resolution is required to mark [% terms.bugs %] as
     [%+ status FILTER upper FILTER html %].
 
-  [% ELSIF error == "move_bugs_disabled" %]
-    [% title = BLOCK %][% terms.Bug %] Moving Disabled[% END %]
-    Sorry, [% terms.bug %] moving has been disabled. If you need
-    to move [% terms.abug %], please contact [% Param("maintainer") %].
-
   [% ELSIF error == "missing_subcategory" %]
     [% title = "Missing Subcategory" %]
     You did not specify a subcategory for this series.
@@ -1167,6 +1181,10 @@
       Please contact [% Param("maintainer") %] and ask them
       to add a version to this product.
     [% END %]
+
+  [% ELSIF error == "multiple_alias_not_allowed" %]
+    You cannot set aliases when modifying multiple [% terms.bugs %]
+    at once.
 
   [% ELSIF error == "need_quip" %]
     [% title = "Quip Required" %]
@@ -1231,10 +1249,6 @@
                          'groups.html'     => 'Groups security'} %]
     Either no products have been defined to enter [% terms.bugs %] against or you have not
     been given access to any.
-
-  [% ELSIF error == "no_valid_action" %]
-    [% title = "No valid action specified" %]
-    Cannot edit [% field_descs.$field FILTER html %]: no valid action was specified.
 
   [% ELSIF error == "number_not_numeric" %]
     [% title = "Numeric Value Required" %]
@@ -1322,20 +1336,6 @@
     [% title = "Illegal Group" %]
     [% group.name FILTER html %] is not an active [% terms.bug %] group
     and so you cannot edit group controls for it.
-
-  [% ELSIF error == "product_illegal_votes" %]
-    [% title = "Votes Must Be Non-negative" %]
-    [% admindocslinks = {'voting.html' => 'Setting up the voting feature'} %]
-    '[% votes FILTER html %]' is an invalid value for the
-    <em>
-    [% IF field == "votesperuser" %]
-      Votes Per User
-    [% ELSIF field == "maxvotesperbug" %]
-      Maximum Votes Per [% terms.Bug %]
-    [% ELSIF field == "votestoconfirm" %]
-      Votes To Confirm
-    [% END %]
-    </em> field, which should contain a non-negative number.
 
   [% ELSIF error == "product_name_already_in_use" %]
     [% title = "Product name already exists" %]
@@ -1455,9 +1455,23 @@
     To file this [% terms.bug %], you must first choose a component.
     If necessary, just guess.
 
+  [% ELSIF error == "relationship_loop_single" %]
+    [% title = "Relationship Loop Detected" %]
+    [% field_descs.$field_name FILTER html %]
+    for [% terms.bug %] [%+ bug_id FILTER html %]
+    has a circular dependency on [% terms.bug %] [%+ dep_id FILTER html %].
+
+  [% ELSIF error == "request_queue_group_invalid" %]
+    The group field <em>[% group FILTER html %]</em> is invalid.
+
   [% ELSIF error == "require_new_password" %]
     [% title = "New Password Needed" %]
     You cannot change your password without choosing a new one.
+
+  [% ELSIF error == "required_field" %]
+    [% title = "Field Must Be Set" %]
+    A value must be set for the '[% field_descs.${field.name} FILTER html %]'
+    field.
 
   [% ELSIF error == "require_summary" %]
     [% title = "Summary Needed" %]
@@ -1547,21 +1561,6 @@
     [% title = "User Protected" %]
     The user [% login FILTER html %] may not be impersonated by sudoers.
 
-  [% ELSIF error == "too_many_votes_for_bug" %]
-    [% title = "Illegal Vote" %]
-    [% admindocslinks = {'voting.html' => 'Setting up the voting feature'} %]
-    You may only use at most [% max FILTER html %] votes for a single
-    [%+ terms.bug %] in the
-    <tt>[% product FILTER html %]</tt> product, but you are trying to
-    use [% votes FILTER html %].
-
-  [% ELSIF error == "too_many_votes_for_product" %]
-    [% title = "Illegal Vote" %]
-    [% admindocslinks = {'voting.html' => 'Setting up the voting feature'} %]
-    You tried to use [% votes FILTER html %] votes in the
-    <tt>[% product FILTER html %]</tt> product, which exceeds the maximum of
-    [%+ max FILTER html %] votes for this product.
-
   [% ELSIF error == "token_does_not_exist" %]
     [% title = "Token Does Not Exist" %]
     The token you submitted does not exist, has expired, or has
@@ -1576,6 +1575,13 @@
       an account
     [% END %]
     token too recently to request another. Please wait a while and try again.
+
+  [% ELSIF error == "unknown_action" %]
+    [% IF action %]
+       Unknown action [% action FILTER html %]!
+    [% ELSE %]
+       I could not figure out what you wanted to do.
+    [% END %]
 
   [% ELSIF error == "unknown_keyword" %]
     [% title = "Unknown Keyword" %]
@@ -1648,11 +1654,6 @@
     [% title = "User Not In Insidergroup" %]
     Sorry, but you are not allowed to (un)mark comments or attachments
     as private.
-
-  [% ELSIF error == "votes_must_be_nonnegative" %]
-    [% title = "Votes Must Be Non-negative" %]
-    [% admindocslinks = {'voting.html' => 'Setting up the voting feature'} %]
-    Only use non-negative numbers for your [% terms.bug %] votes.
 
   [% ELSIF error == "wrong_token_for_cancelling_email_change" %]
     [% title = "Wrong Token" %]
@@ -1781,6 +1782,8 @@
     group
   [% ELSIF class == "Bugzilla::Product" %]
     product
+  [% ELSIF class == "Bugzilla::Search::Recent" %]
+    recent search
   [% ELSIF class == "Bugzilla::Search::Saved" %]
     saved search
   [% ELSIF ( matches = class.match('^Bugzilla::Field::Choice::(.+)') ) %]

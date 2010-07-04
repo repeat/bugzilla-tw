@@ -59,7 +59,6 @@
 
 'search/boolean-charts.html.tmpl' => [
   '"field${chartnum}-${rownum}-${colnum}"', 
-  '"value${chartnum}-${rownum}-${colnum}"', 
   'field.name', 
   '"${chartnum}-${rownum}-${newor}"', 
   '"${chartnum}-${newand}-0"', 
@@ -70,10 +69,6 @@
 'search/form.html.tmpl' => [
   'qv.name',
   'qv.description',
-  'field.name',
-  'field.description',
-  'field.accesskey',
-  'sel.name',
 ],
 
 'search/search-specific.html.tmpl' => [
@@ -233,7 +228,6 @@
 
 'global/site-navigation.html.tmpl' => [
   'bug.bug_id', 
-  'bug.votes', 
 ],
 
 'bug/comments.html.tmpl' => [
@@ -260,11 +254,9 @@
 ],
 
 'bug/edit.html.tmpl' => [
-  'bug.deadline',
   'bug.remaining_time', 
   'bug.delta_ts', 
   'bug.bug_id', 
-  'bug.votes', 
   'group.bit', 
   'dep.title', 
   'dep.fieldname', 
@@ -312,19 +304,6 @@
        FILTER format("%d")', 
 ],
 
-'bug/votes/list-for-bug.html.tmpl' => [
-  'voter.vote_count', 
-  'total', 
-],
-
-'bug/votes/list-for-user.html.tmpl' => [
-  'product.maxperbug', 
-  'bug.id', 
-  'bug.count', 
-  'product.total', 
-  'product.maxvotes', 
-],
-
 'bug/process/results.html.tmpl' => [
   'title.$type', 
   '"$terms.Bug $id" FILTER bug_link(id)',
@@ -332,9 +311,6 @@
 ],
 
 'bug/create/create.html.tmpl' => [
-  'g.bit',
-  'sel.name',
-  'sel.description',
   'cloned_bug_id',
 ],
 
@@ -416,6 +392,7 @@
 'admin/custom_fields/cf-js.js.tmpl' => [
   'constants.FIELD_TYPE_SINGLE_SELECT',
   'constants.FIELD_TYPE_MULTI_SELECT',
+  'constants.FIELD_TYPE_BUG_ID',
 ],
 
 'admin/params/common.html.tmpl' => [
@@ -481,7 +458,6 @@
   'flags.setter',
   'longdescs',
   'quips',
-  'votes',
   'series',
   'watch.watched',
   'watch.watcher',

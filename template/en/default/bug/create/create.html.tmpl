@@ -30,10 +30,11 @@
 
 [% PROCESS global/header.html.tmpl
   title = title
-  style_urls = [ 'skins/standard/create_attachment.css',
-                 'skins/standard/yui/calendar.css' ]
-  javascript_urls = [ "js/attachment.js", "js/util.js", "js/yui/calendar.js",
-                      "js/field.js", "js/TUI.js" ]
+  yui = [ 'autocomplete', 'calendar', 'datatable' ]
+  style_urls = [ 'skins/standard/attachment.css',
+                 'skins/standard/enter_bug.css' ]
+  javascript_urls = [ "js/attachment.js", "js/util.js",
+                      "js/field.js", "js/TUI.js", "js/bug.js" ]
   onload = 'set_assign_to();'
 %]
 
@@ -168,20 +169,12 @@ TUI_hide_default('expert_fields');
 -->
 </script>
 
-[% USE Bugzilla %]
-[% SET select_fields = {} %]
-[% FOREACH field = Bugzilla.get_fields(
-  { type => constants.FIELD_TYPE_SINGLE_SELECT, custom => 0 })
-%]
-  [% select_fields.${field.name} = field %]
-[% END %]
-
 <form name="Create" id="Create" method="post" action="post_bug.cgi"
-      enctype="multipart/form-data">
+      class="enter_bug_form" enctype="multipart/form-data">
 <input type="hidden" name="product" value="[% product.name FILTER html %]">
 <input type="hidden" name="token" value="[% token FILTER html %]">
 
-<table cellspacing="4" cellpadding="2" border="0">
+<table>
 <tbody>
   <tr>
     <td colspan="4">
@@ -210,22 +203,26 @@ TUI_hide_default('expert_fields');
   </tr>
 
   <tr>
-    <th>Product:</th>
-    <td width="10%">[% product.name FILTER html %]</td>
-
-    <th>Reporter:</th>
-    <td width="100%">[% user.login FILTER html %]</td>
+    [% INCLUDE bug/field.html.tmpl
+      bug = default, field = bug_fields.product, editable = 0,
+      value = product.name %]
+    [% INCLUDE bug/field.html.tmpl
+      bug = default, field = bug_fields.reporter, editable = 0,
+      value = user.login %]
   </tr>
 
   [%# We can't use the select block in these two cases for various reasons. %]
   <tr>
-    <th class="required">
-      <a href="describecomponents.cgi?product=[% product.name FILTER url_quote %]">
-      Component</a>:
-    </th>
-    <td>
-      <select name="component" onchange="set_assign_to();" size="7"
-              aria-required="true" class="required">
+    [% component_desc_url = BLOCK -%]
+      describecomponents.cgi?product=[% product.name FILTER url_quote %]
+    [% END %]
+    [% INCLUDE "bug/field-label.html.tmpl"
+      field = bug_fields.component editable = 1
+      desc_url = component_desc_url
+    %]      
+    <td id="field_container_component">
+      <select name="component" id="component" onchange="set_assign_to();"
+              size="7" aria-required="true" class="required">
         [%# Build the lists of assignees and QA contacts if "usemenuforusers" is enabled. %]
         [% IF Param("usemenuforusers") %]
           [% assignees_list = user.get_userlist.clone %]
@@ -234,7 +231,13 @@ TUI_hide_default('expert_fields');
 
         [%- FOREACH c = product.components %]
           <option value="[% c.name FILTER html %]"
-            [% " selected=\"selected\"" IF c.name == default.component_ %]>
+                  id="v[% c.id FILTER html %]_component"
+            [% IF c.name == default.component_ %]
+              [%# This is for bug/field.html.tmpl, for visibility-related
+                # controls. %]
+              [% default.component_id = c.id %]
+              selected="selected"
+            [% END %]>
             [% c.name FILTER html -%]
           </option>
           [% IF Param("usemenuforusers") %]
@@ -245,9 +248,16 @@ TUI_hide_default('expert_fields');
           [% END %]
         [%- END %]
       </select>
+
+      <script type="text/javascript">
+       <!--
+         [%+ INCLUDE "bug/field-events.js.tmpl" 
+                    field = bug_fields.component %]
+       //-->
+       </script>
     </td>
 
-    <td colspan="2">
+    <td colspan="2" id="comp_desc_container">
       [%# Enclose the fieldset in a nested table so that its width changes based
         # on the length on the component description. %]
       <table>
@@ -264,7 +274,9 @@ TUI_hide_default('expert_fields');
   </tr>
 
   <tr>
-    <th rowspan="3">Version:</th>
+    [% INCLUDE "bug/field-label.html.tmpl"
+      field = bug_fields.version editable = 1 rowspan = 3 
+    %]
     <td rowspan="3">
       <select name="version" size="5">
         [%- FOREACH v = version %]
@@ -276,48 +288,26 @@ TUI_hide_default('expert_fields');
     </td>
 
     [% INCLUDE bug/field.html.tmpl
-      bug = default, field = select_fields.bug_severity, editable = 1, 
+      bug = default, field = bug_fields.bug_severity, editable = 1, 
       value = default.bug_severity %]
   </tr>
 
   <tr>
     [% INCLUDE bug/field.html.tmpl
-      bug = default, field = select_fields.rep_platform, editable = 1,
+      bug = default, field = bug_fields.rep_platform, editable = 1,
       value = default.rep_platform %]
   </tr>
 
   <tr>
     [% INCLUDE bug/field.html.tmpl 
-       bug = default, field = select_fields.op_sys, editable = 1, 
+       bug = default, field = bug_fields.op_sys, editable = 1, 
        value = default.op_sys %]
   </tr>
-</tbody>
-
-<tbody class="expert_fields">
-  <tr>
-    [% IF Param('usetargetmilestone') && Param('letsubmitterchoosemilestone') %]
-      [% sel = { description => 'Target Milestone', name => 'target_milestone' } %]
-      [% INCLUDE select %]
-    [% ELSE %]
-      <td colspan="2">&nbsp;</td>
-    [% END %]
-
-    [% IF Param('letsubmitterchoosepriority') %]
-      [% INCLUDE bug/field.html.tmpl
-        bug = default, field = select_fields.priority, editable = 1, 
-        value = default.priority %]
-    [% ELSE %]
-      <td colspan="2">&nbsp;</td>
-    [% END %]
-  </tr>
-</tbody>
-
-[% IF !Param('defaultplatform') || !Param('defaultopsys') %]
-  <tbody>
+  [% IF !Param('defaultplatform') || !Param('defaultopsys') %]
     <tr>
-      <th>&nbsp;</th>
-      <td colspan="3" class="comment">
-        We've made a guess at your
+      <td colspan="3">&nbsp;</th>
+      <td id="os_guess_note" class="comment">
+        <div>We've made a guess at your
         [% IF Param('defaultplatform') %]
           operating system. Please check it
         [% ELSIF Param('defaultopsys') %]
@@ -325,11 +315,29 @@ TUI_hide_default('expert_fields');
         [% ELSE %]
           operating system and platform. Please check them
         [% END %]
-        and make any corrections if necessary.
+        and make any corrections if necessary.</div>
       </td>
     </tr>
-  </tbody>
-[% END %]
+  [% END %]
+</tbody>
+
+<tbody class="expert_fields">
+  <tr>
+    [% IF Param('usetargetmilestone') && Param('letsubmitterchoosemilestone') %]
+      [% INCLUDE select field = bug_fields.target_milestone %]
+    [% ELSE %]
+      <td colspan="2">&nbsp;</td>
+    [% END %]
+
+    [% IF Param('letsubmitterchoosepriority') %]
+      [% INCLUDE bug/field.html.tmpl
+        bug = default, field = bug_fields.priority, editable = 1, 
+        value = default.priority %]
+    [% ELSE %]
+      <td colspan="2">&nbsp;</td>
+    [% END %]
+  </tr>
+</tbody>
 
 <tbody class="expert_fields">
   <tr>
@@ -337,15 +345,10 @@ TUI_hide_default('expert_fields');
   </tr>
 
   <tr>
-[% IF bug_status.size <= 1 %]
-  <input type="hidden" name="bug_status" 
-         value="[% default.bug_status FILTER html %]">
-    <th>Initial State:</th>
-    <td>[% display_value("bug_status", default.bug_status) FILTER html %]</td>
-[% ELSE %]
-    [% sel = { description => 'Initial State', name => 'bug_status' } %]
-    [% INCLUDE select %]
-[% END %]
+    [% INCLUDE bug/field.html.tmpl
+      bug = default, field = bug_fields.bug_status,
+      editable = (bug_status.size > 1), value = default.bug_status
+      override_legal_values = bug_status %]
 
     <td>&nbsp;</td>
     [%# Calculate the number of rows we can use for flags %]
@@ -376,9 +379,12 @@ TUI_hide_default('expert_fields');
   </tr>
 
   <tr>
-    <th><a href="page.cgi?id=fields.html#assigned_to">Assign To</a>:</th>
+    [% INCLUDE "bug/field-label.html.tmpl"
+      field = bug_fields.assigned_to editable = 1
+    %]
     <td colspan="2">
       [% INCLUDE global/userselect.html.tmpl
+         id => "assigned_to"
          name => "assigned_to"
          value => assigned_to
          disabled => assigned_to_disabled
@@ -392,9 +398,12 @@ TUI_hide_default('expert_fields');
   
 [% IF Param("useqacontact") %]
     <tr>
-      <th>QA Contact:</th>
+      [% INCLUDE "bug/field-label.html.tmpl"
+        field = bug_fields.qa_contact editable = 1
+      %]
       <td colspan="2">
       [% INCLUDE global/userselect.html.tmpl
+         id => "qa_contact"
          name => "qa_contact"
          value => qa_contact
          disabled => qa_contact_disabled
@@ -408,9 +417,12 @@ TUI_hide_default('expert_fields');
 [% END %]
 
   <tr>
-    <th>CC:</th>
+    [% INCLUDE "bug/field-label.html.tmpl"
+      field = bug_fields.cc editable = 1 
+    %]
     <td colspan="2">
       [% INCLUDE global/userselect.html.tmpl
+         id => "cc"
          name => "cc"
          value => cc
          disabled => cc_disabled
@@ -421,7 +433,7 @@ TUI_hide_default('expert_fields');
   </tr>
 
   <tr>
-    <th>Default CC:</th>
+    <th>Default [% field_descs.cc FILTER html %]:</th>
     <td colspan="2">
       <div id="initial_cc">
       </div>
@@ -434,17 +446,17 @@ TUI_hide_default('expert_fields');
 
 [% IF user.is_timetracker %]
   <tr>
-    <th>Estimated Hours:</th>
+    [% INCLUDE "bug/field-label.html.tmpl"
+      field = bug_fields.estimated_time editable = 1
+    %]
     <td colspan="2">
       <input name="estimated_time" size="6" maxlength="6" value="[% estimated_time FILTER html %]">
     </td>
   </tr>
   <tr>
-    <th>Deadline:</th>
-    <td colspan="2">
-      <input name="deadline" size="10" maxlength="10" value="[% deadline FILTER html %]">
-      <small>(YYYY-MM-DD)</small>
-    </td>
+    [% INCLUDE bug/field.html.tmpl
+      bug = default, field = bug_fields.deadline, value = deadline,
+      editable = 1, value_span = 2 %] 
   </tr>
 
   <tr>
@@ -454,7 +466,9 @@ TUI_hide_default('expert_fields');
 
 [% IF Param("usebugaliases") %]
   <tr>
-    <th>Alias:</th>
+    [% INCLUDE "bug/field-label.html.tmpl"
+      field = bug_fields.alias editable = 1
+    %]
     <td colspan="2">
       <input name="alias" size="20" value="[% alias FILTER html %]">
     </td>
@@ -462,7 +476,9 @@ TUI_hide_default('expert_fields');
 [% END %]
 
   <tr>
-    <th>URL:</th>
+    [% INCLUDE "bug/field-label.html.tmpl"
+      field = bug_fields.bug_file_loc editable = 1
+    %]
     <td colspan="2">
       <input name="bug_file_loc" size="40"
              value="[% bug_file_loc FILTER html %]">
@@ -470,13 +486,13 @@ TUI_hide_default('expert_fields');
   </tr>
 </tbody>
 
-<tbody class="expert_fields">
+<tbody>
   [% USE Bugzilla %]
 
   [% FOREACH field = Bugzilla.active_custom_fields %]
     [% NEXT UNLESS field.enter_bug %]
     [% SET value = ${field.name}.defined ? ${field.name} : "" %]
-    <tr>
+    <tr [% 'class="expert_fields"' IF !field.is_mandatory %]>
       [% INCLUDE bug/field.html.tmpl 
         bug = default, field = field, value = value, editable = 1, 
         value_span = 3 %]
@@ -487,17 +503,54 @@ TUI_hide_default('expert_fields');
 <tbody>
 
   <tr>
-    <th class="required">Summary:</th>
+    [% INCLUDE "bug/field-label.html.tmpl"
+      field = bug_fields.short_desc editable = 1
+    %]
     <td colspan="3">
       <input name="short_desc" size="70" value="[% short_desc FILTER html %]"
              maxlength="255" spellcheck="true" aria-required="true"
-             class="required">
+             class="required" id="short_desc">
     </td>
   </tr>
+
+  [% IF feature_enabled('jsonrpc') AND !cloned_bug_id %]
+    <tr id="possible_duplicates_container" class="bz_default_hidden">
+      <th>Possible<br>Duplicates:</th>
+      <td colspan="3">
+        <div id="possible_duplicates"></div>
+        <script type="text/javascript">
+          var dt_columns = [ 
+              { key: "id", label: "[% field_descs.bug_id FILTER js %]",
+                formatter: YAHOO.bugzilla.dupTable.formatBugLink },
+              { key: "summary", 
+                label: "[% field_descs.short_desc FILTER js %]" },
+              { key: "status",
+                label: "[% field_descs.bug_status FILTER js %]",
+                formatter: YAHOO.bugzilla.dupTable.formatStatus },
+              { key: "update_token", label: '',
+                formatter: YAHOO.bugzilla.dupTable.formatCcButton }
+          ];
+          YAHOO.bugzilla.dupTable.addCcMessage = "Add Me to the CC List";
+          YAHOO.bugzilla.dupTable.init({
+            container: 'possible_duplicates',
+            columns: dt_columns,
+            product_name: '[% product.name FILTER js %]',
+            summary_field: 'short_desc',
+            options: {
+              MSG_LOADING: 'Searching for possible duplicates...',
+              MSG_EMPTY:   'No possible duplicates found.',
+              SUMMARY:     'Possible Duplicates'
+            },
+          });
+        </script>
+      </td>
+    </tr>
+  [% END %]
 
   <tr>
     <th>Description:</th>
     <td colspan="3">
+
       [% defaultcontent = BLOCK %]
         [% IF cloned_bug_id %]
 +++ This [% terms.bug %] was initially created as a clone of [% terms.Bug %] #[% cloned_bug_id %] +++
@@ -535,6 +588,7 @@ TUI_hide_default('expert_fields');
     </tr>
   [% END %]
 
+  [% IF Param("maxattachmentsize") %]
   <tr>
     <th>Attachment:</th>
     <td colspan="3">
@@ -569,13 +623,17 @@ TUI_hide_default('expert_fields');
       </script>
     </td>
   </tr>
+  [% END %]
 </tbody>
 
 <tbody class="expert_fields">
   [% IF user.in_group('editbugs', product.id) %]
     [% IF use_keywords %]
       <tr>
-        <th><a href="describekeywords.cgi">Keywords</a>:</th>
+        [% INCLUDE "bug/field-label.html.tmpl"
+          field = bug_fields.keywords editable = 1 
+          desc_url = "describekeywords.cgi"
+        %]
         <td colspan="3">
           <input id="keywords" name="keywords" size="40"
                  value="[% keywords FILTER html %]"> (optional)
@@ -584,13 +642,17 @@ TUI_hide_default('expert_fields');
     [% END %]
 
     <tr>
-      <th>Depends on:</th>
+      [% INCLUDE "bug/field-label.html.tmpl"
+        field = bug_fields.dependson editable = 1
+      %]
       <td colspan="3">
         <input name="dependson" accesskey="d" value="[% dependson FILTER html %]">
       </td>
     </tr>
     <tr>
-      <th>Blocks:</th>
+      [% INCLUDE "bug/field-label.html.tmpl"
+        field = bug_fields.blocked editable = 1
+      %]
       <td colspan="3">
         <input name="blocked" accesskey="b" value="[% blocked FILTER html %]">
       </td>
@@ -599,13 +661,14 @@ TUI_hide_default('expert_fields');
 </tbody>
 
 <tbody class="expert_fields">
-  [% IF group.size %]
+  [% IF product.groups_available.size %]
   <tr>
     <th>&nbsp;</th>
     <td colspan="3">
       <br>
         <strong>
-          Only users in all of the selected groups can view this [% terms.bug %]:
+          Only users in all of the selected groups can view this 
+          [%+ terms.bug %]:
         </strong>
       <br>
       <font size="-1">
@@ -615,12 +678,13 @@ TUI_hide_default('expert_fields');
       <br>
 
       <!-- Checkboxes -->
-      [% FOREACH g = group %]
-        &nbsp;&nbsp;&nbsp;&nbsp;
-        <input type="checkbox" id="bit-[% g.bit %]"
-          name="bit-[% g.bit %]" value="1"
-          [% " checked=\"checked\"" IF g.checked %]>
-          <label for="bit-[% g.bit %]">[% g.description FILTER html_light %]</label><br>
+      [% FOREACH group = product.groups_available %]
+        <input type="checkbox" id="groups_[% group.id FILTER html %]"
+               name="groups" value="[% group.name FILTER html %]"
+               [% ' checked="checked"' IF default.groups.contains(group.name)
+                                          OR group.is_default %]>
+        <label for="groups_[% group.id FILTER html %]">
+          [%- group.description FILTER html_light %]</label><br>
       [% END %]
     </td>
   </tr>
@@ -659,30 +723,20 @@ TUI_hide_default('expert_fields');
 [%############################################################################%]
 
 [% BLOCK select %]
-  [% IF sel.description %]
-    <th>
-      <a href="page.cgi?id=fields.html#[% sel.name %]">[% sel.description %]</a>:
-    </th>
-  [% END %]
 
+  [% INCLUDE "bug/field-label.html.tmpl"
+    field = field editable = 1
+  %]
   <td>
-    <select name="[% sel.name %]" id="[% sel.name %]">
-    [%- FOREACH x = ${sel.name} %]
+    <select name="[% field.name FILTER html %]" 
+            id="[% field.name FILTER html %]">
+    [%- FOREACH x = ${field.name} %]
       <option value="[% x FILTER html %]"
-        [% " selected=\"selected\"" IF x == default.${sel.name} %]>
-        [% display_value(sel.name, x) FILTER html %]
+        [% " selected=\"selected\"" IF x == default.${field.name} %]>
+        [% display_value(field.name, x) FILTER html %]
       </option>
     [% END %]
     </select>
-
-    [% IF sel.name == "bug_status" %]
-       <script type="text/javascript">
-        <!--
-          [%+ INCLUDE "bug/field-events.js.tmpl" 
-                     field = select_fields.bug_status %]
-        //-->
-        </script>
-    [% END %]
   </td>
 [% END %]
 

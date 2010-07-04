@@ -15,32 +15,33 @@
   # Copyright (C) 1998 Netscape Communications Corporation. All
   # Rights Reserved.
   #
-  # Contributor(s): Gervase Markham <gerv@gerv.net>
+  # Contributor(s): Tiago Rodrigues de Mello <timello@linux.vnet.ibm.com>
   #%]
 
 [%# INTERFACE:
-  # As global/header.html.tmpl.
+  # classification: Bugzilla::Classifiation object.
   #%]
 
-[% PROCESS global/variables.none.tmpl %]
+<tr>
+  <th align="right">Classification:</th>
+  <td><input size=64 maxlength=64 name="classification" 
+             value="[% classification.name FILTER html %]"></td>
+</tr>
+<tr>
+  <th align="right">Description:</th>
+  <td>
+    [% INCLUDE global/textarea.html.tmpl
+      name           = 'description'
+      minrows        = 4
+      cols           = 64
+      defaultcontent = classification.description
+    %]
+  </td>
+</tr>
+<tr>
+  <th align="right"><label for="sortkey">Sortkey:</label></th>
+  <td><input id="sortkey" size="20" maxlength="20" name="sortkey"
+             value="[%- classification.sortkey FILTER html %]"></td>
+</tr>
 
-[% USE Bugzilla %]
-
-[% PROCESS "bug/show-header.html.tmpl" %]
-
-[% IF    title_tag == "bug_processed" %]
-  [% title = BLOCK %]
-    [% IF Bugzilla.cgi.param('id') %]
-      [% terms.Bug %] [%+ id FILTER html %]
-    [% ELSE %]
-      [% terms.Bugs %]
-    [% END %]
-    processed
-  [% END %]
-[% ELSIF title_tag == "mid_air" %]
-  [% title = "Mid-air collision!" %]
-[% END %]
-
-[% Hook.process('title') %]
-
-[% PROCESS global/header.html.tmpl %]
+[% Hook.process('rows') %]
