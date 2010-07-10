@@ -128,7 +128,7 @@
     [% extra_class = " b_open" %]
     [% extra_args = 'onclick="return doToggle(this, event)"' %]
   [% END %]
-  <a name="b[% bugid %]"
+  <a id="b[% bugid %]"
      class="b [%+ extra_class FILTER none %]"
      title="點選以展開或縮短此關係樹。按 Ctrl 點選展開或縮短所有子關係樹。"
      [% extra_args FILTER none %]>&nbsp;&nbsp;</a>
