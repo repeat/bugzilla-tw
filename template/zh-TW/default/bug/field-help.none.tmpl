@@ -1,0 +1,220 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Gervase Markham <gerv@gerv.net>
+  #                 Max Kanat-Alexander <mkanat@bugzilla.org>
+  #%]
+
+[%# This file describes both bug fields and search fields. %]
+
+[% PROCESS "global/field-descs.none.tmpl" %]
+
+[% help_html = {
+
+# Note that all these keys here are in alphabetical order, though
+# search-specific fields are at the bottom.
+
+##############
+# Bug Fields #
+##############
+
+alias =>
+  "在 $terms.Bugzilla 中其他地方可以協助找到並指向特定 $terms.bug 的"
+  _ "簡短、獨一無二的名字。",
+
+assigned_to =>
+  "負責解 $terms.bug 的人。",
+
+blocked =>
+  "在解決此欄位列出的 $terms.bugs 解決之前，必須要解決這個 $terms.bug 。",
+
+bug_file_loc =>
+  "$terms.Bugs 可以和網址產生關連。例如說，連上一個網站就會看到這個問題。",
+
+bug_id =>
+  "$terms.Bug 的編號，在此 $terms.Bugzilla 中是獨一無二的。",
+
+bug_severity =>
+  "$terms.bug 的嚴重等級如何，或者它其實只是功能建議。",
+
+bug_status =>
+  "一個 $terms.bug 可能處於其中一種或多種狀態。",
+
+cc =>
+  "也許和 $terms.bug 並無直接關係，只是對過程有興趣的使用者。",
+
+classification =>
+  "$terms.Bugs 以類別、產品和子產品做分類。類別是最上層的分類。",
+
+component =>
+  "子產品是次分類，每一個子產品都歸屬於一個特定的產品。"
+  _ "選擇一個產品來減少這個列表。",
+
+creation_ts =>
+  "$terms.Bug 建立的時間。",
+
+deadline =>
+  "這個 $terms.bug 必須解決的日期，以 YYYY-MM-DD 格式輸入。",
+
+delta_ts =>
+  "這個 $terms.bug 最近更新的時間。",
+
+dependson =>
+  "在此欄位列出的 $terms.bugs 必須先解決，才能解決這個 $terms.bug 。",
+
+estimated_time =>
+  "估計解決這個 $terms.bug 會需要的時間。",
+
+keywords =>
+  "為了替 $terms.bugs 加上標籤並分類，你可以在已定義的列表中對 $terms.bugs 加入關鍵字。",
+
+longdesc =>
+  "$terms.Bugzilla 使用者可以在 $terms.Bugs 加入描述或意見。"
+  _ "你可以在這些意見裡搜尋。",
+
+op_sys =>
+  "在哪一種作業系統上會發生這個 $terms.bug 。",
+
+percentage_complete =>
+  "比較這個 $terms.bug 的 $field_descs.work_time 和 $field_descs.estimated_time"
+  _ "欄位，來判斷它離 100% 有多遠。",
+
+priority =>
+  "工程師將 $terms.bugs 做優先程度的分類。",
+
+# Note that this has extra text added below if useclassification is on.
+product =>
+  "$terms.Bugs 以產品和子產品做分類。",
+
+qa_contact =>
+  "當這個 $terms.bug 尚未確認時，負責確認的人；"
+  _ "以及當 $terms.bug 解決時，負責驗證的人。",
+
+remaining_time =>
+  "這個 $terms.bug 剩下的工作時數。算法是"
+  _ " $field_descs.estimated_time 減掉 $field_descs.work_time 。",
+
+rep_platform =>
+  "在哪一種硬體平台上會發生這個 $terms.bug 。",
+
+reporter =>
+  "回報這個 $terms.bug 的人。",
+
+resolution =>
+  "如果一個 $terms.bug 處於已解決的狀態，"
+  _ "那麼將會列出其中一個原因當做解決方案。",
+
+see_also =>
+  "此欄位允許你列出其他 $terms.Bugzilla 上的 $terms.bug 。
+   你可以在「新增 $terms.Bug 回報資訊的網址」欄位中輸入網址，
+   來表示該 $terms.bug 和此 $terms.bug 有關。
+   你可以以半型逗號 (,) 分隔多筆網址。
+
+   <p>你應該將此欄位正常地用於列出<em>其他</em>
+     $terms.Bugzilla 上的 $terms.bugs 。如要列出安裝在同一機器上的
+     $terms.bug ，最好使用 $field_descs.dependson 和
+     $field_descs.blocked 欄位。</p>",
+
+short_desc =>
+  "$terms.bug 摘要是一個簡潔地描述這個 $terms.bug 的短句子。",
+
+status_whiteboard =>
+  "每個 $terms.bug 都有一塊狀態白板，可以加入標籤以及狀態資訊。",
+
+target_milestone =>
+  "目標里程碑的欄位是用來定義工程師將 $terms.bug 排程，"
+  _ "並預計修復的日期。",
+
+version =>
+  "版本欄位是用來定義 $terms.bug 在軟體的哪個版本發生。",
+
+votes =>
+  "有些 $terms.bugs 可以投票，因此你可以將你的搜尋"
+  _ "限制在至少要有一定票數的 $terms.bugs 裡。",
+
+work_time =>
+  "已花在這個 $terms.bug 上的時間。",
+
+##########################
+# Search-specific fields #
+##########################
+
+chfield =>
+  "你可以搜尋特定種類的變更，這個欄位就是給你選擇用的。",
+
+# Duplicated to chfieldto below, also.
+chfieldfrom =>
+  "以 YYYY-MM-DD (例如 2007-12-31) 的格式指定開始及結束的時間。
+   也可以在後頭加上 HH:mm ，例如 2007-12-31 23:59 。
+   也可以用 1h、2d、3w、4m 或是 5y，
+   來表示 1 小時前、 2 天前、 3 星期前、 4 個月前，或是 5 年前。
+   用 0d 表示今天凌晨 00:00 ，另外也可以用 0h、0w、0m、0y
+   分別代表這個小時、這星期、這個月，或是這一年的開始。",
+
+chfieldvalue =>
+  "上欄所定義的數值是在該段時間做出變更的。",
+
+content =>
+  "此欄位為搜尋用。將會對 $field_descs.short_desc 和 "
+  _ "$field_descs.longdesc 欄位做類似 Google 的「全文搜尋」。",
+
+# Duplicated to email2 below, also.
+email1 =>
+  "每個人在每個 $terms.bug 扮演的角色不盡相同。"
+  _ "你可以以特定角色搜尋特定人員。",
+
+} %]
+
+[% help_html.email2 = help_html.email1 %]
+[% help_html.chfieldto = help_html.chfieldfrom %]
+[% help_html.deadlinefrom = help_html.deadline %]
+[% help_html.deadlineto = help_html.deadline %]
+
+[% help_all_note = BLOCK %]
+  <strong>注意：</strong>搜尋時，若選擇 "All" 選項，
+  只會找該欄位值為 "All" 的 [% terms.bugs %] 。
+[% END %]
+[% FOREACH all_field = ['op_sys', 'rep_platform'] %]
+  [% help_html.$all_field = help_html.$all_field _ ' ' _ help_all_note %]
+[% END %]
+
+[% IF Param('useclassification') %]
+  [% help_html.product = help_html.product
+      _ " 選擇一個類別來減少這個列表。" %]
+[% END %]
+
+[% FOREACH help_field = bug_fields.keys %]
+
+  [%# Add help for custom fields. %]
+  [% IF !help_html.${help_field}.defined %]
+    [% SET field_type = bug_fields.${help_field}.type %]
+    [% field_type_desc = BLOCK -%]
+      [% field_types.$field_type FILTER html %]
+    [%- END %]
+    [% help_html.${help_field} =
+      "在此 $terms.Bugzilla 中的自訂欄位 $field_type_desc 。" %]
+  [% END %]
+
+  [%# Add help for the search types, for query.cgi. %]
+  [% type_desc = BLOCK %]
+    你想要搜尋的 [% field_descs.${help_field} FILTER html %] 種類。
+  [% END %]
+  [% SET type_name = help_field _ '_type' %]
+  [% help_html.$type_name = type_desc %]
+[% END %]
+
+[% Hook.process("end") %]
