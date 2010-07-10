@@ -19,28 +19,30 @@
   #%]
 
 [% PROCESS "global/variables.none.tmpl" %]
+[% PROCESS "global/reason-descs.none.tmpl" %]
+
 From: [% Param('mailfrom') %]
 To: [% to_user.email %]
-Subject: [[% terms.Bug %] [%+ bugid %]] [% IF isnew %]新增[% ELSE %]變更[% END %]：[%+ summary %]
+Subject: [[% terms.Bug %] [%+ bug.id %]] [% '新增：' IF isnew %][%+ bug.short_desc %]
 X-Bugzilla-Reason: [% reasonsheader %]
 X-Bugzilla-Type: [% isnew ? 'new' : 'changed' %]
 X-Bugzilla-Watch-Reason: [% reasonswatchheader %]
 [% IF Param('useclassification') %]
-X-Bugzilla-Classification: [% classification %]
+X-Bugzilla-Classification: [% bug.classification %]
 [% END %]
-X-Bugzilla-Product: [% product %]
-X-Bugzilla-Component: [% comp %]
-X-Bugzilla-Keywords: [% keywords %]
-X-Bugzilla-Severity: [% severity %]
-X-Bugzilla-Who: [% changer %]
-X-Bugzilla-Status: [% status %]
-X-Bugzilla-Priority: [% priority %]
-X-Bugzilla-Assigned-To: [% assignedto %]
-X-Bugzilla-Target-Milestone: [% targetmilestone %]
+X-Bugzilla-Product: [% bug.product %]
+X-Bugzilla-Component: [% bug.component %]
+X-Bugzilla-Keywords: [% bug.keywords %]
+X-Bugzilla-Severity: [% bug.bug_severity %]
+X-Bugzilla-Who: [% changer.login %]
+X-Bugzilla-Status: [% bug.bug_status %]
+X-Bugzilla-Priority: [% bug.priority %]
+X-Bugzilla-Assigned-To: [% bug.assigned_to.login %]
+X-Bugzilla-Target-Milestone: [% bug.target_milestone %]
 X-Bugzilla-Changed-Fields: [% changedfields %]
 [%+ threadingmarker %]
 
-[%+ urlbase %]show_bug.cgi?id=[% bugid %]
+[%+ urlbase %]show_bug.cgi?id=[% bug.id %]
 [%- IF diffs %]
 
 [%+ diffs %]
@@ -54,35 +56,15 @@ X-Bugzilla-Changed-Fields: [% changedfields %]
 [% END %]
 
 -- [%# Protect the trailing space of the signature marker %]
+
 可以在 [% urlbase %]userprefs.cgi?tab=email 調整是否收到 [% terms.bug %] 通知信的設定。
 ------- 你會收到這封信是因為： -------
-[% FOREACH relationship = reasons %]
-  [% SWITCH relationship %]
-    [% CASE constants.REL_ASSIGNEE %]
-你是這個 [% terms.bug %] 的負責人。
-    [% CASE constants.REL_REPORTER %]
-你回報了這個 [% terms.bug %] 。
-    [% CASE constants.REL_QA %]
-你是這個 [% terms.bug %] 的 QA 連絡人。
-    [% CASE constants.REL_CC %]
-你在這個 [% terms.bug %] 的寄件副本清單中。
-    [% CASE constants.REL_VOTER %]
-你是這個 [% terms.bug %] 的其中一個投票者。
-    [% CASE constants.REL_GLOBAL_WATCHER %]
-你正在監控所有對[% terms.bug %]的變更。
-  [% END %]
+[% SET reason_lines = [] %]
+[% FOREACH reason = reasons %]
+  [% reason_lines.push(reason_descs.$reason) IF reason_descs.$reason %]
 [% END %]
-[% FOREACH relationship = reasons_watch %]
-  [% SWITCH relationship %]
-    [% CASE constants.REL_ASSIGNEE %]
-你在監控這個 [% terms.bug %] 的負責人。
-    [% CASE constants.REL_REPORTER %]
-你在監控這個 [% terms.bug %] 的回報者。
-    [% CASE constants.REL_QA %]
-你在監控這個 [% terms.bug %] 的 QA 連絡人。
-    [% CASE constants.REL_CC %]
-你在監控這個 [% terms.bug %] 的寄件副本清單中的某個人。
-    [% CASE constants.REL_VOTER %]
-你在監控這個 [% terms.bug %] 的其中一個投票者。
-  [% END %]
+[% FOREACH reason = reasons_watch %]
+  [% reason_lines.push(watch_reason_descs.$reason)
+       IF watch_reason_descs.$reason %]
 [% END %]
+[%+ reason_lines.join("\n") %]

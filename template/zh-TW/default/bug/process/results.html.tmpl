@@ -42,11 +42,12 @@
     'bug' => "已對 $link 做出變更" ,
     'dupe' => "已對 $link 加入重複的標記" ,
     'dep' => "檢查 $link 依賴性的變更" ,
-    'votes' => "已有一些投票確認了 $Link" ,
     'created' => "已在資料庫中加入 $Link" ,
     'move' => "已將 $Link 搬移至另一個資料庫" ,
   }
 %]
+
+[% Hook.process('title') %]
 
 <dl>
   <dt>[% title.$type %]</dt>

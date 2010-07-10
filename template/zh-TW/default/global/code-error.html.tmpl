@@ -37,16 +37,7 @@
 [% DEFAULT title = "內部發生錯誤" %]
 
 [% error_message = BLOCK %]
-  [% IF    error == "action_unrecognized" %]
-    [% docslinks = {'query.html' => "搜尋 $terms.bugs",
-                    'query.html#list' => "$terms.Bug 清單"} %]
-    無法辨識該<em>動作</em>參數的值 (<em>[% action FILTER html %]</em>)。
-
-
-  [% ELSIF error == "attachment_already_obsolete" %]
-    附件 #[% attach_id FILTER html %] ([% description FILTER html %])已被廢棄。
-
-  [% ELSIF error == "attachment_local_storage_disabled" %]
+  [% IF error == "attachment_local_storage_disabled" %]
     [% title = "儲存附件功能已停用" %]
     你無法將附件儲存於伺服器端。此功能已被停用。
 
@@ -198,12 +189,6 @@
     [% title = "無法要求特定的人設定旗標" %]
     你不能要求特定的人設定 <em>[% type.name FILTER html %]</em> 。
 
-  [% ELSIF error == "flag_status_invalid" %]
-    [% IF id %]
-      對旗標編號 #[% id FILTER html %] 而言，
-    [% END %]
-    旗標狀態 <em>[% status FILTER html %]</em> 無效。
-
   [% ELSIF error == "flag_type_inactive" %]
     [% title = "無效的旗標類型" %]
     旗標類型 [% type FILTER html %] 無效，也不能用於建立新旗標。
@@ -228,9 +213,6 @@
 
   [% ELSIF error == "illegal_field" %]
     並未設定有效的 [% field FILTER html %] 。
-
-  [% ELSIF error == "inactive_group" %]
-    嘗試新增[% terms.bug %]到'[% name FILTER html %]'群組，但該群組已不使用於[% terms.bugs %]上。
 
   [% ELSIF error == "invalid_attach_id_to_obsolete" %]
     你想要廢棄的附件編號其中之一（[% attach_id FILTER html %]）無效。
@@ -345,16 +327,13 @@
   [% ELSIF error == "need_quipid" %]
     需要輸入有效的智語編號。
 
-  [% ELSIF error == "no_manual_moved" %]
-    你不能將一個 [% terms.bug %] 的解決方案設定為 [% display_value("resolution", "MOVED") FILTER html %] ，但不搬移它。
-
-  [% ELSIF error == "no_open_bug_status" %]
-    [% title = "$terms.Bug 無法被確認" %]
-    沒有有效的方式可以讓狀態為 [%+ display_value("bug_status", "UNCONFIRMED") FILTER html %] 的
-    [%+ terms.bug %] 成為開啟的狀態。
-
   [% ELSIF error == "not_in_transaction" %]
     未開始變更就嘗試結束。
+
+  [% ELSIF error == "object_dep_sort_loop" %]
+    '[% field FILTER html %] 欄位在 VALIDATOR_DEPENDENCIES
+    發生迴圈。以下是我們考慮的欄位：
+    [%+ considered.join(', ') FILTER html %] 。
 
   [% ELSIF error == "param_invalid" %]
     [% title = "無效的參數。" %]
@@ -396,9 +375,6 @@
     在準備 RADIUS 認證要求時發生錯誤：
     <code>[% errstr FILTER html %]</code>。
 
-  [% ELSIF error == "request_queue_group_invalid" %]
-    群組欄位 <em>[% group FILTER html %]</em> 無效。
-
   [% ELSIF error == "report_axis_invalid" %]
     <em>[% val FILTER html %]</em> 對
     [%+ IF    fld == "x" %] X 軸
@@ -433,13 +409,6 @@
 
   [% ELSIF error == "undefined_field" %]
     表單欄位 [% field FILTER html %] 並未定義。
-
-  [% ELSIF error == "unknown_action" %]
-    [% IF action %]
-       [% action FILTER html %] 是未知的動作！
-    [% ELSE %]
-       無法理解你想要做的事。
-    [% END %]
 
   [% ELSIF error == "unknown_method" %]
     找不到指定的 method '[% method FILTER html %]' 。
@@ -505,6 +474,9 @@
     </td>
   </tr>
 </table>
+
+<p>Traceback:</p>
+<pre>[% traceback FILTER html_linebreak %]</pre>
 
 [% IF variables %]
   <pre>

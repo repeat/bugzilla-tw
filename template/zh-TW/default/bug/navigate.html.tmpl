@@ -16,7 +16,10 @@
   # Rights Reserved.
   #
   # Contributor(s): Gervase Markham <gerv@gerv.net>
+  #                 Max Kanat-Alexander <mkanat@bugzilla.org>
   #%]
+
+[% RETURN IF !bug %]
 
 [% PROCESS global/variables.none.tmpl %]
 [% IF bottom_navigator == 1 %]
@@ -34,45 +37,41 @@
 [% END %]
 
 <div class="navigation">
-[% IF last_bug_list.size > 0 %]
-  [% this_bug_idx = lsearch(last_bug_list, bug.id) %]
+[% SET my_search = user.recent_search_for(bug) %]
+[% IF my_search %]
+  [% SET last_bug_list = my_search.bug_list %]
+  [% SET this_bug_idx = lsearch(last_bug_list, bug.id) %]
   <b>[% terms.Bug %] 清單：</b>
-  [% IF this_bug_idx != -1 %]
-    ([% last_bug_list.size %] 個中的第 [% this_bug_idx + 1 %] 個)
-  [% END %]
 
-  [% IF this_bug_idx != -1 %]
+  (共 [% last_bug_list.size %] 個，第 [% this_bug_idx + 1 %] 個)
+
+  <a href="show_bug.cgi?id=
+           [%- last_bug_list.first FILTER url_quote %]&amp;list_id=
+           [%- my_search.id FILTER url_quote %]">第一個</a>
+  <a href="show_bug.cgi?id=
+           [%- last_bug_list.last FILTER url_quote %]&amp;list_id=
+           [%- my_search.id FILTER url_quote %]">最後一個</a>
+
+  [% IF this_bug_idx > 0 %]
+    [% prev_bug = this_bug_idx - 1 %]
     <a href="show_bug.cgi?id=
-             [%- last_bug_list.first FILTER url_quote %]">第一個</a>
-    <a href="show_bug.cgi?id=
-             [%- last_bug_list.last FILTER url_quote %]">最後一個</a>
-  [% END %]
-
-  [% IF bug.bug_id %]
-    [% IF this_bug_idx != -1 %]
-      [% IF this_bug_idx > 0 %]
-        [% prev_bug = this_bug_idx - 1 %]
-        <a href="show_bug.cgi?id=
-                 [%- last_bug_list.$prev_bug FILTER url_quote %]">前一個</a>
-      [% ELSE %]
-        <i><font color="#777777">前一個</font></i>
-      [% END %]
-
-      [% IF this_bug_idx + 1 < last_bug_list.size %]
-        [% next_bug = this_bug_idx + 1 %]
-        <a href="show_bug.cgi?id=
-                 [%- last_bug_list.$next_bug FILTER url_quote %]">下一個</a>
-      [% ELSE %]
-        <i><font color="#777777">下一個</font></i>
-      [% END %]
-    [% ELSE %]
-      (這個 [% terms.bug %] 不在你上次的搜尋結果中)
-    [% END %]
+             [%- last_bug_list.$prev_bug FILTER url_quote %]&amp;list_id=
+             [%- my_search.id FILTER url_quote %]">前一個</a>
   [% ELSE %]
-    &nbsp;&nbsp;
+    <i><font color="#777777">前一個</font></i>
   [% END %]
 
-  &nbsp;&nbsp;<a href="buglist.cgi?regetlastlist=1">顯示上次的搜尋結果</a>
+  [% IF this_bug_idx + 1 < last_bug_list.size %]
+    [% next_bug = this_bug_idx + 1 %]
+    <a href="show_bug.cgi?id=
+             [%- last_bug_list.$next_bug FILTER url_quote %]&amp;list_id=
+             [%- my_search.id FILTER url_quote %]">下一個</a>
+  [% ELSE %]
+    <i><font color="#777777">下一個</font></i>
+  [% END %]
+
+  &nbsp;&nbsp;<a href="buglist.cgi?regetlastlist=
+              [%- my_search.id FILTER url_quote %]">顯示上次的搜尋結果</a>
 [% ELSE %]
   [%# With no list, don't show link to search results %]
   <i><font color="#777777">第一個</font></i>
@@ -80,6 +79,6 @@
   <i><font color="#777777">前一個</font></i>
   <i><font color="#777777">後一個</font></i>
   &nbsp;&nbsp;
-  <i><font color="#777777">沒有可用的搜尋結果</font></i>
+  <i><font color="#777777">此 [% terms.bug %] 不在你上次的搜尋結果中。</font></i>
 [% END %]
 </div>

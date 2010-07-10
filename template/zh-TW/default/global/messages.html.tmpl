@@ -129,7 +129,7 @@
 
   [% ELSIF message_tag == "buglist_query_gone" %]
     [% title = "搜尋結果已刪除" %]
-    [% link  = "回到搜尋頁。" %]
+    [% link  = "復原刪除" %]
     名稱是 <b>[% namedcmd FILTER html %]</b> 的搜尋結果已刪除。
 
   [% ELSIF message_tag == "buglist_sorted_by_relevance" %]
@@ -441,10 +441,7 @@
 
   [% ELSIF message_tag == "keyword_deleted" %]
     [% title = "已刪除關鍵字" %]
-    已刪除關鍵字 <em>[% keyword.name FILTER html %]</em> 。<
-    b>在你結束編輯關鍵字後，你需要<a
-    href="sanitycheck.cgi?rebuildkeywordcache=1">重建關鍵字快取</a></b>（在有很多資料的
-    [% terms.Bugzilla %] 上執行時，可能會花上數分鐘）。
+    已刪除關鍵字 <em>[% keyword.name FILTER html %]</em> 。
 
   [% ELSIF message_tag == "keyword_updated" %]
     [% title = "已更新關鍵字" %]
@@ -452,12 +449,7 @@
       已儲存對關鍵字 <em>[% keyword.name FILTER html %]</em> 所做的變更：
       <ul>
         [% IF changes.name.defined %]
-          <li>
-            已將關鍵字更名為 <em>[% keyword.name FILTER html %]</em> 。<
-            b>在你結束編輯關鍵字後，你需要<a
-            href="sanitycheck.cgi?rebuildkeywordcache=1">重建關鍵字快取</a></b>（在有很多資料的
-            [% terms.Bugzilla %] 上執行時，可能會花上數分鐘）。
-          </li>
+          <li>已將關鍵字更名為 <em>[% keyword.name FILTER html %]</em> 。</li>
         [% END %]
         [% IF changes.description.defined %]
           <li>已更新描述為 <em>[% keyword.description FILTER html %]</em></li>

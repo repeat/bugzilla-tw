@@ -46,7 +46,24 @@
   header_addl_info = ""
   onload = ""
   style_urls = []
+  yui = []
 %]
+
+[% SET yui_css = {
+  autocomplete => 1,
+  calendar     => 1,
+  datatable    => 1,
+} %]
+
+[%# Note: This is simple dependency resolution--you can't have dependencies
+  # that depend on each other. You have to specify all of a module's deps,
+  # if that module is going to be specified in "yui".
+  #%]
+[% SET yui_deps = {
+  autocomplete => ['json', 'connection', 'datasource'],
+  datatable    => ['json', 'connection', 'datasource', 'element'],
+} %]
+
 
 [%# We should be able to set the default value of the header variable
   # to the value of the title variable using the DEFAULT directive,
@@ -61,6 +78,7 @@
                       "http://www.w3.org/TR/html4/loose.dtd">
 <html>
   <head>
+    [% Hook.process("start") %]
     <title>[% title %]</title>
 
 [%# Migration note: contents of the old Param 'headerhtml' would go here %]
@@ -70,6 +88,7 @@
     [% PROCESS 'global/setting-descs.none.tmpl' %]
 
     [%# Set up the skin CSS cascade:
+      #  0. YUI CSS
       #  1. Standard Bugzilla stylesheet set (persistent)
       #  2. Standard Bugzilla stylesheet set (selectable)
       #  3. All third-party "skin" stylesheet sets (selectable)
@@ -82,6 +101,27 @@
       [% user_skin = user.settings.skin.value %]
     [% END %]
     [% style_urls.unshift('skins/standard/global.css') %]
+
+    [%# YUI dependency resolution %]
+    [%# We have to do this in a separate array, because modifying the
+      # existing array by unshift'ing dependencies confuses FOREACH.
+      #%]
+    [% SET yui_resolved = [] %]
+    [% FOREACH yui_name = yui %]
+      [% FOREACH yui_dep = yui_deps.${yui_name}.reverse %]
+        [% yui_resolved.push(yui_dep) IF NOT yui_resolved.contains(yui_dep) %]
+      [% END %]
+      [% yui_resolved.push(yui_name) IF NOT yui_resolved.contains(yui_name) %]
+    [% END %]
+    [% SET yui = yui_resolved %]
+
+    [%# YUI CSS %]
+    [% FOREACH yui_name = yui %]
+      [% IF yui_css.$yui_name %]
+        <link rel="stylesheet" type="text/css"
+              href="js/yui/assets/skins/sam/[%- yui_name FILTER html %].css">
+      [% END %]
+    [% END %]
 
     [%# CSS cascade, part 1: Standard Bugzilla stylesheet set (persistent).
       # Always present.
@@ -190,9 +230,18 @@
             type="text/css">
     <![endif]-->
 
-    <script src="js/yui/yahoo-dom-event.js" type="text/javascript"></script>
-    <script src="js/yui/cookie.js" type="text/javascript"></script>
+    [%# YUI Scripts %]
+    <script src="js/yui/yahoo-dom-event/yahoo-dom-event.js"
+            type="text/javascript"></script>
+    <script src="js/yui/cookie/cookie-min.js" type="text/javascript"></script>
+    [% FOREACH yui_name = yui %]
+      <script type="text/javascript"
+              src="js/yui/[% yui_name FILTER html %]/
+                   [%- yui_name FILTER html %]-min.js"></script>
+    [% END %]
+
     <script src="js/global.js" type="text/javascript"></script>
+
     <script type="text/javascript">
     <!--
         YAHOO.namespace('bugzilla');
@@ -260,7 +309,7 @@
         class="[% urlbase.replace('^https?://','').replace('/$','').replace('[-~@:/.]+','-') %]
                [% FOREACH class = bodyclasses %]
                  [% ' ' %][% class FILTER css_class_quote %]
-               [% END %]">
+               [% END %] yui-skin-sam">
 
 [%# Migration note: the following file corresponds to the old Param
   # 'bannerhtml'

@@ -39,16 +39,6 @@ X[% comment_body %]
 *** 此 [% terms.bug %] 被標記為和 [% terms.bug %] [%+ comment.extra_data %] 重複。 ***
 [% ELSIF comment.type == constants.CMT_HAS_DUPE %]
 *** [% terms.Bug %] [%+ comment.extra_data %] 被標記為和此 [% terms.bug %] 重複。 ***
-[% ELSIF comment.type == constants.CMT_POPULAR_VOTES %]
-*** 此 [% terms.bug %] 已經由投票確認。 ***
-[% ELSIF comment.type == constants.CMT_MOVED_TO %]
-X[% comment_body %]
-
-[%+ terms.Bug %] 搬移至 [% Param("move-to-url") %] 。
-如果搬移成功， [% comment.extra_data %] 會收到一封通知信，內容包含在
-另一資料庫中的新 [% terms.bug %] 編號。
-如果沒什麼問題，請把網址貼到新的 [% terms.bug %] 中。
-否則，請將此 [% terms.bug %] 再度開啟。
 [% ELSIF comment.type == constants.CMT_ATTACHMENT_CREATED %]
 已建立附件 [% comment.extra_data %]
 [% IF is_bugmail %]
@@ -65,4 +55,6 @@ X[% comment_body %]
 [%+ comment.attachment.description %]
 
 [%+ comment.body %]
+[% ELSE %]
+X[% Hook.process('type') %]
 [% END %]
