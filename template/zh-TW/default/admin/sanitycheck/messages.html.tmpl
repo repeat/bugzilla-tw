@@ -81,12 +81,6 @@
   [% ELSIF san_tag == "bug_check_status_everconfirmed_error_text2" %]
     狀態是已確認的 [% terms.Bugs %] ，但未設定 everconfirmed 參數
 
-  [% ELSIF san_tag == "bug_check_votes_everconfirmed" %]
-    檢查投票／是否確認中…
-
-  [% ELSIF san_tag == "bug_check_votes_everconfirmed_error_text" %]
-    [% terms.Bugs %] 已有足夠票數供確認，但尚未確認
-
   [% ELSIF san_tag == "bug_check_control_values" %]
     檢查 group_control_map 錯誤的數值中…
 
@@ -212,22 +206,6 @@
   [% ELSIF san_tag == "keyword_check_duplicated_ids" %]
     在 [% PROCESS bug_link bug_id = id %] 中找到重複的關鍵字編號。
 
-  [% ELSIF san_tag == "keyword_cache_start" %]
-    檢查快取的關鍵字中…
-
-  [% ELSIF san_tag == "keyword_cache_alert" %]
-    在 [% badbugs.size FILTER none %] 個 [%+ terms.bugs %] 中找到不正確的關鍵字快取：
-    [% INCLUDE bug_list badbugs = badbugs %]
-
-  [% ELSIF san_tag == "keyword_cache_fixing" %]
-    修復關鍵字快取中…
-
-  [% ELSIF san_tag == "keyword_cache_fixed" %]
-    關鍵字快取已修復。
-
-  [% ELSIF san_tag == "keyword_cache_rebuild" %]
-    <a href="sanitycheck.cgi?rebuildkeywordcache=1">點選此連結重建關鍵字快取</a>。
-
   [% ELSIF san_tag == "profile_login_start" %]
     檢查帳號中…
 
@@ -256,24 +234,6 @@
 
   [% ELSIF san_tag == "unsent_bugmail_fix" %]
     <a href="sanitycheck.cgi?rescanallBugMail=1">寄出這些信件</a>。
-
-  [% ELSIF san_tag == "vote_cache_rebuild_start" %]
-    重建投票快取中…
-
-  [% ELSIF san_tag == "vote_cache_rebuild_end" %]
-    投票快取已重建完成。
-
-  [% ELSIF san_tag == "vote_cache_rebuild_fix" %]
-    <a href="sanitycheck.cgi?rebuildvotecache=1">點選此連結重建投票快取</a>。
-
-  [% ELSIF san_tag == "vote_cache_alert" %]
-    [% PROCESS bug_link bug_id = id %] 的投票快取已損壞。
-
-  [% ELSIF san_tag == "vote_count_start" %]
-    檢查票數快取中…
-
-  [% ELSIF san_tag == "vote_count_alert" %]
-    [% terms.bug %] [%+ id FILTER html %] 的總票數已損壞。
 
   [% ELSIF san_tag == "whines_obsolete_target_deletion_start" %]
     移除訂閱中不存在的使用者／群組中。

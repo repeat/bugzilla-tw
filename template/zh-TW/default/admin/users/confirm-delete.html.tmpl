@@ -33,7 +33,6 @@
   # namedquery_group_map:     number of named queries the user has shared
   # profiles_activity:        number of changes made to other users' profiles
   # series:                   number of series the viewed user has created
-  # votes:                    number of bugs the viewed user has voted on
   # watch.watched:            number of users the viewed user is being watched
   #                           by
   # watch.watcher:            number of users the viewed user is watching
@@ -164,8 +163,8 @@
   [% END %]
 
   [% IF assignee_or_qa || cc || component_cc || email_setting || flags.requestee ||
-        namedqueries || profile_setting || quips || series || votes || watch.watched ||
-        watch.watcher || whine_events || whine_schedules %]
+        namedqueries || profile_setting || quips || series || watch.watched ||
+        watch.watcher || whine_events || whine_schedules || other_safe %]
     <div class="warningmessages">
       <p>下列刪除是<b>安全的</b>，且不會產生完整參照的不一致。</p>
 
@@ -234,12 +233,6 @@
             [%+ quips %] 條智語將不再有作者，但仍會顯示。
           </li>
         [% END %]
-        [% IF votes %]
-          <li>
-            [% otheruser.login FILTER html %] 曾對 [% votes %] 個 [% terms.bugs %]
-            投過票。如果你刪除該使用者，則該使用者的投票將和該使用者一併刪除。
-          </li>
-        [% END %]
         [% IF watch.watched || watch.watcher %]
           <li>
             [% otheruser.login FILTER html %]
@@ -259,6 +252,7 @@
             [% whine_schedules %] 項訂閱的收件者之一。對應到寄送此帳號的排程將被刪除，但不會變更訂閱的內容。
           </li>
         [% END %]
+        [% Hook.process('warn_safe') %]
       </ul>
     </div>
 

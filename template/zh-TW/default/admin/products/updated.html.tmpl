@@ -70,33 +70,6 @@
   </p>
 [% END %]
 
-[% IF changes.votesperuser.defined %]
-  <p>
-  已將每人
-  [%+ changes.votesperuser.0 FILTER html %] 票更新為
-  [%+ product.votes_per_user FILTER html %] 票。
-  </p>
-  [% checkvotes = 1 %]
-[% END %]
-
-[% IF changes.maxvotesperbug.defined %]
-  <p>
-  已將每個 [% terms.bug %] 最多
-  [%+ changes.maxvotesperbug.0 FILTER html %] 票更新為最多
-  [%+ product.max_votes_per_bug FILTER html %] 票。
-  </p>
-  [% checkvotes = 1 %]
-[% END %]
-
-[% IF changes.votestoconfirm.defined %]
-  <p>
-  已將確認 [% terms.bug %] 需要的票數從
-  [%+ changes.votestoconfirm.0 FILTER html %] 票更新為
-  [%+ product.votes_to_confirm FILTER html %] 票。
-  </p>
-  [% checkvotes = 1 %]
-[% END %]
-
 [% IF changes.allows_unconfirmed.defined %]
   <p>
   [% IF product.allows_unconfirmed %]
@@ -114,60 +87,10 @@
   </p>
 [% END %]
 
+[% Hook.process('changes') %]
+
 [% IF !changes.keys.size %]
   <p>並未對產品 '[% product.name FILTER html %]' 做出任何變更。</p>
-[% END %]
-
-[%# Note that this display of changed votes and/or confirmed bugs is
-    not very scalable. We could have a _lot_, and we just list them all.
-    One day we should limit this perhaps, or have a more scalable display %]
-
-
-[% IF checkvotes %]
-  <hr>
-
-  <p>檢查此產品中已存在的票數，看是否有人現在對一個 [% terms.bug %] 有太多票…<br>
-  [% IF changes.too_many_votes.size %]
-    [% FOREACH detail = changes.too_many_votes %]
-      &rarr;自 [% detail.name FILTER html %] 刪除對 [% terms.bug %] <a href="show_bug.cgi?id=
-     [%- detail.id FILTER url_quote %]">
-     [%- detail.id FILTER html %]</a> 的過多票數。<br>
-    [% END %]
-  [% ELSE %]
-    &rarr;無。
-  [% END %]
-  </p>
-
-  <p>檢查此產品中已存在的票數，看是否有人現在有過多的總票數…<br>
-  [% IF changes.too_many_total_votes.size %]
-    [% FOREACH detail = changes.too_many_total_votes %]
-      &rarr;自 [% detail.name FILTER html %] 刪除對 [% terms.bug %] <a href="show_bug.cgi?id=
-     [%- detail.id FILTER url_quote %]">
-     [%- detail.id FILTER html %]</a> 的過多票數。<br>
-    [% END %]
-  [% ELSE %]
-    &rarr;無。
-  [% END %]
-  </p>
-
-  <p>檢查此產品中原先狀態為未確認的 [% terms.bugs %] ，看是否有 [% terms.bugs %] 符合新的票數標準…<br>
-  [% IF changes.confirmed_bugs.size %]
-    [% FOREACH id = changes.confirmed_bugs %]
-
-      [%# This is INCLUDED instead of PROCESSED to avoid variables getting
-          overwritten, which happens otherwise %]
-      [% INCLUDE bug/process/results.html.tmpl
-        type = 'votes'
-        header_done = 1
-        sent_bugmail = changes.confirmed_bugs_sent_bugmail.$id
-        id = id
-      %]
-    [% END %]
-  [% ELSE %]
-    &rarr;無。
-  [% END %]
-  </p>
-
 [% END %]
 
 [% PROCESS admin/products/footer.html.tmpl %]

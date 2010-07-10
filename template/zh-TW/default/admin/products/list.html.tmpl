@@ -63,23 +63,8 @@
        name => "is_active"
        heading => "允許回報新的 $terms.bugs"
        yesno_field => 1
-     },
-     {
-       name => "votesperuser"
-       heading => "每人幾票"
-       align => 'right'
-     },
-     {
-       name => "maxvotesperbug"
-       heading => "每個 $terms.bug 最多幾票"
-       align => 'right'
-     },
-     {
-       name => "votestoconfirm"
-       heading => "確認票數"
-       align => 'right'
-     } ]
-%]
+     }
+] %]
 
 [% IF showbugcounts %]
 
@@ -99,6 +84,8 @@
        contentlink => delete_contentlink
      })
 %]
+
+[% Hook.process('before_table') %]
 
 [% PROCESS admin/table.html.tmpl
      columns = columns

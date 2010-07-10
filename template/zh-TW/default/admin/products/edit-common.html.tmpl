@@ -76,36 +76,9 @@
     </label>
   </th>
   <td><input type="checkbox" id="allows_unconfirmed" name="allows_unconfirmed"
-             [% ' checked="checked"' IF product.allows_unconfirmed %]
-             [% IF Param('usevotes') %]
-               onchange="bz_toggleClass('votes_to_confirm_container',
-                                        'bz_default_hidden')"
-             [% END %]>
-    [% IF Param('usevotes') %]
-      <span id="votes_to_confirm_container"
-            [% ' class="bz_default_hidden"' IF !product.allows_unconfirmed %]>
-        當 [% terms.bugs %] 達到
-        <input size="3" maxlength="5" name="votestoconfirm" id="votestoconfirm"
-               value="[% product.votes_to_confirm FILTER html %]">
-         票時，自動確認它們。（設定為 0 即可停用自動確認的功能。）
-      </span>
+             [% ' checked="checked"' IF product.allows_unconfirmed %]>
     [% END %]
   </td>
 </tr>
 
-[% IF Param('usevotes') %]
-  <tr>
-    <th align="right">每人最多幾票：</th>
-    <td><input size="5" maxlength="5" name="votesperuser" id="votesperuser"
-               value="[% product.votesperuser FILTER html %]">
-    </td>
-  </tr>
-  <tr>
-    <th align="right">
-      每人每個 [% terms.bug %] 最多幾票：
-    </th>
-    <td><input size="5" maxlength="5" name="maxvotesperbug" id="maxvotesperbug"
-               value="[% product.maxvotesperbug FILTER html %]">
-    </td>
-  </tr>
-[% END %]
+[% Hook.process('rows') %]

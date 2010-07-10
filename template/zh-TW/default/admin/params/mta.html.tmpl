@@ -47,10 +47,6 @@
                       "開啟此參數前，請確認你已經安裝了在 <code>checksetup.pl</code> 中列出的特定 Perl 模組，並且已執行 <code>jobqueue.pl</code> daemon ，否則 $terms.Bugzilla 並不會寄信。<br>" _
                       "此參數不是只會影響送出的 $terms.bug 通知信，而是會影響所有 $terms.Bugzilla 的信件。",
 
-  sendmailnow => "若使用早於版本 8.12 的 'sendmail' ，將此選項設為「關」時，可以在使用者介面得到十分明顯的效能改善，代價是不會即時寄信。<br>" _
-                 "若使用版本 8.12 以後的 'sendmail' ，則應將此選項設為「開」，因為設為「關」時，並不會有任何效益。<br>" _
-                 "使用 'sendmail' 以外的 MTA 的站台<b>必須</b>設為「開」，否則將不會寄送任何 $terms.bug 通知信。",
-
   smtpserver => "若使用 SMTP 做為郵件傳遞方式時， SMTP 的伺服器地址。",
 
   smtp_username => "使用於 SMTP 伺服器，供 SMTP 認證用的使用者名稱。" _

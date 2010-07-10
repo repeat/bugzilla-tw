@@ -32,6 +32,7 @@
            onload = "toggleCheckbox(document.getElementById('enter_bug'), 'new_bugmail');"
            javascript_urls = [ 'js/util.js' ]
            doc_section = "custom-fields.html#edit-custom-fields"
+           style_urls = ['skins/standard/admin.css']
 %]
 
 <p>
@@ -39,12 +40,12 @@
 </p>
 
 <form id="edit_field" action="editfields.cgi" method="GET">
-  <table border="0" cellspacing="0" cellpadding="5">
+  <table border="0" cellspacing="0" cellpadding="5" id="edit_custom_field">
     <tr>
-      <th align="right">名稱：</th>
+      <th class="narrow_label">名稱：</th>
       <td>[% field.name FILTER html %]</td>
 
-      <th align="right">
+      <th>
         <label for="enter_bug">可以在建立 [% terms.bug %] 時設定：</label>
       </th>
       <td><input type="checkbox" id="enter_bug" name="enter_bug" value="1"
@@ -52,31 +53,54 @@
                  onchange="toggleCheckbox(this, 'new_bugmail');"></td>
     </tr>
     <tr>
-      <th align="right"><label for="desc">描述：</label></th>
+      <th class="narrow_label"><label for="desc">描述：</label></th>
       <td><input type="text" id="desc" name="desc" size="40"
                  value="[% field.description FILTER html %]"></td>
 
-      <th align="right">
+      <th>
         <label for="new_bugmail">將新的 [% terms.bug %] 顯示於 [% terms.bug %] 通知信中：</label>
       </th>
       <td><input type="checkbox" id="new_bugmail" name="new_bugmail" value="1"
                  [%- " checked" IF field.mailhead %]></td>
     </tr>
     <tr>
-      <th align="right">種類：</th>
+      <th class="narrow_label">種類：</th>
       <td>[% field_types.${field.type} FILTER html %]</td>
 
-      <th align="right"><label for="obsolete">已廢棄：</label></th>
+      <th><label for="obsolete">已廢棄：</label></th>
       <td><input type="checkbox" id="obsolete" name="obsolete" value="1"
                  [%- " checked" IF field.obsolete %]></td>
     </tr>
     <tr>
-      <th align="right"><label for="sortkey">排序鍵：</label></th>
+      <th class="narrow_label"><label for="sortkey">排序鍵：</label></th>
       <td>
         <input type="text" id="sortkey" name="sortkey" size="6" maxlength="6"
                value="[% field.sortkey FILTER html %]">
       </td>
-      <th align="right">
+      <th align="right"><label for="is_mandatory">是否強制：</label></th>
+      <td><input type="checkbox" id="is_mandatory" name="is_mandatory" value="1"
+                 [%- ' checked="checked"' IF field.is_mandatory %]></td>
+    </tr>
+    <tr>
+      [% IF field.type == constants.FIELD_TYPE_BUG_ID %]
+        <th class="narrow_label">
+          <label for="reverse_desc">反向關係描述：</label>
+        </th>
+        <td>
+          <input type="text" id="reverse_desc" name="reverse_desc" size="40"
+                 value="[% field.reverse_desc FILTER html %]">
+          <br/>
+          使用此標籤可列出因
+          [%+ field_types.${constants.FIELD_TYPE_BUG_ID} FILTER html %]
+          此欄位，而連至一個 [% terms.bug %] 的 [% terms.bugs %] 清單。
+          例如，描述是「此 [% terms.bug %] 和 ... 重複」時，
+          反向關係就會是「和此 [% terms.bug %] 重複的 [% terms.bugs %] 」。
+          如果要停用此欄位的清單，請留白。
+        </td>
+      [% ELSE %]
+        <td colspan="2">&nbsp;</td>
+      [% END %]
+      <th>
         <label for="visibility_field_id">當符合下列條件時，欄位才會出現：</label>
       </th>
       <td>
