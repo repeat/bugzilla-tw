@@ -58,7 +58,7 @@
 
 [% bug_ids_string = bug_ids.join(',') %]
 
-<h3><a name="params">變更參數</a></h3>
+<h3 id="params">變更參數</h3>
 
 <form method="get" action="duplicates.cgi">
   <input type="hidden" name="sortby" value="[% sortby FILTER html %]">
@@ -135,9 +135,9 @@
 
 <hr>
 
-<b>
-  <a name="explanation">什麼是「最常回報的 [% terms.Bugs %] 」？</a>
-</b>
+<h3 id="explanation">
+  什麼是「最常回報的 [% terms.Bugs %] 」？
+</h3>
 
 <p>
   最常回報的 [% terms.Bugs %] 頁面列出目前狀態為開啟，且最常被回報的

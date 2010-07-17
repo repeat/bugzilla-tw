@@ -34,7 +34,9 @@
   "regexp",
   "notregexp",
   "lessthan",
+  "lessthaneq",
   "greaterthan",
+  "greaterthaneq",
   "anywords",
   "allwords",
   "nowords",
@@ -47,11 +49,12 @@
   "notmatches"
 ] %]
 
-  <p>
-    <strong>
-      <a name="chart">使用布林運算式進階搜尋</a>：
-    </strong>
-  </p>
+  <h3 id="chart">
+    自訂搜尋
+    <span class="section_help">
+      在上方沒找到需要的欄位嗎？此區域允許 AND OR 以及其他更為複雜的搜尋。
+    </span>
+  </h3>
 
 [%# Whoever wrote the original version of boolean charts had a seriously twisted mind %]
 
@@ -87,7 +90,6 @@
         [% INCLUDE "search/type-select.html.tmpl"
            name = "type${chartnum}-${rownum}-${colnum}",
            types = types, selected = col.type %]
-
         <input name="[% "value${chartnum}-${rownum}-${colnum}" %]"
                value="[% col.value FILTER html %]">
       </td>
