@@ -131,8 +131,6 @@
       刪除
     [% ELSIF action == "edit" %]
       新增、修改或刪除
-    [% ELSIF action == "move" %]
-      搬移
     [% ELSIF action == "run" %]
       執行
     [% ELSIF action == "schedule" %]
@@ -141,6 +139,8 @@
       使用
     [% ELSIF action == "approve" %]
       允許
+    [% ELSE %]
+      [% Hook.process('auth_failure_action') %]
     [% END %]
 
     [% IF object == "administrative_pages" %]
@@ -488,7 +488,7 @@
   [% ELSIF error == "fieldvalue_is_default" %]
     [% title = "指定的欄位值為預設值" %]
     '[% value.name FILTER html %]' 是欄位 '[% field.description FILTER html %]'
-    的預設值，因此無法刪除。
+    的預設值，因此無法刪除或停用。
     [% IF user.in_group('tweakparams') %]
       你必須先<a href="editparams.cgi?section=bugfields#
       [%- param_name FILTER url_quote %]">變更</a>預設值。
@@ -506,7 +506,7 @@
 
   [% ELSIF error == "fieldvalue_not_deletable" %]
     [% title = "無法刪除欄位值" %]
-    無法刪除欄位值 '[% value.name FILTER html %]' ，因為它在欄位
+    無法刪除或停用欄位值 '[% value.name FILTER html %]' ，因為它在欄位
     '[% field.description FILTER html %]' 中扮演特別的角色。
 
   [% ELSIF error == "fieldvalue_reserved_word" %]
@@ -578,6 +578,13 @@
     但是該附件僅限制屬於 [% Param("insidergroup") FILTER html %] 群組的使用者瀏覽，
     而你所要求的使用者並不屬於該群組。
     請選擇屬於該群組的使用者，或是要求管理者將該使用者加入該群組中。
+
+  [% ELSIF error == "flag_status_invalid" %]
+    [% title = "旗標狀態無效" %]
+    [% IF id %]
+      旗標編號 #[% id FILTER html %] 的
+    [% END %]
+    旗標狀態 <em>[% status FILTER html %]</em> 無效。
 
   [% ELSIF error == "flag_type_cc_list_invalid" %]
     [% title = "無效的旗標類型寄件副本清單" %]
@@ -679,11 +686,6 @@
     [% title = "未知的群組" %]
     群組 [% name FILTER html %] 不存在。請輸入有效的群組名稱。如有必要，請先新增該群組。
 
-  [% ELSIF error == "illegal_at_least_x_votes" %]
-    [% title = "搜尋不合邏輯" %]
-    <em>至少幾票</em>欄位必須是 0 或正整數。
-    你輸入的<tt>[% value FILTER html %]</tt>並不是。
-
   [% ELSIF error == "illegal_attachment_edit" %]
     [% title = "未經授權的動作" %]
     你並未被授權編輯附件 [% attach_id FILTER html %] 。
@@ -718,9 +720,9 @@
       變更為 <em>[% newvalue.join(', ') FILTER html %]</em>
     [% END %]
     ，但是只有
-    [% IF privs < 3 %]
+    [% IF privs < constants.PRIVILEGES_REQUIRED_EMPOWERED %]
       [% terms.bug %] 的負責人
-      [% IF privs < 2 %]或回報者[% END %]
+      [% IF privs < constants.PRIVILEGES_REQUIRED_ASSIGNEE %]或回報者[% END %]
       ，或
     [% END %]
     擁有所需要權限的使用者才能變更該欄位。
@@ -912,8 +914,23 @@
       [%+ constants.LOGIN_LOCKOUT_INTERVAL FILTER html %] 分鐘無法登入此帳號。
     [% END %]
 
+  [% ELSIF error == "json_rpc_get_method_required" %]
+    當透過 GET 使用 JSON-RPC 時，你必須指定 'method' 參數。
+    請參考
+    [%+ docs_urlbase FILTER html %]api/Bugzilla/WebService/Server/JSONRPC.html
+
+  [% ELSIF error == "json_rpc_invalid_params" %]
+    無法將 'params' 參數內容解讀為有效的 JSON 。
+    錯誤： [% err_msg FILTER html %]
+    數值： [% params FILTER html %]
+
+  [% ELSIF error == "json_rpc_invalid_callback" %]
+    無法以 '[% callback FILTER html %]' 做為 'callback' 參數。
+    由於安全性考量，僅允許英文字母、數字和 <code>[]._</code> 這些字元出現於
+    'callback' 參數中。
+
   [% ELSIF error == "json_rpc_post_only" %]
-    為了安全性考量，你只能用 HTTP POST 和 JSON-RPC 。
+    為了安全性考量，你只能透過 HTTP POST 呼叫 '[% method FILTER html %]' 。
 
   [% ELSIF error == "keyword_already_exists" %]
     [% title = "關鍵字已存在" %]
@@ -1055,10 +1072,6 @@
     [% title = "需要解決方案" %]
     將 [% terms.bugs %] 標記為[%+ status FILTER upper FILTER html %]需要有效的解決方案。
 
-  [% ELSIF error == "move_bugs_disabled" %]
-    [% title = BLOCK %]不允許搬移 [% terms.Bug %][% END %]
-    很抱歉，不允許搬移 [% terms.bug %] 。如果你需要搬移 [% terms.bug %] ，請洽 [% Param("maintainer") %] 。
-
   [% ELSIF error == "missing_subcategory" %]
     [% title = "缺少子類" %]
     你並未指定此系列的子類。
@@ -1073,6 +1086,9 @@
     [% ELSE %]
       請洽[% Param("maintainer") %]並要求他們替此產品新增一個版本。
     [% END %]
+
+  [% ELSIF error == "multiple_alias_not_allowed" %]
+    你無法在修改多個 [% terms.bugs %] 時設定別名。
 
   [% ELSIF error == "need_quip" %]
     [% title = "需要智語" %]
@@ -1133,10 +1149,6 @@
                          'components.html' => '在產品中新增子產品',
                          'groups.html'     => '群組安全性'} %]
     並未定義可以輸入 [% terms.bugs %] 的產品，或者你沒有權限可以瀏覽任何產品。
-
-  [% ELSIF error == "no_valid_action" %]
-    [% title = "未指定有效的動作" %]
-    無法編輯 [% field_descs.$field FILTER html %] ：未指定有效的動作。
 
   [% ELSIF error == "number_not_numeric" %]
     [% title = "必須是數字" %]
@@ -1244,19 +1256,6 @@
     '[% group.name FILTER html %]' 並非使用中的
     [% terms.bug %] 群組，因此你無法編輯它的群組控管設定。
 
-  [% ELSIF error == "product_illegal_votes" %]
-    [% title = "票數不可為負數" %]
-    [% admindocslinks = {'voting.html' => '設定投票功能'} %]
-    <em>
-    [%- IF field == "votesperuser" %]
-      每個使用者幾票
-    [%- ELSIF field == "maxvotesperbug" %]
-      每個 [% terms.Bug %] 最多幾票
-    [%- ELSIF field == "votestoconfirm" %]
-      待確認投票
-    [% END %]
-    </em>欄位的數值 '[% votes FILTER html %]' 無效，因票數不可為負數。
-
   [% ELSIF error == "product_must_define_defaultmilestone" %]
     [% title = "必須定義新的預設里程碑" %]
     [% admindocslinks = {'products.html' => '管理產品',
@@ -1336,6 +1335,14 @@
     [% title = "無效的重新分配" %]
     要重新分配 [% terms.bug %] ，你必須輸入新的負責人的電子郵件地址。
 
+  [% ELSIF error == "relationship_loop_single" %]
+    [% title = "偵測到關係迴圈" %]
+    [% terms.bug %] [%+ bug_id FILTER html %] 的 [% field_descs.$field_name FILTER html %]
+    對 [% terms.bug %] [%+ dep_id FILTER html %] 的依賴關係是個迴圈。
+
+  [% ELSIF error == "request_queue_group_invalid" %]
+    群組欄位 <em>[% group FILTER html %]</em> 無效。
+
   [% ELSIF error == "require_component" %]
     [% title = "需要輸入子產品" %]
     要將此 [% terms.bug %] 歸檔，必須先選擇一項子產品。
@@ -1348,6 +1355,10 @@
   [% ELSIF error == "require_summary" %]
     [% title = "需要輸入摘要" %]
     你必須對這個 [% terms.bug %] 輸入摘要。
+
+  [% ELSIF error == "required_field" %]
+    [% title = "需要設定欄位" %]
+    你必須對 '[% field_descs.${field.name} FILTER html %]' 欄位設定數值。
 
   [% ELSIF error == "resolution_cant_clear" %]
     [% terms.Bug %] [% bug_id FILTER bug_link(bug_id) FILTER none %]
@@ -1423,18 +1434,6 @@
     <em>[% name FILTER html %]</em> 是一個系統群組。
     無法刪除此群組。
 
-  [% ELSIF error == "too_many_votes_for_bug" %]
-    [% title = "無效的投票" %]
-    [% admindocslinks = {'voting.html' => '設定投票功能'} %]
-    在產品 <tt>[% product FILTER html %]</tt> 中對一個 [% terms.bug %]
-    你最多只能設定 [% max FILTER html %] 票，但是你試著設定 [% votes FILTER html %] 票。
-
-  [% ELSIF error == "too_many_votes_for_product" %]
-    [% title = "無效的投票" %]
-    [% admindocslinks = {'voting.html' => '設定投票功能'} %]
-    你嘗試在產品 <tt>[% product FILTER html %]</tt> 中設定 [% votes FILTER html %] 票，
-    但已超過此產品允許的最大票數（ [% max FILTER html %] 票）。
-
   [% ELSIF error == "token_does_not_exist" %]
     [% title = "Token 不存在" %]
     所送出的 token 不存在、已過期，或是已被取消。
@@ -1448,6 +1447,13 @@
       帳號
     [% END %]
     token 速度過快。請過一陣子再試。
+
+  [% ELSIF error == "unknown_action" %]
+    [% IF action %]
+       未知的動作 [% action FILTER html %] ！
+    [% ELSE %]
+       無法理解你想要做什麼事。
+    [% END %]
 
   [% ELSIF error == "unknown_keyword" %]
     [% title = "未知的關鍵字" %]
@@ -1509,11 +1515,6 @@
   [% ELSIF error == "user_not_insider" %]
     [% title = "使用者無適當的群組權限" %]
     很抱歉，但你並未被允許將意見或附件標記或取消隱藏。
-
-  [% ELSIF error == "votes_must_be_nonnegative" %]
-    [% title = "票數必須是零或正整數" %]
-    [% admindocslinks = {'voting.html' => '設定投票功能'} %]
-    在設定 [% terms.bug %] 投票時，只能用 0 或正整數。
 
   [% ELSIF error == "wrong_token_for_cancelling_email_change" %]
     [% title = "錯誤的 token" %]
@@ -1635,6 +1636,8 @@
     群組
   [% ELSIF class == "Bugzilla::Product" %]
     產品
+  [% ELSIF class == "Bugzilla::Search::Recent" %]
+    最近搜尋
   [% ELSIF class == "Bugzilla::Search::Saved" %]
     已儲存的搜尋
   [% ELSIF ( matches = class.match('^Bugzilla::Field::Choice::(.+)') ) %]

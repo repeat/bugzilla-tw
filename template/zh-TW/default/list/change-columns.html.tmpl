@@ -33,10 +33,22 @@
 
 [% PROCESS "global/field-descs.none.tmpl" %]
 [% field_descs.short_short_desc     = "摘要（前 60 個字）" %]
-[% field_descs.short_desc           = "完整摘要" %]
-[% field_descs.assigned_to_realname = "負責人姓名" %]
-[% field_descs.reporter_realname    = "回報者姓名" %]
-[% field_descs.qa_contact_realname  = "QA 連絡人姓名" %]
+[% field_descs.short_desc           = "摘要（完整）" %]
+[% field_descs.assigned_to_realname = "$field_descs.assigned_to 姓名" %]
+[% field_descs.reporter_realname    = "$field_descs.reporter 姓名" %]
+[% field_descs.qa_contact_realname  = "$field_descs.qa_contact 姓名" %]
+
+[%# Create a mapping of field descriptions to field names, so that
+  # the "Available Columns" list can be sorted alphabetically by
+  # field description.
+  #%]
+[% SET available_columns = {} %]
+[% FOREACH column = columns.keys %]
+  [% NEXT IF collist.contains(column) %]
+  [%# We lowecase the keys so that the sort happens case-insensitively. %]
+  [% SET column_desc = field_descs.$column || column FILTER lower %]
+  [% available_columns.$column_desc = column %]
+[% END %]
 
 <form name="changecolumns" action="colchange.cgi" onsubmit="change_submit();">
   <input type="hidden" name="rememberedquery" value="[% buffer FILTER html %]">
@@ -69,12 +81,13 @@
                 [% (field_descs.${column} || column) FILTER html %]
               </option>
             [% END %]
-            [% FOREACH column = masterlist %]
-              [% IF lsearch(collist, column) == -1 %]
-                <option value="[% column FILTER html %]">
-                  [% (field_descs.${column} || column) FILTER html %]
-                </option>
-              [% END %]
+            [% FOREACH key = available_columns.keys.sort %]
+              [% SET column = available_columns.$key %]
+              <option value="[% column FILTER html %]">
+                [%# Don't display the lower-cased column description,
+                  # display the correct-case one. %]
+                [% (field_descs.$column || column) FILTER html %]
+              </option>
             [% END %]
           </select>
         </td>

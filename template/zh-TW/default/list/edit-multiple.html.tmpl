@@ -147,13 +147,9 @@
                value="[% dontchange FILTER html %]"
                size="6">
       </td>
-      <th><label for="deadline">截止期限 (YYYY-MM-DD) ：</label></th>
-      <td>
-        <input id="deadline"
-               name="deadline"
-               value="[% dontchange FILTER html %]"
-               size="10">
-      </td>
+      [% PROCESS bug/field.html.tmpl
+          field = bug_fields.deadline, value = dontchange
+          editable = 1, allow_dont_change = 1 %]
     </tr>
     <tr>
       <th><label for="remaining_time">剩餘時數：</label></th>
@@ -274,6 +270,8 @@
   [% END %]
 
   [% USE Bugzilla %]
+  [%# Show all legal values and all fields, ignoring visibility controls. %]
+  [% bug = 0 %]
   [% FOREACH field = Bugzilla.active_custom_fields %]
     <tr>
       [% PROCESS bug/field.html.tmpl value = dontchange
@@ -354,10 +352,6 @@
 [% END %]
 
 <input type="submit" id="commit" value="送出">
-
-[% IF Param('move-enabled') && user.is_mover %]
-  <input type="submit" name="action" id="action" value="[% Param('move-button-text') %]">
-[% END %]
 
 [%############################################################################%]
 [%# Select Menu Block                                                        #%]
