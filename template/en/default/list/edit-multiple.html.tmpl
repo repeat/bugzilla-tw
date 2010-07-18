@@ -19,6 +19,7 @@
   #                 Max Kanat-Alexander <mkanat@bugzilla.org>
   #                 Frédéric Buclin <LpSolit@gmail.com>
   #                 Guy Pyrzak <guy.pyrzak@gmail.com>
+  #                 Reed Loden <reed@reedloden.com>
   #%]
 
 [% PROCESS global/variables.none.tmpl %]
@@ -173,7 +174,7 @@
            id => "assigned_to"
            name => "assigned_to"
            value => dontchange
-           size => 32
+           size => 40
       %]
       <input type="checkbox" id="set_default_assignee" name="set_default_assignee" value="1">
       <label for="set_default_assignee">Reset Assignee to default</label>
@@ -188,7 +189,7 @@
              id => "qa_contact"
              name => "qa_contact"
              value => dontchange
-             size => 32
+             size => 40
         %]
         <input type="checkbox" id="set_default_qa_contact" name="set_default_qa_contact" value="1">
         <label for="set_default_qa_contact">Reset QA Contact to default</label>
@@ -200,7 +201,13 @@
 
     <th><label for="masscc">CC List:</label></th>
     <td colspan="3">
-      <input id="masscc" name="masscc" size="32">
+      [% INCLUDE global/userselect.html.tmpl
+           id => "masscc"
+           name => "masscc"
+           value => ""
+           size => 40
+           multiple => 5
+      %]
       <select name="ccaction">
         <option value="add">Add these to the CC List</option>
         <option value="remove">Remove these from the CC List</option>
@@ -212,17 +219,19 @@
   [% IF use_keywords %]
     <tr>
 
-      <th>
-        <label for="keywords">
-          <a href="describekeywords.cgi">Keywords</a>:
-        </label>
-      </th>
+      [% INCLUDE "bug/field-label.html.tmpl"
+         field = bug_fields.keywords, editable = 1
+         desc_url = "describekeywords.cgi"
+      %]
       <td colspan="3">
-        <input id="keywords" name="keywords" size="32">
+        [% INCLUDE bug/field.html.tmpl
+           field = bug_fields.keywords, editable = 1, value = keywords
+           no_tds = 1
+        %]
         <select name="keywordaction">
           <option value="add">Add these keywords</option>
-          <option value="delete">Delete these keywords</option>
-          <option value="makeexact">Make the keywords be exactly this list</option>
+          <option value="remove">Delete these keywords</option>
+          <option value="set">Make the keywords be exactly this list</option>
         </select>
       </td>
 
@@ -236,7 +245,7 @@
       </label>
     </th>
     <td colspan="3">
-      <input id="dependson" name="dependson" size="32">
+      <input id="dependson" name="dependson" size="40">
       <select name="dependson_action">
           <option value="add">Add these IDs</option>
           <option value="remove">Delete these IDs</option>
@@ -251,7 +260,7 @@
       </label>
     </th>
     <td colspan="3">
-      <input id="blocked" name="blocked" size="32">
+      <input id="blocked" name="blocked" size="40">
       <select name="blocked_action">
           <option value="add">Add these IDs</option>
           <option value="remove">Delete these IDs</option>
@@ -309,10 +318,18 @@
 
 [% IF groups.size > 0 %]
 
+  <script type="text/javascript">
+    function turn_off(myself, id) {
+        var other_checkbox = document.getElementById(id);
+        if (myself.checked && other_checkbox) {
+            other_checkbox.checked = false;
+        }
+    }
+  </script>
+
   <b>Groups:</b><br>
   <table border="1">
     <tr>
-      <th>Don't<br>change<br>this group<br>restriction</th>
       <th>Remove<br>[% terms.bugs %]<br>from this<br>group</th>
       <th>Add<br>[% terms.bugs %]<br>to this<br>group</th>
       <th>Group Name:</th>
@@ -321,14 +338,17 @@
     [% FOREACH group = groups %]
     <tr>
       <td align="center">
-        <input type="radio" name="bit-[% group.id %]" value="-1" checked="checked">
-      </td>
-      <td align="center">
-        <input type="radio" name="bit-[% group.id %]" value="0">
+        <input type="checkbox" name="defined_groups" 
+               id="defined_group_[% group.id %]"
+               value="[% group.name FILTER html %]"
+               onchange="turn_off(this, 'group_[% group.id %]')">
       </td>
       [% IF group.is_active %]
         <td align="center">
-          <input type="radio" name="bit-[% group.id %]" value="1">
+          <input type="checkbox" name="groups" 
+                 id="group_[% group.id FILTER html %]"
+                 value="[% group.name FILTER html %]"
+                 onchange="turn_off(this, 'defined_group_[% group.id %]')">
         </td>
       [% ELSE %]
         <td>&nbsp;</td>

@@ -128,6 +128,15 @@
 
 [% END %]
 
+  /* Index all classifications so we can keep track of the classification
+   * for the selected product, which could control field visibility.
+   */
+  var all_classifications = new Array([% bug.choices.product.size %]);
+  [%- FOREACH product = bug.choices.product %]
+      all_classifications['[% product.name FILTER js %]'] = '
+          [%- product.classification.name FILTER js %]';
+  [%- END %]
+
   //-->
   </script>
 
@@ -319,12 +328,24 @@
     [%#############%]
     [%#  PRODUCT  #%]
     [%#############%]
-    
     <tr>
        [% INCLUDE bug/field.html.tmpl
             bug = bug, field = bug_fields.product,
             override_legal_values = bug.choices.product
             desc_url = 'describecomponents.cgi', value = bug.product
+            editable = bug.check_can_change_field('product', 0, 1) %]
+    </tr>
+
+    [%# Classification is here so that it can be used in value controllers
+      # and visibility controllers. It comes after product because
+      # it uses some javascript that depends on the existence of the
+      # product field.
+      #%]
+    <tr class="bz_default_hidden">
+       [% INCLUDE bug/field.html.tmpl
+            bug = bug field = bug_fields.classification
+            override_legal_values = bug.choices.classification
+            value = bug.classification
             editable = bug.check_can_change_field('product', 0, 1) %]
     </tr>
     [%###############%]    
@@ -591,8 +612,13 @@
         <label for="keywords" accesskey="k">
           <b><a href="describekeywords.cgi"><u>K</u>eywords</a></b></label>:
       </td>
-      [% PROCESS input inputname => "keywords" size => 40 colspan => 2
-                       value => bug.keywords.join(', ') %]
+      <td class="field_value" colspan="2">
+        [% INCLUDE bug/field.html.tmpl
+           bug = bug, field = bug_fields.keywords, value = bug.keywords
+           editable = bug.check_can_change_field("keywords", 0, 1),
+           no_tds = 1
+        %]
+      </td>
     </tr>
   [% END %]
 [% END %]
@@ -654,14 +680,15 @@
       [% END %]
 
       [% IF group.ingroup %]
-        <input type="hidden" name="defined_bit-[% group.bit %]" value="1">
+        <input type="hidden" name="defined_groups" 
+               value="[% group.name FILTER html %]">
       [% END %]
 
-      <input type="checkbox" value="1" name="bit-[% group.bit %]" 
-             id="bit-[% group.bit %]"
+      <input type="checkbox" value="[% group.name FILTER html %]"
+             name="groups" id="group_[% group.bit %]"
              [% ' checked="checked"' IF group.ison %]
              [% ' disabled="disabled"' IF NOT group.ingroup %]>
-      <label for="bit-[% group.bit %]">
+      <label for="group_[% group.bit %]">
       [%- group.description FILTER html_light %]</label>
       <br>
     [% END %]
