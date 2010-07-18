@@ -18,6 +18,7 @@
   # Contributor(s): Chris Lahey <clahey@ximian.com> [javascript fixes]
   #                 Christian Reis <kiko@async.com.br> [javascript rewrite]
   #                 Gervase Markham <gerv@gerv.net>
+  #                 Guy Pyrzak <guy.pyrzak@gmail.com>
   #%]
 
 [% PROCESS "global/field-descs.none.tmpl" %]
@@ -103,6 +104,17 @@ function doOnSelectProduct(selectmode) {
     }
 }
 
+// Hide the Advanced Fields by default, unless the user has a cookie
+// that specifies otherwise.
+// &#9656; and &#9662; are both utf8 escaped characters for right
+//    and down facing arrows respectivly.
+TUI_alternates['history_query'] = '&#9658;';
+TUI_alternates['people_query'] = '&#9658;';
+TUI_alternates['information_query'] = '&#9658;';
+
+TUI_hide_default('history_query');
+TUI_hide_default('people_query');
+TUI_hide_default('information_query');
 </script>
 
 [% query_types = [
@@ -113,7 +125,7 @@ function doOnSelectProduct(selectmode) {
   "allwords",
   "anywords",
   "regexp",
-  "notregexp"
+  "notregexp",
 ] %]
 
 [%# If we resubmit to ourselves, we need to know if we are using a format. %]
@@ -122,389 +134,202 @@ function doOnSelectProduct(selectmode) {
 
 [%# *** Summary *** %]
 
-<table>
-  <tr>
-    <th align="right">
-      <label for="short_desc" accesskey="s">摘要 (<u>S</u>)</label>：
-    </th>
-    <td>
-    [% INCLUDE "search/type-select.html.tmpl"
-       name = "short_desc_type",
-       types = query_types, selected = default.short_desc_type.0 %]
-    </td>
-    <td>
-      <input name="short_desc" id="short_desc" size="40"
-             value="[% default.short_desc.0 FILTER html %]">
+  <div class="search_field_row" id="summary_field">
+      [% INCLUDE "search/field.html.tmpl"
+         field = bug_fields.short_desc
+         types = query_types
+         value = default.short_desc.0
+         type_selected = default.short_desc_type.0
+         accesskey = "s"
+         %]
       <script type="text/javascript"> <!--
           document.forms[queryform].short_desc.focus();
       // -->
       </script>
-    </td>
-    <td>
+
       [% IF button_name %]
         <input type="submit" id="[% button_name FILTER css_class_quote %]_top"
                value="[% button_name FILTER html %]">
       [% END %]
-    </td>
-  </tr>
+  </div>
 
-[%# *** Classification Product Component Version Target *** %]
-  <tr>
-    <td colspan="4">
-      <table>
-        <tr>
-        [% Hook.process('before_selects_top') %]
-        [% IF Param('useclassification') %]
-          <td valign="top">
-            <table>
-              <tr valign="bottom">
-                <th align="left">
-                  <label for="classification">分類</label>：
-                </th>
-              </tr>
-              <tr valign="top">
-                <td align="left">
-                  <select name="classification" multiple="multiple" size="5" id="classification"
-                          onchange="doOnSelectProduct(1);">
-                    [% FOREACH cat = classification %]
-                      <option value="[% cat.name FILTER html %]"
-                        [% " selected" IF lsearch(default.classification, cat.name) != -1 %]>
-                        [% cat.name FILTER html %]
-                      </option>
-                    [% END %]
-                  </select>
-                </td>
-              </tr>
-            </table>
-          </td>
-        [% END %]
-          <td valign="top">
-            <table>
-              <tr valign="bottom">
-                <th align="left">
-                  <label for="product" accesskey="p">產品 (<u>P</u>)</label>:
-                </th>
-              </tr>
-              <tr valign="top">
-                [%# Can't use the select block here because of the onChange %]
-                <td align="left">
-                  <select name="product" multiple="multiple" size="5" id="product"
-                          onchange="doOnSelectProduct(2);">
-                    [% FOREACH p = product %]
-                      [% IF p.components.size %]
-                      <option value="[% p.name FILTER html %]"
-                        [% " selected" IF lsearch(default.product, p.name) != -1 %]>
-                        [% p.name FILTER html %]</option>
-                      [% END %]
-                    [% END %]
-                  </select>
-                </td>
-              </tr>
-            </table>
-          </td>
-          <td valign="top">
-            <table>
-              <tr valign="bottom">
-                <th align="left">
-                  <label for="component" accesskey="m"><a href="describecomponents.cgi">子產品(<u>M</u>)</a></label>：
-                </th>
-              </tr>
-              <tr valign="top">
-                [%# Can't use the select block here because 'component' is a toolkit
-                    reserved word - we use 'component_' instead. %]
-                <td align="left">
-                  <select name="component" id="component"
-                          multiple="multiple" size="5">
-                    [% FOREACH c = component_ %]
-                      <option value="[% c FILTER html %]"
-                        [% " selected" IF lsearch(default.component, c) != -1 %]>
-                        [% c FILTER html %]</option>
-                    [% END %]
-                  </select>
-                </td>
-              </tr>
-            </table>
-          </td>
-          <td valign="top">
-            <table>
-              <tr valign="bottom">
-                <th align="left">
-                  <label for="version">版本</label>：
-                </th>
-              </tr>
-              <tr valign="top">
-                [% PROCESS select sel = { name => 'version',
-                                          size => 5 } %]
-              </tr>
-            </table>
-          </td>
-        [% IF Param('usetargetmilestone') %]
-          <td valign="top">
-            <table>
-              <tr valign="bottom">
-                <th align="left">
-                  <label for="target_milestone">目標里程碑</label>：
-                </th>
-              </tr>
-              <tr valign="top">
-                [% PROCESS select sel = { name => 'target_milestone',
-                                          size => 5 } %]
-              </tr>
-            </table>
-          </td>
-        [% END %]
-        [% Hook.process('after_selects_top') %]
-        </tr>
-      </table>
-    </td>
-  </tr>
+[%# *** Classification Product Component *** %]
 
+[% Hook.process('before_selects_top') %]
+[% IF Param('useclassification') %]
+      [% fake_classfication = { name => bug_fields.classification.name,
+                                type => constants.FIELD_TYPE_SINGLE_SELECT } %]
+      [% INCLUDE "search/field.html.tmpl"
+            field => fake_classfication
+            accesskey => "c"
+            onchange => "doOnSelectProduct(1);"
+            value => default.classification
+      %]
+[% END %]
+
+[% INCLUDE "search/field.html.tmpl"
+      field => bug_fields.product
+      accesskey => "p"
+      onchange => "doOnSelectProduct(2);"
+      value => default.product
+%]
+[% INCLUDE "search/field.html.tmpl"
+      field => bug_fields.component
+      accesskey => "m"
+      onchange => "doOnSelectProduct(2);"
+      value => default.component
+%]
+[% INCLUDE "search/field.html.tmpl"
+      field => bug_fields.bug_status
+      accesskey => "a"
+      value => default.bug_status
+%]
+[% INCLUDE "search/field.html.tmpl"
+      field => bug_fields.resolution
+      accesskey => "r"
+      value => default.resolution
+%]
+
+[% Hook.process('after_selects_top') %]
+
+<div id="detailed_information" class="bz_section_title">
+  <div id="information_query_controller" class="arrow">&#9660;</div>
+  <a href="javascript:TUI_toggle_class('information_query')">
+    [% terms.Bug %] 的詳細資訊
+  </a>
+  <span class="section_help">以下列欄位限制搜尋結果：
+    [%+ field_descs.longdesc FILTER html %] 、 [%+ field_descs.bug_file_loc FILTER html %] 、
+    [% IF Param('usestatuswhiteboard') %] [%+ field_descs.status_whiteboard FILTER html %] 、 [%+ END %]
+    [% IF use_keywords %] [%+ field_descs.keywords FILTER html %] 、 [%+ END %]
+    [% IF user.is_timetracker %] [%+ field_descs.deadline FILTER html %] 、 [%+ END %]
+    [% terms.Bug %] 編號、 [%+ field_descs.version FILTER html %] 、
+    [% IF Param('usetargetmilestone') %] [%+ field_descs.target_milestone FILTER html %] 、 [%+ END %]
+    [% field_descs.bug_severity FILTER html %] 、 [%+ field_descs.priority FILTER html %] 、 [%+ field_descs.rep_platform FILTER html %] 、
+    [%+ field_descs.op_sys FILTER html %]
+  </span>
+</div>
 [%# *** Comment URL Whiteboard Keywords *** %]
-
+<div id="detailed_information_section" class="bz_search_section information_query">
   [% SET freetext_fields = [
-    { name => "longdesc", description => "描述或意見 (<u>C</u>)",
-      accesskey => 'c' },
-    { name => "bug_file_loc", description => "網址 (<u>U</u>)",
-      accesskey => 'u' },
-    { name => "status_whiteboard", description => "狀態白板 (<u>W</u>)",
-      accesskey => 'w' }
+    { field => bug_fields.longdesc, accesskey => 'c' },
+    { field => bug_fields.bug_file_loc, accesskey => 'u' },
+    { field => bug_fields.status_whiteboard, accesskey => 'w' },
+    { field => bug_fields.keywords, accesskey => 'k',
+      qtypes => ['allwords', 'anywords', 'nowords', 'regexp', 'notregexp'] }
   ] %]
-
   [% Hook.process('before_freetext_fields') %]
-  [% FOREACH field = freetext_fields %]
-    [% NEXT IF field.name == 'status_whiteboard'
+
+  [%# loop through a bunch of free text fields and print out their text stuff %]
+  [% FOREACH field_container = freetext_fields %]
+    [% NEXT IF field_container.field.name == 'status_whiteboard'
                AND NOT Param('usestatuswhiteboard')
     %]
-    <tr>
-      <th align="right">
-        <label for="[% field.name %]"
-               accesskey="[% field.accesskey %]">[% field.description %]</label>：
-      </th>
-      <td>
-        [% type = field.name _ "_type" %]
-        [% INCLUDE "search/type-select.html.tmpl"
-           name = type,
-           types = query_types, selected = default.$type.0 %]
-      </td>
-      <td><input name="[% field.name %]" id="[% field.name %]" size="40"
-                 value="[% default.${field.name}.0 FILTER html %]">
-      </td>
-      <td></td>
-    </tr>
-  [% END %]
-
-  [% IF use_keywords %]
-    <tr>
-      <th align="right">
-        <label for="keywords" accesskey="k"><a href="describekeywords.cgi">關鍵字 (<u>K</u>)</a></label>：
-      </th>
-      <td>
-      [% INCLUDE "search/type-select.html.tmpl"
-         name = "keywords_type",
-         types = ['allwords', 'anywords', 'nowords', 'regexp', 'notregexp'],
-         selected = default.keywords_type.0 %]
-      </td>
-      <td>
-        <input name="keywords" id="keywords" size="40"
-               value="[% default.keywords.0 FILTER html %]">
-      </td>
-    </tr>
+    [% NEXT IF field_container.field.name == 'keywords'
+               AND NOT use_keywords
+    %]
+    <div class="search_field_row">
+      [% type = field_container.field.name _ "_type" %]
+      [% INCLUDE "search/field.html.tmpl"
+          field => field_container.field
+          types => field_container.qtypes || query_types
+          accesskey => field_container.accesskey
+          value => default.${field_container.field.name}.0
+          type_selected => default.$type.0
+      %]
+    </div>
   [% END %]
 
   [%# Deadline %]
   [% IF user.is_timetracker %]
-    <tr>
-      <th align="right">
-        <label for="deadlinefrom" accesskey="l">截止期限 (<u>L</u>)</label>：
-      </th>
-      <td>
-        從<input name="deadlinefrom" id="deadlinefrom" size="10" maxlength="10"
-                    value="[% default.deadlinefrom.0 FILTER html %]">
-        到<input name="deadlineto" size="10" maxlength="10"
-                  value="[% default.deadlineto.0 FILTER html %]">
-      </td>
-      <td>
-        <small>(YYYY-MM-DD 或相對的日期)</small>
-      </td>
-    </tr>
+    <div class="search_field_row">
+        [% INCLUDE "search/field.html.tmpl"
+                    field = bug_fields.deadline
+                    accesskey = "l"
+                    value = [ default.deadlinefrom.0, default.deadlineto.0  ]
+        %]
+    </div>
   [% END %]
+
+  <div class="search_field_row">
+    搜尋結果中應該
+    <select name="bug_id_type">
+      <option value="anyexact"[% " selected" IF default.bug_id_type.0 == "anyexact" %]>只包括</option>
+      <option value="nowords"[% " selected" IF default.bug_id_type.0 == "nowords" %]>不包括</option>
+    </select>
+    <label for="bug_id">[% terms.bug %] 編號為：</label>
+    <div id="bug_id_container" >
+      <input type="text" name="bug_id" id="bug_id"
+           value="[% default.bug_id.0 FILTER html %]" size="20">
+           <div class="field_help">[以逗號 (,) 分隔多個 [% terms.bug %] 編號</div>
+    </div>
+  </div>
 
   [% Hook.process('after_freetext_fields') %]
 
-</table>
-
-<hr>
-
-[%# *** Status Resolution Severity Priority Hardware OS *** %]
-
-<table>
-  <tr>
+  [%# *** Status Resolution Severity Priority Hardware OS *** %]
+  <div>
     [% Hook.process('before_selects_bottom') %]
-    <td>
-      <table>
-        <tr>
-          <th align="left">
-            <label for="bug_status" accesskey="a">狀態 (<u>A</u>)</label>：
-          </th>
-        </tr>
-        <tr valign="top">
-          [% PROCESS select sel = { name => 'bug_status',
-                                    size => 7 } %]
-        </tr>
-      </table>
-    </td>
-    <td>
-      <table>
-        <tr>
-          <th align="left">
-            <label for="resolution" accesskey="r">解決方案 (<u>R</u>)</label>：
-          </th>
-        </tr>
-        <tr valign="top">
-          [% PROCESS select sel = { name => 'resolution',
-                                    size => 7 } %]
-        </tr>
-      </table>
-    </td>
-    <td>
-      <table>
-        <tr>
-          <th align="left">
-            <label for="bug_severity">嚴重等級</label>：
-          </th>
-        </tr>
-        <tr valign="top">
-          [% PROCESS select sel = { name => 'bug_severity',
-                                    size => 7 }%]
-        </tr>
-      </table>
-    </td>
-    <td>
-      <table>
-        <tr>
-          <th align="left">
-            <label for="priority" accesskey="i">優先程度 (<u>I</u>)</label>：
-          </th>
-        </tr>
-        <tr valign="top">
-          [% PROCESS select sel = { name => 'priority',
-                                    size => 7 } %]
-        </tr>
-      </table>
-    </td>
-    <td>
-      <table>
-        <tr>
-          <th align="left">
-            <label for="rep_platform" accesskey="h">硬體平台 (<u>H</u>)</label>：
-          </th>
-        </tr>
-        <tr valign="top">
-          [% PROCESS select sel = { name => 'rep_platform',
-                                    size => 7 } %]
-        </tr>
-      </table>
-    </td>
-    <td>
-      <table>
-        <tr>
-          <th align="left">
-            <label for="op_sys" accesskey="o">作業系統 (<u>O</u>)</label>：
-          </th>
-        </tr>
-        <tr valign="top">
-          [% PROCESS select sel = { name => 'op_sys',
-                                    size => 7 } %]
-        </tr>
-      </table>
-    </td>
+    [% fake_version_field = { name => bug_fields.version.name,
+                              type => constants.FIELD_TYPE_SINGLE_SELECT }%]
+    [% INCLUDE "search/field.html.tmpl"
+          field => fake_version_field
+          value => default.version
+    %]
+    [% IF Param('usetargetmilestone') %]
+        [% fake_target_milestone_field = { name => bug_fields.target_milestone.name ,
+                                           type => constants.FIELD_TYPE_SINGLE_SELECT } %]
+        [% INCLUDE "search/field.html.tmpl"
+              field => fake_target_milestone_field
+              value => default.target_milestone
+        %]
+    [% END %]
+    [% INCLUDE "search/field.html.tmpl"
+          field => bug_fields.bug_severity
+          accesskey=> "v"
+          value => default.bug_severity
+    %]
+    [% INCLUDE "search/field.html.tmpl"
+         field => bug_fields.priority
+         accesskey => "i"
+         value => default.priority
+    %]
+    [% INCLUDE "search/field.html.tmpl"
+        field => bug_fields.rep_platform
+        accesskey =>"h"
+        value => default.rep_platform
+    %]
+    [% INCLUDE "search/field.html.tmpl"
+        field => bug_fields.op_sys
+        accesskey =>"o"
+        value => default.op_sys
+    %]
     [% Hook.process('after_selects_bottom') %]
-  </tr>
-</table>
-
-[%# *** Email Numbering Votes *** %]
-
-<table>
-  <tr>
-    <td>
-      <fieldset>
-        <legend>
-          <strong>
-            [% IF Param('usevotes') %]
-              電子郵件地址， [% terms.Bug %] 編號，以及投票
-            [% ELSE %]
-              電子郵件地址以及 [% terms.Bug %] 編號
-            [% END %]
-          </strong>
-        </legend>
-
-
-<table>
-  <tr>
-  [% FOREACH n = [1, 2] %]
-    <td>
-
-
-<table cellspacing="0" cellpadding="0">
-  <tr>
-    <td>
-      任何一位：
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <input type="checkbox" name="emailassigned_to[% n %]"
-             id="emailassigned_to[% n %]" value="1"
-             [% " checked" IF default.emailassigned_to.$n %]>
-      <label for="emailassigned_to[% n %]">
-        [% terms.bug %] 的負責人
-      </label>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <input type="checkbox" name="emailreporter[% n %]"
-             id="emailreporter[% n %]" value="1"
-             [% " checked" IF default.emailreporter.$n %]>
-      <label for="emailreporter[% n %]">
-        回報者
-      </label>
-    </td>
-  </tr>
-  [% IF Param('useqacontact') %]
-  <tr>
-    <td>
-      <input type="checkbox" name="emailqa_contact[% n %]"
-             id="emailqa_contact[% n %]" value="1"
-             [% " checked" IF default.emailqa_contact.$n %]>
-      <label for="emailqa_contact[% n %]">
-        QA 連絡人
-      </label>
-    </td>
-  </tr>
-  [% END %]
-  <tr>
-    <td>
-      <input type="checkbox" name="emailcc[% n %]"
-             id="emailcc[% n %]" value="1"
-             [% " checked" IF default.emailcc.$n %]>
-      <label for="emailcc[% n %]">
-        寄件副本清單的成員
-      </label>
-    </td>
-  </tr>
-  <tr>
-    <td>
-        <input type="checkbox" name="emaillongdesc[% n %]"
-               id="emaillongdesc[% n %]" value="1"
-               [% " checked" IF default.emaillongdesc.$n %]>
-      <label for="emaillongdesc[% n %]">
-        發表過意見的人
-      </label>
-    </td>
-  </tr>
-  <tr>
-    <td>
+  </div>
+</div>
+[%# *** Email Numbering *** %]
+  <div class="bz_section_title" id="people_filter">
+    <div id="people_query_controller" class="arrow">&#9660;</div>
+    <a href="javascript:TUI_toggle_class('people_query')">以人為條件搜尋</a>
+    <span>將結果限制在一個人在一個 [% terms.bug %] 上的角色（例如 [% field_descs.assigned_to FILTER html %]
+      、 [% field_descs.reporter FILTER html %] 、 [% field_descs.commenter FILTER html %] 等）
+    </span>
+  </div>
+  <div id="people_filter_section" class="bz_search_section people_query">
+  [% FOREACH n = [1, 2, 3] %]
+    <div class="search_email_fields">
+      Any of:
+      [% PROCESS role_types field = { count => n, name => "emailassigned_to",
+                  label=> "the ${terms.Bug} ${field_descs.assigned_to}" } %]
+      [% PROCESS role_types field = { count => n, name => "emailreporter",
+                  label=> "the ${field_descs.reporter}" } %]
+      [% IF Param('useqacontact') %]
+          [% PROCESS role_types field = { count => n, name => "emailqa_contact",
+                  label=> "the ${field_descs.qa_contact}" } %]
+      [% END %]
+      [% PROCESS role_types field = { count => n, name => "emailcc",
+                  label=> "a ${field_descs.cc} list member" } %]
+      [% PROCESS role_types field = { count => n, name => "emaillongdesc",
+                  label=> " a ${field_descs.commenter}" } %]
       <select name="emailtype[% n %]">
       [% FOREACH qv = [
         { name => "substring", description => "包含" },
@@ -512,132 +337,76 @@ function doOnSelectProduct(selectmode) {
         { name => "notequals", description => "不是" },
         { name => "regexp", description => "符合正規表達式" },
         { name => "notregexp", description => "不符合正規表達式" } ] %]
-
         <option value="[% qv.name %]"
           [% " selected" IF default.emailtype.$n == qv.name %]>[% qv.description %]</option>
       [% END %]
       </select>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <input name="email[% n %]" size="25" value="[% default.email.$n FILTER html %]">
-    </td>
-  </tr>
-</table>
-
-
-    </td>
+      <input name="email[% n %]" class="email" id="email[% n %]" value="[% default.email.$n FILTER html %]">
+    </div>
   [% END %]
-  </tr>
-</table>
-<hr>
-<table>
-  <tr>
-    <td>
-      <select name="bug_id_type">
-        <option value="anyexact"[% " selected" IF default.bug_id_type.0 == "anyexact" %]>只包括</option>
-        <option value="nowords"[% " selected" IF default.bug_id_type.0 == "nowords" %]>不包括</option>
-      </select>
-      <label for="bug_id">[% terms.bugs %] 編號為</label>：
-    </td>
-    <td>
-      <input type="text" name="bug_id" id="bug_id"
-             value="[% default.bug_id.0 FILTER html %]" size="20">
-    </td>
-  </tr>
-  <tr>
-    <td></td>
-    <td>[以逗號 (,) 分隔多個編號]</td>
-  </tr>
-  [% IF Param('usevotes') %]
-    <tr>
-      <td align="right">
-        <label for="votes">只顯示至少</label>
-      </td>
-      <td>
-        <input name="votes" id="votes" size="3"
-               value="[% default.votes.0 FILTER html %]">
-        票的[% terms.bugs %]
-      </td>
-    </tr>
-  [% END %]
-</table>
-
-
-      </fieldset>
-    </td>
-
+   [% Hook.process('email_numbering_end') %]
+   </div>
 [%# *** Bug Changes *** %]
-
-    <td valign="top">
-      <fieldset>
-        <legend><strong>[% terms.Bug %] 的變更</strong></legend>
-
-
-<dl class="bug_changes">
-  <dt>
-    <label for="chfieldfrom">只顯示下列日期之間的 [% terms.bugs %]</label> ：
-  </dt>
-  <dd>
-    <input name="chfieldfrom" id="chfieldfrom"
-           size="10" value="[% default.chfieldfrom.0 FILTER html %]">和<input
-           name="chfieldto" size="10" value="[% default.chfieldto.0 FILTER html %]">
-    <br>(YYYY-MM-DD 或是關連性日期)
-  </dd>
-  <dt>
-    <label for="chfield">有下列一項或多項被變更</label>：
-  </dt>
-  <dd>
+<div class="bz_section_title" id="history_filter">
+  <div id="history_query_controller" class="arrow">&#9660;</div>
+  <a href="javascript:TUI_toggle_class('history_query')" >以變更歷史為條件搜尋</a>
+  <span>將結果限制在一段特定時間中欄位如何變更</span>
+</div>
+<ul class="bug_changes bz_search_section history_query" id="history_filter_section" >
+  <li>
+    <label for="chfield">有下列一項或多項變更：</label>
     [%# Create array, so we can sort it by description #%]
     [% chfields = [] %]
     [% FOREACH field = chfield %]
       [% chfields.push({value => field, desc => (field_descs.$field || field) }) %]
     [% END %]
-
     <select name="chfield" id="chfield" multiple="multiple" size="4">
     [% FOREACH field = chfields.sort('desc') %]
       <option value="[% field.value FILTER html %]"
-        [% " selected" IF lsearch(default.chfield, field.value) != -1 %]>
+        [% " selected" IF default.chfield.contains(field.value) %]>
         [% field.desc FILTER html %]</option>
     [% END %]
     </select>
-  </dd>
-  <dt>而且<label for="chfieldvalue">新的數值是</label>：</dt>
-  <dd>
+  </li>
+  <li>
+    <label for="chfieldvalue">[% search_descs.changedto FILTER html %]:</label>
     <input name="chfieldvalue" id="chfieldvalue"
            size="20" value="[% default.chfieldvalue.0 FILTER html %]">
-  </dd>
-</dl>
-
-       </fieldset>
-     </td>
-  </tr>
-</table>
+  </li>
+  <li>
+    <label for="chfieldfrom">在</label>
+    <input name="chfieldfrom" id="chfieldfrom" size="10"
+           value="[% default.chfieldfrom.0 FILTER html %]" onchange="updateCalendarFromField(this)">
+           <button type="button" class="calendar_button"
+                          id="button_calendar_chfieldfrom"
+                          onclick="showCalendar('chfieldfrom')"><span>月曆</span></button>
+           和
+           <div id="con_calendar_chfieldfrom"></div>
+          <input name="chfieldto" size="10" id="chfieldto"
+          value="[% default.chfieldto.0 FILTER html %]" onchange="updateCalendarFromField(this)">
+          <button type="button" class="calendar_button"
+                         id="button_calendar_chfieldto"
+                         onclick="showCalendar('chfieldto')"><span>月曆</span></button>
+          <div id="con_calendar_chfieldto"></div>
+          之間
+    (YYYY-MM-DD 或相對的日期)
+    <script type="text/javascript">
+      createCalendar('chfieldfrom');
+      createCalendar('chfieldto');
+    </script>
+  </li>
+</ul>
 
 [%############################################################################%]
-[%# Block for SELECT fields                                                  #%]
+[%# Block for email role type use to select which email to search through    #%]
 [%############################################################################%]
-
-[% BLOCK select %]
-  <td align="left">
-    <select name="[% sel.name %]" id="[% sel.name %]"
-            multiple="multiple" size="[% sel.size %]">
-      [% FOREACH value = ${sel.name} %]
-        [% IF value.id %]
-          [%# This only applies for Resolution really %]
-          [% v = value.name OR '---' -%]
-          <option value="[% v FILTER html %]"
-            [% " selected" IF lsearch(default.${sel.name}, v) != -1 %]>
-            [% display_value(sel.name, value.name) FILTER html %]
-          </option>
-        [% ELSE %]
-          <option value="[% value OR '---' FILTER html %]"
-            [% " selected" IF lsearch(default.${sel.name}, value) != -1 %]>
-            [% display_value(sel.name, value) FILTER html %]
-          </option>
-        [% END %]
-      [% END %]
-    </select>
-  </td>
+[% BLOCK role_types %]
+  <div class="role_type">
+    <input type="checkbox" name="[% field.name _ field.count FILTER html %]"
+           id="[% field.name _ field.count FILTER html %]" value="1"
+           [% " checked" IF default.${field.name}.${field.count} %]>
+    <label for="[% field.name _ field.count FILTER html%]">
+      [% field.label FILTER html%]
+    </label>
+  </div>
 [% END %]

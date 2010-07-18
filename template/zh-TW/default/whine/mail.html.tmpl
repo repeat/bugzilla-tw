@@ -52,37 +52,41 @@
       [% END %]
     </p>
 
+[% IF queries.size %]
+  [% FOREACH query=queries %]
 
-[% FOREACH query=queries %]
+    <h2>[%+ query.title FILTER html %]</h2>
 
-  <h2>[%+ query.title FILTER html %]</h2>
-
-  <table width="100%">
-    <tr>
-      <th align="left">編號</th>
-      <th align="left">嚴重等級</th>
-      <th align="left">優先程度</th>
-      <th align="left">硬體平台</th>
-      <th align="left">負責人</th>
-      <th align="left">狀態</th>
-      <th align="left">解決方案</th>
-      <th align="left">摘要</th>
-    </tr>
-
-    [% FOREACH bug=query.bugs %]
+    <table width="100%">
       <tr>
-        <td align="left"><a href="[%+ urlbase FILTER html %]show_bug.cgi?id=
-            [%- bug.bug_id %]">[% bug.bug_id %]</a></td>
-        <td align="left">[% display_value("bug_severity", bug.bug_severity) FILTER html %]</td>
-        <td align="left">[% display_value("priority", bug.priority) FILTER html %]</td>
-        <td align="left">[% display_value("rep_platform", bug.rep_platform) FILTER html %]</td>
-        <td align="left">[% bug.assigned_to FILTER html %]</td>
-        <td align="left">[% display_value("bug_status", bug.bug_status) FILTER html %]</td>
-        <td align="left">[% display_value("resolution", bug.resolution) FILTER html %]</td>
-        <td align="left">[% bug.short_desc FILTER html %]</td>
+        <th align="left">編號</th>
+        <th align="left">嚴重等級</th>
+        <th align="left">優先程度</th>
+        <th align="left">硬體平台</th>
+        <th align="left">負責人</th>
+        <th align="left">狀態</th>
+        <th align="left">解決方案</th>
+        <th align="left">摘要</th>
       </tr>
-    [% END %]
-  </table>
+
+      [% FOREACH bug=query.bugs %]
+        <tr>
+          <td align="left"><a href="[%+ urlbase FILTER html %]show_bug.cgi?id=
+              [%- bug.bug_id %]">[% bug.bug_id %]</a></td>
+          <td align="left">[% display_value("bug_severity", bug.bug_severity) FILTER html %]</td>
+          <td align="left">[% display_value("priority", bug.priority) FILTER html %]</td>
+          <td align="left">[% display_value("rep_platform", bug.rep_platform) FILTER html %]</td>
+          <td align="left">[% bug.assigned_to FILTER html %]</td>
+          <td align="left">[% display_value("bug_status", bug.bug_status) FILTER html %]</td>
+          <td align="left">[% display_value("resolution", bug.resolution) FILTER html %]</td>
+          <td align="left">[% bug.short_desc FILTER html %]</td>
+        </tr>
+      [% END %]
+    </table>
+  [% END %]
+[% ELSE %]
+
+  <h3>找不到符合搜尋標準的 [% terms.bugs %] 。</h3>
 [% END %]
 
   </body>
