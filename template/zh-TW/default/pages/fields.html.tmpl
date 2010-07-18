@@ -61,43 +61,30 @@
         <dd>
           這個 [% terms.bug %] 最近才被加到資料庫。沒有人確認它是不是真的。擁有
           "canconfirm" 權限的使用者可以藉由將它的狀態設定為
-          <b>[% display_value("bug_status", "NEW") FILTER html %]</b>
+          <b>[% display_value("bug_status", "CONFIRMED") FILTER html %]</b>
           來確認這個 [% terms.bug %] 。或者它也可以直接被解決，並標記為
           <b>[% display_value("bug_status", "RESOLVED") FILTER html %]</b> 。
         </dd>
 
         <dt>
-          [% display_value("bug_status", "NEW") FILTER html %]
+          [% display_value("bug_status", "CONFIRMED") FILTER html %]
         </dt>
         <dd>
           這個 [% terms.bug %] 是最近才新增且被確認的 [% terms.bug %] 。
           當有人開始處理在這個狀態的 [%+ terms.bugs %] 時，狀態變更為
-          <b>[% display_value("bug_status", "ASSIGNED") FILTER html %]</b>
+          <b>[% display_value("bug_status", "IN_PROGRESS") FILTER html %]</b>
           ；或是將它解決，並標記為
           <b>[% display_value("bug_status", "RESOLVED") FILTER html %]</b> 。
         </dd>
 
         <dt>
-          [% display_value("bug_status", "ASSIGNED") FILTER html %]
+          [% display_value("bug_status", "IN_PROGRESS") FILTER html %]
         </dt>
         <dd>
           這個 [% terms.bug %] 還沒解決，但已分配給適當的人負責。在這狀態下，
           [% terms.bugs %] 可以丟給其他人處理，並會自動將狀態變更為
-          <b>[% display_value("bug_status", "NEW") FILTER html %]</b>
+          <b>[% display_value("bug_status", "CONFIRMED") FILTER html %]</b>
           ；或是將它解決，並標記為
-          <b>[% display_value("bug_status", "RESOLVED") FILTER html %]</b> 。
-        </dd>
-
-        <dt>
-          [% display_value("bug_status", "REOPENED") FILTER html %]
-        </dt>
-        <dd>
-          這個 [% terms.bug %] 曾解決過，但解決方案似乎不正確。例如，有更多的資訊顯示某個原先解決方案是
-          <b>[% display_value("resolution", "WORKSFORME") FILTER html %]</b> 的 [% terms.bug %]
-          可以被重製，並設定為
-          <b>[% display_value("bug_status", "REOPENED") FILTER html %]</b>
-          。在這狀態下， [% terms.bugs %] 可以標記為
-          <b>[% display_value("bug_status", "ASSIGNED") FILTER html %]</b> 或
           <b>[% display_value("bug_status", "RESOLVED") FILTER html %]</b> 。
         </dd>
       </dl>
@@ -121,11 +108,9 @@
         </dt>
         <dd>
           已採取解決方案，並等待 QA 認證。在此狀態下，
-          [% terms.bugs %] 可以被重新開啟並設定為
-          <b>[% display_value("bug_status", "REOPENED") FILTER html %]</b> 、標記為
-          <b>[% display_value("bug_status", "VERIFIED") FILTER html %]</b>
-          ，或是永遠關閉並設定為
-          <b>[% display_value("bug_status", "CLOSED") FILTER html %]</b> 。
+          [% terms.bugs %] 可以被重新開啟並設定為開啟的狀態，或是經由
+          QA 認證並設定為
+          <b>[% display_value("bug_status", "VERIFIED") FILTER html %]</b> 。
         </dd>
 
         <dt>
@@ -133,18 +118,7 @@
         </dt>
         <dd>
           QA 看過了 [% terms.bug %] 和解決方案，並同意已採取適當的解決方案。
-          [% terms.Bugs %] 將維持在此狀態，直到所回報的 [% terms.bug %]
-          所屬的產品結束之後，才會被設定為
-          <b>[% display_value("bug_status", "CLOSED") FILTER html %]</b> 。
-        </dd>
-
-        <dt>
-          [% display_value("bug_status", "CLOSED") FILTER html %]
-        </dt>
-        <dd>
-          這個 [% terms.bug %] 已有正確的方案，並被認為不會再發生。任何復活的
-          [% terms.bugs %] 必須被設定為
-          <b>[% display_value("bug_status", "REOPENED") FILTER html %]</b> 。
+          這是 [% terms.bugs %] 最後的狀態。
         </dd>
       </dl>
     </td>

@@ -427,6 +427,9 @@
       並未對群組 '[% group.name FILTER html %]' 做任何變更。
     [% END %]
 
+  [% ELSIF message_tag == "install_workflow_init" %]
+    設定預設的工作流程中...
+
   [% ELSIF message_tag == "invalid_column_name" %]
     所指定的自訂排序包含無效的欄位名稱：
     <em>[% invalid_fragments.join(', ') FILTER html %]</em> 。

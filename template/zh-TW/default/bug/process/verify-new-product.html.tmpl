@@ -40,7 +40,7 @@
 
 [% SET exclude_items = ['version', 'component', 'target_milestone'] %]
 [% IF verify_bug_groups %]
-  [% exclude_items.push('bit-\d+') %]
+  [% exclude_items.push('groups', 'defined_groups') %]
 [% END %]
 [% Hook.process('exclude') %]
 
@@ -115,9 +115,10 @@
   [% IF old_groups.size %]
     <p>對 '[% product.name FILTER html %]' 產品而言，這些群組已經無效；或者你不被允許將 [% terms.bugs %] 限制於這些群組中。如果不加入其他群組的話， [%+ terms.Bugs %] 將不再被限制於這些群組，且會變為公開：<br>
     [% FOREACH group = old_groups %]
-      <input type="checkbox" id="bit-[% group.id FILTER html %]"
-             name="bit-[% group.id FILTER html %]" disabled="disabled" value="1">
-      <label for="bit-[% group.id FILTER html %]">
+      <input type="checkbox" id="group_[% group.group.id FILTER html %]"
+             name="groups" disabled="disabled"
+             value="[% group.group.name FILTER html %]">
+      <label for="group_[% group.group.id FILTER html %]">
         [% group.name FILTER html %]: [% group.description FILTER html %]
       </label>
       <br>
@@ -144,16 +145,15 @@
   [% IF optional_groups.size %]
     <p>這些群組是選用的。你可以決定將 [% terms.bugs %] 限制在下列一或多個群組中：<br>
     [% FOREACH group = optional_groups %]
-      <input type="hidden" name="defined_bit-[% group.group.id FILTER html %]"
-             value="1">
-      <input type="checkbox" id="bit-[% group.group.id FILTER html %]"
-             name="bit-[% group.group.id FILTER html %]"
-             [%+ ((group.membercontrol == constants.CONTROLMAPDEFAULT && user.in_group(group.group.name))
+      <input type="hidden" name="defined_groups"
+             value="[% group.group.name FILTER html %]">
+      <input type="checkbox" id="group_[% group.group.id FILTER html %]"
+             name="groups"
+             [% ' checked="checked"' IF ((group.membercontrol == constants.CONTROLMAPDEFAULT && user.in_group(group.group.name))
                  || (group.othercontrol == constants.CONTROLMAPDEFAULT && !user.in_group(group.group.name))
-                 || cgi.param("bit-$group.group.id") == 1) ?
-                 'checked="checked"' : ''
-             %] value="1">
-      <label for="bit-[% group.group.id FILTER html %]">
+                 || cgi.param("groups").contains(group.group.name)) %]
+             %] value="[% group.group.name FILTER html %]">
+      <label for="group_[% group.group.id FILTER html %]">
         [% group.group.name FILTER html %]: [% group.group.description FILTER html %]
       </label>
       <br>
@@ -164,9 +164,10 @@
   [% IF mandatory_groups.size %]
     <p>這些群組是強制性的，因此 [% terms.bugs %] 將會自動被限制於這些群組：<br>
     [% FOREACH group = mandatory_groups %]
-      <input type="checkbox" id="bit-[% group.group.id FILTER html %]" checked="checked"
-             name="bit-[% group.group.id FILTER html %]" value="1" disabled="disabled">
-      <label for="bit-[% group.group.id FILTER html %]">
+      <input type="checkbox" id="group_[% group.group.id FILTER html %]"
+              checked="checked" disabled="disabled"
+             name="groups" value="[% group.group.name FILTER html %]">
+      <label for="group_[% group.group.id FILTER html %]">
         [% group.group.name FILTER html %]: [% group.group.description FILTER html %]
       </label>
       <br>

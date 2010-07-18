@@ -19,6 +19,7 @@
   #                 Max Kanat-Alexander <mkanat@bugzilla.org>
   #                 Frédéric Buclin <LpSolit@gmail.com>
   #                 Guy Pyrzak <guy.pyrzak@gmail.com>
+  #                 Reed Loden <reed@reedloden.com>
   #%]
 
 [% PROCESS global/variables.none.tmpl %]
@@ -171,7 +172,7 @@
            id => "assigned_to"
            name => "assigned_to"
            value => dontchange
-           size => 32
+           size => 40
       %]
       <input type="checkbox" id="set_default_assignee" name="set_default_assignee" value="1">
       <label for="set_default_assignee">將產品負責人設回預設值</label>
@@ -186,7 +187,7 @@
              id => "qa_contact"
              name => "qa_contact"
              value => dontchange
-             size => 32
+             size => 40
         %]
         <input type="checkbox" id="set_default_qa_contact" name="set_default_qa_contact" value="1">
         <label for="set_default_qa_contact">將 QA 連絡人設回預設值</label>
@@ -198,7 +199,13 @@
 
     <th><label for="masscc">寄件副本清單：</label></th>
     <td colspan="3">
-      <input id="masscc" name="masscc" size="32">
+      [% INCLUDE global/userselect.html.tmpl
+           id => "masscc"
+           name => "masscc"
+           value => ""
+           size => 40
+           multiple => 5
+      %]
       <select name="ccaction">
         <option value="add">將他們加到寄件副本清單</option>
         <option value="remove">將他們從寄件副本清單中刪除</option>
@@ -210,17 +217,19 @@
   [% IF use_keywords %]
     <tr>
 
-      <th>
-        <label for="keywords">
-          <a href="describekeywords.cgi">關鍵字</a>：
-        </label>
-      </th>
+      [% INCLUDE "bug/field-label.html.tmpl"
+         field = bug_fields.keywords, editable = 1
+         desc_url = "describekeywords.cgi"
+      %]
       <td colspan="3">
-        <input id="keywords" name="keywords" size="32">
+        [% INCLUDE bug/field.html.tmpl
+           field = bug_fields.keywords, editable = 1, value = keywords
+           no_tds = 1
+        %]
         <select name="keywordaction">
           <option value="add">加入這些關鍵字</option>
-          <option value="delete">刪除這些關鍵字</option>
-          <option value="makeexact">將關鍵字設定為此清單</option>
+          <option value="remove">刪除這些關鍵字</option>
+          <option value="set">將關鍵字設定為此清單</option>
         </select>
       </td>
 
@@ -234,7 +243,7 @@
       </label>
     </th>
     <td colspan="3">
-      <input id="dependson" name="dependson" size="32">
+      <input id="dependson" name="dependson" size="40">
       <select name="dependson_action">
           <option value="add">加上這些 [% terms.bugs %] 編號</option>
           <option value="remove">刪除這些 [% terms.bugs %] 編號</option>
@@ -249,7 +258,7 @@
       </label>
     </th>
     <td colspan="3">
-      <input id="blocked" name="blocked" size="32">
+      <input id="blocked" name="blocked" size="40">
       <select name="blocked_action">
           <option value="add">加上這些 [% terms.bugs %] 編號</option>
           <option value="remove">刪除這些 [% terms.bugs %] 編號</option>
@@ -308,10 +317,18 @@
 
 [% IF groups.size > 0 %]
 
+  <script type="text/javascript">
+    function turn_off(myself, id) {
+        var other_checkbox = document.getElementById(id);
+        if (myself.checked && other_checkbox) {
+            other_checkbox.checked = false;
+        }
+    }
+  </script>
+
   <b>群組：</b><br>
   <table border="1">
     <tr>
-      <th>不要<br>變更<br>此群組<br>的限制</th>
       <th>將<br>[% terms.bugs %]自<br>此群組<br>刪除</th>
       <th>新增<br>[% terms.bugs %]<br>到<br>此群組</th>
       <th>群組名稱：</th>
@@ -320,14 +337,17 @@
     [% FOREACH group = groups %]
     <tr>
       <td align="center">
-        <input type="radio" name="bit-[% group.id %]" value="-1" checked="checked">
-      </td>
-      <td align="center">
-        <input type="radio" name="bit-[% group.id %]" value="0">
+        <input type="checkbox" name="defined_groups"
+               id="defined_group_[% group.id %]"
+               value="[% group.name FILTER html %]"
+               onchange="turn_off(this, 'group_[% group.id %]')">
       </td>
       [% IF group.is_active %]
         <td align="center">
-          <input type="radio" name="bit-[% group.id %]" value="1">
+          <input type="checkbox" name="groups"
+                 id="group_[% group.id FILTER html %]"
+                 value="[% group.name FILTER html %]"
+                 onchange="turn_off(this, 'defined_group_[% group.id %]')">
         </td>
       [% ELSE %]
         <td>&nbsp;</td>

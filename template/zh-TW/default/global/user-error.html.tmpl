@@ -649,8 +649,8 @@
 
   [% ELSIF error == "group_change_denied" %]
     [% title = "無法新增或移除該群組" %]
-    你試著從 [% terms.bug %] [% bug.id FILTER html %] 中移除群組編號
-    [% group_id FILTER html %] ，但你並沒有權限可以這麼做。
+    你試著從 [% terms.bug %] [% bug.id FILTER html %] 中移除群組
+    '[% group.name FILTER html %]' ，但你並沒有權限可以這麼做。
 
   [% ELSIF error == "group_exists" %]
     [% title = "群組已存在" %]
@@ -669,13 +669,13 @@
     如要刪除此群組，你必須先變更[% param FILTER html %]，將[% attr FILTER html %]指向另一個群組。
 
   [% ELSIF error == "group_invalid_removal" %]
-    你試著從群組編號 [% group_id FILTER html %] 中移除
+    你試著從群組 '[% group.name FILTER html %]' 中移除
     [% terms.bug %] [% bug.id FILTER html %] ，但是在產品
     '[% product FILTER html %]' 中的 [% terms.bug %] 無法自該群組中移除。
 
   [% ELSIF error == "group_invalid_restriction" %]
-    你試著將 [% terms.bug %] [% bug.id FILTER html %] 限制於群組編號
-    [% group_id FILTER html %] 中，但是在產品
+    你試著將 [% terms.bug %] [% bug.id FILTER html %] 限制於群組
+    '[% group.name FILTER html %]' 中，但是在產品
     '[% product FILTER html %]' 中的 [% terms.bug %] 無法被限制於該群組。
 
   [% ELSIF error == "group_not_specified" %]

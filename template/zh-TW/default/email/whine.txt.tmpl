@@ -29,9 +29,8 @@ X-Bugzilla-Type: whine
 在 [% terms.Bugzilla %] [% terms.bug %] 追蹤系統 ([% urlbase %]) 中，
 有一個以上的 [% terms.bugs %] 分配給你，並需要你的注意。
 
-這些 [% terms.bugs %] 都是在 [% display_value("bug_status", "NEW") %] 或
-[%= display_value("bug_status", "REOPENED") %] 的狀態，
-並且已經超過 [% Param("whinedays") %] 天沒有人處理。
+這些 [% terms.bugs %] 都是在 [% display_value("bug_status", "CONFIRMED") %]
+的狀態，並且已經超過 [% Param("whinedays") %] 天沒有人處理。
 你需要查看它們，並且決定一個初始的動作。
 
 一般而言，這代表以下三種狀況其中之一：
@@ -42,17 +41,17 @@ X-Bugzilla-Type: whine
     （提示：如果你不知道要分配給誰，重新選擇適合的子產品欄位，
     並使用「將負責人重新設定為預設值」選項。
 (3) 你覺得這個 [% terms.bug %] 是你負責的，但是現在還無法解決。
-    那麼就將 [% terms.bug %] 的狀態設定為 [% get_status("ASSIGNED") %] 。
+    那麼就將 [% terms.bug %] 的狀態設定為 [% get_status("IN_PROCESS") %] 。
 
-若要得到所有狀態是 [% display_value("bug_status", "NEW") %] ／ [% display_value("bug_status", "REOPENED") %] 的 [%+ terms.bugs %] 清單，
+若要得到所有狀態是 [% display_value("bug_status", "CONFIRMED") %] 的 [%+ terms.bugs %] 清單，
 你可以使用以下網址（你也可以加入書籤）：
 
- [% urlbase %]buglist.cgi?bug_status=NEW&bug_status=REOPENED&assigned_to=[% email %]
+ [% urlbase %]buglist.cgi?bug_status=CONFIRMED&assigned_to=[% email %]
 
 你也可以使用一般查詢頁：
 [%+ urlbase %]query.cgi
 
-以下為超過 [% Param("whinedays") %] 天以上沒有處理，狀態為 [% display_value("bug_status", "NEW") %] ，
+以下為超過 [% Param("whinedays") %] 天以上沒有處理，狀態為 [% display_value("bug_status", "CONFIRMED") %] ，
 並且是屬於你負責的每個 [%+ terms.bugs %] 的網址。
 
 在你處理這些 [% terms.bugs %] 之前，你將會每天收到此一訊息！
