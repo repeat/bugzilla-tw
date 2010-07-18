@@ -23,6 +23,10 @@
    desc = "設定 $terms.bug 變更的政策"
 %]
 
+[% PROCESS "global/field-descs.none.tmpl" %]
+
+[% accept_status = display_value('bug_status', 'IN_PROGRESS') FILTER html %]
+
 [% param_descs = {
   duplicate_or_move_bug_status => "當 $terms.bug 被標記為和另一個 $terms.bug 重複 (DUPLICATE) ，" _
                                   "或是搬到另一台安裝的機器上時，使用此狀態。",
@@ -33,7 +37,8 @@
   letsubmitterchoosemilestone => "若設為「開」，則回報 $terms.bug 的使用者可以選擇它的目標里程碑為何。" _
                                  "若設為「關」，則使用該產品預設的目標里程碑。",
 
-  musthavemilestoneonaccept => "使用「目標里程碑」時，是否要求使用者在接受一個 $terms.bug 時，設定目標里程碑？",
+  musthavemilestoneonaccept =>
+    "使用 ${field_descs.target_milestone} 時，是否要求使用者在接受一個 $terms.bug 時，設定目標里程碑？",
 
   commentonchange_resolution => "若設為「開」，當變更 $terms.bug 的解決方案時，使用者需要輸入意見。",
 

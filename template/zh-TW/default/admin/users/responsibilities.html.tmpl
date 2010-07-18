@@ -29,6 +29,7 @@
       <th>子產品</th>
       <th>預設負責人</th>
       <th>預設 QA 連絡人</th>
+      <th>預設寄件副本清單</th>
     </tr>
     [% FOREACH component = item.components %]
       <tr>
@@ -48,6 +49,9 @@
             [% component.$responsibility.id == otheruser.id ? "X" : "&nbsp;" %]
           </td>
         [% END %]
+        <td class="center">
+          [% component.initial_cc.contains(otheruser) ? "X" : "&nbsp;" %]
+        </td>
       </tr>
     [% END %]
     </tbody>
