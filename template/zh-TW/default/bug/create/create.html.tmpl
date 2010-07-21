@@ -247,10 +247,10 @@ TUI_hide_default('expert_fields');
       </select>
 
       <script type="text/javascript">
-      <!--
-        [%+ INCLUDE "bug/field-events.js.tmpl"
-                    field = bug_fields.component %]
-      //-->
+       <!--
+         [%+ INCLUDE "bug/field-events.js.tmpl"
+                     field = bug_fields.component %]
+       //-->
       </script>
     </td>
 
@@ -495,6 +495,9 @@ TUI_hide_default('expert_fields');
         value_span = 3 %]
     </tr>
   [% END %]
+</tbody>
+
+<tbody>
 
   <tr>
     [% INCLUDE "bug/field-label.html.tmpl"
@@ -524,16 +527,16 @@ TUI_hide_default('expert_fields');
               { key: "update_token", label: '',
                 formatter: YAHOO.bugzilla.dupTable.formatCcButton }
           ];
-          YAHOO.bugzilla.dupTable.addCcMessage = "Add Me to the CC List";
+          YAHOO.bugzilla.dupTable.addCcMessage = "將我加入寄件副本清單中";
           YAHOO.bugzilla.dupTable.init({
             container: 'possible_duplicates',
             columns: dt_columns,
             product_name: '[% product.name FILTER js %]',
             summary_field: 'short_desc',
             options: {
-              MSG_LOADING: 'Searching for possible duplicates...',
-              MSG_EMPTY:   'No possible duplicates found.',
-              SUMMARY:     'Possible Duplicates'
+              MSG_LOADING: '搜尋可能重複的 [% terms.bugs %] 中...',
+              MSG_EMPTY:   '找不到可能重複的 [% terms.bugs %] 。',
+              SUMMARY:     '可能重複'
             },
           });
         </script>
