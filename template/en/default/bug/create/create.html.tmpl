@@ -129,9 +129,10 @@ function set_assign_to() {
             if (inputElement.name.search(/^flag_type-(\d+)$/) != -1) {
                 var id = inputElement.name.replace(/^flag_type-(\d+)$/, "$1");
                 inputElement.disabled = true;
-                // Also disable the requestee field, if it exists.
+                // Also hide the requestee field, if it exists.
                 inputElement = document.getElementById("requestee_type-" + id);
-                if (inputElement) inputElement.disabled = true;
+                if (inputElement)
+                  YAHOO.util.Dom.addClass(inputElement.parentNode, 'bz_default_hidden');
             }
         }
         // Now enable flags available for the selected component.
@@ -160,6 +161,11 @@ function handleWantsAttachment(wants_attachment) {
     }
 }
 
+var status_comment_required = new Array();
+[% FOREACH status = bug_status %]
+  status_comment_required['[% status.name FILTER js %]'] = 
+    [% status.comment_required_on_change_from() ? 'true' : 'false' %]
+[% END %]
 
 TUI_alternates['expert_fields'] = 'Show Advanced Fields';
 // Hide the Advanced Fields by default, unless the user has a cookie
@@ -170,7 +176,8 @@ TUI_hide_default('expert_fields');
 </script>
 
 <form name="Create" id="Create" method="post" action="post_bug.cgi"
-      class="enter_bug_form" enctype="multipart/form-data">
+      class="enter_bug_form" enctype="multipart/form-data"
+      onsubmit="return validateEnterBug(this)">
 <input type="hidden" name="product" value="[% product.name FILTER html %]">
 <input type="hidden" name="token" value="[% token FILTER html %]">
 
@@ -278,7 +285,7 @@ TUI_hide_default('expert_fields');
       field = bug_fields.version editable = 1 rowspan = 3 
     %]
     <td rowspan="3">
-      <select name="version" size="5">
+      <select name="version" id="version" size="5">
         [%- FOREACH v = version %]
           <option value="[% v FILTER html %]"
             [% ' selected="selected"' IF v == default.version %]>[% v FILTER html -%]
@@ -305,7 +312,7 @@ TUI_hide_default('expert_fields');
   </tr>
   [% IF !Param('defaultplatform') || !Param('defaultopsys') %]
     <tr>
-      <td colspan="3">&nbsp;</th>
+      <th colspan="3">&nbsp;</th>
       <td id="os_guess_note" class="comment">
         <div>We've made a guess at your
         [% IF Param('defaultplatform') %]
@@ -479,9 +486,9 @@ TUI_hide_default('expert_fields');
     [% INCLUDE "bug/field-label.html.tmpl"
       field = bug_fields.bug_file_loc editable = 1
     %]
-    <td colspan="2">
-      <input name="bug_file_loc" size="40"
-             value="[% bug_file_loc FILTER html %]">
+    <td colspan="2" class="field_value">
+      <input name="bug_file_loc" id="bug_file_loc" class="text_input"
+             size="40" value="[% bug_file_loc FILTER html %]">
     </td>
   </tr>
 </tbody>
@@ -506,10 +513,10 @@ TUI_hide_default('expert_fields');
     [% INCLUDE "bug/field-label.html.tmpl"
       field = bug_fields.short_desc editable = 1
     %]
-    <td colspan="3">
+    <td colspan="3" class="field_value">
       <input name="short_desc" size="70" value="[% short_desc FILTER html %]"
              maxlength="255" spellcheck="true" aria-required="true"
-             class="required" id="short_desc">
+             class="required text_input" id="short_desc">
     </td>
   </tr>
 
@@ -676,11 +683,11 @@ TUI_hide_default('expert_fields');
 
       <!-- Checkboxes -->
       [% FOREACH group = product.groups_available %]
-        <input type="checkbox" id="groups_[% group.id FILTER html %]"
+        <input type="checkbox" id="group_[% group.id FILTER html %]"
                name="groups" value="[% group.name FILTER html %]"
                [% ' checked="checked"' IF default.groups.contains(group.name)
                                           OR group.is_default %]>
-        <label for="groups_[% group.id FILTER html %]">
+        <label for="group_[% group.id FILTER html %]">
           [%- group.description FILTER html_light %]</label><br>
       [% END %]
     </td>
@@ -695,10 +702,7 @@ TUI_hide_default('expert_fields');
   <tr>
     <th>&nbsp;</th>
     <td colspan="3">
-      <input type="submit" id="commit" value="Submit [% terms.Bug %]"
-             onclick="if (this.form.short_desc.value == '')
-             { alert('Please enter a summary sentence for this [% terms.bug %].');
-               return false; } return true;">
+      <input type="submit" id="commit" value="Submit [% terms.Bug %]">
       &nbsp;&nbsp;&nbsp;&nbsp;
       <input type="submit" name="maketemplate" id="maketemplate"
              value="Remember values as bookmarkable template"

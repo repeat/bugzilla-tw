@@ -154,7 +154,7 @@
     [% ELSIF action == "approve" %]
       approve
     [% ELSE %]
-      [% Hook.process('auth_failure_action') %]
+      [%+ Hook.process('auth_failure_action') %]
     [% END %]
 
     [% IF object == "administrative_pages" %]
@@ -1004,8 +1004,8 @@
     characters are allowed in the 'callback' parameter: <code>[]._</code>
 
   [% ELSIF error == "json_rpc_post_only" %]
-    For security reasons, you may only call the '[% method FILTER html %]'
-    method via HTTP POST.
+    For security reasons, you must use HTTP POST to call the
+    '[% method FILTER html %]' method.
 
   [% ELSIF error == "keyword_already_exists" %]
     [% title = "Keyword Already Exists" %]
@@ -1328,10 +1328,6 @@
     [% END %]
     does not exist or you don't have access to it.
 
-  [% ELSIF error == "product_doesnt_exist" %]
-    [% title = "Specified Product Does Not Exist" %]
-    The product '[% product FILTER html %]' does not exist.
-
   [% ELSIF error == "product_illegal_group" %]
     [% title = "Illegal Group" %]
     [% group.name FILTER html %] is not an active [% terms.bug %] group
@@ -1400,15 +1396,6 @@
     [% admindocslinks = {'products.html' => 'Administering products',
                          'versions.html' => 'Administering versions'} %]
     You must enter a valid version to create a new product.
-
-  [% ELSIF error == "product_not_specified" %]
-    [% title = "No Product Specified" %]
-    [% admindocslinks = {'products.html'   => 'Administering products',
-                         'components.html' => 'Administering components',
-                         'milestones.html' => 'Administering milestones',
-                         'versions.html'   => 'Administering versions'} %]
-    No product specified when trying to edit components, milestones, versions
-    or product.
 
   [% ELSIF error == "query_name_exists" %]
     [% title = "Search Name Already In Use" %]
@@ -1536,6 +1523,22 @@
         (<a href="showdependencytree.cgi?id=[% bug.bug_id FILTER none %]&amp;hide_resolved=1">Dependency
         Tree</a>)<br>
       [% END %]
+    [% END %]
+
+  [% ELSIF error == "sudo_invalid_cookie" %]
+    [% title = "Invalid Sudo Cookie" %]
+    Your sudo cookie is invalid. Either it expired or you didn't start
+    a sudo session correctly. Refresh the page or load another page
+    to continue what you are doing as yourself.
+
+  [% ELSIF error == "sudo_illegal_action" %]
+    [% title = "Impersonation Not Authorized" %]
+    [% IF NOT sudoer.in_group("bz_sudoers") %]
+      You are not allowed to impersonate users.
+    [% ELSIF target_user AND target_user.in_group("bz_sudo_protect") %]
+      You are not allowed to impersonate [% target_user.identity FILTER html %].
+    [% ELSE %]
+      The user you tried to impersonate doesn't exist.
     [% END %]
 
   [% ELSIF error == "sudo_in_progress" %]
