@@ -66,6 +66,8 @@ END
     feature_updates           => '自動更新通知',
     feature_xmlrpc            => 'XML-RPC 介面',
 
+    file_remove => '移除 ##name## 中...',
+    file_rename => '將 ##from## 更名為 ##to## 中...',
     header => "* 這是在 ##os_name## ##os_ver## ，\n"
             . "* Perl ##perl_ver## 上執行的 Bugzilla ##bz_ver## 。",
     install_all => <<EOT,

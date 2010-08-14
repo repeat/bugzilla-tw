@@ -39,18 +39,18 @@
 
   <ul>
     <li>
-      <a href="editparams.cgi?section=core#urlbase">urlbase</a><br>
+      <a href="editparams.cgi?section=core#urlbase_desc">urlbase</a><br>
       網址基準。指向安裝 [% terms.Bugzilla %] 的機器的網址。也會用於電子郵件中。<br>
       （這也是你會看到此頁面的原因：只要此一參數未被設定，就會一直看到此頁面。）
     </li>
 
     <li>
-      <a href="editparams.cgi?section=core#cookiepath">cookiepath</a><br>
+      <a href="editparams.cgi?section=core#cookiepath_desc">cookiepath</a><br>
       Cookie 路徑。可使你的瀏覽器正確管理你的 cookie 。
     </li>
 
     <li>
-      <a href="editparams.cgi?section=general#maintainer">maintainer</a><br>
+      <a href="editparams.cgi?section=general#maintainer_desc">maintainer</a><br>
       管理者。當執行已安裝 [% terms.Bugzilla %] 的機器發生錯誤訊息時，要回報給誰負責。
     </li>
   </ul>
@@ -59,14 +59,14 @@
 
   <ul>
     <li>
-      <a href="editparams.cgi?section=auth#requirelogin">requirelogin</a><br>
+      <a href="editparams.cgi?section=auth#requirelogin_desc">requirelogin</a><br>
       需要登入。開啟此參數時，將不允許無帳號者使用此 [% terms.Bugzilla %] 。<br>
       換句話說，沒有經過授權並擁有有效帳號密碼的使用者，將無法看見任何資料。<br>
       如果你希望所有資料不對外公開時，可開啟此參數。
     </li>
 
     <li>
-      <a href="editparams.cgi?section=auth#createemailregexp">createemailregexp</a><br>
+      <a href="editparams.cgi?section=auth#createemailregexp_desc">createemailregexp</a><br>
       允許建立新帳號的正規表達式。此參數定義哪些使用者可以建立新帳號。<br>
       如果設定為 ".*" (預設值)，則所有人均可建立新帳號。<br>
       如果設定為 "@mycompany.com$"，則只有擁有 @mycompany.com 帳號的使用者可以建立新帳號。<br>
@@ -75,7 +75,7 @@
     </li>
 
     <li>
-      <a href="editparams.cgi?section=mta#mail_delivery_method">mail_delivery_method</a><br>
+      <a href="editparams.cgi?section=mta#mail_delivery_method_desc">mail_delivery_method</a><br>
       信件傳送方式。定義信件使用何種方式傳送，例如 sendmail 或 SMTP 。必須設定正確，才能寄送郵件。
     </li>
   </ul>

@@ -140,7 +140,7 @@
     [% ELSIF action == "approve" %]
       允許
     [% ELSE %]
-      [% Hook.process('auth_failure_action') %]
+      [%+ Hook.process('auth_failure_action') %]
     [% END %]
 
     [% IF object == "administrative_pages" %]
@@ -930,7 +930,7 @@
     'callback' 參數中。
 
   [% ELSIF error == "json_rpc_post_only" %]
-    為了安全性考量，你只能透過 HTTP POST 呼叫 '[% method FILTER html %]' 。
+    為了安全性考量，你必須透過 HTTP POST 呼叫 '[% method FILTER html %]' 。
 
   [% ELSIF error == "keyword_already_exists" %]
     [% title = "關鍵字已存在" %]
@@ -1235,10 +1235,6 @@
     [% admindocslinks = {'products.html' => '管理產品'} %]
     很抱歉，已不允許在產品 <em>[% product.name FILTER html %]</em> 中回報 [% terms.bug %] 。
 
-  [% ELSIF error == "product_doesnt_exist" %]
-    [% title = "指定的產品不存在" %]
-    產品 '[% product FILTER html %]' 不存在。
-
   [% ELSIF error == "product_edit_denied" %]
     [% title = "權限不足" %]
     [% admindocslinks = {'products.html' => '管理產品',
@@ -1289,14 +1285,6 @@
     [% title = "產品名稱過長" %]
     產品名稱的長度限制為 [% constants.MAX_PRODUCT_SIZE FILTER html %]
     字元。 '[% name FILTER html %]' 太長了（ [% name.length %] 字元）。
-
-  [% ELSIF error == "product_not_specified" %]
-    [% title = "未指定產品" %]
-    [% admindocslinks = {'products.html'   => '管理產品',
-                         'components.html' => '管理子產品',
-                         'milestones.html' => '管理里程碑',
-                         'versions.html'   => '管理版本'} %]
-    編輯子產品、里程碑、版本或產品時，並未指定產品。
 
   [% ELSIF error == "query_name_exists" %]
     [% title = "搜尋名稱已存在" %]
@@ -1406,10 +1394,25 @@
       [% END %]
     [% END %]
 
+  [% ELSIF error == "sudo_illegal_action" %]
+    [% title = "未授權 sudo" %]
+    [% IF NOT sudoer.in_group("bz_sudoers") %]
+      你並未被允許可以 sudo 使用者。
+    [% ELSIF target_user AND target_user.in_group("bz_sudo_protect") %]
+      你並未被允許可以 sudo [% target_user.identity FILTER html %] 。
+    [% ELSE %]
+      你要 sudo 的使用者不存在。
+  [% END %]
+
   [% ELSIF error == "sudo_in_progress" %]
     [% title = "正在 sudo" %]
     目前正在 sudo [% target FILTER html %] 。
     在開始新的 sudo 之前，請先利用頁尾的連結結束這個 sudo。
+
+  [% ELSIF error == "sudo_invalid_cookie" %]
+    [% title = "無效的 sudo cookie" %]
+    你的 sudo cookie 無效。它可能過期了，或是你的 sudo 並未正確開始。
+    請重新整理頁面，或是以你自己的身份載入其他頁面並繼續。
 
   [% ELSIF error == "sudo_password_required" %]
     [% title = "需要輸入密碼" %]
