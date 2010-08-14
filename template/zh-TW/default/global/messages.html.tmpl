@@ -134,10 +134,6 @@
 
   [% ELSIF message_tag == "buglist_sorted_by_relevance" %]
     此清單中的[% terms.Bugs %]以關聯度排序，關聯度最高的在最上面。
-    [% IF bugs.size == constants.FULLTEXT_BUGLIST_LIMIT %]
-      只顯示最相關的 [% constants.FULLTEXT_BUGLIST_LIMIT FILTER html %]
-      個[% terms.bugs %]。
-    [% END %]
 
   [% ELSIF message_tag == "buglist_updated_named_query" %]
     [% title = "已更新搜尋" %]

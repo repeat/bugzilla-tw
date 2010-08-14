@@ -132,6 +132,10 @@
       你必須設定 "auth_env_email" 參數到包含使用者的電子郵件地址的該環境變數名稱中。
     [% END %]
 
+  [% ELSIF error == "extension_disabled" %]
+    [% title = "附加元件已停用" %]
+    你無法瀏覽此頁面，因為附加元件 '[% name FILTER html %]' 已停用。
+
   [% ELSIF error == "extension_must_be_subclass" %]
     來自 <code>[% filename FILTER html %]</code> 的 <code>[% package FILTER html %]</code>
     並不是 <code>[% class FILTER html %]</code> 的 subclass 。
