@@ -37,22 +37,11 @@
   title = "選擇${classification_title}產品"
 %]
 
-[% edit_contentlink = BLOCK %]
-  editproducts.cgi?action=edit&amp;product=%%name%%
-[% END %]
-[% delete_contentlink = BLOCK %]
-  editproducts.cgi?action=del&amp;product=%%name%%
-[% END %]
-[% bug_count_contentlink = BLOCK %]
-  buglist.cgi?product=%%name%%
-[% END %]
-
-
 [% columns = [
      {
        name => "name"
        heading => "編輯產品…"
-       contentlink => edit_contentlink
+       contentlink => 'editproducts.cgi?action=edit&amp;product=%%name%%'
      },
      {
        name => "description"
@@ -72,7 +61,7 @@
        name => "bug_count"
        heading => "$terms.Bug 數目"
        align => 'right'
-       contentlink => bug_count_contentlink
+       contentlink => 'buglist.cgi?product=%%name%%'
      })
   %]
 
@@ -81,7 +70,7 @@
 [% columns.push({
        heading => "動作"
        content => "刪除"
-       contentlink => delete_contentlink
+       contentlink => 'editproducts.cgi?action=del&amp;product=%%name%%'
      })
 %]
 

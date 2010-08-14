@@ -258,7 +258,13 @@ document.write('<input type="button" value="全不選" onclick="SetCheckboxes(fa
 </p>
 
 <p id="new_watched_by_you">將使用者加入監控清單〔以半形逗號 (,) 分隔多個使用者〕：
-  <input size="60" name="new_watchedusers" value="">
+  [% INCLUDE global/userselect.html.tmpl
+     id => "new_watchedusers"
+     name => "new_watchedusers"
+     value => ""
+     size => 60
+     multiple => 5
+  %]
 </p>
 
 <p id="watching_you">正在監控你的使用者：<br>

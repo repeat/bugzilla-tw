@@ -60,7 +60,7 @@
 
 [% IF value.is_default || value.bug_count || (value_count == 1)
       || value.controls_visibility_of_fields.size
-      || value.controlled_values.size
+      || value.controlled_values_array.size
 %]
 
   <p>很抱歉，由於下列原因，無法將 '[% value.name FILTER html %]' 數值從 '[% field.description FILTER html %]' 欄位中刪除：</p>
@@ -99,7 +99,7 @@
       </li>
     [% END %]
 
-    [% IF value.controlled_values.size %]
+    [% IF value.controlled_values_array.size %]
       <li>此數值控制其他欄位的下列數值：<br>
        [% FOREACH field_name = value.controlled_values.keys %]
          [% FOREACH controlled = value.controlled_values.${field_name} %]

@@ -24,6 +24,7 @@
 From: [% Param('mailfrom') %]
 To: [% to_user.email %]
 Subject: [[% terms.Bug %] [%+ bug.id %]] [% '新增：' IF isnew %][%+ bug.short_desc %]
+Date: [% bug.delta_ts FILTER time("%a, %d %b %Y %T %z", to_user.timezone) %]
 X-Bugzilla-Reason: [% reasonsheader %]
 X-Bugzilla-Type: [% isnew ? 'new' : 'changed' %]
 X-Bugzilla-Watch-Reason: [% reasonswatchheader %]
@@ -39,7 +40,7 @@ X-Bugzilla-Status: [% bug.bug_status %]
 X-Bugzilla-Priority: [% bug.priority %]
 X-Bugzilla-Assigned-To: [% bug.assigned_to.login %]
 X-Bugzilla-Target-Milestone: [% bug.target_milestone %]
-X-Bugzilla-Changed-Fields: [% changedfields %]
+X-Bugzilla-Changed-Fields: [% changedfields.join(" ") %]
 [%+ threadingmarker %]
 
 [%+ urlbase %]show_bug.cgi?id=[% bug.id %]
@@ -50,7 +51,7 @@ X-Bugzilla-Changed-Fields: [% changedfields %]
 [% FOREACH comment = new_comments %]
 
 [%- IF comment.count %]
---- [% comment.time FILTER time(undef, to_user.timezone) %] [%+ comment.author.identity %] 的意見 #[% comment.count %] ---
+--- [% comment.creation_ts FILTER time(undef, to_user.timezone) %] [%+ comment.author.identity %] 的意見 #[% comment.count %] ---
 [% END %]
 [%+ comment.body_full({ is_bugmail => 1, wrap => 1 }) %]
 [% END %]
