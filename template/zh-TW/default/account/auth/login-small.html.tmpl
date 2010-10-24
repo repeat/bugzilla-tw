@@ -50,7 +50,7 @@
            type="password"
     >
     <input class="bz_password bz_default_hidden bz_mini_login_help" type="text"
-           id="Bugzilla_password_dummy[% qs_suffix %]" value="password"
+           id="Bugzilla_password_dummy[% qs_suffix %]" value="密碼"
            onfocus="mini_login_on_focus('[% qs_suffix FILTER js %]')"
     >
     [% IF Param('rememberlogin') == 'defaulton' ||
@@ -65,7 +65,7 @@
             id="log_in[% qs_suffix %]">
     <script type="text/javascript">
       mini_login_constants = {
-          "login" : "login",
+          "login" : "帳號",
           "warning" : "你必須輸入帳號密碼才能登入。"
       };
       [%# We need this event to fire after autocomplete, because it does
