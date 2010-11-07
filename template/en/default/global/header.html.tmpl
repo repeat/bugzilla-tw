@@ -64,6 +64,13 @@
   datatable    => ['json', 'connection', 'datasource', 'element'],
 } %]
 
+[%# When using certain YUI modules, we need to process certain
+  # extra JS templates.
+  #%]
+[% SET yui_templates = {
+  datatable => ['global/value-descs.js.tmpl'],
+} %]
+
 [%# These are JS URLs that are *always* on the page and come before
   # every other JS URL.
   #%]
@@ -104,7 +111,7 @@
     [%# This allows people to switch back to the "Classic" skin if they
       # are in another skin. 
       #%]
-    <link href="[% 'skins/standard/global.css' FILTER mtime_url FILTER html %]"
+    <link href="[% 'skins/standard/global.css' FILTER mtime FILTER html %]"
           rel="alternate stylesheet" 
           title="[% setting_descs.standard FILTER html %]">
     [% FOREACH style_url = css_sets.standard %]
@@ -154,8 +161,11 @@
     <script type="text/javascript">
     <!--
         YAHOO.namespace('bugzilla');
-        if (YAHOO.env.ua.gecko) {
+        
+        if ( "onpagehide" in window || YAHOO.env.ua.gecko) {
             YAHOO.util.Event._simpleRemove(window, "unload", 
+                                           YAHOO.util.Event._unload);
+            YAHOO.util.Event._simpleAdd(window, "pagehide", 
                                            YAHOO.util.Event._unload);
         }
         [%# The language selector needs javascript to set its cookie,
@@ -195,6 +205,12 @@
                     'You must select a Version for this [% terms.bug %].'
             }
         };
+
+        [% FOREACH yui_name = yui %]
+          [% FOREACH yui_template = yui_templates.$yui_name %]
+            [% PROCESS $yui_template %]
+          [% END %]
+        [% END %]
         [% IF javascript %]
           [% javascript %]
         [% END %]
@@ -324,5 +340,5 @@
 [% END %]
 
 [% BLOCK format_js_link %]
-  <script type="text/javascript" src="[% javascript_url FILTER mtime_url FILTER html %]"></script>
+  <script type="text/javascript" src="[% javascript_url FILTER mtime FILTER html %]"></script>
 [% END %]

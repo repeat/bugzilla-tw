@@ -251,14 +251,14 @@ TUI_hide_default('information_query');
   [% END %]
 
   <div class="search_field_row">
-    <label for="bug_id">[% terms.Bugs %] numbered</label>
+    <span class="field_label"><label for="bug_id">[% terms.Bugs %] numbered</label></span>
     <div id="bug_id_container" >
       <input type="text" name="bug_id" id="bug_id"
            value="[% default.bug_id.0 FILTER html %]" size="20">
            <div class="field_help">(comma-separated list)</div>
     </div>
     should be 
-    <select name="bug_id_type">
+    <select name="bug_id_type" id="bug_id_type">
       <option value="anyexact"[% " selected" IF default.bug_id_type.0 == "anyexact" %]>only included in</option>
       <option value="nowords"[% " selected" IF default.bug_id_type.0 == "nowords" %]>excluded from</option>
     </select> the results
@@ -342,7 +342,19 @@ TUI_hide_default('information_query');
           [% " selected" IF default.emailtype.$n == qv.name %]>[% qv.description %]</option>
       [% END %]
       </select>
-      <input name="email[% n %]" class="email" id="email[% n %]" value="[% default.email.$n FILTER html %]">
+      [% IF feature_enabled('jsonrpc') %]
+        <div id="email[% n %]_autocomplete">
+      [% END %]
+      <input name="email[% n %]" class="email" id="email[% n %]" 
+             value="[% default.email.$n FILTER html %]">
+      [% IF feature_enabled('jsonrpc') %]
+        <div id="email[% n %]_autocomplete_container"></div>
+        </div>
+        <script type="text/javascript">
+          YAHOO.bugzilla.userAutocomplete.init( "email[% n %]", 
+                    "email[% n %]_autocomplete_container");
+        </script>
+      [% END %]
     </div>
   [% END %]
    [% Hook.process('email_numbering_end') %]
