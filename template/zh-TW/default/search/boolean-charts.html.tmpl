@@ -48,14 +48,16 @@
   "matches",
   "notmatches"
 ] %]
-
-  <h3 id="chart">
-    自訂搜尋
-    <span class="section_help">
-      在上方沒找到需要的欄位嗎？此區域允許 AND 、 OR ，以及其他更為複雜的搜尋。
-    </span>
-  </h3>
-
+<script type="text/javascript">
+  TUI_alternates['custom_search_query'] = '&#9658;';
+  TUI_hide_default('custom_search_query');
+</script>
+<div class="bz_section_title" id="custom_search_filter">
+  <div id="custom_search_query_controller" class="arrow">&#9660;</div>
+  <a id="chart" href="javascript:TUI_toggle_class('custom_search_query')" >自訂搜尋</a>
+  <span class="section_help">在上方沒找到需要的欄位嗎？此區域允許 AND 、 OR ，以及其他更為複雜的搜尋。</span>
+  </div>
+  <div id="custom_search_filter_section" class="bz_search_section custom_search_query" >
 [%# Whoever wrote the original version of boolean charts had a seriously twisted mind %]
 
 [% jsmagic = "onclick=\"this.form.action='query.cgi#chart'; this.form.method='POST'; return 1;\"" %]
@@ -134,5 +136,6 @@
 
   [% END %]
   </table>
-  <hr>
+  [% "<hr>" IF NOT loop.last %]
 [% END %]
+</div>

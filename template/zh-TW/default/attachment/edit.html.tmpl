@@ -65,7 +65,7 @@
             [% attachment.description FILTER html %]
           </span>
           [% IF can_edit %]
-            <span class="bz_edit">(<a href="javascript:toggle_attachment_details_visibility()">編輯</a>)</span>
+            <span class="bz_edit">(<a href="javascript:toggle_attachment_details_visibility()">編輯細節</a>)</span>
           [% END %]
         </div>
         [% IF NOT attachment.isurl %]
@@ -198,6 +198,7 @@
               minrows = 10
               cols    = 80
               wrap    = 'soft'
+              disabled = 'disabled'
               defaultcontent = (attachment.contenttype.match('^text\/')) ?
                                  attachment.data.replace('(.*\n|.+)', '>$1') : undef
             %]
@@ -218,6 +219,10 @@
                   document.write('<button type="button" id="editButton" onclick="editAsComment(patchviewerinstalled);">以編輯附件方式做為意見<\/button>');
                   document.write('<button type="button" id="undoEditButton" onclick="undoEditAsComment(patchviewerinstalled);" class="bz_default_hidden">回復<\/button>');
                   document.write('<button type="button" id="redoEditButton" onclick="redoEditAsComment(patchviewerinstalled);" class="bz_default_hidden">重做以編輯附件方式做為意見<\/button>');
+                  var editFrame = document.getElementById('editFrame');
+                  if (editFrame) {
+                    editFrame.disabled = false;
+                  }
                 [% END %]
                 [% IF use_patchviewer %]
                   document.write('<button type="button" id="viewDiffButton" onclick="viewDiff(attachment_id, patchviewerinstalled);">以比較差異方式 (Diff) 瀏覽附件<\/button>');

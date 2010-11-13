@@ -24,9 +24,9 @@
            title = title
            onload = "document.forms['confirm_account_form'].realname.focus();" %]
 
-<div>
+<p>
 要建立你的帳號，必須在下方的表單中輸入密碼。你的電子郵件地址以及真實姓名（如果有提供的話）會和你所做的變動一併顯示。
-</div>
+</p>
 
 <form id="confirm_account_form" method="post" action="token.cgi">
   <input type="hidden" name="t" value="[% token FILTER html %]">
@@ -42,7 +42,10 @@
     </tr>
     <tr>
       <th align="right"><label for="passwd1">輸入你的密碼</label>：</th>
-      <td><input type="password" id="passwd1" name="passwd1" value=""></td>
+      <td>
+        <input type="password" id="passwd1" name="passwd1" value="">
+        (最少 [% constants.USER_PASSWORD_MIN_LENGTH FILTER none %] 個字元)
+      </td>
     </tr>
     <tr>
       <th align="right"><label for="passwd2">確認你的密碼</label>：</th>

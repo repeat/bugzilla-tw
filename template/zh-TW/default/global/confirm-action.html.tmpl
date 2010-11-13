@@ -27,6 +27,7 @@
                                    style_urls = ['skins/standard/global.css'] %]
 
 <div class="throw_error">
+<!--reason=[%reason FILTER html %]-->
   [% IF reason == "expired_token" %]
     你所做的變更已被拒絕，原因是在送出你對 [% script_name FILTER html %]
     所做的變更的時限（

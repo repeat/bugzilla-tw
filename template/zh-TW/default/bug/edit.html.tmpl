@@ -480,6 +480,7 @@
                  id => "assigned_to"
                  name => "assigned_to"
                  value => bug.assigned_to.login
+                 classes => ["bz_userfield"]
                  size => 30
             %]
             <br>
@@ -522,6 +523,7 @@
                 name => "qa_contact"
                 value => bug.qa_contact.login
                 size => 30
+                classes => ["bz_userfield"]
                 emptyok => 1
             %]
             <br>
@@ -798,9 +800,11 @@
           [% IF bug.cc.contains( user.email ) %]，包括你
           [% END %]
         [% END %]
-        <span id="cc_edit_area_showhide_container" class="bz_default_hidden">
-          （<a href="#" id="cc_edit_area_showhide">[% IF user.id %]編輯[% ELSE %]顯示[% END %]</a>）
-        </span>
+        [% IF user.id || bug.cc.size %]
+          <span id="cc_edit_area_showhide_container" class="bz_default_hidden">
+            （<a href="#" id="cc_edit_area_showhide">[% IF user.id %]編輯[% ELSE %]顯示[% END %]</a>）
+          </span>
+        [% END %]
         <div id="cc_edit_area">
           <br>
           [% IF user.id %]
@@ -811,6 +815,7 @@
                   name => "newcc"
                   value => ""
                   size => 30
+                  classes => ["bz_userfield"]
                   multiple => 5
                 %]
             </div>
@@ -830,13 +835,15 @@
             [% END %]
           [% END %]
         </div>
-        <script type="text/javascript">
-           hideEditableField( 'cc_edit_area_showhide_container',
-                              'cc_edit_area',
-                              'cc_edit_area_showhide',
-                              '',
-                              '');
-        </script>
+        [% IF user.id || bug.cc.size %]
+          <script type="text/javascript">
+             hideEditableField( 'cc_edit_area_showhide_container',
+                                'cc_edit_area',
+                                'cc_edit_area_showhide',
+                                '',
+                                '');
+          </script>
+        [% END %]
       </td>
     </tr>
 [% END %]
@@ -1048,7 +1055,7 @@
         (<u>C</u>)</b></label> ：
 
       [% IF user.is_insider %]
-        <input type="checkbox" name="commentprivacy" value="1"
+        <input type="checkbox" name="comment_is_private" value="1"
                id="newcommentprivacy"
                onClick="updateCommentTagControl(this, form)">
         <label for="newcommentprivacy">

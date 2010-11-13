@@ -22,7 +22,7 @@
 
 [% PROCESS bug/time.html.tmpl %]
 
-<script src="js/comments.js" type="text/javascript">
+<script src="[% 'js/comments.js' FILTER mtime %]" type="text/javascript">
 </script>
 
 [% DEFAULT start_at = 0 mode = "show" %]
@@ -65,6 +65,14 @@
   [% count = count + increment %]
 [% END %]
 
+<script src="[% 'js/comments.js' FILTER mtime %]" type="text/javascript">
+  <div class="bz_add_comment">
+    <a href="#"
+       onclick="return goto_add_comments();">
+       新增意見</a>
+  </div>
+[% END %]
+
 [%# Note: this template is used in multiple places; if you use this hook,
   # make sure you are aware of this fact.
   #%]
@@ -74,10 +82,15 @@
 <td>
   [% IF mode == "edit" %]
     <ul class="bz_collapse_expand_comments">
-      <li><a href="#" onclick="toggle_all_comments('collapse', [% comments.size %]);
+      <li><a href="#" onclick="toggle_all_comments('collapse');
                                return false;">折疊所有意見</a></li>
-      <li><a href="#" onclick="toggle_all_comments('expand', [% comments.size %]);
+      <li><a href="#" onclick="toggle_all_comments('expand');
                                return false;">展開所有意見</a></li>
+      [% IF user.settings.comment_box_position.value == "after_comments" && user.id %]
+        <li class="bz_add_comment"><a href="#"
+            onclick="return goto_add_comments('bug_status_bottom');">
+            新增意見</a></li>
+      [% END %
     </ul>
   [% END %]
 </td>
@@ -89,7 +102,8 @@
 
 [% BLOCK a_comment %]
   [% RETURN IF comment.is_private AND ! user.is_insider %]
-  [% RETURN IF comment.body == '' AND comment.work_time != 0 AND !user.is_timetracker %]
+  [% comment_text = comment.body_full({ wrap => 1 }) %]
+  [% RETURN IF comment_text == '' AND (comment.work_time - 0) != 0 AND !user.is_timetracker %]
 
     <div id="c[% count %]" class="bz_comment[% " bz_private" IF comment.is_private %]
                 [% " bz_comment_hilite" IF marks.$count %]
@@ -162,7 +176,7 @@
   #%]
 <pre class="bz_comment_text"
      [% ' id="comment_text_' _ count _ '"' IF mode == "edit" %]>
-  [%- comment.body_full({ wrap => 1 }) FILTER quoteUrls(bug, comment) -%]
+  [%- comment_text FILTER quoteUrls(bug, comment) -%]
 </pre>
     </div>
 [% END %]

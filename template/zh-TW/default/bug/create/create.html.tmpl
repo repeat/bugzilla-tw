@@ -544,7 +544,7 @@ TUI_hide_default('expert_fields');
               MSG_LOADING: '搜尋可能重複的 [% terms.bugs %] 中...',
               MSG_EMPTY:   '找不到可能重複的 [% terms.bugs %] 。',
               SUMMARY:     '可能重複'
-            },
+            }
           });
         </script>
       </td>
@@ -582,9 +582,9 @@ TUI_hide_default('expert_fields');
       <th>&nbsp;</th>
       <td colspan="3">
         &nbsp;&nbsp;
-        <input type="checkbox" id="commentprivacy" name="commentprivacy"
-          [% " checked=\"checked\"" IF commentprivacy %]>
-        <label for="commentprivacy">
+        <input type="checkbox" id="comment_is_private" name="comment_is_private"
+          [% ' checked="checked"' IF comment_is_private %]>
+        <label for="comment_is_private">
           將描述設定為不公開（僅
           <strong>[% Param('insidergroup') FILTER html %]</strong>
           群組成員可見）

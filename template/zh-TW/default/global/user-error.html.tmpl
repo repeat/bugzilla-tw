@@ -238,9 +238,16 @@
     <code>[% url FILTER html %]</code> 對一個 [% terms.bug %] 而言並不是有效的網址。
     [% IF reason == 'http' %]
       網址必須以 "http" 或 "https" 開頭。
+    [% ELSIF reason == 'path_only' %]
+      你必須輸入完整的網址。
     [% ELSIF reason == 'show_bug' %]
-      [%+ terms.Bug %] 回報資訊網址應該指到
-      已安裝的  [% terms.Bugzilla %] 中的 <code>show_bug.cgi</code> 。
+      [%+ field_descs.see_also FILTER html %] 的網址應該指到以下其中一個地方：
+      <ul>
+        <li>已安裝的  [% terms.Bugzilla %] 中的 <code>show_bug.cgi</code> 。</li>
+        <li>在 launchpad.net 的 b[% %]ug 。</li>
+        <li>在 code.google.com 的 issue 。</li>
+        <li>在 b[% %]ugs.debian.org 的 b[% %]ug 。</li>
+      </ul>
     [% ELSIF reason == 'id' %]
       在網址中沒有有效的 [% terms.bug %] 編號。
     [% END %]
@@ -846,7 +853,7 @@
 
   [% ELSIF error == "invalid_datasets" %]
     [% title = "無效的資料組" %]
-    <em>[% datasets FILTER html %]</em> 是無效的資料組。僅允許數字、英文字母以及冒號 (:)。
+    <em>[% datasets.join(":") FILTER html %]</em> 是無效的資料組。僅允許數字、英文字母以及冒號 (:)。
 
   [% ELSIF error == "invalid_format" %]
     [% title = "無效的格式" %]
@@ -1202,6 +1209,13 @@
     [% title = "密碼不符" %]
     所輸入的兩組密碼不一致。
 
+  [% ELSIF error == "password_current_too_short" %]
+    [% title = "需要新的密碼" %]
+    目前系統的密碼長度要求是至少
+    [%+ constants.USER_PASSWORD_MIN_LENGTH FILTER html %] 字元，而你目前的密碼不符合此要求。
+    你必須<a href="token.cgi?a=reqpw&loginname=[% locked_user.email FILTER html %]">
+    申請新的密碼</a>才能再度登入。
+
   [% ELSIF error == "password_too_short" %]
     [% title = "密碼過短" %]
     密碼不得短於 [% constants.USER_PASSWORD_MIN_LENGTH FILTER html %] 字元。
@@ -1380,19 +1394,12 @@
     href="http://www.mozilla.org">現在就下載</a>。 :D
 
   [% ELSIF error == "still_unresolved_bugs" %]
-    [% IF dependency_count == 1 %]
-      [% terms.Bug %] #<a href="show_bug.cgi?id=[% dependencies.0.bug_id FILTER none %]">[% dependencies.0.bug_id FILTER none %]</a>
-      還有 [% dependencies.0.dependencies FILTER html %] 個未解決的依賴關係。顯示<a
-      href="showdependencytree.cgi?id=[% dependencies.0.bug_id FILTER none %]&amp;hide_resolved=1">依賴關係樹</a>。
-    [% ELSE %]
-      還有 [% dependency_count FILTER none %] 個開啟的 [% terms.bugs %] 有未解決的依賴關係。
-      <br>
-      [% FOREACH bug = dependencies %]
-        [% terms.Bug %] #<a href="show_bug.cgi?id=[% bug.bug_id FILTER none %]">[% bug.bug_id FILTER none %]</a>有
-        [% bug.dependencies FILTER html %] 個開啟的依賴關係。
-        (<a href="showdependencytree.cgi?id=[% bug.bug_id FILTER none %]&amp;hide_resolved=1">依賴關係樹</a>)<br>
-      [% END %]
-    [% END %]
+    [% title = "未解決的依賴關係" %]
+    [% terms.Bug %] [%+ bug_id FILTER bug_link(bug_id) FILTER none %]
+    還有 [% dep_count FILTER none %] 個未解決的依賴關係。在你將此
+    [% terms.bug %] 設定為 [% display_value("resolution", "FIXED") FILTER html %]
+    之前，必須解決這些 [% terms.bugs %] 或者把它們從 "[% field_descs.dependson FILTER html %]"
+    欄位中移除。
 
   [% ELSIF error == "sudo_illegal_action" %]
     [% title = "未授權 sudo" %]

@@ -34,7 +34,7 @@ var queryform = "reportform"
   onload = "doOnSelectProduct(0)"
   yui = [ 'autocomplete', 'calendar' ]
   javascript = js_data
-  javascript_urls = [ "js/productform.js", "js/TUI.js", "js/field.js" ]
+  javascript_urls = [ "js/util.js", "js/productform.js", "js/TUI.js", "js/field.js" ]
   style_urls = [ "skins/standard/search_form.css" ]
   doc_section = "reporting.html#reports"
 %]
@@ -47,7 +47,7 @@ var queryform = "reportform"
 
 [% button_name = "產生報告" %]
 
-<form method="get" action="report.cgi" name="reportform">
+<form method="get" action="report.cgi" name="reportform" id="reportform">
 
 <table align="center">
   <tr>
@@ -79,17 +79,15 @@ var queryform = "reportform"
 
 <hr>
 
-[% PROCESS search/form.html.tmpl %]
+  [% PROCESS search/form.html.tmpl %]
 
-<br>
-<input type="submit" id="[% button_name FILTER css_class_quote %]"
-       value="[% button_name FILTER html %]">
-<input type="hidden" name="format" value="table">
-<input type="hidden" name="action" value="wrap">
-<hr>
+  [% PROCESS "search/boolean-charts.html.tmpl" %]
 
-[% PROCESS "search/boolean-charts.html.tmpl" %]
-
+  <div id="knob">
+    <input type="submit" id="[% button_name FILTER css_class_quote %]"
+         value="[% button_name FILTER html %]">
+    <input type="hidden" name="format" value="table">
+    <input type="hidden" name="action" value="wrap">
 </form>
 
 [% PROCESS global/footer.html.tmpl %]

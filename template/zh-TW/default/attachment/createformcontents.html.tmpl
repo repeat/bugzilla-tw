@@ -86,7 +86,7 @@
       <label for="list">自清單中選擇</label>：
       <select name="contenttypeselection" id="contenttypeselection"
               onchange="this.form.contenttypemethod[1].checked = true;">
-        [% PROCESS "attachment/content-types.html.tmpl" %]
+        [% PROCESS content_types %]
       </select><br>
     <input type="radio" id="manual"
                  name="contenttypemethod" value="manual">
@@ -104,3 +104,19 @@
     [% END %]
   </td>
 </tr>
+
+[% BLOCK content_types %]
+  [% mimetypes = [{type => "text/plain", desc => "純文字 (text/plain)"},
+                  {type => "text/html",  desc => "HTML (text/html)"},
+                  {type => "application/xml", desc => "XML (application/xml)"},
+                  {type => "image/gif",  desc => "GIF 圖檔 (image/gif)"},
+                  {type => "image/jpeg", desc => "JPEG 圖檔 (image/jpeg)"},
+                  {type => "image/png",  desc => "PNG 圖檔 (image/png)"},
+                  {type => "application/octet-stream", desc => "二進制檔案 (application/octet-stream)"}]
+  %]
+  [% Hook.process("mimetypes", "attachment/createformcontents.html.tmpl") %]
+
+  [% FOREACH m = mimetypes %]
+    <option value="[% m.type FILTER html %]">[% m.desc FILTER html %] ([% m.type FILTER html %])</option>
+  [% END %]
+[% END %]
