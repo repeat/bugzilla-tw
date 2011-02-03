@@ -99,7 +99,7 @@
 
 [% INCLUDE req_table reqs = REQUIRED_MODULES
                      new = ['List-MoreUtils']
-                     updated = ['Email-MIME', 'CGI.pm'] %]
+                     updated = ['Email-MIME', 'CGI.pm', 'Apache-SizeLimit'] %]
 
 <h3 id="v40_req_optional_mod">Optional Perl Modules</h3>
 
@@ -107,8 +107,8 @@
   features of [% terms.Bugzilla %]:</p>
 
 [% INCLUDE req_table reqs = OPTIONAL_MODULES
-                     new  = ['JSON-XS']
-                     updated = []
+                     new  = ['JSON-XS', 'Win32-API', 'Math-Random-Secure']
+                     updated = ['Apache-SizeLimit', 'SOAP-Lite']
                      include_feature = 1 %]
 
 <h3 id="v40_req_apache">Optional Apache Modules</h3>
@@ -251,8 +251,8 @@
   if you did two separate searches in separate windows, these links would
   only work for the <em>last</em> search you did. Now, [% terms.Bugzilla %]
   will "remember" which search result you came from and give you the right
-  "last search results" or "next bug" from <em>that</em> list, instead of
-  always using your most recent search.</p>
+  "last search results" or "next [% terms.bug %]" from <em>that</em> list,
+  instead of always using your most recent search.</p>
 
 <p>There are still some situations where [% terms.Bugzilla %] will have to
   "guess" which search you are trying to navigate through, but it does its
@@ -291,7 +291,7 @@
 <p>All of the code for voting in [% terms.Bugzilla %] has been moved
   into an extension, called "Voting", in the <kbd>extensions/Voting/</kbd>
   directory. To enable it, you must remove the <kbd>disabled</kbd> file
-  from that directory, and run checksetup.pl.</p>
+  from that directory, and run <kbd>checksetup.pl</kbd>.</p>
 
 <p>In a future version of [% terms.Bugzilla %], the Voting extension will
   be moved outside of the [% terms.Bugzilla %] core code, so we are looking
@@ -309,13 +309,13 @@
   [%+ terms.Bugzilla %] would have to clear their cache in order to get
   the updated files. Now, if you are using Apache as your webserver and
   you have the <a href="#v40_req_apache">optional Apache modules</a>
-  installed, users will automatically get every new version of
+  installed and enabled, users will automatically get every new version of
   [%+ terms.Bugzilla %]'s Javascript and CSS without having to clear
   their caches.</p>
 
 <p>This feature also gives a slight performance speedup to
   [%+ terms.Bugzilla %] in some cases, and so we recommend that all
-  administrators install the optional Apache modules if possible.</p>
+  administrators install and enable the optional Apache modules if possible.</p>
 
 <h3 id="v40_feat_hooks">Many New Hooks</h3>
 
@@ -419,7 +419,7 @@
     by very few [% terms.Bugzilla %] installations--if you aren't certain
     whether or not you are using it, you're not using it. To enable the system,
     you have to remove the file <kbd>extensions/OldBugMove/disabled</kbd>
-    and then run checksetup.pl. In a future version of [% terms.Bugzilla %],
+    and then run <kbd>checksetup.pl</kbd>. In a future version of [% terms.Bugzilla %],
     this extension may be moved outside of the core [% terms.Bugzilla %] code,
     so if you are interested in maintaining it, please let us know.</li>
   <li><strong>Custom Fields: </strong> "[% terms.Bug %] ID" custom fields can
@@ -453,8 +453,8 @@
   <li><strong>Installation:</strong> Now, whenever <kbd>checksetup.pl</kbd>
     throws an error, it will be printed in the color red, to make it
     obvious that something is wrong.</li>
-  <li><strong>Installation:</strong> Some actions of checksetup.pl were
-    silent, in the past. Now, checksetup.pl will print a message for
+  <li><strong>Installation:</strong> Some actions of <kbd>checksetup.pl</kbd> were
+    silent, in the past. Now, <kbd>checksetup.pl</kbd> will print a message for
     almost anything it does.</li>
   <li><strong>Installation:</strong> The process of adding foreign keys
     to a table is now much faster. This will particularly improve the speed
@@ -487,7 +487,7 @@
     bugmail_relationships, object_columns, object_update_columns,
     and object_validators. The colchange_columns hook has been removed,
     as it is no longer necessary (buglist_columns will be used for data
-    about which columns can be on the buglist).</li>
+    about which columns can be on the [% terms.bug %] list).</li>
   <li>When [% terms.Bugzilla %] throws certain types of errors, it will
     now include a "traceback" of where exactly the error occurred in the
     code, to help administrators and developers debug problems.</li>
@@ -497,6 +497,11 @@
     you may wish to run this test to assure that your changes are correct.
     You can see more information about running this test by doing
     <kbd>perldoc xt/search.t</kbd> at the command line.</li>
+  <li>[% terms.Bugzilla %] now sends the
+    <a href="https://developer.mozilla.org/en/the_x-frame-options_response_header"><code>X-Frame-Options: SAMEORIGIN</code></a> header
+    with every page request in order to prevent "clickjacking" attacks. Note
+    that this prevents other domains from displaying [% terms.Bugzilla %]
+    in an HTML frame.</li> 
 </ul>
 
 <h4 id="v40_feat_ws_changes">WebService Changes</h4>
@@ -576,10 +581,11 @@
 
 <h3>IMPORTANT: Apache Configuration Change</h3>
 
-<p>(Note: If your [% terms.Bugzilla %] runs under mod_perl or runs on some
-  other webserver than Apache, this section does not apply to you.)</p>
+<h4>mod_cgi</h4>
 
-<p>You will need to update the configuration of Apache for 
+<p>If you run [% terms.Bugzilla %] under mod_cgi (this is the most common
+  configuration, involving a &lt;Directory&gt; block in your Apache config
+  file), you will need to update the configuration of Apache for 
   [%+ terms.Bugzilla %]. In particular, this line in the [% terms.Bugzilla %]
   <kbd>&lt;Directory&gt;</kbd> block:</p>
 
@@ -593,6 +599,20 @@
   see the
   <a href="[% docs_urlbase FILTER html %]configuration.html#http-apache">Configuration</a>
   section of the [% terms.Bugzilla %] Guide.</p>
+
+<h4>mod_perl</h4>
+
+<p>If your [% terms.Bugzilla %] runs under mod_perl, the required Apache
+  configuration is now simpler. The line that used to look like:</p>
+
+<blockquote><code>PerlSwitches -w -T -I/var/www/html/bugzilla 
+    -I/var/www/html/bugzilla/lib</code></blockquote>
+
+<p>Now should be only:</p>
+
+<blockquote><code>PerlSwitches -w -T</code></blockquote>
+
+<p>The <code>PerlConfigRequire</code> line should stay the same, however.</p>
 
 <h3>New .htaccess file</h3>
 
@@ -669,6 +689,10 @@
   <li>The <kbd>Bugzilla::Util::lsearch</kbd> function is gone. Use
     <kbd>firstidx</kbd> from <kbd>List::MoreUtils</kbd>, instead.</li>
   <li>[% terms.Bugzilla %] now includes YUI 2.8.2.</li>
+  <li><kbd>long_list.cgi</kbd>, <kbd>showattachment.cgi</kbd> and
+    <kbd>xml.cgi</kbd> are deprecated scripts which are no longer actively
+    used since [% terms.Bugzilla %] 2.19. These scripts will be removed in
+    [%+ terms.Bugzilla %] 4.2.</li>
 </ul>
 
 
@@ -1391,7 +1415,7 @@
     are allowed to grant others membership in that group itself.</li>
   <li>The ability to compress BMP attachments to PNGs is now an Extension.
     To enable the feature, remove the file
-    <kbd>extensions/BmpConvert/disabled</kbd> and then run checksetup.pl.</li>
+    <kbd>extensions/BmpConvert/disabled</kbd> and then run <kbd>checksetup.pl</kbd>.</li>
   <li>The default list of values for the Priority field are now clear English
     words instead of P1, P2, etc.</li>
   <li>There is now a system in place so that all field values can be
@@ -1661,7 +1685,7 @@
     word-wrapping happened between "[% terms.bug %]" and the number.
    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=514703">[% terms.Bug %] 514703</a>)
   </li>
-  <li>Running checksetup.pl on Windows will no longer pop up an error box
+  <li>Running <kbd>checksetup.pl</kbd> on Windows will no longer pop up an error box
     about OCI.dll.
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=480968">[% terms.Bug %] 480968</a>)
   </li>
@@ -2456,7 +2480,7 @@
 
   <li>Some versions of the SOAP::Lite Perl module had a b[% %]ug that caused
     [%+ terms.Bugzilla %]'s XML-RPC service to break. 
-    <code>checksetup.pl</code> now checks for these bad versions and 
+    <kbd>checksetup.pl</kbd> now checks for these bad versions and 
     will reject them.
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=468009">[% terms.Bug %] 468009</a>)</li>
 
@@ -3144,7 +3168,7 @@
      <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=413672">[% terms.Bug %] 413672</a>, and
      <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=431721">[% terms.Bug %] 431721</a>)</li>
 
-  <li>checksetup.pl now handles UTF-8 conversion more reliably during upgrades.
+  <li><kbd>checksetup.pl</kbd> now handles UTF-8 conversion more reliably during upgrades.
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=374951">[% terms.Bug %] 374951</a>)</li>
 
   <li>Comments written in CJK languages are now correctly word-wrapped.
@@ -3899,7 +3923,7 @@
     will tell you when this is, and it will give you certain instructions
     at that time, that you have to follow before you can complete
     the upgrade. Don't do the conversion yourself manually--follow
-    the instructions of checksetup.pl.</li>
+    the instructions of <kbd>checksetup.pl</kbd>.</li>
   <li>If you ever ran 2.23.3, 2.23.4, or 3.0rc1, you will have to run
     <kbd>./collectstats.pl --regenerate</kbd> at the command line, because
     the data for your Old Charts is corrupted. This can take several days,
@@ -4038,7 +4062,7 @@ sub y { $var++ }</pre>
 <h3 id="v30_code_other">Other Changes</h3>
 
 <ul>
-  <li><code>checksetup.pl</code> has been completely re-written, and most
+  <li><kbd>checksetup.pl</kbd> has been completely re-written, and most
     of its code moved into modules in the <kbd>Bugzilla::Install</kbd>
     namespace. See the
     <a href="[% docs_urlbase FILTER html %]api/checksetup.html">checksetup
