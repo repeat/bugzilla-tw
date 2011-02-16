@@ -693,10 +693,10 @@
 
   [% ELSIF error == "freetext_too_long" %]
     [% title = "Text Too Long" %]
-    The text you entered is too long ([% text.length FILTER html %] characters,
-    above the maximum length allowed of [% constants.MAX_FREETEXT_LENGTH FILTER none %]
-    characters):
-    <p><em>[% text FILTER html %]</em></p>
+    The text you entered in the [% field_descs.$field FILTER html %]
+    field is too long ([% text.length FILTER html %] characters,
+    above the maximum length allowed of
+    [%+ constants.MAX_FREETEXT_LENGTH FILTER none %] characters).
 
   [% ELSIF error == "group_cannot_delete" %]
     [% title = "Cannot Delete Group" %]
@@ -1298,6 +1298,10 @@
       Either you mis-typed the name or that user has not yet registered
       for a [% terms.Bugzilla %] account.
     [% END %]
+    [% IF class == "Bugzilla::Keyword" %]
+      The legal keyword names are <a href="describekeywords.cgi">listed
+      here</a>.
+    [% END %]
 
   [% ELSIF error == "old_password_incorrect" %]
     [% title = "Incorrect Old Password" %]
@@ -1587,11 +1591,6 @@
        I could not figure out what you wanted to do.
     [% END %]
 
-  [% ELSIF error == "unknown_keyword" %]
-    [% title = "Unknown Keyword" %]
-    <code>[% keyword FILTER html %]</code> is not a known keyword.
-    The legal keyword names are <a href="describekeywords.cgi">listed here</a>.
-
   [% ELSIF error == "unknown_tab" %]
     [% title = "Unknown Tab" %]
     <code>[% current_tab_name FILTER html %]</code> is not a legal tab name.
@@ -1784,6 +1783,8 @@
     field
   [% ELSIF class == "Bugzilla::Group" %]
     group
+  [% ELSIF class == "Bugzilla::Keyword" %]
+    keyword
   [% ELSIF class == "Bugzilla::Product" %]
     product
   [% ELSIF class == "Bugzilla::Search::Recent" %]
