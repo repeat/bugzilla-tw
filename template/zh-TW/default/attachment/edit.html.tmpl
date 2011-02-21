@@ -37,8 +37,9 @@
   header = header
   subheader = subheader
   doc_section = "attachments.html"
-  javascript_urls = ['js/attachment.js']
+  javascript_urls = ['js/attachment.js', 'js/field.js']
   style_urls = ['skins/standard/attachment.css']
+  yui = [ 'autocomplete' ]
   bodyclasses = "no_javascript"
 %]
 
@@ -181,7 +182,7 @@
             </a>
           </div>
         [% ELSIF !Param("allow_attachment_display") %]
-          <div id="view_disabled" >
+          <div id="view_disabled">
             <p><b>
               因 [% terms.Bugzilla %] 的安全性限制，此附件無法直接顯示於瀏覽器中。
             </b></p>
@@ -271,6 +272,9 @@
 
           [% END %]
         </div>
+
+        [% Hook.process('form_before_submit') %]
+
         [% IF user.id %]
           <div id="update_container">
             <input type="submit" value="送出" id="update">

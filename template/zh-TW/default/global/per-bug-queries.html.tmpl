@@ -61,6 +61,7 @@
         <input type="hidden" name="cmdtype" value="doit">
         <input type="hidden" name="remtype" value="asnamed">
         <input type="hidden" name="list_of_bugs" value="1">
+        <input type="hidden" name="token" value="[% issue_hash_token(['savedsearch']) FILTER html %]">
         <span id="lob_direction">對</span>
         [%+ terms.bugs %]
         <input type="text" name="bug_ids" size="12" maxlength="80"
