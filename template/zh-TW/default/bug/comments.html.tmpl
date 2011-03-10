@@ -65,7 +65,7 @@
   [% count = count + increment %]
 [% END %]
 
-<script src="[% 'js/comments.js' FILTER mtime %]" type="text/javascript">
+[% IF user.settings.comment_box_position.value == "before_comments" && user.id %]
   <div class="bz_add_comment">
     <a href="#"
        onclick="return goto_add_comments();">
@@ -90,7 +90,7 @@
         <li class="bz_add_comment"><a href="#"
             onclick="return goto_add_comments('bug_status_bottom');">
             新增意見</a></li>
-      [% END %
+      [% END %]
     </ul>
   [% END %]
 </td>
