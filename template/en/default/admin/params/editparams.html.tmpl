@@ -73,12 +73,13 @@
         [% FOREACH panel = panels %]
           <tr>
             [% IF panel.current %]
+              [% Hook.process("current_panel") %]
               <td class="selected_section">
                 <span title="[% panel.desc FILTER html %]">[% panel.title FILTER html %]</span>
               </td>
             [% ELSE %]
               <td>
-                <a href="editparams.cgi?section=[% panel.name FILTER url_quote %]"
+                <a href="editparams.cgi?section=[% panel.name FILTER uri %]"
                    title="[% panel.desc FILTER html %]">[% panel.title FILTER html %]</a>
               </td>
             [% END %]

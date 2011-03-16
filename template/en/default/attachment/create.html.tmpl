@@ -35,9 +35,15 @@
   subheader = subheader
   style_urls = [ 'skins/standard/attachment.css' ]
   yui = [ 'autocomplete' ]
-  javascript_urls = [ "js/attachment.js", 'js/field.js', "js/util.js" ]
+  javascript_urls = [ "js/attachment.js", 'js/field.js', "js/util.js", "js/TUI.js" ]
   doc_section = "attachments.html"
 %]
+
+<script type="text/javascript">
+<!--
+TUI_hide_default('attachment_text_field');
+-->
+</script>
 
 <form name="entryform" method="post" action="attachment.cgi"
       enctype="multipart/form-data"

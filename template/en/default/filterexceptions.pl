@@ -258,11 +258,7 @@
   'bug.delta_ts', 
   'bug.bug_id', 
   'group.bit', 
-  'dep.title', 
-  'dep.fieldname', 
-  'bug.${dep.fieldname}.join(\', \')', 
   'selname',
-  '" accesskey=\"$accesskey\"" IF accesskey',
   'inputname',
   '" colspan=\"$colspan\"" IF colspan',
   '" size=\"$size\"" IF size',
@@ -426,12 +422,8 @@
 ],
 
 'admin/flag-type/edit.html.tmpl' => [
-  'action', 
   'type.id', 
-  'type.target_type', 
   'type.sortkey || 1',
-  'typeLabelLowerPlural',
-  'typeLabelLowerSingular',
   'selname',
 ],
 

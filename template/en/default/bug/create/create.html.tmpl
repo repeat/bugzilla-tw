@@ -171,7 +171,8 @@ TUI_alternates['expert_fields'] = 'Show Advanced Fields';
 // Hide the Advanced Fields by default, unless the user has a cookie
 // that specifies otherwise.
 TUI_hide_default('expert_fields');
-
+// Also hide the "Paste text as attachment" textarea by default.
+TUI_hide_default('attachment_text_field');
 -->
 </script>
 
@@ -221,7 +222,7 @@ TUI_hide_default('expert_fields');
   [%# We can't use the select block in these two cases for various reasons. %]
   <tr>
     [% component_desc_url = BLOCK -%]
-      describecomponents.cgi?product=[% product.name FILTER url_quote %]
+      describecomponents.cgi?product=[% product.name FILTER uri %]
     [% END %]
     [% INCLUDE "bug/field-label.html.tmpl"
       field = bug_fields.component editable = 1
@@ -237,6 +238,7 @@ TUI_hide_default('expert_fields');
         [% END %]
 
         [%- FOREACH c = product.components %]
+          [% NEXT IF NOT c.is_active %]
           <option value="[% c.name FILTER html %]"
                   id="v[% c.id FILTER html %]_component"
             [% IF c.name == default.component_ %]
@@ -287,8 +289,9 @@ TUI_hide_default('expert_fields');
     <td rowspan="3">
       <select name="version" id="version" size="5">
         [%- FOREACH v = version %]
-          <option value="[% v FILTER html %]"
-            [% ' selected="selected"' IF v == default.version %]>[% v FILTER html -%]
+          [% NEXT IF NOT v.is_active %]
+          <option value="[% v.name FILTER html %]"
+            [% ' selected="selected"' IF v.name == default.version %]>[% v.name FILTER html -%]
           </option>
         [%- END %]
       </select>
@@ -734,9 +737,10 @@ TUI_hide_default('expert_fields');
     <select name="[% field.name FILTER html %]" 
             id="[% field.name FILTER html %]">
     [%- FOREACH x = ${field.name} %]
-      <option value="[% x FILTER html %]"
-        [% " selected=\"selected\"" IF x == default.${field.name} %]>
-        [% display_value(field.name, x) FILTER html %]
+      [% NEXT IF NOT x.is_active %]
+      <option value="[% x.name FILTER html %]"
+        [% " selected=\"selected\"" IF x.name == default.${field.name} %]>
+        [% display_value(field.name, x.name) FILTER html %]
       </option>
     [% END %]
     </select>

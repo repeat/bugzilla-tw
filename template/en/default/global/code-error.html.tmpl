@@ -37,15 +37,7 @@
 [% DEFAULT title = "Internal Error" %]
 
 [% error_message = BLOCK %]
-  [% IF error == "attachment_local_storage_disabled" %]
-    [% title = "Local Storage Disabled" %]
-    You cannot store attachments locally. This feature is disabled.
-
-  [% ELSIF error == "attachment_url_disabled" %]
-    [% title = "Attachment URL Disabled" %]
-    You cannot attach a URL. This feature is currently disabled.
-
-  [% ELSIF error == "auth_invalid_email" %]
+  [% IF error == "auth_invalid_email" %]
     [% title = "Invalid Email Address" %]
     We received an email address (<b>[% addr FILTER html %]</b>)
     that didn't pass our syntax checking for a legal email address,
@@ -99,7 +91,12 @@
   
   [% ELSIF error == "chart_file_open_fail" %]
     Unable to open the chart datafile <tt>[% filename FILTER html %]</tt>.
-  
+ 
+  [% ELSIF error == "column_alter_nonexistent_fk" %]
+    You attempted to modify the foreign key for 
+    [%+ table FILTER html %].[% column FILTER html %], but there is
+    no foreign key on that column.
+ 
   [% ELSIF error == "column_not_null_without_default" %]
     Failed adding the column [% name FILTER html %]:
     You cannot add a NOT NULL column with no default to an existing table
@@ -193,10 +190,6 @@
     '[% field.description FILTER html %]' ([% field.name FILTER html %])
     is not a custom field.
 
-  [% ELSIF error == "field_type_mismatch" %]
-    Cannot seem to handle <code>[% field FILTER html %]</code>
-    and <code>[% type FILTER html %]</code> together.
-
   [% ELSIF error == "field_type_not_specified" %]
     [% title = "Field Type Not Specified" %]
     You must specify a type when creating a custom field.
@@ -243,6 +236,10 @@
     The series_id [% series_id FILTER html %] is not valid. It may be that
     this series has been deleted.
 
+  [% ELSIF error == "invalid_timestamp" %]
+    The entered timestamp <code>[% timestamp FILTER html %]</code> could not
+    be parsed into a valid date and time.
+
   [% ELSIF error == "invalid_webservergroup" %]
     There is no such group: [% group FILTER html %]. Check your $webservergroup
     setting in [% constants.bz_locations.localconfig FILTER html %].
@@ -277,9 +274,6 @@
     The flag type [% type FILTER html %] is inactive and cannot be used
     to create new flags.
 
-  [% ELSIF error == "flag_type_nonexistent" %]
-    There is no flag type with the ID <em>[% id FILTER html %]</em>.
-
   [% ELSIF error == "flag_type_target_type_invalid" %]
     The target type was neither <em>[% terms.bug %]</em> nor <em>attachment</em>
     but rather <em>[% target_type FILTER html %]</em>.
@@ -310,7 +304,8 @@
   [% ELSIF error == "jobqueue_no_job_mapping" %]
     <code>Bugzilla::JobQueue</code> has not been configured to handle
     the job "[% job FILTER html %]".  You need to add this job type
-    to the <code>JOB_MAP</code> constant in <code>Bugzilla::JobQueue</code>.
+    to the <code>JOB_MAP</code> constant in <code>Bugzilla::JobQueue</code>,
+    perhaps by using the 'job_map' hook.
 
   [% ELSIF error == "ldap_bind_failed" %]
     Failed to bind to the LDAP server. The error message was: 
@@ -462,11 +457,6 @@
 
   [% ELSIF error == "not_in_transaction" %]
     Attempted to end transaction without starting one first.
-
-  [% ELSIF error == "comma_operator_deprecated" %]
-    [% title = "SQL query generator internal error" %]
-    There is an internal error in the SQL query generation code,
-    creating queries with implicit JOIN.
 
   [% ELSIF error == "invalid_post_bug_submit_action" %]
     Invalid setting for post_bug_submit_action
