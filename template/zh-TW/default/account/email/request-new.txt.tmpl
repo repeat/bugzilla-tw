@@ -30,7 +30,7 @@ X-Bugzilla-Type: admin
 
 如要繼續以此一電子郵件建立帳號，請於 [% expiration_ts FILTER time("%Y-%m-%d %H:%M %Z") %] 前點選以下連結：
 
-[%+ urlbase %]token.cgi?t=[% token FILTER url_quote %]&a=request_new_account
+[%+ urlbase %]token.cgi?t=[% token FILTER uri %]&a=request_new_account
 
 如果你並沒有在 [% expiration_ts FILTER time("%Y-%m-%d %H:%M %Z") %] 之前收到此封電子郵件，
 或是你想要以其他的電子郵件建立新帳號，你可以點選以下連結重新開始：
@@ -47,6 +47,6 @@ X-Bugzilla-Type: admin
 
 如果你不想要建立帳號，或者此一要求是錯誤的，你可以什麼也不做，或是點選以下連結：
 
-[%+ urlbase %]token.cgi?t=[% token FILTER url_quote %]&a=cancel_new_account
+[%+ urlbase %]token.cgi?t=[% token FILTER uri %]&a=cancel_new_account
 
 如果以上的連結失效，或者你有其他關於你的帳號的問題，請洽管理者[% Param('maintainer') %]。

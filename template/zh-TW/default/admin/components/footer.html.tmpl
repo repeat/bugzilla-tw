@@ -30,13 +30,13 @@
   編輯[% IF comp && !no_edit_component_link %]子產品<a
   title="編輯子產品 '[% comp.name FILTER html %]'"
   href="editcomponents.cgi?action=edit&amp;product=
-  [%- product.name FILTER url_quote %]&amp;component=[% comp.name FILTER url_quote %]">
+  [%- product.name FILTER uri %]&amp;component=[% comp.name FILTER uri %]">
    '[% comp.name FILTER html %]'</a>，或是編輯[% END %][% IF !no_edit_other_components_link %]產品<a
   title="從產品 '[% product.name FILTER html %]' 中選擇一項子產品進行編輯"
   href="editcomponents.cgi?product=
-  [%- product.name FILTER url_quote %]">'[% product.name FILTER html %]'</a>的其他子產品，或是編輯[% END %]產品<a
+  [%- product.name FILTER uri %]">'[% product.name FILTER html %]'</a>的其他子產品，或是編輯[% END %]產品<a
   title="編輯產品 '[% product.name FILTER html %]'"
   href="editproducts.cgi?action=edit&amp;product=
-  [%- product.name FILTER url_quote %]">'[% product.name FILTER html %]'</a>。
+  [%- product.name FILTER uri %]">'[% product.name FILTER html %]'</a>。
 
 </p>

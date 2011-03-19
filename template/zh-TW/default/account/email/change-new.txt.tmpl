@@ -29,11 +29,11 @@ X-Bugzilla-Type: admin
 
 如要確認變更，請點選以下網址：
 
-[%+ urlbase %]token.cgi?t=[% token FILTER url_quote %]&a=cfmem
+[%+ urlbase %]token.cgi?t=[% token FILTER uri %]&a=cfmem
 
 如果你並非提出此項要求的人，或者你想要取消此項要求，請點選以下網址：
 
-[%+ urlbase %]token.cgi?t=[% token FILTER url_quote %]&a=cxlem
+[%+ urlbase %]token.cgi?t=[% token FILTER uri %]&a=cxlem
 
 如果你什麼也不做，此項請求將會在 [% constants.MAX_TOKEN_AGE %] 天後
 ([% expiration_ts FILTER time("%Y-%m-%d %H:%M %Z") %]) 失效。
