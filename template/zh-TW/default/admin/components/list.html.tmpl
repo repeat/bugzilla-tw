@@ -33,11 +33,11 @@
 %]
 
 [% edit_contentlink = BLOCK %]editcomponents.cgi?action=edit&amp;product=
-  [%- product.name FILTER url_quote %]&amp;component=%%name%%[% END %]
+  [%- product.name FILTER uri %]&amp;component=%%name%%[% END %]
 [% delete_contentlink = BLOCK %]editcomponents.cgi?action=del&amp;product=
-  [%- product.name FILTER url_quote %]&amp;component=%%name%%[% END %]
+  [%- product.name FILTER uri %]&amp;component=%%name%%[% END %]
 [% bug_count_contentlink = BLOCK %]buglist.cgi?component=%%name%%&amp;product=
-  [%- product.name FILTER url_quote %][% END %]
+  [%- product.name FILTER uri %][% END %]
 
 
 [% columns = [
@@ -54,6 +54,11 @@
      {
        name => "initialowner"
        heading => "預設負責人"
+     },
+     {
+       name => "isactive"
+       heading => "啟用"
+       yesno_field => 1
      },
    ]
 %]
@@ -111,12 +116,12 @@
 %]
 
 <p>在產品 '[% product.name FILTER html %]'
-  <a href="editcomponents.cgi?action=add&amp;product=[% product.name FILTER url_quote %]">新增</a>子產品
+  <a href="editcomponents.cgi?action=add&amp;product=[% product.name FILTER uri %]">新增</a>子產品
   '[% product.name FILTER html %]'</p>
 
 [% IF ! showbugcounts %]
 
-  <p><a href="editcomponents.cgi?product=[% product.name FILTER url_quote %]&amp;showbugcounts=1">
+  <p><a href="editcomponents.cgi?product=[% product.name FILTER uri %]&amp;showbugcounts=1">
       以 [% terms.bug %] 數目重新顯示（較慢）</a></p>
 
 [% END %]

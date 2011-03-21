@@ -32,19 +32,19 @@
 [% UNLESS no_add_link %]
   <a title="在 '[% field.description FILTER html %]' 新增一個數值。"
      href="editvalues.cgi?action=add&amp;field=
-          [%- field.name FILTER url_quote %]">新增</a>一個數值。
+          [%- field.name FILTER uri %]">新增</a>一個數值。
 [% END %]
 
 [% IF value.defined && !no_edit_link %]
   編輯數值 <a
   title="編輯 '[% field.name FILTER html %]' 欄位的數值 '[% value.name FILTER html %]'"
-  href="editvalues.cgi?action=edit&amp;field=[% field.name FILTER url_quote %]&amp;value=
-        [%- value.name FILTER url_quote %]">'[% value.name FILTER html %]'</a> 。
+  href="editvalues.cgi?action=edit&amp;field=[% field.name FILTER uri %]&amp;value=
+        [%- value.name FILTER uri %]">'[% value.name FILTER html %]'</a> 。
 [% END %]
 
 [% UNLESS no_edit_other_link %]
   編輯 <a href="editvalues.cgi?field=
-        [%- field.name FILTER url_quote %]">'[% field.description FILTER html %]'</a> 欄位的其他數值。
+        [%- field.name FILTER uri %]">'[% field.description FILTER html %]'</a> 欄位的其他數值。
 
 [% END %]
 

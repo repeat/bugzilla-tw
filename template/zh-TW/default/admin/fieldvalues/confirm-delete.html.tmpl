@@ -47,7 +47,7 @@
   <td valign="top">
 [% IF value.bug_count %]
   <a title="列出 '[% field.description FILTER html %]' 是 '[% value.name FILTER html %]' 的 [% terms.bugs %]"
-     href="buglist.cgi?[% field.name FILTER url_quote %]=[% value.name FILTER url_quote %]"
+     href="buglist.cgi?[% field.name FILTER uri %]=[% value.name FILTER uri %]"
     >[% value.bug_count FILTER html %]</a>
 [% ELSE %]
   無
@@ -79,7 +79,7 @@
           使用了此一數值。在刪除此數值之前，你必須先變更<a
           title="列出 '[% field.description FILTER html %]' 是
                 '[%+ value.name FILTER html %]' 的 [% terms.bugs %]"
-          href="buglist.cgi?[% field.name FILTER url_quote %]=[% value.name FILTER url_quote %]"
+          href="buglist.cgi?[% field.name FILTER uri %]=[% value.name FILTER uri %]"
           >那[% IF value.bug_count > 1 %]些[% ELSE %]個[% END %] [%+ terms.bug %] </a>的數值。
       </li>
     [% END %]
@@ -93,7 +93,7 @@
     [% IF value.controls_visibility_of_fields.size %]
       <li>此數值控制下列欄位的可見性：<br>
         [% FOREACH field = value.controls_visibility_of_fields %]
-          <a href="editfields.cgi?action=edit&name=[% field.name FILTER url_quote %]"
+          <a href="editfields.cgi?action=edit&name=[% field.name FILTER uri %]"
             >[% field.description FILTER html %] ([% field.name FILTER html %])</a><br>
         [% END %]
       </li>
@@ -104,8 +104,8 @@
        [% FOREACH field_name = value.controlled_values.keys %]
          [% FOREACH controlled = value.controlled_values.${field_name} %]
            <a href="editvalues.cgi?action=edit&field=
-                    [%- controlled.field.name FILTER url_quote %]&value=
-                    [%- controlled.name FILTER url_quote %]">
+                    [%- controlled.field.name FILTER uri %]&value=
+                    [%- controlled.name FILTER uri %]">
              [% controlled.field.description FILTER html %]
              ([% controlled.field.name FILTER html %]) ：
              [%+ controlled.name FILTER html %]</a><br>
