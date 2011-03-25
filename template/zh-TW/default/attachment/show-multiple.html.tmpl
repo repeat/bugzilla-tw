@@ -33,6 +33,12 @@
   style_urls = ['skins/standard/attachment.css']
 %]
 
+[% IF hide_obsolete %]
+  <div id="hidden_obsolete_message">
+    已將廢棄的附件隱藏。如要檢視所有附件（包括已廢棄的附件），
+    <a href="attachment.cgi?bugid=[% bug.id FILTER html %]&amp;action=viewall">點此連結</a>。
+  </div>
+[% END %]
 <br>
 
 [% FOREACH a = attachments %]

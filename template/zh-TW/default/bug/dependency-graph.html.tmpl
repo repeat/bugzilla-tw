@@ -21,7 +21,6 @@
 [%# INTERFACE:
   # bug_id: integer. The number of the bug(s).
   # multiple_bugs: boolean. True if bug_id contains > 1 bug number.
-  # doall: boolean. True if we are displaying every bug in the database.
   # showsummary: boolean. True if we are showing bug summaries.
   # rankdir: string. "TB" if we are ranking top-to-bottom,
                      "LR" if left-to-right.
@@ -37,7 +36,7 @@
    header = title
  %]
 
-[% IF NOT multiple_bugs AND NOT doall %]
+[% IF NOT multiple_bugs %]
   [% filtered_desc = short_desc FILTER html %]
   [% title = "$terms.bug $bug_id 的${title}"
      header = "$terms.bug <a href=\"show_bug.cgi?id=$bug_id\">$bug_id</a> 的 $header"
@@ -82,8 +81,6 @@
             將 [% terms.bugs %] 限制在和輸入的 [% terms.bugs %] 有直接關係</option>
           <option value="web" [% 'selected="selected"' IF display == "web" %]>
             顯示和輸入的 [% terms.bugs %] 有任何關係的 [% terms.bugs %]</option>
-          <option value="doall" [% 'selected="selected"' IF display == "doall" %]>
-            顯示每一個 [% terms.bug %] 在系統中的依賴性</option>
         </select>
       </td>
     </tr>
