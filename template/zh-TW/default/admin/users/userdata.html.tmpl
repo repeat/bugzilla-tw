@@ -30,7 +30,7 @@
         [% IF !otheruser.in_group('bz_sudo_protect') %]
           <br />
           <a href="relogin.cgi?action=prepare-sudo&amp;target_login=
-          [%- otheruser.login FILTER url_quote %]">sudo 此使用者</a>
+          [%- otheruser.login FILTER uri %]">sudo 此使用者</a>
         [% END %]
       [% END %]
     [% ELSE %]

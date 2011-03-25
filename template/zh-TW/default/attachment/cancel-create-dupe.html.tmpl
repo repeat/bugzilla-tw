@@ -34,15 +34,15 @@
     <td bgcolor="#ff0000">
       <font size="+2">
         你已經用此表單送過<a
-        href="[% urlbase FILTER html %]attachment.cgi?id=[% attachid FILTER url_quote %]&action=edit"
-        >附件 [% attachid FILTER url_quote %]</a> 。
+        href="[% urlbase FILTER html %]attachment.cgi?id=[% attachid FILTER uri %]&action=edit"
+        >附件 [% attachid FILTER uri %]</a> 。
       </font>
     </td>
   </tr>
 </table>
 
 <p>
-  你可以<a href="[% urlbase FILTER html %]attachment.cgi?bugid=[% bugid FILTER url_quote %]&action=enter"
+  你可以<a href="[% urlbase FILTER html %]attachment.cgi?bugid=[% bugid FILTER uri %]&action=enter"
   >新增附件</a>，或是[% "回到 $terms.bug $bugid" FILTER bug_link(bugid) FILTER none %] 。
 <p>
 

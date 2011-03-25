@@ -34,8 +34,8 @@
     [% errortext FILTER html %]：[% INCLUDE bug_list badbugs = badbugs %]
 
   [% ELSIF san_tag == "bug_check_repair" %]
-    <a href="sanitycheck.cgi?[% param FILTER url_quote %]=1&amp;token=
-       [%- issue_hash_token(['sanitycheck']) FILTER url_quote %]">[% text FILTER html %]</a>。
+    <a href="sanitycheck.cgi?[% param FILTER uri %]=1&amp;token=
+       [%- issue_hash_token(['sanitycheck']) FILTER uri %]">[% text FILTER html %]</a>。
 
   [% ELSIF san_tag == "bug_check_creation_date" %]
     檢查沒有建立日期的 [% terms.bugs %] 中…（沒有建立日期將會使 [% terms.bugs %] 無法檢視。）
@@ -138,12 +138,12 @@
 
   [% ELSIF san_tag == "cross_check_attachment_has_references" %]
     <a href="sanitycheck.cgi?remove_invalid_attach_references=1&amp;token=
-       [%- issue_hash_token(['sanitycheck']) FILTER url_quote %]">
+       [%- issue_hash_token(['sanitycheck']) FILTER uri %]">
       刪除參照到不存在的附件的參照。</a>
 
   [% ELSIF san_tag == "cross_check_bug_has_references" %]
     <a href="sanitycheck.cgi?remove_invalid_bug_references=1&amp;token=
-       [%- issue_hash_token(['sanitycheck']) FILTER url_quote %]">
+       [%- issue_hash_token(['sanitycheck']) FILTER uri %]">
       刪除參照到不存在的 [% terms.bugs %] 的參照。</a>
 
   [% ELSIF san_tag == "double_cross_check_to" %]
@@ -188,7 +188,7 @@
 
   [% ELSIF san_tag == "flag_fix" %]
     <a href="sanitycheck.cgi?remove_invalid_flags=1&amp;token=
-       [%- issue_hash_token(['sanitycheck']) FILTER url_quote %]">
+       [%- issue_hash_token(['sanitycheck']) FILTER uri %]">
       點選此處刪除無效的旗標</a>
 
   [% ELSIF san_tag == "group_control_map_entries_creation" %]
@@ -240,7 +240,7 @@
 
   [% ELSIF san_tag == "unsent_bugmail_fix" %]
     <a href="sanitycheck.cgi?rescanallBugMail=1&amp;token=
-       [%- issue_hash_token(['sanitycheck']) FILTER url_quote %]">寄出這些信件</a>。
+       [%- issue_hash_token(['sanitycheck']) FILTER uri %]">寄出這些信件</a>。
 
   [% ELSIF san_tag == "whines_obsolete_target_deletion_start" %]
     移除訂閱中不存在的使用者／群組中。
@@ -260,7 +260,7 @@
 
   [% ELSIF san_tag == "whines_obsolete_target_fix" %]
     <a href="sanitycheck.cgi?remove_old_whine_targets=1&amp;token=
-       [%- issue_hash_token(['sanitycheck']) FILTER url_quote %]">
+       [%- issue_hash_token(['sanitycheck']) FILTER uri %]">
       點選此處移除舊的使用者／群組</a>
 
   [% ELSE %]
@@ -289,12 +289,12 @@
       # which itself calls this template again, generating a recursion error.
       # I doubt having a tooltip with the bug status and summary is so
       # important here anyway, as you can click the "(as buglist)" link. %]
-    <a href="show_bug.cgi?id=[% bug_id FILTER url_quote %]">[% bug_id FILTER html %]</a>
+    <a href="show_bug.cgi?id=[% bug_id FILTER uri %]">[% bug_id FILTER html %]</a>
     [% ", " IF !loop.last %]
   [% END %]
-  （<a href="buglist.cgi?bug_id=[% badbugs.join(",") FILTER url_quote %]">顯示為 [% terms.bug %] 清單</a>）。
+  （<a href="buglist.cgi?bug_id=[% badbugs.join(",") FILTER uri %]">顯示為 [% terms.bug %] 清單</a>）。
 [% END %]
 
 [% BLOCK bug_link %]
-  <a href="show_bug.cgi?id=[% bug_id FILTER url_quote %]">[% terms.bug %] [%+ bug_id FILTER html %]</a>
+  <a href="show_bug.cgi?id=[% bug_id FILTER uri %]">[% terms.bug %] [%+ bug_id FILTER html %]</a>
 [% END %]

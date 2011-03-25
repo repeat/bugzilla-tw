@@ -40,25 +40,25 @@
 [% UNLESS no_add_milestone_link %]
   <a title="新增產品 '[% product.name FILTER html %]' 的里程碑"
      href="editmilestones.cgi?action=add&amp;product=
-          [%- product.name FILTER url_quote %]">新增</a>里程碑。
+          [%- product.name FILTER uri %]">新增</a>里程碑。
 [% END %]
 
 [% IF milestone.name && !no_edit_milestone_link %]
   編輯里程碑
   <a title="編輯產品 '[%- product.name FILTER html %]' 的里程碑 '[% milestone.name FILTER html %]'"
   href="editmilestones.cgi?action=edit&amp;product=
-        [%- product.name FILTER url_quote %]&amp;milestone=
-        [%- milestone.name FILTER url_quote %]"
+        [%- product.name FILTER uri %]&amp;milestone=
+        [%- milestone.name FILTER uri %]"
         >'[% milestone.name FILTER html %]'</a> 。
 [% END %]
 
 [% UNLESS no_edit_other_milestones_link %]
   編輯產品 <a href="editmilestones.cgi?product=
-        [%- product.name FILTER url_quote %]">'[% product.name FILTER html %]'</a> 的其他里程碑。
+        [%- product.name FILTER uri %]">'[% product.name FILTER html %]'</a> 的其他里程碑。
 
 [% END %]
 
   編輯產品 <a href="editproducts.cgi?action=edit&amp;product=
-        [%- product.name FILTER url_quote %]">'[% product.name FILTER html %]'</a> 。
+        [%- product.name FILTER uri %]">'[% product.name FILTER html %]'</a> 。
 
 </p>

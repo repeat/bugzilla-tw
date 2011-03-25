@@ -32,11 +32,11 @@
 %]
 
 [% edit_contentlink = BLOCK %]editversions.cgi?action=edit&amp;product=
-  [%- product.name FILTER url_quote %]&amp;version=%%name%%[% END %]
+  [%- product.name FILTER uri %]&amp;version=%%name%%[% END %]
 [% delete_contentlink = BLOCK %]editversions.cgi?action=del&amp;product=
-  [%- product.name FILTER url_quote %]&amp;version=%%name%%[% END %]
+  [%- product.name FILTER uri %]&amp;version=%%name%%[% END %]
 [% bug_count_contentlink = BLOCK %]buglist.cgi?version=%%name%%&amp;product=
-  [%- product.name FILTER url_quote %][% END %]
+  [%- product.name FILTER uri %][% END %]
 
 
 [% columns = [
@@ -44,6 +44,11 @@
        name => "name"
        heading => "編輯版本…"
        contentlink => edit_contentlink
+     },
+     {
+       name => "isactive"
+       heading => "啟用"
+       yesno_field => 1
      }
    ]
 %]
@@ -76,7 +81,7 @@
 
 [% IF ! showbugcounts %]
 
-  <p><a href="editversions.cgi?product=[% product.name FILTER url_quote %]&amp;showbugcounts=1"
+  <p><a href="editversions.cgi?product=[% product.name FILTER uri %]&amp;showbugcounts=1"
        >以 [% terms.bug %] 數目重新顯示（較慢）</a></p>
 
 [% END %]
