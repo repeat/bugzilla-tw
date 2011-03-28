@@ -37,15 +37,7 @@
 [% DEFAULT title = "內部發生錯誤" %]
 
 [% error_message = BLOCK %]
-  [% IF error == "attachment_local_storage_disabled" %]
-    [% title = "儲存附件功能已停用" %]
-    你無法將附件儲存於伺服器端。此功能已被停用。
-
-  [% ELSIF error == "attachment_url_disabled" %]
-    [% title = "附加網址功能已停用" %]
-    你無法附加網址。此功能已被停用。
-
-  [% ELSIF error == "auth_invalid_email" %]
+  [% IF error == "auth_invalid_email" %]
     [% title = "無效的電子郵件地址" %]
     在試圖建立或更新你的帳號的時候，我們收到了一個無法通過電子郵件語法檢查的地址
     (<b>[% addr FILTER html %]</b>)。
@@ -89,6 +81,11 @@
   [% ELSIF error == "chart_file_open_fail" %]
     無法開啟圖表檔案 <tt>[% filename FILTER html %]</tt> 。
 
+  [% ELSIF error == "column_alter_nonexistent_fk" %]
+    你嘗試修改
+    [%+ table FILTER html %].[% column FILTER html %]
+    的 foreign key ，但是該欄位並沒有 foreign key 。
+
   [% ELSIF error == "column_not_null_without_default" %]
     新增欄位 [% name FILTER html %] 失敗：
     <br>除非你在參數 <code>$init_value</code> 中做設定，否則你不能在現有的表格中加入沒有預設值的 NOT NULL 欄位。
@@ -96,10 +93,6 @@
   [% ELSIF error == "column_not_null_no_default_alter" %]
     由於 [% name FILTER html %] 欄位內含有 NULL 值，因此你不能在不指定預設值或指定一個值給
     $set_nulls_to 的前提下，將 [% name FILTER html %] 欄位設為 NOT NULL 值。
-
-  [% ELSIF error == "comma_operator_deprecated" %]
-    [% title = "SQL 查詢發生內部錯誤" %]
-    在建立內含 JOIN 的查詢時，SQL 查詢發生內部錯誤。
 
   [% ELSIF error == "comment_extra_data_not_allowed" %]
     你嘗試將 <code>extra_data</code> 欄位設定為
@@ -182,9 +175,6 @@
     '[% field.description FILTER html %]' ([% field.name FILTER html %])
     並非自訂欄位。
 
-  [% ELSIF error == "field_type_mismatch" %]
-    無法同時處理 <code>[% field FILTER html %]</code> 以及 <code>[% type FILTER html %]</code> 。
-
   [% ELSIF error == "field_type_not_specified" %]
     [% title = "未指定欄位種類" %]
     在新增自訂欄位時，你必須指定欄位的種類。
@@ -196,9 +186,6 @@
   [% ELSIF error == "flag_type_inactive" %]
     [% title = "無效的旗標類型" %]
     旗標類型 [% type FILTER html %] 無效，也不能用於建立新旗標。
-
-  [% ELSIF error == "flag_type_nonexistent" %]
-    沒有編號為 <em>[% id FILTER html %]</em> 的旗標類型。
 
   [% ELSIF error == "flag_type_target_type_invalid" %]
     目標種類既非 <em>[% terms.bug %]</em> ，也不是<em>附件</em>，而是 <em>[% target_type FILTER html %]</em> 。
@@ -251,6 +238,10 @@
     [% title = "無效的系列" %]
     系列編號 [% series_id FILTER html %] 無效。可能是該系列已刪除。
 
+  [% ELSIF error == "invalid_timestamp" %]
+    所輸入的 timestamp <code>[% timestamp FILTER html %]</code>
+    無法被轉換為有效的日期和時間。
+
   [% ELSIF error == "invalid_webservergroup" %]
     沒有此群組： [% group FILTER html %] 。<br>
     請檢查你在 [% constants.bz_locations.localconfig FILTER html %]
@@ -280,7 +271,8 @@
   [% ELSIF error == "jobqueue_no_job_mapping" %]
     <code>Bugzilla::JobQueue</code> 並未被指派來處理
     "[% job FILTER html %]" 。你必須在
-    <code>Bugzilla::JobQueue</code> 裡把此種 job 類別加入 <code>JOB_MAP</code> 此常數中。
+    <code>Bugzilla::JobQueue</code> 裡把此種 job 類別加入 <code>JOB_MAP</code> 此常數中，
+    也許會需要用到 'job_map' 這個 hook 。
 
   [% ELSIF error == "ldap_bind_failed" %]
     Bind LDAP 伺服器失敗。錯誤訊息為：

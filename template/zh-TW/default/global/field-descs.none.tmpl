@@ -60,46 +60,10 @@
   ${constants.FIELD_TYPE_BUG_ID}        => "$terms.Bug 編號"
 } %]
 
-[%# You can use this hash to localize (translate) the values displayed
-  # for drop-down and multiple-select fields. Lines starting with "#"
-  # are comments.
-  #%]
-[% value_descs = {
-  "bug_status" => {
-    # "UNCONFIRMED" => "UNCO",
-    # "NEW"         => "NEWISH",
-    "UNCONFIRMED" => "未確認 (UNCONFIRMED)",
-    "CONFIRMED"   => "已確認 (CONFIRMED)",
-    "IN_PROCESS"  => "進行中 (IN_PROCESS)",
-    "RESOLVED"    => "已解決 (RESOLVED)",
-    "VERIFIED"    => "已認證 (VERIFIED)"
-  },
-
-  "resolution" => {
-    # "FIXED"      => "NO LONGER AN ISSUE",
-    # "WORKSFORME" => "NOTMYPROBLEM!",
-    ""        => "---",
-    "FIXED"      => "已修復 (FIXED)",
-    "INVALID"    => "無效的 (INVALID)",
-    "WONTFIX"    => "不處理 (WONTFIX)",
-    "DUPLICATE"  => "重複 (DUPLICATE)",
-    "WORKSFORME" => "好好的 (WORKSFORME)"
-  }
-} %]
-
-[%# We use "FILTER none" here because only the caller can know how to
-  # filter the result appropriately.
-  #%]
-[% MACRO display_value(field_name, value_name) BLOCK %][% FILTER trim %]
-  [% IF value_descs.${field_name}.${value_name}.defined %]
-    [% value_descs.${field_name}.${value_name} FILTER none %]
-  [% ELSE %]
-    [% value_name FILTER none %]
-  [% END %]
-[% END %][% END %]
-
 [% IF in_template_var %]
-  [% vars.terms = terms %]
+  [% PROCESS "global/value-descs.none.tmpl" %]
+  [% SET vars.value_descs = value_descs %]
+  [% SET vars.terms = terms %]
 
   [%# field_descs is loaded as a global template variable and cached
     # across all templates--see VARIABLES in Bugzilla/Template.pm.
@@ -117,7 +81,6 @@
     "attachments.ispatch"     => "附件是 patch",
     "attachments.isobsolete"  => "附件已廢棄",
     "attachments.isprivate"   => "附件不公開",
-    "attachments.isurl"       => "附件是網址",
     "attachments.submitter"   => "附件建立者",
     "blocked"                 => "會擋掉這些 $terms.Bug",
     "bug_file_loc"            => "網址",
@@ -143,6 +106,7 @@
     "flagtypes.name"          => "旗標",
     "keywords"                => "關鍵字",
     "longdesc"                => "意見",
+    "longdescs.count"         => "意見數量",
     "longdescs.isprivate"     => "意見不公開",
     "newcc"                   => "寄件副本",
     "op_sys"                  => "作業系統",
@@ -167,6 +131,7 @@
     "settings"                => "設定",
     "short_desc"              => "摘要",
     "status_whiteboard"       => "狀態白板",
+    "tags.name"               => "標籤",
     "target_milestone"        => "目標里程碑",
     "version"                 => "版本",
     "work_time"               => "已工作時數"

@@ -90,10 +90,14 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
                       "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<html lang="en">
   <head>
     [% Hook.process("start") %]
     <title>[% title %]</title>
+
+    [% IF Param('utf8') %]
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    [% END %]
 
 [%# Migration note: contents of the old Param 'headerhtml' would go here %]
 
@@ -190,7 +194,9 @@
                 cookiepath: '[% Param('cookiepath') FILTER js %]',
                 maxusermatches: [% Param('maxusermatches') FILTER js %]
             },
-
+            constant: {
+                COMMENT_COLS: [% constants.COMMENT_COLS FILTER js %]
+            },
             string: {
                 [%# Please keep these in alphabetical order. %]
 
@@ -209,7 +215,7 @@
 
         [% FOREACH yui_name = yui %]
           [% FOREACH yui_template = yui_templates.$yui_name %]
-            [% PROCESS $yui_template %]
+            [% INCLUDE $yui_template %]
           [% END %]
         [% END %]
         [% IF javascript %]

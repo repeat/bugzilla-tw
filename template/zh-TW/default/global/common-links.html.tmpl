@@ -35,7 +35,7 @@
                   { alert('請至少輸入一個字串來搜尋。');
                     return false; } return true;">
     <input class="txt" type="text" id="quicksearch[% qs_suffix FILTER html %]" name="quicksearch"
-           value="[% quicksearch FILTER html %]">
+           title="快速搜尋" value="[% quicksearch FILTER html %]">
     <input class="btn" type="submit" value="搜尋"
            id="find[% qs_suffix FILTER html %]">
     [%-# Work around FF bug: keep this on one line %]</form>
@@ -47,8 +47,8 @@
     [% IF Param('shutdownhtml') || Bugzilla.has_flags %]
       <span class="separator">| </span>
       [% IF user.id %]
-        <a href="request.cgi?requester=[% user.login FILTER url_quote %]&amp;requestee=
-                 [% user.login FILTER url_quote %]&amp;do_union=1&amp;group=type">我的要求</a>
+        <a href="request.cgi?requester=[% user.login FILTER uri %]&amp;requestee=
+                 [% user.login FILTER uri %]&amp;do_union=1&amp;group=type">我的要求</a>
       [% ELSE %]
         <a href="request.cgi">要求</a>
       [% END %]
