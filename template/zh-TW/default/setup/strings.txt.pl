@@ -67,6 +67,7 @@ END
     feature_mod_perl => 'mod_perl',
     feature_moving => '在不同機器間搬移 Bugs',
     feature_patch_viewer => 'Patch Viewer',
+    feature_rand_security => '改善 cookie 和 token 的安全性',
     feature_smtp_auth => 'SMTP 認證',
     feature_updates => '自動更新通知',
     feature_xmlrpc => 'XML-RPC 介面',

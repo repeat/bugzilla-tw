@@ -643,9 +643,9 @@
 
   [% ELSIF error == "freetext_too_long" %]
     [% title = "文字過長" %]
-    文字的長度限制為 [% constants.MAX_FREETEXT_LENGTH FILTER none %] 字元 。
-    你輸入的文字太長了（ [% text.length FILTER html %] 字元）：
-    <p><em>[% text FILTER html %]</em></p>
+    你在 [% field_descs.$field FILTER html %] 欄位輸入的文字太長了（
+    [% text.length FILTER html %] 字元，超過所允許的文字長度上限
+    [% constants.MAX_FREETEXT_LENGTH FILTER none %] 字元）。
 
   [% ELSIF error == "group_cannot_delete" %]
     [% title = "無法刪除群組" %]
@@ -1192,6 +1192,9 @@
     [%- IF class == "Bugzilla::User" %]
       可能是你輸入了錯誤的名稱，或者該使用者尚未建立 [% terms.Bugzilla %] 帳號。
     [% END %]
+    [% IF class == "Bugzilla::Keyword" %]
+      有效的關鍵字名稱<a href="describekeywords.cgi">列於此處</a>。
+    [% END %]
 
   [% ELSIF error == "old_password_incorrect" %]
     [% title = "不正確的舊密碼" %]
@@ -1465,11 +1468,6 @@
        無法理解你想要做什麼事。
     [% END %]
 
-  [% ELSIF error == "unknown_keyword" %]
-    [% title = "未知的關鍵字" %]
-    <code>[% keyword FILTER html %]</code> 並非已知的關鍵字。
-    有效的關鍵字名稱<a href="describekeywords.cgi">列於此處</a>。
-
   [% ELSIF error == "unknown_tab" %]
     [% title = "未知的 tab" %]
     <code>[% current_tab_name FILTER html %]</code>並非有效的 tab 名稱。
@@ -1644,6 +1642,8 @@
     欄位
   [% ELSIF class == "Bugzilla::Group" %]
     群組
+  [% ELSIF class == "Bugzilla::Keyword" %]
+    關鍵字
   [% ELSIF class == "Bugzilla::Product" %]
     產品
   [% ELSIF class == "Bugzilla::Search::Recent" %]

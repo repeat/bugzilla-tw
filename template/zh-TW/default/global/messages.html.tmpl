@@ -540,7 +540,7 @@
       [% FOREACH param = param_changed %]
         已更新 <em>[% param FILTER html %]</em> 。<br>
         [% IF param == 'utf8' && Param('utf8') %]
-          <strong>你必須重新執行 checksetup.pl 。</strong><br>
+          <strong>你必須重新執行 <kbd>checksetup.pl</kbd> 。</strong><br>
         [% END %]
       [% END %]
     [% ELSE %]

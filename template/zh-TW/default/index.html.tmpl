@@ -161,6 +161,7 @@ function quicksearchHelpText(el_id, action){
                 |
                 <a href="page.cgi?id=release-notes.html">版本資訊</a>
               </li>
+              [% Hook.process('additional_links') %]
             </ul>
           </div>
         </form>
