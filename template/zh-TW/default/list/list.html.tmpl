@@ -35,7 +35,7 @@
   [% title = title _ "：" _ (searchname OR defaultsavename) FILTER html %]
 [% END %]
 
-[% qorder = order FILTER url_quote IF order %]
+[% qorder = order FILTER uri IF order %]
 
 
 [%############################################################################%]
@@ -110,9 +110,7 @@
 [%############################################################################%]
 
 [% IF bugs.size > 9 %]
-  <span class="bz_result_count">
-    找到 [% bugs.size %] 個 [% terms.bugs %] 。
-  </span>
+  [% PROCESS num_results %]
 [% END %]
 
 [%############################################################################%]
@@ -134,13 +132,7 @@
 [%# Succeeding Status Line                                                   #%]
 [%############################################################################%]
 
-<span class="bz_result_count">
-  [% IF bugs.size == 0 %]
-    <span class="zero_results">[% terms.zeroSearchResults %]。</span>
-  [% ELSE %]
-    找到 [% bugs.size %] 個 [% terms.bugs %] 。
-  [% END %]
-</span>
+[% PROCESS num_results %]
 
 [% IF bugs.size == 0 %]
   <ul class="zero_result_links">
@@ -201,7 +193,7 @@
 
       <td valign="middle" class="bz_query_links">
         <a href="buglist.cgi?
-        [% urlquerypart FILTER html %]&amp;ctype=csv">CSV</a> |
+        [% urlquerypart FILTER html %]&amp;ctype=csv&human=1">CSV</a> |
         <a href="buglist.cgi?
         [% urlquerypart FILTER html %]&amp;title=
         [%- title FILTER html %]&amp;ctype=atom">ATOM</a> |
@@ -209,7 +201,7 @@
         [% urlquerypart FILTER html %]&amp;ctype=ics">iCalendar</a> |
         <a href="colchange.cgi?
         [% urlquerypart FILTER html %]&amp;query_based_on=
-          [% defaultsavename OR searchname FILTER url_quote %]">變更欄位</a> |
+          [% defaultsavename OR searchname FILTER uri %]">變更欄位</a> |
 
         [% IF bugs.size > 1 && caneditbugs && !dotweak %]
           <a href="buglist.cgi?[% urlquerypart FILTER html %]
@@ -236,8 +228,8 @@
       <td valign="middle" nowrap="nowrap" class="bz_query_forget">
         |
         <a href="buglist.cgi?cmdtype=dorem&amp;remaction=forget&amp;namedcmd=
-                [% searchname FILTER url_quote %]&amp;token=
-                [% issue_hash_token([search_id, searchname]) FILTER url_quote %]">
+                [% searchname FILTER uri %]&amp;token=
+                [% issue_hash_token([search_id, searchname]) FILTER uri %]">
           刪除已儲存的搜尋 '[% searchname FILTER html %]'</a>
       </td>
     [% ELSE %]
@@ -271,21 +263,40 @@
 
 [% PROCESS global/footer.html.tmpl %]
 
+[%##########%]
+[%# Blocks #%]
+[%##########%]
+
 [% BLOCK edit_search_url %]
   [% editqueryname = searchname OR defaultsavename OR '' %]
   query.cgi?[% urlquerypart FILTER html %]
     [%- IF editqueryname != '' %]&amp;known_name=
-      [%- editqueryname FILTER url_quote %]
+      [%- editqueryname FILTER uri %]
     [% END %]
 [% END %]
 
 [% BLOCK enter_bug_link %]
   <a href="enter_bug.cgi
            [%- IF one_product.defined %]?product=
-             [%- one_product.name FILTER url_quote %][% END %]">
+             [%- one_product.name FILTER uri %][% END %]">
    [% IF one_product.defined %]
      在 "[% one_product.name FILTER html %]" 產品中
    [% END %]
    回報新的 [% terms.bug %]
   </a>
+[% END %]
+
+[% BLOCK num_results %]
+  <span class="bz_result_count">
+    [% IF bugs.size == 0 %]
+      <span class="zero_results">[% terms.zeroSearchResults %]。</span>
+    [% ELSIF default_limited AND bugs.size >= Param('default_search_limit') %]
+      只顯示 [% Param('default_search_limit') FILTER html %] 個
+      [%+ terms.bugs %] 。
+      <a href="buglist.cgi?[% urlquerypart FILTER html %]
+              [%- "&order=$qorder" FILTER html IF order %]&limit=0">查詢所有結果。</a>
+    [% ELSE %]
+      找到 [% bugs.size %] 個 [%+ terms.bugs %] 。
+    [% END %]
+  </span>
 [% END %]

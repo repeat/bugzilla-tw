@@ -55,10 +55,10 @@
   <tr>
     <td>
       <dl>
-        <dt>
+        <dt class="unconfirmed">
           [% display_value("bug_status", "UNCONFIRMED") FILTER html %]
         </dt>
-        <dd>
+        <dd class="unconfirmed">
           這個 [% terms.bug %] 最近才被加到資料庫。沒有人確認它是不是真的。擁有
           "canconfirm" 權限的使用者可以藉由將它的狀態設定為
           <b>[% display_value("bug_status", "CONFIRMED") FILTER html %]</b>
@@ -66,10 +66,10 @@
           <b>[% display_value("bug_status", "RESOLVED") FILTER html %]</b> 。
         </dd>
 
-        <dt>
+        <dt class="confirmed">
           [% display_value("bug_status", "CONFIRMED") FILTER html %]
         </dt>
-        <dd>
+        <dd class="confirmed">
           這個 [% terms.bug %] 是最近才新增且被確認的 [% terms.bug %] 。
           當有人開始處理在這個狀態的 [%+ terms.bugs %] 時，狀態變更為
           <b>[% display_value("bug_status", "IN_PROGRESS") FILTER html %]</b>
@@ -77,16 +77,18 @@
           <b>[% display_value("bug_status", "RESOLVED") FILTER html %]</b> 。
         </dd>
 
-        <dt>
+        <dt class="in_progress">
           [% display_value("bug_status", "IN_PROGRESS") FILTER html %]
         </dt>
-        <dd>
+        <dd class="in_progress">
           這個 [% terms.bug %] 還沒解決，但已分配給適當的人負責。在這狀態下，
           [% terms.bugs %] 可以丟給其他人處理，並會自動將狀態變更為
           <b>[% display_value("bug_status", "CONFIRMED") FILTER html %]</b>
           ；或是將它解決，並標記為
           <b>[% display_value("bug_status", "RESOLVED") FILTER html %]</b> 。
         </dd>
+
+        [% Hook.process('open-status') %]
       </dl>
     </td>
 
@@ -103,65 +105,69 @@
   <tr>
     <td>
       <dl>
-        <dt>
+        <dt class="resolved">
           [% display_value("bug_status", "RESOLVED") FILTER html %]
         </dt>
-        <dd>
+        <dd class="resolved">
           已採取解決方案，並等待 QA 認證。在此狀態下，
           [% terms.bugs %] 可以被重新開啟並設定為開啟的狀態，或是經由
           QA 認證並設定為
           <b>[% display_value("bug_status", "VERIFIED") FILTER html %]</b> 。
         </dd>
 
-        <dt>
+        <dt class="verified">
           [% display_value("bug_status", "VERIFIED") FILTER html %]
         </dt>
-        <dd>
+        <dd class="verified">
           QA 看過了 [% terms.bug %] 和解決方案，並同意已採取適當的解決方案。
           這是 [% terms.bugs %] 最後的狀態。
         </dd>
+
+        [% Hook.process('closed-status') %]
       </dl>
     </td>
 
     <td>
       <dl>
-        <dt>
+        <dt class="fixed">
           [% display_value("resolution", "FIXED") FILTER html %]
         </dt>
-        <dd>
+        <dd class="fixed">
           這個 [% terms.bug %] 已被修復。
         </dd>
 
-        <dt>
+        <dt class="invalid">
           [% display_value("resolution", "INVALID") FILTER html %]
         </dt>
-        <dd>
+        <dd class="invalid">
           描述的問題並不是 [% terms.bug %] 。
         </dd>
 
-        <dt>
+        <dt class="wontfix">
           [% display_value("resolution", "WONTFIX") FILTER html %]
         </dt>
-        <dd>
+        <dd class="wontfix">
           描述的問題的確是 [% terms.bug %] ，但不打算修復。
         </dd>
 
-        <dt>
+        <dt class="duplicate">
          [% display_value("resolution", "DUPLICATE") FILTER html %]
         </dt>
-        <dd>
+        <dd class="duplicate">
           此問題和已存在的 [% terms.bug %] 重複了。將一個 [% terms.bug %] 標記為
           <b>[% display_value("resolution", "DUPLICATE") FILTER html %]</b>
           時，需要輸入該已存在的 [% terms.bug %] 編號。
         </dd>
 
-        <dt>
+        <dt class="worksforme">
           [% display_value("resolution", "WORKSFORME") FILTER html %]
         </dt>
-        <dd>
+        <dd class="worksforme">
           無法重製這個 [% terms.bug %] ，且檢視程式碼也沒有發現任何可能引發這個
           [% terms.bug %] 的線索。如果有較多的資訊，這個 [% terms.bug %] 可以被重新開啟。
         </dd>
+
+        [% Hook.process('resolution') %]
       </dl>
     </td>
   </tr>
