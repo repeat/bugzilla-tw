@@ -71,14 +71,14 @@
         </div>
         [% IF NOT attachment.isurl %]
           <div class="details">
-            [% attachment.filename FILTER html %] ([% attachment.contenttype FILTER html %])
+            [% attachment.filename FILTER html %] ([% attachment.contenttype FILTER html %]) ，
             [% IF attachment.datasize %]
               [%+ attachment.datasize FILTER unitconvert %]
             [% ELSE %]
               <em>已刪除</em>
             [% END %]，由 [%+ INCLUDE global/user.html.tmpl who = attachment.attacher %] 建立
-            [% IF attachment.isprivate %]
-              <span class="bz_private">僅 <strong>[% Param('insidergroup') FILTER html %]</strong> 群組可見</span>
+            [% IF attachment.isprivate %]；
+              <span class="bz_private">僅 <strong>[% Param('insidergroup') FILTER html %]</strong> 群組成員可見</span>
             [% END %]
           </div>
         [% END %]
