@@ -120,18 +120,21 @@
                   <option value="[% comp FILTER html %]">[% comp FILTER html %]</option>
                 [% END %]
               </select><br>
-              <input type="submit" name="categoryAction-include" value="包括">
-              <input type="submit" name="categoryAction-exclude" value="不包括">
+              <input type="submit" id="categoryAction-include"
+                                   name="categoryAction-include" value="包括">
+              <input type="submit" id="categoryAction-exclude"
+                                   name="categoryAction-exclude" value="不包括">
             </td>
             <td style="vertical-align: top;">
               <b>包括：</b><br>
               [% PROCESS category_select name="inclusion_to_remove" categories = inclusions %]<br>
-              <input type="submit" name="categoryAction-removeInclusion" value='刪除該項「包括」設定'>
+              <input type="submit" id="categoryAction-removeInclusion"
+                     name="categoryAction-removeInclusion" value="刪除該項「包括」設定">
             </td>
             <td style="vertical-align: top;">
               <b>不包括：</b><br>
               [% PROCESS category_select name="exclusion_to_remove" categories = exclusions %]<br>
-              <input type="submit" name="categoryAction-removeExclusion" value='刪除該項「不包括」設定'>
+                     name="categoryAction-removeExclusion" value="刪除該項「不包括」設定">
             </td>
           </tr>
         </table>

@@ -57,6 +57,8 @@
               已設定新密碼。
             [% ELSIF field == 'disabledtext' %]
               已修改停用文字。
+            [% ELSIF field == 'extern_id' %]
+              已修改使用者的外部登入帳號。
             [% ELSIF field == 'disable_mail' %]
               [% IF otheruser.email_disabled %]
                 [% terms.Bug %] 通知信已停用。

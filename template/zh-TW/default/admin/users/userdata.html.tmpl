@@ -38,6 +38,19 @@
     [% END %]
   </td>
 </tr>
+[% IF default_authorizer.extern_id_used %]
+  <tr>
+    <th><label for="extern_id">外部登入帳號：</label></th>
+    <td>
+      [% IF editusers %]
+        <input size="64" maxlength="64" name="extern_id"
+               id="extern_id" value="[% otheruser.extern_id FILTER html %]">
+      [% ELSE %]
+        [% otheruser.extern_id FILTER html %]
+      [% END %]
+    </td>
+  </tr>
+[% END %]
 <tr>
   <th><label for="name">真實姓名：</label></th>
   <td>

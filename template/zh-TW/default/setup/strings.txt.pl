@@ -125,6 +125,14 @@ EOT
 EOT
     install_module => '安裝 ##module## 版本 ##version## 中...',
     installation_failed => '*** 安裝已中止。請閱讀上述訊息。 ***',
+    install_no_compiler => <<END,
+錯誤：
+錯誤：使用 install-module.pl 必須先安裝一種編譯器，例如
+gcc 。
+END
+    install_no_make => <<END,
+錯誤：使用 install-module.pl 必須先安裝 "make" 。
+END
     lc_new_vars => <<'END',
 此版本的 Buzilla 包含一些你也許想要改變及套用到本地設定的參數。
 請編輯 ##localconfig## 並重新執行 checksetup.pl 。

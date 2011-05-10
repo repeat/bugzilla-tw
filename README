@@ -1,9 +1,9 @@
-Bugzilla 4.1.1 繁體中文化語系檔
+Bugzilla 4.1.2 繁體中文化語系檔
 
 常見問題
 
 Q. 是否會釋出 doc/ 的中文化語系檔？
-A. 目前無此打算。
+A. 無此打算。
 
 Q. Release Note 沒有中文化？
 A. 參考 Mozilla Firefox 3.5 的 Release Note 的做法，改為維持原(英)文。
@@ -25,7 +25,7 @@ A. 請利用 Google Code 裡的 New Issue 功能 ( http://code.google.com/p/bugz
 
 
 
-Bugzilla 4.1.1 Chinese, traditional (zh-TW) language pack files
+Bugzilla 4.1.2 Chinese, traditional (zh-TW) language pack files
 
 FAQ for non-Chinese speakers
 

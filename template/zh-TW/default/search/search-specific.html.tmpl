@@ -22,6 +22,7 @@
 
 [% PROCESS global/header.html.tmpl
   title = "簡單搜尋"
+  style_urls = [ "skins/standard/search_form.css" ]
 %]
 
 [% WRAPPER search/tabs.html.tmpl %]
@@ -39,11 +40,11 @@
 <input type="hidden" name="query_format" value="specific">
 <input type="hidden" name="order" value="relevance desc">
 
-<table>
+<table summary="Search fields" class="bz_simple_search_form">
   <tr>
-    <td align="right" valign="baseline">
-      <b><label for="bug_status">狀態：</label></b>
-    </td>
+    <th>
+      <label for="bug_status">狀態：</label>>
+    </th>
     <td>
       <select name="bug_status" id="bug_status">
         [% statuses = [ { name = 'open', label = "開啟" },
@@ -59,9 +60,9 @@
     </td>
   </tr>
   <tr>
-    <td align="right" valign="baseline">
-      <b><label for="product">產品：</label></b>
-    </td>
+    <th>
+      <label for="product">產品：</label>
+    </th>
     <td>
       <select name="product" id="product">
         <option value="">全部</option>
@@ -90,9 +91,9 @@
     </td>
   </tr>
   <tr>
-    <td align="right" valign="baseline">
-      <b><label for="content">字串：</label></b>
-    </td>
+    <th>
+      <label for="content">字串：</label>
+    </th>
     <td>
       <input name="content" size="40" id="content"
              value="[% default.content.0 FILTER html %]">

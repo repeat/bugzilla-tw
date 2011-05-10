@@ -431,6 +431,14 @@
     你的附加元件名稱的第一個字母必須為大寫。
     （你指定的是 '[% name FILTER html %]' 。）
 
+  [% ELSIF error == "extern_id_exists" %]
+    [% title = "帳號已存在" %]
+    外部登入帳號 "[% extern_id FILTER html %]"
+    已經有一個帳號
+    [% IF existing_login_name %]
+       ([% existing_login_name FILTER html %])
+    [% END %]。
+
   [% ELSIF error == "field_already_exists" %]
     [% title = "欄位已存在" %]
     欄位 '[% field.name FILTER html %]'

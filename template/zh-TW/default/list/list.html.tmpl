@@ -52,9 +52,9 @@
   doc_section = "query.html#list"
 %]
 
-<div class="bz_query_head" align="center">
+<div class="bz_query_head">
   <span class="bz_query_timestamp">
-    <b>[% currenttime FILTER time('%a %b %e %Y %T %Z') FILTER html %]</b><br>
+    [% currenttime FILTER time('%a %b %e %Y %T %Z') FILTER html %]<br>
   </span>
 
   [% IF debug %]
@@ -67,7 +67,7 @@
   [% IF user.settings.display_quips.value == 'on' %]
     [% DEFAULT quip = "$terms.Bugzilla 可以在這裡隨機顯示智語，但目前仍未輸入任何智語。" %]
     <span class="bz_quip">
-      <a href="quips.cgi"><i>[% quip FILTER html %]</i></a>
+      <a href="quips.cgi"><em>[% quip FILTER html %]</em></a>
     </span>
   [% END %]
 
@@ -244,7 +244,7 @@
           <input type="hidden" name="remtype" value="asnamed">
           <input type="hidden" name="token" value="[% issue_hash_token(['savedsearch']) FILTER html %]">
           <input type="text" id="save_newqueryname" name="newqueryname" size="20"
-                 value="[% defaultsavename FILTER html %]">
+                 title="新搜尋名稱" value="[% defaultsavename FILTER html %]">
         </form>
       </td>
     [% END %]

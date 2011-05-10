@@ -378,6 +378,13 @@
     [%+ ELSIF fld == "z" %]多表格／多圖
     [%+ ELSE %]一份報告的座標[% END %]而言，並非有效的值。
 
+  [% ELSIF error == "search_cp_without_op" %]
+    搜尋參數 f[% id FILTER html %] 是 "CP" ，但在它之前沒有符合的
+    "OP" 。
+
+  [% ELSIF error == "search_invalid_joiner" %]
+    '[% joiner FILTER html %]' 對搜尋而言不是有效的 joiner 。
+
   [% ELSIF error == "setting_info_invalid" %]
     要新增設定，你必須輸入設定名稱、合適的數值／排序鍵，以及預設值。
 

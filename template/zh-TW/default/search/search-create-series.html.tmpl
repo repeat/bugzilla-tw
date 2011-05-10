@@ -35,7 +35,7 @@
   onload = "doOnSelectProduct(0);"
   yui = [ 'autocomplete', 'calendar' ]
   javascript = js_data
-  javascript_urls = [ "js/productform.js", "js/TUI.js", "js/field.js" ]
+  javascript_urls = [ "js/util.js", "js/productform.js", "js/TUI.js", "js/field.js" ]
   style_urls = [ "skins/standard/search_form.css" ]
   doc_section = "reporting.html#charts-new-series"
 %]
@@ -45,7 +45,7 @@
 [% PROCESS search/form.html.tmpl %]
 
 <p>
-  <input type="submit" name="action-search" value="執行搜尋">來看看哪些 [% terms.bugs %] 會被包括在這個資料集裡。
+  <input type="submit" id="action-search" name="action-search" value="執行搜尋">來看看哪些 [% terms.bugs %] 會被包括在這個資料集裡。
 </p>
 
 <h3>資料集參數</h3>

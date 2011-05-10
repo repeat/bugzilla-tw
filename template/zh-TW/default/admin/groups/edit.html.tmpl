@@ -182,7 +182,7 @@
     </table>
   [% END %]
 
-  <input type="submit" value="更新群組">
+  <input type="submit" id="update-group" value="更新群組">
   <input type="hidden" name="token" value="[% token FILTER html %]">
 </form>
 
@@ -196,7 +196,7 @@
   <fieldset>
     <legend>刪除所有帳號符合下列正規表達式的使用者：</legend>
     <input type="text" size="20" name="regexp">
-    <input type="submit" value="刪除">
+    <input type="submit" id="remove-membership" value="刪除">
 
     <p>如果不填，此群組所有的成員都會被刪除。</p>
 
