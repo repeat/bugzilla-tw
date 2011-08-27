@@ -30,11 +30,13 @@
 
 [% PROCESS global/header.html.tmpl
   title = title
-  yui = [ 'autocomplete', 'calendar', 'datatable' ]
+  yui = [ 'autocomplete', 'calendar', 'datatable', 'button' ]
   style_urls = [ 'skins/standard/attachment.css',
                  'skins/standard/enter_bug.css' ]
   javascript_urls = [ "js/attachment.js", "js/util.js",
                       "js/field.js", "js/TUI.js", "js/bug.js" ]
+  onload = "set_assign_to(); hideElementById('attachment_true');
+            showElementById('attachment_false'); showElementById('btn_no_attachment');"
 %]
 
 <script type="text/javascript">
@@ -52,6 +54,7 @@ var flags = new Array([% product.components.size %]);
 [% END %]
 [% count = 0 %]
 [%- FOREACH c = product.components %]
+    [% NEXT IF NOT c.is_active %]
     components[[% count %]] = "[% c.name FILTER js %]";
     comp_desc[[% count %]] = "[% c.description FILTER html_light FILTER js %]";
     initialowners[[% count %]] = "[% c.default_assignee.login FILTER js %]";
@@ -145,18 +148,6 @@ function set_assign_to() {
                 toggleRequesteeField(flagField, 1);
             }
         }
-    }
-}
-
-function handleWantsAttachment(wants_attachment) {
-    if (wants_attachment) {
-        document.getElementById('attachment_false').style.display = 'none';
-        document.getElementById('attachment_true').style.display = 'block';
-    }
-    else {
-        document.getElementById('attachment_false').style.display = 'block';
-        document.getElementById('attachment_true').style.display = 'none';
-        clearAttachmentFields();
     }
 }
 
@@ -603,20 +594,13 @@ TUI_hide_default('attachment_text_field');
   <tr>
     <th>附件：</th>
     <td colspan="3">
-      <script type="text/javascript">
-        <!--
-        document.write( '<div id="attachment_false">'
-                      +   '<input type="button" value="新增附件" '
-                      +          'onClick="handleWantsAttachment(true)"> '
-                      +   '<em style="display: none">因為你的瀏覽器不支援或不使用'
-                      +   'CSS，因此此一功能對你來說是無效的。<\/em>'
-                      + '<\/div>'
-                      + '<div id="attachment_true" style="display: none">'
-                      +   '<input type="button" '
-                      +          'value="不要新增附件" '
-                      +          'onClick="handleWantsAttachment(false)">');
-        //-->
-      </script>
+      <div id="attachment_false" class="bz_default_hidden">
+        <input type="button" value="新增附件" onClick="handleWantsAttachment(true)">
+      </div>
+
+      <div id="attachment_true">
+        <input type="button" id="btn_no_attachment" value="不要新增附件"
+               class="bz_default_hidden"  onClick="handleWantsAttachment(false)">
         <fieldset>
           <legend>新增附件</legend>
           <table class="attachment_entry">
@@ -626,11 +610,7 @@ TUI_hide_default('attachment_text_field');
                        flag_table_id ="attachment_flags" %]
           </table>
         </fieldset>
-      <script type="text/javascript">
-        <!--
-        document.write('<\/div>');
-        //-->
-      </script>
+      </div>
     </td>
   </tr>
   [% END %]

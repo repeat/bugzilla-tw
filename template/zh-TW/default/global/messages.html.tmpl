@@ -57,6 +57,8 @@
               已設定新密碼。
             [% ELSIF field == 'disabledtext' %]
               已修改停用文字。
+            [% ELSIF field == 'is_enabled' %]
+              此使用者已[% otheruser.is_enabled ? '啟用' : '停用' %]。
             [% ELSIF field == 'extern_id' %]
               已修改使用者的外部登入帳號。
             [% ELSIF field == 'disable_mail' %]
@@ -835,7 +837,8 @@
     [% ELSE %]
       移除
     [% END %]
-    '[% tag FILTER html %]' 標籤。
+    '<a href="buglist.cgi?tag=[% tag FILTER uri %]">[% tag FILTER html %]</a>'
+    標籤。
 
   [% ELSIF message_tag == "term" %]
     [% terms.$term FILTER html %]
