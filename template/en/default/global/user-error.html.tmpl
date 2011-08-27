@@ -109,6 +109,11 @@
     [% terms.Bug %] aliases cannot be longer than 20 characters.
     Please choose a shorter alias.
 
+  [% ELSIF error == "attachment_bug_id_mismatch" %]
+    [% title = "Invalid Attachments" %]
+    You tried to perform an action on attachments from different [% terms.bugs %].
+    This operation requires all attachments to be from the same [% terms.bug %].
+
   [% ELSIF error == "auth_cant_create_account" %]
     [% title = "Can't create accounts" %]
     This site is using an authentication scheme which does not permit
@@ -214,6 +219,8 @@
       versions
     [% ELSIF object == "workflow" %]
       the workflow
+    [% ELSE %]
+      [%+ Hook.process('auth_failure_object') %]
     [% END %].
 
     [% Hook.process("auth_failure") %]
@@ -707,12 +714,6 @@
     in the database which refer to it. All references to this group must
     be removed before you can remove it.
 
-  [% ELSIF error == "group_change_denied" %]
-    [% title = "Cannot Add/Remove That Group" %]
-    You tried to add or remove the '[% group.name FILTER html %]' group
-    from [% terms.bug %] [%+ bug.id FILTER html %], but you do not
-    have permissions to do so.
-
   [% ELSIF error == "group_exists" %]
     [% title = "The group already exists" %]
     The group [% name FILTER html %] already exists.
@@ -733,16 +734,17 @@
 
 
   [% ELSIF error == "group_invalid_removal" %]
-    You tried to remove [% terms.bug %] [%+ bug.id FILTER html %]
-    from the '[% group.name FILTER html %]' group, but [% terms.bugs %]
-     in the '[% product FILTER html %]' product can not be removed from that
-    group.
-    
-  [% ELSIF error == "group_invalid_restriction" %]
-    You tried to restrict [% terms.bug %] [%+ bug.id FILTER html %] to
-    to the '[% group.name FILTER html %]' group, but [% terms.bugs %] in the
-    '[% product FILTER html %]' product can not be restricted to
-    that group.
+    You tried to remove [% terms.bug %] [%+ bug_id FILTER html %]
+    from the '[% name FILTER html %]' group, but either this group does not exist,
+    or you are not allowed to remove [% terms.bugs %] from this group in the
+    '[% product FILTER html %]' product.
+
+  [% ELSIF error == "group_restriction_not_allowed" %]
+    [% title = "Group Restriction Not Allowed" %]
+    You tried to restrict [% bug_id ? "$terms.bug $bug_id" : terms.abug FILTER html %]
+    to the '[% name FILTER html %]' group, but either this group does not exist,
+    or you are not allowed to restrict [% terms.bugs %] to this group in the
+    '[% product FILTER html %]' product.
 
   [% ELSIF error == "group_not_specified" %]
     [% title = "Group not specified" %]
@@ -1324,7 +1326,7 @@
     Your password is currently less than
     [%+ constants.USER_PASSWORD_MIN_LENGTH FILTER html %] characters long,
     which is the new minimum length required for passwords.
-    You must <a href="token.cgi?a=reqpw&loginname=[% locked_user.email FILTER html %]">
+    You must <a href="token.cgi?a=reqpw&amp;loginname=[% locked_user.email FILTER url_quote %]">
     request a new password</a> in order to log in again.
 
   [% ELSIF error == "password_too_short" %]
@@ -1554,16 +1556,16 @@
   [% ELSIF error == "sudo_password_required" %]
     [% title = "Password Required" %]
     Your [% terms.Bugzilla %] password is required to begin a sudo 
-    session. Please <a href="relogin.cgi?action=prepare-sudo&target_login=
-    [%- target_login FILTER html %]&reason=
-    [%- reason FILTER html %]">go back</a> and enter your password.
+    session. Please <a href="relogin.cgi?action=prepare-sudo&amp;target_login=
+    [%- target_login FILTER url_quote %]&amp;reason=
+    [%- reason FILTER url_quote %]">go back</a> and enter your password.
     
   [% ELSIF error == "sudo_preparation_required" %]
     [% title = "Preparation Required" %]
     You may not start a sudo session directly.  Please
-    <a href="relogin.cgi?action=prepare-sudo&target_login=
-    [%- target_login FILTER html %]&reason=
-    [%- reason FILTER html %]">start your session normally</a>.
+    <a href="relogin.cgi?action=prepare-sudo&amp;target_login=
+    [%- target_login FILTER url_quote %]&amp;reason=
+    [%- reason FILTER url_quote %]">start your session normally</a>.
 
   [% ELSIF error == "sudo_protected" %]
     [% title = "User Protected" %]
@@ -1752,7 +1754,7 @@
                   
     [% FOREACH q = Bugzilla.user.queries %]
       [% IF q.name == namedcmd %]
-        or <a href="query.cgi?[% q.url FILTER html %]">edit</a>
+        or <a href="query.cgi?[% q.url FILTER url_quote %]">edit</a>
       [% END %]
     [% END %]
     
@@ -1795,4 +1797,5 @@
     [% SET field_name = matches.0 %]
     [% field_descs.$field_name FILTER html %]
   [% END %]
+  [% Hook.process('end_object_name', 'global/user-error.html.tmpl') %]
 [% END %]
