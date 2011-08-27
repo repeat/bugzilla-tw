@@ -125,7 +125,9 @@ YAHOO.util.Event.addListener(window, "load", function() {
       {key:"total", parser:this.parseNumber}
     ]
   };
-  this.myDataTable = new YAHOO.widget.DataTable("tabular_report_container", myColumnDefs, this.myDataSource, {formatRow: totalRowFormatter});
+  this.myDataTable = new YAHOO.widget.DataTable("tabular_report_container_
+                         [% tbl FILTER js %]", myColumnDefs, this.myDataSource, 
+                         {formatRow: totalRowFormatter});
 });
 </script>
 
@@ -153,7 +155,7 @@ YAHOO.util.Event.addListener(window, "load", function() {
 [% col_idx = 0 %]
 [% row_idx = 0 %]
 [% grand_total = 0 %]
-<div id="tabular_report_container">
+<div id="tabular_report_container_[% tbl FILTER js %]">
 <table id="tabular_report" border="1">
   [% IF col_field %]
     <thead>
@@ -187,7 +189,7 @@ YAHOO.util.Event.addListener(window, "load", function() {
       [% FOREACH col = col_names %]
         [% row_total = row_total + data.$tbl.$col.$row %]
         [% NEXT IF col == "" %]
-        [% col_totals.$col = col_totals.$col + data.$tbl.$col.$row %]
+        [% col_totals.$col = (col_totals.$col || 0) + data.$tbl.$col.$row %]
         
         [% col_idx = 1 - col_idx %]
         <td class="[% classes.$row_idx.$col_idx %]" align="center">

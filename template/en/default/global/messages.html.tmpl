@@ -60,6 +60,8 @@
               A new password has been set.
             [% ELSIF field == 'disabledtext' %]
               The disable text has been modified.
+            [% ELSIF field == 'is_enabled' %]
+              The user has been [% otheruser.is_enabled ? 'enabled' : 'disabled' %].
             [% ELSIF field == 'extern_id' %]
               The user's External Login ID has been modified.
             [% ELSIF field == 'disable_mail' %]
@@ -869,7 +871,8 @@
 
   [% ELSIF message_tag == "tag_updated" %]
     [% title = "Tag Updated" %]
-    The '[% tag FILTER html %]' tag has been
+    The '<a href="buglist.cgi?tag=[% tag FILTER uri %]">[% tag FILTER html %]</a>'
+    tag has been
     [% IF action == "add" %]
       added to
     [% ELSE %]

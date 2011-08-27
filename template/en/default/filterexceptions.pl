@@ -57,15 +57,6 @@
   'type.id', 
 ],
 
-'search/boolean-charts.html.tmpl' => [
-  '"field${chartnum}-${rownum}-${colnum}"', 
-  'field.name', 
-  '"${chartnum}-${rownum}-${newor}"', 
-  '"${chartnum}-${newand}-0"', 
-  'newchart',
-  'jsmagic',
-],
-
 'search/form.html.tmpl' => [
   'qv.name',
   'qv.description',
