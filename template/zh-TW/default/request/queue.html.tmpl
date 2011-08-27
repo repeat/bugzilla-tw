@@ -198,7 +198,10 @@
     <tr>
       [% FOREACH column = display_columns %]
         [% NEXT IF column == group_field || excluded_columns.contains(column) %]
-        <td>[% PROCESS "display_$column" %]</td>
+        <td>
+          [% PROCESS "display_$column" %]
+          [% Hook.process('after_column') %]
+        </td>
       [% END %]
     </tr>
   [% END %]

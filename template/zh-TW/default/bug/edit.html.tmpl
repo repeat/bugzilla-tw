@@ -1092,13 +1092,19 @@
 
     [%# For logged-out users %]
     [% ELSE %]
-      <table><tr><td><fieldset>
-        <legend>注意</legend>
-        你需要
-        <a href="show_bug.cgi?id=
-                 [%- bug.bug_id %]&amp;GoAheadAndLogIn=1">登入</a>
-         才能夠發表意見，或對此 [% terms.bug %] 做變更。
-      </fieldset></table><tr></td>
+      <table>
+        <tr>
+          <td>
+            <fieldset>
+              <legend>注意</legend>
+              你需要
+              <a href="show_bug.cgi?id=
+                      [%- bug.bug_id %]&amp;GoAheadAndLogIn=1">登入</a>
+              才能夠發表意見，或對此 [% terms.bug %] 做變更。
+            </fieldset>
+          </td>
+        </tr>
+      </table>
     [% END %]
   </div>
 [% END %]

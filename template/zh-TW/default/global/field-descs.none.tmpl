@@ -134,6 +134,7 @@
     "component"               => "子產品",
     "content"                 => "內容",
     "creation_ts"             => "建立 $terms.Bug 的時間",
+    "days_elapsed"            => "距上次 $terms.bug 變更已過幾天",
     "deadline"                => "截止期限",
     "delta_ts"                => "已變更",
     "dependson"               => "要先修好這些 $terms.Bug",
@@ -182,6 +183,8 @@
          IF !vars.field_descs.${bz_field.name}.defined %]
     [% END %]
   [% END %]
+
+  [% PROCESS "bug/field-help.none.tmpl" %]
 [% END %]
 
 [% Hook.process("end") %]

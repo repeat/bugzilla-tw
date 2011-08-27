@@ -97,6 +97,11 @@
     [% terms.Bug %]別名不能超過 20 字元。
     請選擇較短的別名。
 
+  [% ELSIF error == "attachment_bug_id_mismatch" %]
+    [% title = "無效的附件" %]
+    你嘗試對不同 [% terms.bugs %] 的附件執行一項動作。
+    此動作必須在所有附件來自同一個 [% terms.bug %] 的條件下才能執行。
+
   [% ELSIF error == "auth_cant_create_account" %]
     [% title = "無法建立帳號" %]
     如要建立帳號，請洽管理者。
@@ -203,6 +208,8 @@
       版本
     [% ELSIF object == "workflow" %]
       流程
+    [% ELSE %]
+      [%+ Hook.process('auth_failure_object') %]
     [% END %]。
 
     [% Hook.process("auth_failure") %]
@@ -654,11 +661,6 @@
              [%- gid FILTER url_quote %]">記錄</a>。
     在你能夠刪除此群組前，必須先刪除所有指向此群組的參照。
 
-  [% ELSIF error == "group_change_denied" %]
-    [% title = "無法新增或移除該群組" %]
-    你試著從 [% terms.bug %] [% bug.id FILTER html %] 中移除群組
-    '[% group.name FILTER html %]' ，但你並沒有權限可以這麼做。
-
   [% ELSIF error == "group_exists" %]
     [% title = "群組已存在" %]
     群組[% name FILTER html %]已存在。
@@ -676,14 +678,17 @@
     如要刪除此群組，你必須先變更[% param FILTER html %]，將[% attr FILTER html %]指向另一個群組。
 
   [% ELSIF error == "group_invalid_removal" %]
-    你試著從群組 '[% group.name FILTER html %]' 中移除
-    [% terms.bug %] [% bug.id FILTER html %] ，但是在產品
-    '[% product FILTER html %]' 中的 [% terms.bug %] 無法自該群組中移除。
+    你試著從群組 '[% name FILTER html %]' 中移除
+    [% terms.bug %] [%+ bug_id FILTER html %] ，但是該群組並不存在，
+    或是你在產品 '[% product FILTER html %]' 中不被允許從該群組移除
+    [% terms.bugs %] 。
 
-  [% ELSIF error == "group_invalid_restriction" %]
-    你試著將 [% terms.bug %] [% bug.id FILTER html %] 限制於群組
-    '[% group.name FILTER html %]' 中，但是在產品
-    '[% product FILTER html %]' 中的 [% terms.bug %] 無法被限制於該群組。
+  [% ELSIF error == "group_restriction_not_allowed" %]
+    [% title = "不被允許的群組限制" %]
+    你試著將 [% bug_id ? "$terms.bug $bug_id" : terms.abug FILTER html %]
+    限制於群組 '[% name FILTER html %]' 中，但是該群組並不存在，
+    或是你在產品 '[% product FILTER html %]' 中不被允許將
+    [% terms.bugs %] 限制於該群組。
 
   [% ELSIF error == "group_not_specified" %]
     [% title = "未指定群組" %]
@@ -1216,7 +1221,7 @@
     [% title = "需要新的密碼" %]
     目前系統的密碼長度要求是至少
     [%+ constants.USER_PASSWORD_MIN_LENGTH FILTER html %] 字元，而你目前的密碼不符合此要求。
-    你必須<a href="token.cgi?a=reqpw&loginname=[% locked_user.email FILTER html %]">
+    你必須<a href="token.cgi?a=reqpw&amp;loginname=[% locked_user.email FILTER url_quote %]">
     申請新的密碼</a>才能再度登入。
 
   [% ELSIF error == "password_too_short" %]
@@ -1427,9 +1432,9 @@
   [% ELSIF error == "sudo_password_required" %]
     [% title = "需要輸入密碼" %]
     需要輸入你的 [% terms.Bugzilla %] 密碼，來執行 sudo 。請<a
-    href="relogin.cgi?action=prepare-sudo&target_login=
-    [%- target_login FILTER html %]&reason=
-    [%- reason FILTER html %]">回到上一頁</a>並輸入密碼。
+    href="relogin.cgi?action=prepare-sudo&amp;target_login=
+    [%- target_login FILTER url_quote %]&amp;reason=
+    [%- reason FILTER url_quote %]">回到上一頁</a>並輸入密碼。
 
   [% ELSIF error == "sudo_preparation_required" %]
     [% title = "需要正常流程" %]
@@ -1611,7 +1616,7 @@
 
     [% FOREACH q = Bugzilla.user.queries %]
       [% IF q.name == namedcmd %]
-        或是<a href="query.cgi?[% q.url FILTER html %]">編輯</a>
+        或是<a href="query.cgi?[% q.url FILTER url_quote %]">編輯</a>
       [% END %]
     [% END %]
 
@@ -1654,4 +1659,5 @@
     [% SET field_name = matches.0 %]
     [% field_descs.$field_name FILTER html %]
   [% END %]
+  [% Hook.process('end_object_name', 'global/user-error.html.tmpl') %]
 [% END %]
