@@ -791,6 +791,11 @@
       並未對版本 <em>[% version.name FILTER html %]</em> 做出變更。
     [% END %]
 
+  [% ELSIF message_tag == "whine_query_failed" %]
+    來自 [% author.login FILTER html %] 的訂閱排程查詢
+    '[% query_name FILTER html %]' 失敗了，原因是：
+    [%+ reason FILTER html %]
+
   [% ELSIF message_tag == "workflow_updated" %]
     工作流程已更新。
 
