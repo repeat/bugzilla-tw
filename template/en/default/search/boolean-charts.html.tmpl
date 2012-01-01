@@ -74,7 +74,11 @@
     TUI_alternates['custom_search_advanced'] = "Show Advanced Features";
     TUI_hide_default('custom_search_advanced');
   </script>
-  <script type="text/javascript" src="js/custom-search.js"></script>
+  <script type="text/javascript" src="[% 'js/custom-search.js' FILTER mtime %]"></script>
+  <script type="text/javascript" src="[% 'js/history.js/native.history.js' FILTER mtime %]"></script>
+  <script type="text/javascript">
+    redirect_html4_browsers();
+  </script>
 </div>
 
 
@@ -135,6 +139,7 @@
     [% ELSE %]
       <select name="f[% cond_num FILTER html %]" title="Field"
               id="f[% cond_num FILTER html %]"
+              onchange="fix_query_string(this)"
               class="custom_search_form_field">
         [% FOREACH field = fields %]
           <option value="[% field.name FILTER html %]"
@@ -150,6 +155,7 @@
     
       <input name="v[% cond_num FILTER html %]" title="Value"
              class="custom_search_form_field"
+             onchange="fix_query_string(this)"
              value="[% condition.v FILTER html %]">
     [% END %]
     
@@ -170,7 +176,8 @@
 
 [% BLOCK any_all_select %]
   <div class="any_all_select">
-    <select name="[% name FILTER html %]" id="[% name FILTER html %]">
+    <select name="[% name FILTER html %]" id="[% name FILTER html %]"
+            onchange="fix_query_string(this)">
       <option value="AND">Match ALL of the following:</option>
       <option value="OR" [% ' selected="selected"' IF selected == "OR" %]>
         Match ANY of the following:</option>
