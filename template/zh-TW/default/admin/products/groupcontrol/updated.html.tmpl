@@ -27,16 +27,16 @@
   title = title
 %]
 <p>
-[% IF changes.group_controls.now_na.size %]
-  [% FOREACH g = changes.group_controls.now_na %]
+[% IF changes._group_controls.now_na.size %]
+  [% FOREACH g = changes._group_controls.now_na %]
     從群組 '[% g.name FILTER html %]' 中刪除 [% terms.bugs %] ，因已不再適用這項產品的權限。
     <p>
     已刪除 [% g.bug_count FILTER html %] 個 [% terms.bugs %] 。<p>
   [% END %]
 [% END %]
 
-[% IF changes.group_controls.now_mandatory.size %]
-  [% FOREACH g = changes.group_controls.now_mandatory %]
+[% IF changes._group_controls.now_mandatory.size %]
+  [% FOREACH g = changes._group_controls.now_mandatory %]
     在群組 '[% g.name FILTER html %]' 新增 [% terms.bugs %] 中，因已適用此項產品的權限。
     <p>
     已新增 [% g.bug_count FILTER html %] 個 [% terms.bugs %] 。<p>

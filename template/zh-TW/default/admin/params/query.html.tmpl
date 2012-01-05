@@ -47,7 +47,11 @@
 
   defaultquery => "當使用者瀏覽「進階搜尋」頁時的預設查詢。這是網址的參數格式，因此較為難以閱讀，十分抱歉。",
 
-  specific_search_allow_empty_words => "是否允許使用者在「簡單搜尋」頁面不輸入任何字串搜尋。"
+  search_allow_no_criteria =>
+    "除非程式裡明確允許傳回所有的 $terms.bugs ，否則這個選項將可阻擋沒有條件 (criteria) 的搜尋。" _
+    "當設為「關」，搜尋都必須指定一些條件，以限制傳給使用者的 $terms.bugs 數量。" _
+    "當設為「開」，使用者將可以不帶任何條件進行搜尋，並傳回他所能看到的所有 $terms.bugs 的清單。" _
+    "在資料庫較大的 $terms.Bugzilla 上不建議將此選項開啟。",
 
   default_search_limit =>
     "因為效能因素， $terms.Bugzilla 預設限制在網頁介面的搜尋只回傳這麼多筆數。" _

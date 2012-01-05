@@ -164,7 +164,8 @@
 
   [% IF assignee_or_qa || cc || component_cc || email_setting || flags.requestee ||
         namedqueries || profile_setting || quips || series || watch.watched ||
-        watch.watcher || whine_events || whine_schedules || other_safe %]
+        watch.watcher || whine_events || whine_schedules || otheruser.has_audit_entries ||
+        other_safe %]
     <div class="warningmessages">
       <p>下列刪除是<b>安全的</b>，且不會產生完整參照的不一致。</p>
 
@@ -250,6 +251,11 @@
           <li>
             [% otheruser.login FILTER html %] 是
             [% whine_schedules %] 項訂閱的收件者之一。對應到寄送此帳號的排程將被刪除，但不會變更訂閱的內容。
+          </li>
+        [% END %]
+        [% IF otheruser.has_audit_entries %]
+          <li>
+            在資料庫中有使用者執行過的稽核管理記錄。如果你刪除此使用者帳號，這些記錄將無法再被辨識。
           </li>
         [% END %]
         [% Hook.process('warn_safe') %]

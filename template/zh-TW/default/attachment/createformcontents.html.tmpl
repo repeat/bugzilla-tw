@@ -43,10 +43,11 @@
   </td>
 </tr>
 <tr>
-  <th><label for="description">描述</label>：</th>
+  <th class="required"><label for="description">描述</label>：</th>
   <td>
     <em>簡要描述該附件。</em><br>
-    <input type="text" id="description" name="description" size="60" maxlength="200">
+    <input type="text" id="description" name="description" class="required"
+           size="60" maxlength="200">
   </td>
 </tr>
 <tr[% ' class="expert_fields"' UNLESS bug.id %]>

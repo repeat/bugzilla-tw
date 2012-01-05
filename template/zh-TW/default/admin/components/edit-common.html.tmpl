@@ -23,15 +23,16 @@
   #%]
 
 <tr>
-  <td valign="top">子產品：</td>
-  <td><input size="64" maxlength="64" name="component"
+  <th class="field_label"><label for="component">子產品：</th>
+  <td><input size="64" maxlength="64" name="component" id="component"
              value="[%- comp.name FILTER html %]"></td>
 </tr>
 <tr>
-  <td valign="top">描述：</td>
+  <th class="field_label"><label for="[% desc_name FILTER html %]">描述：</th>
   <td>
     [% INCLUDE global/textarea.html.tmpl
       name           = 'description'
+      id             = 'description'
       minrows        = 4
       cols           = 64
       wrap           = 'virtual'
@@ -40,7 +41,7 @@
   </td>
 </tr>
 <tr>
-  <td valign="top"><label for="initialowner">預設負責人：</label></td>
+  <th class="field_label"><label for="initialowner">預設負責人：</label></th>
   <td>
     [% INCLUDE global/userselect.html.tmpl
        name => "initialowner"
@@ -52,7 +53,7 @@
 </tr>
 [% IF Param('useqacontact') %]
   <tr>
-    <td valign="top"><label for="initialqacontact">預設 QA 連絡人：</label></td>
+    <th class="field_label"><label for="initialqacontact">預設 QA 連絡人：</label></th>
     <td>
       [% INCLUDE global/userselect.html.tmpl
          name => "initialqacontact"
@@ -65,9 +66,7 @@
   </tr>
 [% END %]
 <tr>
-  <td valign="top">
-    <label for="initialcc">預設寄件副本清單：</label>
-  </td>
+  <th class="field_label"><label for="initialcc">預設寄件副本清單：</label></th>
   <td>
     [% INCLUDE global/userselect.html.tmpl
        name     => "initialcc"
