@@ -53,6 +53,10 @@
       </strong> - 折線圖、長條圖及圓餅圖。
     </li>
   [% END %]
+  <li id="report_duplicates">
+    <strong><a href="duplicates.cgi">重覆報告</a></strong> -
+    列出最常被回報的 [% terms.bugs %] 。
+  </li>
   [% Hook.process('current_state') %]
 </ul>
 

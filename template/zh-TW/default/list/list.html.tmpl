@@ -186,6 +186,14 @@
             <input type="hidden" name="id" value="[% buglist_joined FILTER html %]">
             <input type="submit" id="timesummary" value="時間統計">
           </form>
+          [% IF time_summary_limited %]
+            <small>
+              時間統計將只會包含上面所顯示的 [% terms.bugs %] 。如要顯示搜尋結果中所有
+              [% terms.bugs%] 的時間統計，你可以
+              <a href="buglist.cgi?[% urlquerypart FILTER html %]
+                       [%- "&order=$qorder" FILTER html IF order %]&limit=0">
+                顯示所有搜尋結果</a>。</small>
+          [% END %]
         [% END %]
       </td>
 
@@ -294,7 +302,8 @@
       只顯示 [% Param('default_search_limit') FILTER html %] 個
       [%+ terms.bugs %] 。
       <a href="buglist.cgi?[% urlquerypart FILTER html %]
-              [%- "&order=$qorder" FILTER html IF order %]&limit=0">查詢所有結果。</a>
+              [%- "&order=$qorder" FILTER html IF order %]&limit=0">顯示所有搜尋結果</a>。
+      [% time_summary_limited = 1 %]
     [% ELSE %]
       找到 [% bugs.size %] 個 [%+ terms.bugs %] 。
     [% END %]

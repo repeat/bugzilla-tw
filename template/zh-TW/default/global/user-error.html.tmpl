@@ -567,6 +567,10 @@
     [% title = "未指定檔案" %]
     你並未指定要附加的檔案。
 
+  [% ELSIF error == "filename_not_specified" %]
+    [% title = "未指定檔名" %]
+    你並未替附件指定檔名。
+
   [% ELSIF error == "file_too_large" %]
     [% title = "檔案過大" %]
     [%# Convert maxlocalattachment from Mb to Kb %]
@@ -874,7 +878,7 @@
     無效的 MIME 類別 <em>[% contenttype FILTER html %]</em>。
     有效的類別必須是類似 <em>foo/bar</em> 的格式，其中 <em>foo</em>
     必須是 <em>[% constants.LEGAL_CONTENT_TYPES.join(', ') FILTER html %]</em>
-    的其中一種。
+    的其中一種，而 <em>bar</em> 不能含有特殊符號［例如等號 (=) 、問號 (?) 等等］。
 
   [% ELSIF error == "invalid_context" %]
     [% title = "無效的內容" %]
@@ -1412,7 +1416,7 @@
     [% terms.Bugzilla %] 不支援在
     "[%+ field_descs.$field FILTER html %]" ([% field FILTER html %])
     欄位使用
-    "[% search_descs.$operator FILTER html %]" ([% operator FILTER html %]) 
+    "[% search_descs.$operator FILTER html %]" ([% operator FILTER html %])
     搜尋。
 
   [% ELSIF error == "see_also_self_reference" %]
@@ -1663,6 +1667,10 @@
     附件
   [% ELSIF class == "Bugzilla::User" %]
     使用者
+  [% ELSIF class == "Bugzilla::Classification" %]
+    分類
+  [% ELSIF class == "Bugzilla::Product" %]
+    產品
   [% ELSIF class == "Bugzilla::Component" %]
     子產品
   [% ELSIF class == "Bugzilla::Version" %]
@@ -1681,8 +1689,6 @@
     群組
   [% ELSIF class == "Bugzilla::Keyword" %]
     關鍵字
-  [% ELSIF class == "Bugzilla::Product" %]
-    產品
   [% ELSIF class == "Bugzilla::Search::Recent" %]
     最近搜尋
   [% ELSIF class == "Bugzilla::Search::Saved" %]

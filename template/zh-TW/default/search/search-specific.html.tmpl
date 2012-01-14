@@ -43,7 +43,7 @@
 <table summary="Search fields" class="bz_simple_search_form">
   <tr>
     <th>
-      <label for="bug_status">狀態：</label>>
+      <label for="bug_status">[% field_descs.bug_status FILTER html %]：</label>>
     </th>
     <td>
       <select name="bug_status" id="bug_status">
@@ -61,7 +61,7 @@
   </tr>
   <tr>
     <th>
-      <label for="product">產品：</label>
+      <label for="product">[% field_descs.product FILTER html %]：</label>
     </th>
     <td>
       <select name="product" id="product">
@@ -107,7 +107,7 @@
     <td></td>
     <td>
 
-      [% IF Param('specific_search_allow_empty_words') %]
+      [% IF Param('search_allow_no_criteria') %]
         <input type="submit" id="search" value="搜尋">
       [% ELSE %]
         <input type="submit" id="search" value="搜尋"

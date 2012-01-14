@@ -401,7 +401,7 @@ END
 ##data##/comments.bak 。你只要確認智語有搬移成功，即可將該檔
 案刪除。
 END
-    update_queries_to_tags => "填入新的標籤 table 中：",
+    update_queries_to_tags => "填入新的 'tag' table 中：",
     webdot_bad_htaccess => <<END,
 警告：依賴關係圖表的圖無法存取。
 刪除 ##dir##/.htaccess 後重新執行 checksetup.pl 。

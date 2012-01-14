@@ -300,7 +300,7 @@
 
   [% ELSIF error == "mail_send_error" %]
     從 '[% mail.header('From') FILTER html %]' 寄信到 '[% mail.header('To') FILTER html %]' 時，出現錯誤：
-    [% msg FILTER html %]
+    [%+ msg FILTER html %]
 
   [% ELSIF error == "mismatched_bug_ids_on_obsolete" %]
     附件 [% attach_id FILTER html %] （[% description FILTER html %]）是附加在 [% terms.bug %]
