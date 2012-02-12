@@ -63,14 +63,14 @@
         [% IF ids.size %]
             依賴於
         [% ELSE %]
-            並未依賴任何 [% terms.bugs %] 。
+            並未依賴任何[% '開啟的' IF hide_resolved %][% terms.bugs %] 。
         [% END %]
     [% ELSIF type == 2 %]
         [% tree_name = "blocked_tree" %]
         [% IF ids.size %]
             阻擋
         [% ELSE %]
-            並未阻擋任何 [% terms.bugs %] 。
+            並未阻擋任何[% '開啟的' IF hide_resolved %][% terms.bugs %] 。
         [% END %]
     [% END %]
     [% IF ids.size %]

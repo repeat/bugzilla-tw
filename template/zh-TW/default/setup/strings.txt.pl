@@ -57,7 +57,7 @@ EOT
     commands_optional => '安裝選用模組的指令：',
     commands_required => <<EOT,
 安裝必備模組的指令（你「必須」執行所有的指令後，重新執行
-此程式）：
+checksetup.pl ）：
 EOT
     continue_without_answers => <<'END',
 在互動模式（不會有一個 'answers' 檔案）重新執行 checksetup.pl
@@ -135,10 +135,12 @@ END
 END
     lc_new_vars => <<'END',
 此版本的 Buzilla 包含一些你也許想要改變及套用到本地設定的參數。
-請編輯 ##localconfig## 並重新執行 checksetup.pl 。
-
 自從你上次執行 checksetup.pl 以後，以下參數對 ##localconfig##
-而言是新的：  ##new_vars##
+而言是新的：
+
+##new_vars##
+
+請編輯 ##localconfig## 並重新執行 checksetup.pl 以完成安裝。
 END
     lc_old_vars => <<'END',
 ##localconfig## 中的以下參數已不再使用，並已被搬到

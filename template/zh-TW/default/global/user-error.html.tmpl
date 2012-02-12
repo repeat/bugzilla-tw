@@ -803,10 +803,9 @@
     [% IF default %]
       一個有效的電子郵件地址必須要有一個 @ 符號，以及在 @ 之後至少有一個 . 符號。
     [% ELSE %]
-      [%+ Param('emailregexpdesc') %]
+      [%+ Param('emailregexpdesc') FILTER html_light %]
     [% END %]
-    另外，不可以含有下列特殊字元：
-    <tt>\ ( ) &amp; &lt; &gt; , ; : &quot; [ ]</tt>，或是任何空白。
+    另外，不可以含有任何不合法的字元。
 
   [% ELSIF error == "illegal_frequency" %]
     [% title = "過於頻繁" %]
@@ -958,6 +957,10 @@
     當透過 GET 使用 JSON-RPC 時，你必須指定 'method' 參數。
     請參考
     [%+ docs_urlbase FILTER html %]api/Bugzilla/WebService/Server/JSONRPC.html
+
+  [% ELSIF error == "json_rpc_illegal_content_type" %]
+    當透過 POST 使用 JSON-RPC 時，你無法使用 [% content_type FILTER html %]
+    做為 MIME 類別。只允許使用 application/json 和 application/json-rpc 。
 
   [% ELSIF error == "json_rpc_invalid_params" %]
     無法將 'params' 參數內容解讀為有效的 JSON 。

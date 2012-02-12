@@ -44,10 +44,9 @@
     [% IF default %]
       一個有效的電子郵件地址必須要有一個 @ 符號，以及在 @ 符號之後至少有一個 . 符號。
     [% ELSE %]
-      [%+ Param('emailregexpdesc') %]
+      [%+ Param('emailregexpdesc') FILTER html_light %]
     [% END %]
-    另外，不可以含有下列特殊字元：
-    <tt>\ ( ) &amp; &lt; &gt; , ; : &quot; [ ]</tt>，或是任何空白。
+    另外，不可以含有任何不合法的字元。
 
   [% ELSIF error == "authres_unhandled" %]
     [% value FILTER html %] 結果值並非由登入碼處理。

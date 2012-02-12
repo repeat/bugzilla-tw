@@ -19,7 +19,7 @@
   #                 Frédéric Buclin <LpSolit@gmail.com>
   #%]
 
-[% RETURN UNLESS attachments.size || Param("maxattachmentsize") %]
+[% RETURN UNLESS attachments.size || Param("maxattachmentsize") || Param("maxlocalattachment") %]
 
 <script type="text/javascript">
 <!--
@@ -159,7 +159,7 @@ function toggle_display(link) {
           [% END %]
         </span>
       [% END %]
-      [% IF Param("maxattachmentsize") %]
+      [% IF Param("maxattachmentsize") || Param("maxlocalattachment") %]
         <a href="attachment.cgi?bugid=[% bugid %]&amp;action=enter">新增附件</a>
         （建議的 patch, testcase 等等）
       [% END %]
