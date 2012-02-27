@@ -60,6 +60,10 @@
               A new password has been set.
             [% ELSIF field == 'disabledtext' %]
               The disable text has been modified.
+            [% ELSIF field == 'is_enabled' %]
+              The user has been [% otheruser.is_enabled ? 'enabled' : 'disabled' %].
+            [% ELSIF field == 'extern_id' %]
+              The user's External Login ID has been modified.
             [% ELSIF field == 'disable_mail' %]
               [% IF otheruser.email_disabled %]
                 [% terms.Bug %]mail has been disabled.
@@ -129,7 +133,7 @@
   [% ELSIF message_tag == "buglist_updated_named_query" %]
     [% title = "Search updated" %]
     Your search named <code><a 
-     href="buglist.cgi?cmdtype=runnamed&amp;namedcmd=[% queryname FILTER url_quote %]"
+     href="buglist.cgi?cmdtype=runnamed&amp;namedcmd=[% queryname FILTER uri %]"
     >[% queryname FILTER html %]</a></code> has been updated.
 
   [% ELSIF message_tag == "buglist_new_default_query" %]
@@ -139,7 +143,7 @@
   [% ELSIF message_tag == "buglist_new_named_query" %]
     [% title = "Search created" %]
     OK, you have a new search named <code><a
-     href="buglist.cgi?cmdtype=runnamed&amp;namedcmd=[% queryname FILTER url_quote %]"
+     href="buglist.cgi?cmdtype=runnamed&amp;namedcmd=[% queryname FILTER uri %]"
     >[% queryname FILTER html %]</a></code>.
 
   [% ELSIF message_tag == "buglist_query_gone" %]
@@ -233,6 +237,9 @@
         [% ELSE %]
           <li>Default CC list deleted</li>
         [% END %]
+      [% END %]
+      [% IF changes.isactive.defined %]
+        <li>[% comp.is_active ? "Enabled" : "Disabled" %] for [% terms.bugs %]</li>
       [% END %]
       [% Hook.process('component_updated_fields') %]
       </ul>
@@ -547,6 +554,9 @@
         [% IF changes.sortkey.defined %]
           <li>Sortkey updated to <em>[% milestone.sortkey FILTER html %]</em>
         [% END %]
+        [% IF changes.isactive.defined %]
+          <li>[% milestone.is_active ? "Enabled" : "Disabled" %] for [% terms.bugs %]</li>
+        [% END %]
       </ul>
     [% ELSE %]
       No changes made to milestone <em>[% milestone.name FILTER html %]</em>.
@@ -588,10 +598,64 @@
     [% title = BLOCK %]Flag Type '[% name FILTER html %]' Created[% END %]
     The flag type <em>[% name FILTER html %]</em> has been created.
 
-  [% ELSIF message_tag == "flag_type_changes_saved" %]
-    [% title = BLOCK %]Flag Type '[% name FILTER html %]' Changes Saved[% END %]
-    Your changes to the flag type <em>[% name FILTER html %]</em>
-    have been saved.
+  [% ELSIF message_tag == "flag_type_updated" %]
+    [% title = BLOCK %]Flag Type '[% flagtype.name FILTER html %]' Updated[% END %]
+    [% IF changes.size %]
+      Changes to the flag type <em>[% flagtype.name FILTER html %]</em>
+      have been saved:
+      <ul>
+        [% IF changes.is_active.defined %]
+          <li>Flag type is now [% flagtype.is_active ? "active" : "inactive" %]</li>
+        [% END %]
+        [% IF changes.name.defined %]
+          <li>Flag type renamed to <em>[% flagtype.name FILTER html %]</em></li>
+        [% END %]
+        [% IF changes.description.defined %]
+          <li>Description updated to <em>[% flagtype.description FILTER html %]</em></li>
+        [% END %]
+        [% IF changes.cc_list.defined %]
+          [% IF flagtype.cc_list %]
+            <li>CC list updated to <em>[% flagtype.cc_list FILTER html %]</em></li>
+          [% ELSE %]
+            <li>CC list is now empty</li>
+          [% END %]
+        [% END %]
+        [% IF changes.sortkey.defined %]
+          <li>Sortkey updated to <em>[% flagtype.sortkey FILTER html %]</em></li>
+        [% END %]
+        [% IF changes.is_requestable.defined %]
+          <li>Flag type is [% "no longer" UNLESS flagtype.is_requestable %] requestable</li>
+        [% END %]
+        [% IF changes.is_requesteeble.defined AND flagtype.is_requestable %]
+          <li>
+            Flag type is [% "no longer" UNLESS flagtype.is_requesteeble %]
+            specifically requestable
+          </li>
+        [% END %]
+        [% IF changes.is_multiplicable.defined %]
+          <li>Flag type is [% "no longer" UNLESS flagtype.is_multiplicable %] multiplicable</li>
+        [% END %]
+        [% IF changes.grant_group_id.defined %]
+          [% IF flagtype.grant_group_id %]
+            <li>Grant group updated to <em>[% flagtype.grant_group.name FILTER html %]</em></li>
+          [% ELSE %]
+            <li>Grant group deleted</li>
+          [% END %]
+        [% END %]
+        [% IF changes.request_group_id.defined %]
+          [% IF flagtype.request_group_id %]
+            <li>Request group updated to <em>[% flagtype.request_group.name FILTER html %]</em></li>
+          [% ELSE %]
+            <li>Request group deleted</li>
+          [% END %]
+        [% END %]
+        [% IF changes.inclusions.defined || changes.exclusions.defined %]
+          <li>The inclusions and exclusions lists have been updated</li>
+        [% END %]
+     </ul>
+    [% ELSE %]
+      No changes made to flag type <em>[% flagtype.name FILTER html %]</em>.
+    [% END %]
 
   [% ELSIF message_tag == "flag_type_deleted" %]
     [% title = BLOCK %]Flag Type '[% name FILTER html %]' Deleted[% END %]
@@ -648,7 +712,7 @@
   [% ELSIF message_tag == "install_fk_invalid" %]
     ERROR: There are invalid values for the [% column FILTER html %] column in the [% table FILTER html %]
     table. (These values do not exist in the [% foreign_table FILTER html %] table, in the 
-    [% foreign_column FILTER html %] column.)
+    [%+ foreign_column FILTER html %] column.)
 
     Before continuing with checksetup, you will need to fix these values,
     either by deleting these rows from the database, or changing the values
@@ -662,11 +726,23 @@
     that have been [% IF action == 'delete' %]deleted[% ELSE %]set to NULL[% END %]:
     [%+ values.join(', ') FILTER html %]
 
+  [% ELSIF message_tag == "install_fk_setup" %]
+    Setting up foreign keys...
+
   [% ELSIF message_tag == "install_group_create" %]
     Creating group [% name FILTER html %]...
 
+  [% ELSIF message_tag == "install_groups_setup" %]
+    Creating default groups...
+
   [% ELSIF message_tag == "install_setting_new" %]
     Adding a new user setting called '[% name FILTER html %]'
+
+  [% ELSIF message_tag == "install_setting_setup" %]
+    Setting up user preferences...
+
+  [% ELSIF message_tag == "install_success" %]
+    checksetup.pl complete.
 
   [% ELSIF message_tag == "install_table_drop" %]
     Dropping the '[% name FILTER html %]' table...
@@ -721,7 +797,7 @@
   [% ELSIF message_tag == "product_created" %]
     [% title = "Product Created" %]
     The product <em>[% product.name FILTER html %]</em> has been created. You will need to
-    <a href="editcomponents.cgi?action=add&product=[% product.name FILTER url_quote %]">
+    <a href="editcomponents.cgi?action=add&product=[% product.name FILTER uri %]">
     add at least one component</a> before anyone can enter [% terms.bugs %] against this product.
 
   [% ELSIF message_tag == "product_deleted" %]
@@ -793,6 +869,18 @@
       The cookie that was remembering your login is now gone.
     [% END %]
 
+  [% ELSIF message_tag == "tag_updated" %]
+    [% title = "Tag Updated" %]
+    The '<a href="buglist.cgi?tag=[% tag FILTER uri %]">[% tag FILTER html %]</a>'
+    tag has been
+    [% IF action == "add" %]
+      added to
+    [% ELSE %]
+      removed from
+    [% END %]
+    [%+ buglist.size > 1 ? terms.bugs : terms.bug %]
+    [%+ buglist.join(", ") FILTER html %].
+
   [% ELSIF message_tag == "term" %]
     [% terms.$term FILTER html %]
 
@@ -822,12 +910,23 @@
   [% ELSIF message_tag == "version_updated" %]
     [% title = "Version Updated" %]
     [% IF changes.size %]
-      [% IF changes.value.defined %]
-        Version renamed to <em>[% version.name FILTER html %]</em>.
-      [% END %]
+      Changes to the version <em>[% version.name FILTER html %]</em>
+      have been saved:
+      <ul>
+        [% IF changes.value.defined %]
+          <li>Version renamed to <em>[% version.name FILTER html %]</em></li>
+        [% END %]
+        [% IF changes.isactive.defined %]
+          <li>[% version.is_active ? "Enabled" : "Disabled" %] for [% terms.bugs %]</li>
+        [% END %]
+      </ul>
     [% ELSE %]
       No changes made to version <em>[% version.name FILTER html %]</em>.
     [% END %]
+
+  [% ELSIF message_tag == "whine_query_failed" %]
+    The query '[% query_name FILTER html %]' from [% author.login FILTER html %]
+    failed: [% reason FILTER html %]
 
   [% ELSIF message_tag == "workflow_updated" %]
     The workflow has been updated.

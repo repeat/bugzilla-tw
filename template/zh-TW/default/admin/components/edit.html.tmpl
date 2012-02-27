@@ -43,13 +43,18 @@
     [% PROCESS "admin/components/edit-common.html.tmpl" %]
 
     <tr>
-      <td>[% terms.Bugs %]：</td>
+      <th class="field_label"><label for="isactive">開啟回報 [% terms.Bugs %] 功能：</label></th>
+      <td><input id="isactive" name="isactive" type="checkbox" value="1"
+                 [% 'checked="checked"' IF comp.isactive %]></td>
+    </tr>
+    <tr>
+      <th class="field_label">[% terms.Bugs %]：</th>
       <td>
 [% IF comp.bug_count > 0 %]
         <a title="在子產品 '[% comp.name FILTER html %]' 中的 [% terms.Bugs %]"
            href="buglist.cgi?component=
-                [%- comp.name FILTER url_quote %]&amp;product=
-                [%- product.name FILTER url_quote %]">[% comp.bug_count %]</a>
+                [%- comp.name FILTER uri %]&amp;product=
+                [%- product.name FILTER uri %]">[% comp.bug_count %]</a>
 [% ELSE %]
         無
 [% END %]
@@ -64,8 +69,8 @@
    <input type="hidden" name="token" value="[% token FILTER html %]">
    <input type="submit" value="儲存設定" id="update">，或是<a
         href="editcomponents.cgi?action=del&amp;product=
-        [%- product.name FILTER url_quote %]&amp;component=
-        [%- comp.name FILTER url_quote %]">刪除</a>此一子產品。
+        [%- product.name FILTER uri %]&amp;component=
+        [%- comp.name FILTER uri %]">刪除</a>此一子產品。
 
 </form>
 

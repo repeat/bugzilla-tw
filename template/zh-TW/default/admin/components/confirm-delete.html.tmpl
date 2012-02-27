@@ -80,15 +80,15 @@
 </tr>
 <tr>
   <TD VALIGN="top">開啟回報 [% terms.bugs %] 功能：</TD>
-  <TD VALIGN="top">[% IF product.is_active %]是[% ELSE %]否[% END %]</td>
+  <TD VALIGN="top">[% IF product.is_active && comp.isactive %]是[% ELSE %]否[% END %]</td>
 </tr>
 <tr>
   <td valign="top">[% terms.Bugs %] ：</td>
   <td valign="top">
 [% IF comp.bug_count %]
   <a title="列出子產品 '[% comp.name FILTER html %]' 的 [% terms.bugs %]"
-     href="buglist.cgi?component=[% comp.name FILTER url_quote %]&amp;product=
-          [%- product.name FILTER url_quote %]">[% comp.bug_count %]</a>
+     href="buglist.cgi?component=[% comp.name FILTER uri %]&amp;product=
+          [%- product.name FILTER uri %]">[% comp.bug_count %]</a>
 [% ELSE %]
   無
 [% END %]

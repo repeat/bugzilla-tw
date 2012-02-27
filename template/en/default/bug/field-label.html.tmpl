@@ -24,9 +24,9 @@
   #   hidden: True if the field label should start hidden.
   #   rowspan: a "rowspan" value for the label's <th>.
   #   tag_name: the tag to use to surround the label
+  #   accesskey: access key for the label
   #%]
 
-[% PROCESS "bug/field-help.none.tmpl" %]
 [% DEFAULT tag_name = "th" %]
 <[% tag_name FILTER html %] class="field_label [% ' bz_hidden_field' IF hidden %]
            [%- ' required' IF field.is_mandatory && NOT bug.id %]"
@@ -34,7 +34,7 @@
     [% IF rowspan %] rowspan="[% rowspan FILTER html %]"[% END %]>
 
   [% IF editable %]
-    <label for="[% field.name FILTER html %]">
+    <label for="[% field.name FILTER html %]"[% IF accesskey %] accesskey="[% accesskey FILTER html %]"[% END %]>
   [% END %]
 
   <a 
@@ -45,7 +45,7 @@
     [% IF desc_url %]
       href="[% desc_url FILTER html %]"
     [% ELSE %]
-      href="page.cgi?id=fields.html#[% field.name FILTER url_quote %]"
+      href="page.cgi?id=fields.html#[% field.name FILTER uri %]"
     [% END %]
   >[%- field_descs.${field.name} FILTER html %]:</a>
 

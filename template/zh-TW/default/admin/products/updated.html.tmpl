@@ -45,7 +45,7 @@
   <p>
   已將產品名稱從 '[% changes.name.0 FILTER html %]' 更新為
   '<a href="editproducts.cgi?action=edit&amp;product=
-  [%- product.name FILTER url_quote %]">[% product.name FILTER html %]</a>' 。
+  [%- product.name FILTER uri %]">[% product.name FILTER html %]</a>' 。
   </p>
 [% END %]
 
@@ -80,7 +80,7 @@
     [%+ display_value('bug_status', 'UNCONFIRMED') FILTER html %] 狀態。
     注意：任何
     <a href="buglist.cgi?product=
-            [%- product.name FILTER url_quote %]&amp;bug_status=UNCONFIRMED">狀態為
+            [%- product.name FILTER uri %]&amp;bug_status=UNCONFIRMED">狀態為
     [%+ display_value('bug_status', 'UNCONFIRMED') FILTER html %] 的 [%+ terms.bugs %]</a>
     在被編輯前仍會維持原本的狀態。
   [% END %]

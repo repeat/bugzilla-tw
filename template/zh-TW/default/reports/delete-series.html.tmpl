@@ -52,7 +52,7 @@
 
 <p>
   <a href="chart.cgi?action=delete&amp;series_id=[% series.series_id FILTER html %]&amp;token=
-           [%- issue_hash_token([series.id, series.name]) FILTER url_quote %]">是的，刪除</a> |
+           [%- issue_hash_token([series.id, series.name]) FILTER uri %]">是的，刪除</a> |
   <a href="chart.cgi">不，回到圖表頁</a>
 </p>
 

@@ -30,11 +30,13 @@
 
 [% PROCESS global/header.html.tmpl
   title = title
-  yui = [ 'autocomplete', 'calendar', 'datatable' ]
+  yui = [ 'autocomplete', 'calendar', 'datatable', 'button' ]
   style_urls = [ 'skins/standard/attachment.css',
                  'skins/standard/enter_bug.css' ]
   javascript_urls = [ "js/attachment.js", "js/util.js",
                       "js/field.js", "js/TUI.js", "js/bug.js" ]
+  onload = "set_assign_to(); hideElementById('attachment_true');
+            showElementById('attachment_false'); showElementById('btn_no_attachment');"
 %]
 
 <script type="text/javascript">
@@ -52,6 +54,7 @@ var flags = new Array([% product.components.size %]);
 [% END %]
 [% count = 0 %]
 [%- FOREACH c = product.components %]
+    [% NEXT IF NOT c.is_active %]
     components[[% count %]] = "[% c.name FILTER js %]";
     comp_desc[[% count %]] = "[% c.description FILTER html_light FILTER js %]";
     initialowners[[% count %]] = "[% c.default_assignee.login FILTER js %]";
@@ -148,18 +151,6 @@ function set_assign_to() {
     }
 }
 
-function handleWantsAttachment(wants_attachment) {
-    if (wants_attachment) {
-        document.getElementById('attachment_false').style.display = 'none';
-        document.getElementById('attachment_true').style.display = 'block';
-    }
-    else {
-        document.getElementById('attachment_false').style.display = 'block';
-        document.getElementById('attachment_true').style.display = 'none';
-        clearAttachmentFields();
-    }
-}
-
 var status_comment_required = new Array();
 [% FOREACH status = bug_status %]
   status_comment_required['[% status.name FILTER js %]'] =
@@ -170,6 +161,8 @@ TUI_alternates['expert_fields'] = '顯示進階欄位';
 // Hide the Advanced Fields by default, unless the user has a cookie
 // that specifies otherwise.
 TUI_hide_default('expert_fields');
+// Also hide the "Paste text as attachment" textarea by default.
+TUI_hide_default('attachment_text_field');
 -->
 </script>
 
@@ -218,7 +211,7 @@ TUI_hide_default('expert_fields');
   [%# We can't use the select block in these two cases for various reasons. %]
   <tr>
     [% component_desc_url = BLOCK -%]
-      describecomponents.cgi?product=[% product.name FILTER url_quote %]
+      describecomponents.cgi?product=[% product.name FILTER uri %]
     [% END %]
     [% INCLUDE "bug/field-label.html.tmpl"
       field = bug_fields.component editable = 1
@@ -234,6 +227,7 @@ TUI_hide_default('expert_fields');
         [% END %]
 
         [%- FOREACH c = product.components %]
+          [% NEXT IF NOT c.is_active %]
           <option value="[% c.name FILTER html %]"
                   id="v[% c.id FILTER html %]_component"
             [% IF c.name == default.component_ %]
@@ -284,8 +278,9 @@ TUI_hide_default('expert_fields');
     <td rowspan="3">
       <select name="version" id="version" size="5">
         [%- FOREACH v = version %]
-          <option value="[% v FILTER html %]"
-            [% ' selected="selected"' IF v == default.version %]>[% v FILTER html -%]
+          [% NEXT IF NOT v.is_active %]
+          <option value="[% v.name FILTER html %]"
+            [% ' selected="selected"' IF v.name == default.version %]>[% v.name FILTER html -%]
           </option>
         [%- END %]
       </select>
@@ -595,24 +590,17 @@ TUI_hide_default('expert_fields');
     </tr>
   [% END %]
 
-  [% IF Param("maxattachmentsize") %]
+  [% IF Param("maxattachmentsize") || Param("maxlocalattachment") %]
   <tr>
     <th>附件：</th>
     <td colspan="3">
-      <script type="text/javascript">
-        <!--
-        document.write( '<div id="attachment_false">'
-                      +   '<input type="button" value="新增附件" '
-                      +          'onClick="handleWantsAttachment(true)"> '
-                      +   '<em style="display: none">因為你的瀏覽器不支援或不使用'
-                      +   'CSS，因此此一功能對你來說是無效的。<\/em>'
-                      + '<\/div>'
-                      + '<div id="attachment_true" style="display: none">'
-                      +   '<input type="button" '
-                      +          'value="不要新增附件" '
-                      +          'onClick="handleWantsAttachment(false)">');
-        //-->
-      </script>
+      <div id="attachment_false" class="bz_default_hidden">
+        <input type="button" value="新增附件" onClick="handleWantsAttachment(true)">
+      </div>
+
+      <div id="attachment_true">
+        <input type="button" id="btn_no_attachment" value="不要新增附件"
+               class="bz_default_hidden"  onClick="handleWantsAttachment(false)">
         <fieldset>
           <legend>新增附件</legend>
           <table class="attachment_entry">
@@ -622,11 +610,7 @@ TUI_hide_default('expert_fields');
                        flag_table_id ="attachment_flags" %]
           </table>
         </fieldset>
-      <script type="text/javascript">
-        <!--
-        document.write('<\/div>');
-        //-->
-      </script>
+      </div>
     </td>
   </tr>
   [% END %]
@@ -681,6 +665,7 @@ TUI_hide_default('expert_fields');
       <br>
 
       <!-- Checkboxes -->
+      <input type="hidden" name="defined_groups" value="1">
       [% FOREACH group = product.groups_available %]
         <input type="checkbox" id="group_[% group.id FILTER html %]"
                name="groups" value="[% group.name FILTER html %]"
@@ -705,7 +690,7 @@ TUI_hide_default('expert_fields');
       &nbsp;&nbsp;&nbsp;&nbsp;
       <input type="submit" name="maketemplate" id="maketemplate"
              value="將所有的值儲存為書籤模版"
-             class="expert_fields">
+             onclick="bz_no_validate_enter_bug=true" class="expert_fields">
     </td>
   </tr>
 </tbody>
@@ -731,9 +716,10 @@ TUI_hide_default('expert_fields');
     <select name="[% field.name FILTER html %]"
             id="[% field.name FILTER html %]">
     [%- FOREACH x = ${field.name} %]
-      <option value="[% x FILTER html %]"
-        [% " selected=\"selected\"" IF x == default.${field.name} %]>
-        [% display_value(field.name, x) FILTER html %]
+      [% NEXT IF NOT x.is_active %]
+      <option value="[% x.name FILTER html %]"
+        [% " selected=\"selected\"" IF x.name == default.${field.name} %]>
+        [% display_value(field.name, x.name) FILTER html %]
       </option>
     [% END %]
     </select>

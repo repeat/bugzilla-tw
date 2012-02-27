@@ -29,7 +29,7 @@
 
     <tr valign=top>
       <th align="right">
-        <a href="editproducts.cgi?classification=[% classification.name FILTER url_quote %]">編輯產品</a>：
+        <a href="editproducts.cgi?classification=[% classification.name FILTER uri %]">編輯產品</a>：
       </th>
       <td>
         [% IF classification.products.size > 0 %]

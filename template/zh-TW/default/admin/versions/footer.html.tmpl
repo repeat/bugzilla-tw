@@ -38,25 +38,25 @@
 [% UNLESS no_add_version_link %]
   <a title="在產品 '[% product.name FILTER html %]' 新增版本"
      href="editversions.cgi?action=add&amp;product=
-          [%- product.name FILTER url_quote %]">新增</a>版本。
+          [%- product.name FILTER uri %]">新增</a>版本。
 [% END %]
 
 [% IF version.name && !no_edit_version_link %]
   編輯版本 <a
   title="編輯產品 '[%- product.name FILTER html %]' 的版本 '[% version.name FILTER html %]'"
   href="editversions.cgi?action=edit&amp;product=
-        [%- product.name FILTER url_quote %]&amp;version=
-        [%- version.name FILTER url_quote %]"
+        [%- product.name FILTER uri %]&amp;version=
+        [%- version.name FILTER uri %]"
         >'[% version.name FILTER html %]'</a> 。
 [% END %]
 
 [% UNLESS no_edit_other_versions_link %]
   編輯產品 <a href="editversions.cgi?product=
-        [%- product.name FILTER url_quote %]">'[% product.name FILTER html %]'</a> 的其他版本。
+        [%- product.name FILTER uri %]">'[% product.name FILTER html %]'</a> 的其他版本。
 
 [% END %]
 
   編輯產品 <a href="editproducts.cgi?action=edit&amp;product=
-        [%- product.name FILTER url_quote %]">'[% product.name FILTER html %]'</a> 。
+        [%- product.name FILTER uri %]">'[% product.name FILTER html %]'</a> 。
 
 </p>

@@ -52,17 +52,7 @@
         /* pre id="comment_name_N" */
         var text_elem = document.getElementById('comment_text_'+id);
         var text = getText(text_elem);
-
-        /* make sure we split on all newlines -- IE or Moz use \r and \n
-         * respectively.
-         */
-        text = text.split(/\r|\n/);
-
-        for (var i=0; i < text.length; i++) {
-            replytext += "> " + text[i] + "\n";
-        }
-
-        replytext = prefix + replytext + "\n";
+        replytext = prefix + wrapReplyText(text);
       [% ELSIF user.settings.quote_replies.value == 'simple_reply' %]
         replytext = prefix;
       [% END %]
@@ -474,6 +464,10 @@
             <span>
               [% INCLUDE global/user.html.tmpl who = bug.assigned_to %]
               (<a href="#" id="bz_assignee_edit_action">編輯</a>)
+              [% IF bug.assigned_to.id != user.id %]
+                (<a title="分配給自己"
+                    href="#" id="bz_assignee_take_action">接受</a>)
+              [% END %]
             </span>
           </div>
           <div id="bz_assignee_input">
@@ -494,6 +488,12 @@
                              'bz_assignee_edit_action',
                              'assigned_to',
                              '[% bug.assigned_to.login FILTER js %]' );
+           hideEditableField('bz_assignee_edit_container',
+                             'bz_assignee_input',
+                             'bz_assignee_take_action',
+                             'assigned_to',
+                             '[% bug.assigned_to.login FILTER js %]',
+                             '[% user.login FILTER js %]' );
            initDefaultCheckbox('assignee');
           </script>
         [% ELSE %]
@@ -553,17 +553,12 @@
 [%# Block for URL Keyword and Whiteboard                                     #%]
 [%############################################################################%]
 [% BLOCK section_url_keyword_whiteboard %]
-[%# *** URL Whiteboard Keywords *** %]
   <tr>
-    <td class="field_label">
-      <label for="bug_file_loc" accesskey="u"><b>
-        [% IF is_safe_url(bug.bug_file_loc) %]
-           <a href="[% bug.bug_file_loc FILTER html %]">網址 (<u>U</u>)</a>
-        [% ELSE %]
-          網址 (<u>U</u>)
-        [% END %]
-      [%%]</b><label>：
-    </td>
+    [% INCLUDE "bug/field-label.html.tmpl"
+      field = bug_fields.bug_file_loc
+      editable = 1
+      accesskey = "u"
+    %]
     <td>
       [% IF bug.check_can_change_field("bug_file_loc", 0, 1) %]
         <span id="bz_url_edit_container" class="bz_default_hidden">
@@ -579,7 +574,7 @@
       <span id="bz_url_input_area">
         [% url_output =  PROCESS input no_td=1 inputname => "bug_file_loc" size => "40" colspan => 2 %]
         [% IF NOT bug.check_can_change_field("bug_file_loc", 0, 1)
-              AND is_safe_url(bug.bug_file_loc)  %]
+              AND is_safe_url(bug.bug_file_loc) %]
           <a href="[% bug.bug_file_loc FILTER html %]">[% url_output FILTER none %]</a>
         [% ELSE %]
           [% url_output FILTER none %]
@@ -628,8 +623,8 @@
 [%############################################################################%]
 [% BLOCK section_dependson_blocks %]
   <tr>
-    [% PROCESS dependencies
-               dep = { title => "要先修好這些 $terms.bug", fieldname => "dependson" } %]
+    [% INCLUDE dependencies
+         field = bug_fields.blocked deps = bug.blocks_obj %]
   </tr>
 
   <tr>
@@ -821,16 +816,26 @@
             </div>
           [% END %]
           [% IF bug.cc %]
-            <select id="cc" name="cc" multiple="multiple" size="5">
+            <select id="cc" multiple="multiple" size="5"
+              [% IF bug.user.canedit %]name="cc"[% END %]>
               [% FOREACH c = bug.cc %]
                 <option value="[% c FILTER email FILTER html %]">
                   [% c FILTER email FILTER html %]</option>
               [% END %]
             </select>
-            [% IF user.id %]
+            [% IF user.id && !bug.user.canedit %]
+              <input type="hidden" name="cc" value="[% user.login FILTER email FILTER html %]">
+            [% END %]
+            [% IF user.id AND (bug.user.canedit OR bug.cc.contains(user.login)) %]
               <br>
               <input type="checkbox" id="removecc" name="removecc">
-              [%%]<label for="removecc">刪除選擇的寄件副本清單</label>
+              <label for="removecc">
+                [% IF bug.user.canedit %]
+                  刪除選擇的寄件副本清單
+                [% ELSE %]
+                  將我從寄件副本清單中刪除
+                [% END %]
+              </label>
               <br>
             [% END %]
           [% END %]
@@ -936,37 +941,35 @@
 
 [% BLOCK dependencies %]
 
-  <th class="field_label">
-    <label for="[% dep.fieldname %]"[% " accesskey=\"$accesskey\"" IF accesskey %]>
-    [% dep.title %]</label>：
-  </th>
+  [% INCLUDE "bug/field-label.html.tmpl" %]
+
   <td>
-    <span id="[% dep.fieldname %]_input_area">
-      [% IF bug.check_can_change_field(dep.fieldname, 0, 1) %]
-        <input name="[% dep.fieldname %]" id="[% dep.fieldname %]"
-               class="text_input"
-               value="[% bug.${dep.fieldname}.join(', ') %]">
+    <span id="[% field.name FILTER html %]_input_area">
+      [% IF bug.check_can_change_field(field.name, 0, 1) %]
+        <input name="[% field.name FILTER html %]"
+               id="[% field.name FILTER html %]" class="text_input"
+               value="[% bug.${field.name}.join(', ') FILTER html %]">
       [% END %]
     </span>
 
-    [% FOREACH depbug = bug.${dep.fieldname} %]
-      [% depbug FILTER bug_link(depbug, use_alias => 1) FILTER none %][% " " %]
+    [% FOREACH dep_bug = deps %]
+      [% dep_bug.id FILTER bug_link(dep_bug, use_alias => 1)
+                    FILTER none %][% " " %]
     [% END %]
-    [% IF bug.check_can_change_field(dep.fieldname, 0, 1) %]
-      <span id="[% dep.fieldname %]_edit_container" class="edit_me bz_default_hidden" >
-        (<a href="#" id="[% dep.fieldname %]_edit_action">編輯</a>)
+    [% IF bug.check_can_change_field(field.name, 0, 1) %]
+      <span id="[% field.name FILTER html %]_edit_container"
+            class="edit_me bz_default_hidden">
+        (<a href="#" id="[% field.name FILTER html %]_edit_action">編輯</a>)
       </span>
       <script type="text/javascript">
-        hideEditableField('[% dep.fieldname %]_edit_container',
-                          '[% dep.fieldname %]_input_area',
-                          '[% dep.fieldname %]_edit_action',
-                          '[% dep.fieldname %]',
-                          "[% bug.${dep.fieldname}.join(', ') %]");
+        hideEditableField('[% field.name FILTER js %]_edit_container',
+                          '[% field.name FILTER js %]_input_area',
+                          '[% field.name FILTER js %]_edit_action',
+                          '[% field.name FILTER js %]',
+                          '[% bug.${field.name}.join(', ') FILTER js %]');
       </script>
     [% END %]
   </td>
-
-  [% accesskey = undef %]
 
 [% END %]
 
@@ -1092,13 +1095,19 @@
 
     [%# For logged-out users %]
     [% ELSE %]
-      <table><tr><td><fieldset>
-        <legend>注意</legend>
-        你需要
-        <a href="show_bug.cgi?id=
-                 [%- bug.bug_id %]&amp;GoAheadAndLogIn=1">登入</a>
-         才能夠發表意見，或對此 [% terms.bug %] 做變更。
-      </fieldset></table><tr></td>
+      <table>
+        <tr>
+          <td>
+            <fieldset>
+              <legend>注意</legend>
+              你需要
+              <a href="show_bug.cgi?id=
+                      [%- bug.bug_id %]&amp;GoAheadAndLogIn=1">登入</a>
+              才能夠發表意見，或對此 [% terms.bug %] 做變更。
+            </fieldset>
+          </td>
+        </tr>
+      </table>
     [% END %]
   </div>
 [% END %]
@@ -1113,6 +1122,7 @@
           AND bug.choices.${selname}.size > 1 %]
       <select id="[% selname %]" name="[% selname %]">
         [% FOREACH x = bug.choices.${selname} %]
+          [% NEXT IF NOT x.is_active AND x.name != bug.${selname} %]
           <option value="[% x.name FILTER html %]"
             [% " selected" IF x.name == bug.${selname} %]>
             [%- x.name FILTER html %]

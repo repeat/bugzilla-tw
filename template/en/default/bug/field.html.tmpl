@@ -33,18 +33,12 @@
   #               the field value.
   #   no_tds: boolean; if true, don't display the label <th> or the 
   #           wrapping <td> for the field.
-  #   desc_url: string; Normally the label of a non-custom field links to
-  #             fields.html. If you want it to link elsewhere, specify the
-  #             relative URL you want to link to, here. Remember to call
-  #             url_quote on any query string arguments.
   #   bug (optional): The current Bugzilla::Bug being displayed, or a hash 
   #                   with default field values being displayed on a page.
   #%]
 
 [% SET hidden = 0 %]
-[% IF field.visibility_field.defined AND bug
-      AND !field.visibility_value.is_set_on_bug(bug) 
-%]
+[% IF bug AND !field.is_visible_on_bug(bug) %]
   [% SET hidden = 1 %]
 [% END %]
 
@@ -126,6 +120,7 @@
             [% legal_values = field.legal_values %]
           [% END %]
           [% FOREACH legal_value = legal_values %]
+            [% NEXT IF NOT legal_value.is_active AND NOT value.contains(legal_value.name).size %]
             <option value="[% legal_value.name FILTER html %]"
                     id="v[% legal_value.id FILTER html %]_
                         [%- field.name FILTER html %]"
@@ -164,10 +159,10 @@
            cols = 60 defaultcontent = value mandatory = field.is_mandatory %]
      [% CASE constants.FIELD_TYPE_BUG_URLS %]
        [% '<ul class="bug_urls">' IF value.size %]
-       [% FOREACH url = value %]
+       [% FOREACH bug_url = value %]
          <li>
-           <a href="[% url FILTER html %]">[% url FILTER html %]</a>
-           <label><input type="checkbox" value="[% url FILTER html %]"
+           [% PROCESS bug_url_link bug_url = bug_url %]
+           <label><input type="checkbox" value="[% bug_url.name FILTER html %]"
                          name="remove_[% field.name FILTER html %]">
              Remove</label>
          </li>
@@ -175,11 +170,20 @@
        [% '</ul>' IF value.size %]
 
        [% IF Param('use_see_also') %]
-         <label for="[% field.name FILTER html %]">
-           <strong>Add [% terms.Bug %] URLs:</strong>
-         </label><br>
-         <input type="text" id="[% field.name FILTER html %]" size="40"
-                class="text_input" name="[% field.name FILTER html %]">
+         <span id="container_showhide_[% field.name FILTER html %]"
+               class="bz_default_hidden">
+           <a href="#" id="showhide_[% field.name FILTER html %]">(add)</a>
+         </span>
+         <div id="container_[% field.name FILTER html %]">
+           <label for="[% field.name FILTER html %]">
+             <strong>Add [% terms.Bug %] URLs:</strong>
+           </label><br>
+           <input type="text" id="[% field.name FILTER html %]" size="40"
+                  class="text_input" name="[% field.name FILTER html %]">
+         </div>
+         <script type="text/javascript">
+             setupEditLink('[% field.name FILTER js %]');
+         </script>
        [% END %]
      [% CASE constants.FIELD_TYPE_KEYWORDS %]
        <div id="keyword_container">
@@ -198,16 +202,17 @@
        </script>
   [% END %]
 [% ELSIF field.type == constants.FIELD_TYPE_TEXTAREA %]
-  <div class="uneditable_textarea">[% value FILTER wrap_comment(60)
-                                            FILTER html %]</div>
+  <div class="uneditable_textarea">[% value FILTER html %]</div>
 [% ELSIF field.type == constants.FIELD_TYPE_BUG_ID %]
     [% IF value %]  
         [% value FILTER bug_link(value, use_alias => 1) FILTER none %]
     [% END %]
 [% ELSIF field.type == constants.FIELD_TYPE_BUG_URLS %]
   [% '<ul class="bug_urls">' IF value.size %]
-    [% FOREACH url = value %]
-      <li><a href="[% url FILTER html %]">[% url FILTER html %]</a></li>
+    [% FOREACH bug_url = value %]
+      <li>
+        [% PROCESS bug_url_link bug_url = bug_url %]
+      </li>
     [% END %]
   [% '</ul>' IF value.size %]
 [% ELSE %]
@@ -227,4 +232,13 @@
     [% END %]
 [% ELSE %]
     [% extra_field_item = '' %]
+[% END %]
+
+[% BLOCK bug_url_link %]
+  [% IF bug_url.isa('Bugzilla::BugUrl::Bugzilla::Local') %]
+    [% bug_url.target_bug_id FILTER bug_link(bug_url.target_bug_id, use_alias => 1) FILTER none %]
+  [% ELSE %]
+    <a href="[% bug_url.name FILTER html %]">
+      [% bug_url.name FILTER html %]</a>
+  [% END %]
 [% END %]

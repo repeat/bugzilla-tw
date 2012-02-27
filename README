@@ -1,9 +1,9 @@
-Bugzilla 4.0r 繁體中文化語系檔
+Bugzilla 4.2 繁體中文化語系檔
 
 常見問題
 
 Q. 是否會釋出 doc/ 的中文化語系檔？
-A. 目前無此打算。
+A. 無此打算。
 
 Q. Release Note 沒有中文化？
 A. 參考 Mozilla Firefox 3.5 的 Release Note 的做法，改為維持原(英)文。
@@ -12,20 +12,16 @@ Q. 明明是中文化，我還是看到一堆英文？
 A. 有很多的語彙保留原文會比中文化來得容易瞭解，因此大部份的 admin 權限檔案都是以中英混雜的方式譯出。
    使用者介面已儘量中文化。
 
-Q. 我在偏好設定中的「在電子郵件中用的語言」選了 zh-TW ，但是還是有一堆英文？
-A. 這是一個已知的 bug 。請參考 https://bugzilla.mozilla.org/show_bug.cgi?id=215210
-
 Q. 我裝完語系檔，還是看到一堆英文？
 A. Bugzilla 使用的技術是偵測你的瀏覽器設定。
    以 Firefox 來說，在 Firefox 選擇 工具 > 選項 > 進階 > 一般 > 語言 ，
    按「選擇 (O)...」，把「中文/台灣 [zh-tw] 」往上移到「英文/美國 [en-us] 」或「英文 [en] 」的上方即可。
 
-Q. 如何連絡中文化語系檔的作者？
+Q. 如何連絡繁體中文化語系檔的作者？
 A. 請利用 Google Code 裡的 New Issue 功能 ( http://code.google.com/p/bugzilla-tw/issues/list ) 即可。
 
 
-
-Bugzilla 4.0r Chinese, traditional (zh-TW) language pack files
+Bugzilla 4.2 Chinese, traditional (zh-TW) language pack files
 
 FAQ for non-Chinese speakers
 

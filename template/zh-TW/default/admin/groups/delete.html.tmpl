@@ -54,7 +54,7 @@
       位使用者直屬於此群組。你無法在群組中還有使用者時刪除它。</b>
 
     <br><a href="editusers.cgi?action=list&amp;groupid=
-                 [%- group.id FILTER url_quote %]&amp;grouprestrict=1">顯示有哪些使用者</a>
+                 [%- group.id FILTER uri %]&amp;grouprestrict=1">顯示有哪些使用者</a>
     - <label><input type="checkbox" name="removeusers">刪除此群組中的所有使用者。</label></p>
   [% END %]
 
@@ -72,7 +72,7 @@
      你無法在群組中還有[% terms.bugs %]時刪除它。</b>
 
     <br><a href="buglist.cgi?field0-0-0=bug_group&amp;type0-0-0=equals&amp;value0-0-0=
-                 [%- group.name FILTER url_quote %]">顯示有哪些 [% terms.bugs %]</a>
+                 [%- group.name FILTER uri %]">顯示有哪些 [% terms.bugs %]</a>
     - <label><input type="checkbox" name="removebugs">刪除此群組中所有的[% terms.bugs %]限制。</label><p>
 
     <p><b>注意：</b>這可能會使不公開的[% terms.bugs %]變為公開。<br>
@@ -112,7 +112,7 @@
         [% END %]
 
         <li><a href="editproducts.cgi?action=editgroupcontrols&amp;product=
-                    [%- data.product.name FILTER url_quote %]">
+                    [%- data.product.name FILTER uri %]">
           [%- data.product.name FILTER html %]</a>
           ([% active.join(', ') FILTER html %])
           [% IF hidden %]
@@ -133,7 +133,7 @@
     - <input type="checkbox" name="removeflags">刪除此群組中的所有旗標類型。</p>
 
     <br><a href="editflagtypes.cgi?action=list&amp;group=
-                 [%- group.id FILTER url_quote %]">顯示有哪些類型</a>
+                 [%- group.id FILTER uri %]">顯示有哪些類型</a>
     - <label><input type="checkbox" name="removeflags">刪除此群組中的所有旗標類型。</label></p>
   [% END %]
 

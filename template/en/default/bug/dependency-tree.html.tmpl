@@ -64,14 +64,14 @@
         [% IF ids.size %]
             depends on 
         [% ELSE %]
-            does not depend on any [% terms.bugs %].
+            does not depend on any [% 'open ' IF hide_resolved %][% terms.bugs %].
         [% END %]
     [% ELSIF type == 2 %]
         [% tree_name = "blocked_tree" %]
         [% IF ids.size %] 
             blocks 
         [% ELSE %]
-            does not block any [% terms.bugs %].
+            does not block any [% 'open ' IF hide_resolved %][% terms.bugs %].
         [% END %]
     [% END %]
     [% IF ids.size %]
@@ -144,7 +144,7 @@
       <span class="summ_text">[%+ bug.short_desc FILTER html %]</span>
       <span class="summ_info">[[% INCLUDE buginfo %]]</span>
     </a>
-    <a href="showdependencytree.cgi?id=[% bugid FILTER url_quote %]"
+    <a href="showdependencytree.cgi?id=[% bugid FILTER uri %]"
        class="tree_link">
       <img src="skins/standard/dependency-tree/tree.png"
            title="See dependency tree for [% terms.bug %] [%+ bugid FILTER html %]">

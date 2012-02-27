@@ -63,14 +63,14 @@
         [% IF ids.size %]
             依賴於
         [% ELSE %]
-            並未依賴任何 [% terms.bugs %] 。
+            並未依賴任何[% '開啟的' IF hide_resolved %][% terms.bugs %] 。
         [% END %]
     [% ELSIF type == 2 %]
         [% tree_name = "blocked_tree" %]
         [% IF ids.size %]
             阻擋
         [% ELSE %]
-            並未阻擋任何 [% terms.bugs %] 。
+            並未阻擋任何[% '開啟的' IF hide_resolved %][% terms.bugs %] 。
         [% END %]
     [% END %]
     [% IF ids.size %]
@@ -143,7 +143,7 @@
       <span class="summ_text">[%+ bug.short_desc FILTER html %]</span>
       <span class="summ_info">[[% INCLUDE buginfo %]]</span>
     </a>
-    <a href="showdependencytree.cgi?id=[% bugid FILTER url_quote %]"
+    <a href="showdependencytree.cgi?id=[% bugid FILTER uri %]"
        class="tree_link">
       <img src="skins/standard/dependency-tree/tree.png"
            title="顯示 [% terms.bug %] [%+ bugid FILTER html %] 的依賴關係樹">

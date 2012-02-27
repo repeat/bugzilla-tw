@@ -34,6 +34,8 @@
    style = "#somebugs { width: 100%; height: 500px }"
  %]
 
+[% style = "" %]
+
 <p>
   <font color="red">
     這是使用於 mozilla.org 的模版。此模版以及 comment-guided.txt.tmpl
@@ -78,7 +80,7 @@ function PutDescription() {
 [% ELSIF product.name == "Thunderbird" %]
   [% productstring = "product=Mozilla%20Application%20Suite&amp;product=Thunderbird" %]
 [% ELSE %]
-  [% productstring = BLOCK %]product=[% product.name FILTER url_quote %][% END %]
+  [% productstring = BLOCK %]product=[% product.name FILTER uri %][% END %]
 [% END %]
 
 <p>
@@ -191,7 +193,7 @@ function PutDescription() {
       <p>
         問題發生的區域。你可以藉由使用搜尋結果中類似的 [% terms.bugs %] 來選擇正確的子產品，或是瀏覽<a
         target="_blank" href="describecomponents.cgi?product=
-            [% product.name FILTER url_quote %]">子產品描述</a>的完整清單（在新視窗開啟）以獲得更多資訊。
+            [% product.name FILTER uri %]">子產品描述</a>的完整清單（在新視窗開啟）以獲得更多資訊。
       </p>
     </td>
   </tr>

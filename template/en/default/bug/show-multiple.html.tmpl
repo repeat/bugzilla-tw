@@ -66,7 +66,7 @@
     [% terms.Bug %] 
     <a href="show_bug.cgi?id=[% bug.bug_id FILTER html %]">[% bug.bug_id FILTER html %]</a>
     [% IF Param("usebugaliases") AND bug.alias AND NOT bug.error %]
-      (<a href="show_bug.cgi?id=[% bug.alias FILTER url_quote %]">
+      (<a href="show_bug.cgi?id=[% bug.alias FILTER uri %]">
         [% bug.alias FILTER html %]</a>)
     [% END %]
   </h1>
@@ -168,6 +168,18 @@
                      [% bug.bug_file_loc FILTER html %]</a>
           [% ELSE %]
             [% bug.bug_file_loc FILTER html %]
+          [% END %]
+        </td>
+      </tr>
+    [% END %]
+
+    [% IF bug.see_also.size %]
+      <tr>
+        <th>[% field_descs.see_also FILTER html %]:</th>
+        <td colspan="3">
+          [% FOREACH see_also = bug.see_also %]
+            <a href="[% see_also.name FILTER html %]">[% see_also.name FILTER html %]</a>
+            [% "<br>" IF not loop.last() %]
           [% END %]
         </td>
       </tr>

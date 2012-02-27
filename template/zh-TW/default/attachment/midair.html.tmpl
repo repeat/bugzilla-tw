@@ -52,7 +52,7 @@
 <p>
   你原本的意見是：<br>
   <blockquote><pre class="bz_comment_text">
-    [% cgi.param("comment") FILTER wrap_comment FILTER html %]
+    [% cgi.param("comment") FILTER html %]
   </pre></blockquote>
 </p>
 [% END %]

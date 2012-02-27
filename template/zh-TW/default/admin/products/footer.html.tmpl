@@ -30,10 +30,10 @@
 
 [% IF Param('useclassification') && classification %]
   [% classification_url_part = BLOCK %]&amp;classification=
-     [%- classification.name FILTER url_quote %]
+     [%- classification.name FILTER uri %]
   [% END %]
   [% classification_url_part_start = BLOCK %]classification=
-     [%- classification.name FILTER url_quote %]
+     [%- classification.name FILTER uri %]
   [% END %]
   [% classification_text = BLOCK %]
     分類 '[% classification.name FILTER html %]' 的
@@ -59,7 +59,7 @@
 [% IF product && !no_edit_product_link %]
   編輯產品<a
   title="編輯[% classification_text %]產品 '[% product.name FILTER html %]'"
-  href="editproducts.cgi?action=edit&amp;product=[% product.name FILTER url_quote %]">
+  href="editproducts.cgi?action=edit&amp;product=[% product.name FILTER uri %]">
        '[% product.name FILTER html %]' </a>。
 [% END %]
 

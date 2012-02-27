@@ -30,8 +30,9 @@
     table#filtering th { text-align: right; }
   "
   onload="var f = document.request_form; selectProduct(f.product, f.component, null, null, '任何');"
-  javascript_urls=["js/productform.js"]
+  javascript_urls=["js/productform.js", "js/field.js"]
   style_urls = ['skins/standard/buglist.css']
+  yui = ['autocomplete']
 %]
 
 <script type="text/javascript">
@@ -77,7 +78,7 @@
            value => cgi.param('requester')
            size => 20
            emptyok => 1
-           title => "要求者的電子郵件地址"
+           field_title => "要求者的電子郵件地址"
         %]
       </td>
       <th>產品：</th>
@@ -135,7 +136,7 @@
            size => 20
            emptyok => 1
            hyphenok => 1
-           title => "被要求者的電子郵件地址，或者以減號 &quot;-&quot; 代表沒有被要求者的一項要求"
+           field_title => "被要求者的電子郵件地址，或者以減號 \"-\" 代表沒有被要求者的一項要求"
         %]
       </td>
       <th>子產品：</th>
@@ -198,7 +199,10 @@
     <tr>
       [% FOREACH column = display_columns %]
         [% NEXT IF column == group_field || excluded_columns.contains(column) %]
-        <td>[% PROCESS "display_$column" %]</td>
+        <td>
+          [% PROCESS "display_$column" %]
+          [% Hook.process('after_column') %]
+        </td>
       [% END %]
     </tr>
   [% END %]

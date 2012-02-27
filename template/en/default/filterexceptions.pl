@@ -34,7 +34,7 @@
 #                                   [% foo.push() %]
 # TT loop variables               - [% loop.count %]
 # Already-filtered stuff          - [% wibble FILTER html %]
-#   where the filter is one of html|csv|js|url_quote|quoteUrls|time|uri|xml|none
+#   where the filter is one of html|csv|js|quoteUrls|time|uri|xml|none
 
 %::safe = (
 
@@ -55,15 +55,6 @@
   'flag.id', 
   'flag.status', 
   'type.id', 
-],
-
-'search/boolean-charts.html.tmpl' => [
-  '"field${chartnum}-${rownum}-${colnum}"', 
-  'field.name', 
-  '"${chartnum}-${rownum}-${newor}"', 
-  '"${chartnum}-${newand}-0"', 
-  'newchart',
-  'jsmagic',
 ],
 
 'search/form.html.tmpl' => [
@@ -258,11 +249,7 @@
   'bug.delta_ts', 
   'bug.bug_id', 
   'group.bit', 
-  'dep.title', 
-  'dep.fieldname', 
-  'bug.${dep.fieldname}.join(\', \')', 
   'selname',
-  '" accesskey=\"$accesskey\"" IF accesskey',
   'inputname',
   '" colspan=\"$colspan\"" IF colspan',
   '" size=\"$size\"" IF size',
@@ -426,12 +413,8 @@
 ],
 
 'admin/flag-type/edit.html.tmpl' => [
-  'action', 
   'type.id', 
-  'type.target_type', 
   'type.sortkey || 1',
-  'typeLabelLowerPlural',
-  'typeLabelLowerSingular',
   'selname',
 ],
 

@@ -123,15 +123,18 @@ YAHOO.util.Event.onDOMReady(function() {onChangeType(document.getElementById('ty
         <select name="visibility_field_id" id="visibility_field_id"
                 onchange="onChangeVisibilityField()">
           <option></option>
-          [% FOREACH sel_field = Bugzilla.get_fields({ is_select => 1 }) %]
+          [% FOREACH sel_field = Bugzilla.fields({ is_select => 1 }) %]
             <option value="[% sel_field.id FILTER html %]">
               [% sel_field.description FILTER html %]
               ([% sel_field.name FILTER html %])
             </option>
           [% END %]
         </select>
-        <label for="visibility_value_id"><strong>is set to:</strong></label>
-        <select name="visibility_value_id" id="visibility_value_id">
+        <label for="visibility_values">
+          <strong>is set to any of:</strong>
+        </label>
+        <select multiple="multiple" size="5" name="visibility_values"
+                id="visibility_values" class="field_value">
           <option value=""></option>
         </select>
       </td>
@@ -149,7 +152,7 @@ YAHOO.util.Event.onDOMReady(function() {onChangeType(document.getElementById('ty
       <td>
         <select disabled="disabled" name="value_field_id" id="value_field_id">
           <option></option>
-          [% FOREACH sel_field = Bugzilla.get_fields({ is_select => 1 }) %]
+          [% FOREACH sel_field = Bugzilla.fields({ is_select => 1 }) %]
             <option value="[% sel_field.id FILTER html %]">
               [% sel_field.description FILTER html %]
               ([% sel_field.name FILTER html %])

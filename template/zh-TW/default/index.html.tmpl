@@ -46,12 +46,6 @@ function onLoadActions() {
   }
   document.getElementById('quicksearch_top').focus();
 }
-function addSidebar() {
-  var sidebarname=window.location.host;
-  if (!/bug/i.test(sidebarname))
-    sidebarname="[% terms.Bugzilla %] "+sidebarname;
-  window.sidebar.addPanel (sidebarname, "[% urlbase FILTER html %]sidebar.cgi", "");
-}
 var quicksearch_message = "輸入 [% terms.bug %] 的編號或字串進行搜尋";
 
 function checkQuicksearch( form ) {
@@ -95,14 +89,22 @@ function quicksearchHelpText(el_id, action){
       <p class="notice">此一訊息僅對有管理權限的使用者顯示。
       你可以在<a href="editparams.cgi?section=general#upgrade_notification_desc">參數設定</a>頁設定此通知。</p>
     [% ELSIF release.error == "cannot_download" %]
-      <p>無法建立本地 XML 檔案 '[% release.xml_file FILTER html %]' 。請確認網站伺服器可在此目錄下寫入此檔案，以及你可以瀏覽網際網路。如果你在使用代理伺服器，請正確設定
+      <p>無法下載遠端檔案 <a href="[% constants.REMOTE_FILE FILTER html %]">
+      [%~ constants.REMOTE_FILE FILTER html %]</a> （原因：
+      [% release.reason FILTER html %] ）。<br>
+      可能是遠端伺服器暫時無法使用，或是你的網站伺服器無法瀏覽網際網路。如果你在使用代理伺服器，請正確設定
       <a href="editparams.cgi?section=advanced#proxy_url">proxy_url</a> 參數。</p>
+
+    [% ELSIF release.error == "no_write" %]
+      <p>無法建立本地 XML 檔案 '[% constants.LOCAL_FILE FILTER html %]' （原因：
+      [% release.reason FILTER html %] ）。<br>
+      請確認網站伺服器可在此目錄下寫入此檔案。
     [% ELSIF release.error == "no_update" %]
-      <p>無法更新本地 XML 檔案 '[% release.xml_file FILTER html %]' 。請確認網站伺服器可以編輯此檔案。</p>
+      <p>無法更新本地 XML 檔案 '[% constants.LOCAL_FILE FILTER html %]' 。請確認網站伺服器可以編輯此檔案。</p>
     [% ELSIF release.error == "no_access" %]
-      <p>無法讀取本地 XML 檔案 '[% release.xml_file FILTER html %]' 。請確認此檔案已設定正確的讀寫權限。</p>
+      <p>無法讀取本地 XML 檔案 '[% constants.LOCAL_FILE FILTER html %]' 。請確認此檔案已設定正確的讀寫權限。</p>
     [% ELSIF release.error == "corrupted" %]
-      <p>本地 XML 檔案 '[% release.xml_file FILTER html %]' 並非有效的 XML 格式。請將它刪除，並嘗試重新瀏覽此頁面。</p>
+      <p>本地 XML 檔案 '[% constants.LOCAL_FILE FILTER html %]' 並非有效的 XML 格式。請將它刪除，並嘗試重新瀏覽此頁面。</p>
     [% ELSIF release.error == "unknown_parameter" %]
       <p>'[% Param("upgrade_notification") FILTER html %]' 並非有效的通知參數。請點選<a
       href="editparams.cgi?section=general#upgrade_notification_desc">參數設定</a>頁面，檢查此參數的設定。</p>
@@ -116,27 +118,35 @@ function quicksearchHelpText(el_id, action){
       <td>
         <h1 id="welcome">歡迎來到 [% terms.Bugzilla %]</h1>
         <div class="intro">[% Hook.process('intro') %]</div>
-        <a id="enter_bug" class="bz_common_actions"
-           href="enter_bug.cgi"><span>回報 [% terms.Bug %]</span></a>
 
-        <a id="query" class="bz_common_actions"
-           href="query.cgi"><span>搜尋</span></a>
-
-        <a id="account" class="bz_common_actions"
-          [% IF user.id %]
-            href="userprefs.cgi"><span>使用者偏好設定</span></a>
-          [% ELSIF Param('createemailregexp')
-                   && user.authorizer.user_can_create_account
-          %]
-            href="createaccount.cgi"><span>建立新帳號</span></a>
-          [% ELSE %]
-            href="?GoAheadAndLogIn=1"><span>登入</span></a>
-          [% END %]
+        <div class="bz_common_actions">
+          <ul>
+            <li>
+              <a id="enter_bug" href="enter_bug.cgi"><span>回報 [% terms.Bug %]</span></a>
+            </li>
+            <li>
+              <a id="query" href="query.cgi"><span>搜尋</span></a>
+            </li>
+            <li>
+              <a id="account"
+                 [% IF user.id %]
+                   href="userprefs.cgi"><span>使用者偏好設定</span></a>
+                 [% ELSIF Param('createemailregexp')
+                          && user.authorizer.user_can_create_account
+                 %]
+                   href="createaccount.cgi"><span>建立新帳號</span></a>
+                 [% ELSE %]
+                   href="?GoAheadAndLogIn=1"><span>登入</span></a>
+                 [% END %]
+            </li>
+          </ul>
+        </div>
 
         <form id="quicksearchForm" name="quicksearchForm" action="buglist.cgi"
               onsubmit="return checkQuicksearch(this);">
           <div>
             <input id="quicksearch_main" type="text" name="quicksearch"
+              title="快速搜尋"
               onfocus="quicksearchHelpText(this.id, 'hide');"
               onblur="quicksearchHelpText(this.id, 'show');"
             >

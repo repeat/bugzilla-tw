@@ -51,8 +51,8 @@
   <td valign="top">
 [% IF version.bug_count %]
   <a title="列出指向版本 '[%- version.name FILTER html %]' 的 [% terms.bugs %]"
-     href="buglist.cgi?version=[% version.name FILTER url_quote %]&amp;product=
-          [%- product.name FILTER url_quote %]">[%- version.bug_count FILTER none %]</a>
+     href="buglist.cgi?version=[% version.name FILTER uri %]&amp;product=
+          [%- product.name FILTER uri %]">[%- version.bug_count FILTER none %]</a>
 [% ELSE %]
   無
 [% END %]

@@ -69,19 +69,17 @@
             <span class="bz_edit">(<a href="javascript:toggle_attachment_details_visibility()">edit details</a>)</span>
           [% END %]
         </div>
-        [% IF NOT attachment.isurl %]
-          <div class="details">
-            [% attachment.filename FILTER html %] ([% attachment.contenttype FILTER html %]) 
-            [% IF attachment.datasize %]
-              [%+ attachment.datasize FILTER unitconvert %]
-            [% ELSE %]
-              <em>deleted</em>
-            [% END %], created by  [%+ INCLUDE global/user.html.tmpl who = attachment.attacher %]
-            [% IF attachment.isprivate %]
-              <span class="bz_private">Only visible to <strong>[% Param('insidergroup') FILTER html %]</strong></span>
-            [% END %]
-          </div>
-        [% END %]
+        <div class="details">
+          [% attachment.filename FILTER html %] ([% attachment.contenttype FILTER html %]),
+          [% IF attachment.datasize %]
+            [%+ attachment.datasize FILTER unitconvert %]
+          [% ELSE %]
+            <em>deleted</em>
+          [% END %], created by [%+ INCLUDE global/user.html.tmpl who = attachment.attacher %]
+          [% IF attachment.isprivate %];
+            <span class="bz_private">only visible to <strong>[% Param('insidergroup') FILTER html %]</strong> members</span>
+          [% END %]
+        </div>
       </div>
       <div id="attachment_information_edit">
         <span class="bz_hide">
@@ -100,12 +98,6 @@
           %]          
         </div>
 
-        [% IF attachment.isurl %]
-          <input type="hidden" name="filename"
-                 value="[% attachment.filename FILTER html %]">
-          <input type="hidden" name="contenttypeentry"
-                 value="[% attachment.contenttype FILTER html %]">
-        [% ELSE %]
           <div id="attachment_filename">
             <label for="filename">Filename:</label>
             <input type="text" size="20"  class="text block[% editable_or_hide %]"
@@ -139,7 +131,7 @@
                    [%+ 'checked="checked"' IF attachment.ispatch %]>
                    <label for="ispatch">patch</label>
           </div>
-        [% END %]
+
         <div class="readonly">
           <div class="checkboxes">
             <div id="attachment_isobsolete">
@@ -169,18 +161,6 @@
       <div id="attachment_view_window">
         [% IF !attachment.datasize %]
           <div><b>The content of this attachment has been deleted.</b></div>
-        [% ELSIF attachment.isurl %]
-          <div>
-            <a href="[% attachment.data FILTER html %]">
-              [% IF attachment.datasize < 120 %]
-                [% attachment.data FILTER html %]
-              [% ELSE %]
-                [% attachment.data FILTER truncate(80) FILTER html %]
-                &nbsp;...
-                [% attachment.data.match(".*(.{20})$").0 FILTER html %]
-              [% END %]
-            </a>
-          </div>
         [% ELSIF !Param("allow_attachment_display") %]
           <div id="view_disabled">
             <p><b>
@@ -193,7 +173,7 @@
             </b></p>
           </div>
         [% ELSIF attachment.is_viewable %]
-          <div >
+          <div>
             [% INCLUDE global/textarea.html.tmpl
               id      = 'editFrame'
               name    = 'comment'
@@ -205,10 +185,34 @@
               defaultcontent = (attachment.contenttype.match('^text\/')) ?
                                  attachment.data.replace('(.*\n|.+)', '>$1') : undef
             %]
-            <iframe id="viewFrame" src="attachment.cgi?id=[% attachment.id %]">
-              <b>You cannot view the attachment while viewing its details because your browser does not support IFRAMEs.
-              <a href="attachment.cgi?id=[% attachment.id %]">View the attachment on a separate page</a>.</b>
-            </iframe>
+            [% IF attachment.contenttype == 'text/plain' AND is_safe_url(attachment.data) %]
+              <p>
+                <a href="[% attachment.data FILTER html %]">
+                  [% IF attachment.datasize < 120 %]
+                    [% attachment.data FILTER html %]
+                  [% ELSE %]
+                    [% attachment.data FILTER truncate(80) FILTER html %]
+                    ...
+                    [% attachment.data.match('.*(.{20})$').0 FILTER html %]
+                  [% END %]
+                </a>
+              </p>
+            [% ELSIF attachment.contenttype == "text/html" %]
+              [%# For security reasons (clickjacking, embedded scripts), we never
+                # render HTML pages from here. The source code is displayed instead. %]
+              [% INCLUDE global/textarea.html.tmpl
+                 id      = 'viewFrame'
+                 minrows = 10
+                 cols    = 80
+                 defaultcontent = attachment.data
+                 readonly = 'readonly'
+              %]
+            [% ELSE %]
+              <iframe id="viewFrame" src="attachment.cgi?id=[% attachment.id %]">
+                <b>You cannot view the attachment while viewing its details because your browser does not support IFRAMEs.
+                <a href="attachment.cgi?id=[% attachment.id %]">View the attachment on a separate page</a>.</b>
+              </iframe>
+            [% END %]
             <script type="text/javascript">
               <!--
               var patchviewerinstalled = 0;
@@ -266,10 +270,7 @@
         [% END %]             
         <div id="attachment_flags">
           [% IF attachment.flag_types.size > 0 %]
-     
-              [% PROCESS "flag/list.html.tmpl" bug_id = attachment.bug_id
-                                               attach_id = attachment.id
-                                               flag_types = attachment.flag_types
+              [% PROCESS "flag/list.html.tmpl" flag_types = attachment.flag_types
                                                read_only_flags = !can_edit
               %]
      
@@ -299,6 +300,7 @@
         && attachment.datasize > 0 %]
     | <a href="attachment.cgi?id=[% attachment.id %]&amp;action=delete">Delete</a>
   [% END %]
+  [% Hook.process('action') %]
 </div>
 
 <div id="attachment_list">

@@ -43,13 +43,18 @@
     [% PROCESS "admin/components/edit-common.html.tmpl" %]
 
     <tr>
-      <td>[% terms.Bugs %]:</td>
+      <th class="field_label"><label for="isactive">Enabled For [% terms.Bugs %]:</label></th>
+      <td><input id="isactive" name="isactive" type="checkbox" value="1" 
+                 [% 'checked="checked"' IF comp.isactive %]></td>
+    </tr>
+    <tr>
+      <th class="field_label">[% terms.Bugs %]:</th>
       <td>
 [% IF comp.bug_count > 0 %]
         <a title="[% terms.Bugs %] in component '[% comp.name FILTER html %]'"
            href="buglist.cgi?component=
-                [%- comp.name FILTER url_quote %]&amp;product=
-                [%- product.name FILTER url_quote %]">[% comp.bug_count %]</a>
+                [%- comp.name FILTER uri %]&amp;product=
+                [%- product.name FILTER uri %]">[% comp.bug_count %]</a>
 [% ELSE %]
         None
 [% END %]
@@ -64,8 +69,8 @@
    <input type="hidden" name="token" value="[% token FILTER html %]">
    <input type="submit" value="Save Changes" id="update"> or <a 
         href="editcomponents.cgi?action=del&amp;product=
-        [%- product.name FILTER url_quote %]&amp;component=
-        [%- comp.name FILTER url_quote %]">Delete</a> this component.
+        [%- product.name FILTER uri %]&amp;component=
+        [%- comp.name FILTER uri %]">Delete</a> this component.
 
 </form>
 

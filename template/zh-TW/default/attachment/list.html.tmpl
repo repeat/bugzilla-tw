@@ -19,12 +19,14 @@
   #                 Frédéric Buclin <LpSolit@gmail.com>
   #%]
 
-[% RETURN UNLESS attachments.size || Param("maxattachmentsize") %]
+[% RETURN UNLESS attachments.size || Param("maxattachmentsize") || Param("maxlocalattachment") %]
 
 <script type="text/javascript">
 <!--
 function toggle_display(link) {
     var table = document.getElementById("attachment_table");
+    var view_all = document.getElementById("view_all");
+    var hide_obsolete_url_parameter = "&hide_obsolete=1";
     // Store current height for scrolling later
     var originalHeight = table.offsetHeight;
     var rows = YAHOO.util.Dom.getElementsByClassName(
@@ -36,9 +38,11 @@ function toggle_display(link) {
 
     if (YAHOO.util.Dom.hasClass(rows[0], 'bz_default_hidden')) {
         link.innerHTML = "顯示已廢棄的附件";
+        view_all.href = view_all.href + hide_obsolete_url_parameter
     }
     else {
         link.innerHTML = "隱藏已廢棄的附件";
+        view_all.href = view_all.href.replace(hide_obsolete_url_parameter,"");
     }
 
     var newHeight = table.offsetHeight;
@@ -68,9 +72,8 @@ function toggle_display(link) {
         [% obsolete_attachments = obsolete_attachments + 1 %]
       [% END %]
       <tr id="a[% count %]" class="[% "bz_contenttype_" _ attachment.contenttype
-                     FILTER css_class_quote UNLESS attachment.isurl %]
+                     FILTER css_class_quote %]
                  [% " bz_patch" IF attachment.ispatch %]
-                 [% " bz_url" IF attachment.isurl %]
                  [% " bz_private" IF attachment.isprivate %]
                  [% " bz_tr_obsolete bz_default_hidden"
                      IF attachment.isobsolete %]">
@@ -87,8 +90,6 @@ function toggle_display(link) {
               ([% attachment.datasize FILTER unitconvert %]，
               [% IF attachment.ispatch %]
                 patch)
-              [% ELSIF attachment.isurl %]
-                網址)
               [% ELSE %]
                 [%+ attachment.contenttype FILTER html %])
               [% END %]
@@ -152,11 +153,13 @@ function toggle_display(link) {
             <a href="#a0" onclick="return toggle_display(this);">顯示已廢棄的附件</a> ([% obsolete_attachments %])
           [% END %]
           [% IF Param("allow_attachment_display") %]
-            <a href="attachment.cgi?bugid=[% bugid %]&amp;action=viewall">顯示全部</a></a>
+            <a id="view_all" href="attachment.cgi?bugid=
+                  [%- bugid %]&amp;action=viewall
+                  [%- "&amp;hide_obsolete=1" IF obsolete_attachments %]">顯示全部</a>
           [% END %]
         </span>
       [% END %]
-      [% IF Param("maxattachmentsize") %]
+      [% IF Param("maxattachmentsize") || Param("maxlocalattachment") %]
         <a href="attachment.cgi?bugid=[% bugid %]&amp;action=enter">新增附件</a>
         （建議的 patch, testcase 等等）
       [% END %]

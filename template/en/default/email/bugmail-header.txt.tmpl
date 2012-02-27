@@ -16,15 +16,18 @@
   # Rights Reserved.
   #
   # Contributor(s): André Batosti <batosti@async.com.br>
+  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #                 Guy Pyrzak <guy.pyrzak@gmail.com>
   #%]
-
-[% PROCESS "global/variables.none.tmpl" %]
+  
+[% PROCESS "global/field-descs.none.tmpl" %]
 [% PROCESS "global/reason-descs.none.tmpl" %]
+[% isnew = bug.lastdiffed ? 0 : 1 %]
 
 From: [% Param('mailfrom') %]
 To: [% to_user.email %]
 Subject: [[% terms.Bug %] [%+ bug.id %]] [% 'New: ' IF isnew %][%+ bug.short_desc %]
-Date: [% bug.delta_ts FILTER time("%a, %d %b %Y %T %z", to_user.timezone) %]
+Date: [% date %]
 X-Bugzilla-Reason: [% reasonsheader %]
 X-Bugzilla-Type: [% isnew ? 'new' : 'changed' %]
 X-Bugzilla-Watch-Reason: [% reasonswatchheader %]
@@ -42,29 +45,3 @@ X-Bugzilla-Assigned-To: [% bug.assigned_to.login %]
 X-Bugzilla-Target-Milestone: [% bug.target_milestone %]
 X-Bugzilla-Changed-Fields: [% changedfields.join(" ") %]
 [%+ threadingmarker %]
-
-[%+ urlbase %]show_bug.cgi?id=[% bug.id %]
-[%- IF diffs %]
-
-[%+ diffs %]
-[% END -%]
-[% FOREACH comment = new_comments %]
-
-[%- IF comment.count %]
---- Comment #[% comment.count %] from [% comment.author.identity %] [%+ comment.creation_ts FILTER time(undef, to_user.timezone) %] ---
-[% END %]
-[%+ comment.body_full({ is_bugmail => 1, wrap => 1 }) %]
-[% END %]
-
--- [%# Protect the trailing space of the signature marker %]
-Configure [% terms.bug %]mail: [% urlbase %]userprefs.cgi?tab=email
-------- You are receiving this mail because: -------
-[% SET reason_lines = [] %]
-[% FOREACH reason = reasons %]
-  [% reason_lines.push(reason_descs.$reason) IF reason_descs.$reason %]
-[% END %]
-[% FOREACH reason = reasons_watch %]
-  [% reason_lines.push(watch_reason_descs.$reason)
-       IF watch_reason_descs.$reason %]
-[% END %]
-[%+ reason_lines.join("\n") %]

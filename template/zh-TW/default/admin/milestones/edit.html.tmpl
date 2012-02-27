@@ -37,16 +37,20 @@
   <table border="0" cellpadding="4" cellspacing="0">
 
     <tr>
-      <th valign="top"><label for="milestone">里程碑：</label></th>
+      <th class="field_label"><label for="milestone">里程碑：</label></th>
       <td><input id="milestone" size="20" maxlength="20" name="milestone" value="
       [%- milestone.name FILTER html %]"></td>
     </tr>
     <tr>
-      <th align="right"><label for="sortkey">排序鍵：</label></th>
+      <th class="field_label"><label for="sortkey">排序鍵：</label></th>
       <td><input id="sortkey" size="20" maxlength="20" name="sortkey" value="
       [%- milestone.sortkey FILTER html %]"></td>
     </tr>
-
+    <tr>
+      <th class="field_label"><label for="isactive">開啟回報 [% terms.Bugs %] 功能：</label></th>
+      <td><input id="isactive" name="isactive" type="checkbox" value="1"
+                 [% 'checked="checked"' IF milestone.isactive %]></td>
+    </tr>
   </table>
 
   <input type="hidden" name="milestoneold" value="[% milestone.name FILTER html %]">

@@ -36,6 +36,18 @@
 [% header_addl_info = "Last modified: $filtered_timestamp" %]
 [% yui = ['autocomplete', 'calendar'] %]
 [% javascript_urls = [ "js/util.js", "js/field.js" ] %]
+[% IF bug.defined %]
+  [% unfiltered_title = "$terms.Bug $bug.bug_id – $bug.short_desc" %]
+  [% javascript =  BLOCK %]
+    if( !document.location.href.match(/show_bug\.cgi/) && history && history.replaceState ) {
+      history.replaceState( null, 
+                         "[% unfiltered_title FILTER js %]",  
+                         "show_bug.cgi?id=[% bug.bug_id FILTER js %]" );
+      document.title = "[% unfiltered_title FILTER js %]";
+    }
+    [% javascript FILTER none %]
+  [% END %]
+[% END %]
 [% style_urls = [ "skins/standard/show_bug.css" ] %]
 [% doc_section = "bug_page.html" %]
 [% bodyclasses = ['bz_bug',
@@ -47,3 +59,5 @@
 [% FOREACH group = bug.groups_in %]
   [% bodyclasses.push("bz_group_$group.name") %]
 [% END %]
+
+[% Hook.process('end') %]

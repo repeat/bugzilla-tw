@@ -46,7 +46,8 @@
         <br>這將會適用於所有使用者的預設值。使用者可以透過<a
         href="userprefs.cgi?tab=settings">偏好設定</a>頁，自行變更偏好設定。</dd>
 
-        [% class = user.in_group('editcomponents') ? "" : "forbidden" %]
+        [% class = (user.in_group('editcomponents')
+                   || user.get_products_by_permission('editcomponents').size) ? "" : "forbidden" %]
         <dt id="sanitycheck" class="[% class %]"><a href="sanitycheck.cgi">健全度測試</a></dt>
         <dd class="[% class %]">執行健全度測試，檢測資料庫是否有問題。
         <br>這可能花上數十分鐘甚至數小時，視資料庫大小而定。你也可以透過設定
