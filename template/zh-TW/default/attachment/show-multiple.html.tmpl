@@ -88,10 +88,22 @@
   </table>
 
   [% IF a.is_viewable %]
-    <iframe src="attachment.cgi?id=[% a.id %]" width="75%" height="350">
-      <b>你無法在此頁面瀏覽附件，原因為你的瀏覽器不支援
-      IFRAME 屬性。<a href="attachment.cgi?id=[% a.id %]">以另開視窗的方式瀏覽附件</a>。</b>
-    </iframe>
+    [% IF a.contenttype == "text/html" %]
+      [%# For security reasons (clickjacking, embedded scripts), we never
+        # render HTML pages from here. The source code is displayed instead. %]
+      [% INCLUDE global/textarea.html.tmpl
+         minrows = 10
+         cols    = 80
+         defaultcontent = a.data
+         readonly = 'readonly'
+         classes = 'viewall_frame'
+      %]
+    [% ELSE %]
+      <iframe src="attachment.cgi?id=[% a.id %]" width="75%" height="350">
+        <b>你無法在此頁面瀏覽附件，原因為你的瀏覽器不支援
+        IFRAME 屬性。<a href="attachment.cgi?id=[% a.id %]">以另開視窗的方式瀏覽附件</a>。</b>
+      </iframe>
+    [% END %]
   [% ELSE %]
     <p><b>
       無法瀏覽附件，因為它的 MIME 類別並不是 text/* 、 image/* ，或是

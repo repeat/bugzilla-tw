@@ -1589,6 +1589,11 @@
     &lt;[% type FILTER html %]&gt; 欄位的有效數值。（詳情請參閱
     XML-RPC 的說明。）
 
+  [% ELSIF error == "xmlrpc_illegal_content_type" %]
+    使用 XML-RPC 時，你不能將資料以
+    [%+ content_type FILTER html %] 格式傳送。只允許
+    text/xml 和 application/xml 。
+
   [% ELSIF error == "zero_length_file" %]
     [% title = "0 字元的檔案" %]
     你嘗試附加的檔案大小為 0 字元、不存在，或是你沒有讀取它的權限。
