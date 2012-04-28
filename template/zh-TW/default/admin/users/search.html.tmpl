@@ -64,6 +64,8 @@
 [% END %]
 </form>
 
+[% Hook.process('end') %]
+
 [% IF editusers %]
   <p>
     你也可以<a href="editusers.cgi?action=add">新增使用者</a>[%- IF listselectionvalues %]，或者<a

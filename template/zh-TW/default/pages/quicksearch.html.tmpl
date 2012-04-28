@@ -38,7 +38,16 @@
   <input type="submit" value="搜尋" id="find">
 </form>
 
-<h2>基本</h2>
+<ul>
+  <li><a href="#basics">基本</a></li>
+  <li><a href="#basic_examples">簡易搜尋的範例</a></li>
+  <li><a href="#fields">你可以搜尋的欄位</a></li>
+  <li><a href="#advanced_features">進階功能</a></li>
+  <li><a href="#shortcuts">進階快速鍵</a></li>
+  <li><a href="#advanced_examples">複雜搜尋的範例</a></li>
+</ul>
+
+<h2 id="basics">基本</h2>
 
 <ul class="qs_help">
   <li>如果你在搜尋框裡輸入了一個或多個字，
@@ -83,6 +92,30 @@
 </ul>
 
 <p>你也許會想繼續閱讀<a href="#advanced">進階功能</a>一段。</p>
+
+<h2 id="basic_examples">簡易搜尋的範例</h2>
+
+<p>以下是一些搜尋的範例。此頁面下方也可以找到<a href="#advanced_examples">更複雜的範例</a>。</p>
+
+<ul class="qs_help">
+  <li>所有狀態為開啟 (OPEN) 的 [% terms.bugs %] 中， userA@company.com
+    在寄件副本清單中的 [% terms.bugs %] （不需要輸入「開啟」這個狀態的字串，這是預設值）：<br>
+    <kbd>cc:userA@company.com</kbd></li>
+  <li>所有在產品「productA」中，狀態為未確認 (UNCONFIRMED) 的 [% terms.bugs %]
+    （將 [% terms.bug %] 的狀態放在第一個字的話，就會自動視為 [% terms.bug %]
+    的狀態）：<br>
+    <kbd>UNCONFIRMED product:productA</kbd>
+  <li>所有 (ALL) 由 userB@company.com 回報的 [% terms.bugs %]
+    （必須要在第一個字指定狀態為 ALL ，否則只會找狀態為開啟的 [% terms.bugs %]
+    ）：<br>
+    <kbd>ALL reporter:userB@company.com</kbd>
+  <li>所有狀態為開啟、嚴重等級是 blocker 或 critical ，且目標里程碑是
+    2.5 的 [% terms.bugs %] ：<br>
+    <kbd>severity:blocker,critical milestone:2.5</kbd>
+  <li>所有在產品「Research & Development」中，優先程度是 P1 或 P2 ，狀態為開啟的 [% terms.bugs %]
+    （因為產品名稱中含有空白，因此必須以引號 (") 包覆它）：<br>
+    <kbd>component:"Research & Development" priority:P1,P2</kbd></li>
+</ul>
 
 <h2 id="fields">你可以搜尋的欄位</h2>
 
@@ -129,13 +162,17 @@
   </tbody>
 </table>
 
-<h2 id="advanced">進階功能</h2>
+<h2 id="advanced_features">進階功能</h2>
 
 <ul class="qs_help">
-  <li>如果你要搜尋的是<strong>片語</strong>或是含有空白的字，可以放在引號 (&quot;) 中。
-    例如： <kbd>"this is a phrase"</kbd> 。
+  <li>如果你要搜尋的是<strong>片語</strong>或是含有空白、逗號 (,) 、冒號 (:)
+    、引號 (&quot;) 的字，必須以引號包覆這些字。
+    例如： <kbd>"yes, this is a phrase"</kbd> 。
     如要搜尋含有會被快速搜尋認定為特別功能的字元時，也可以放在引號中。
-    例如： <kbd>"this|thing"</kbd> 就會以字面上的 <em>this|thing</em> 進行搜尋。</li>
+    例如： <kbd>"this|that"</kbd> 就會以字面上的 <em>this|that</em> 進行搜尋。
+    同樣的道理， <kbd>"-field:value"</kbd> 就會以字面上的 <em>-field:value</em>
+    進行搜尋，而不是解讀為 <kbd>"NOT field:value"</kbd> 。
+  </li>
 
   <li>你可以在搜尋中使用 <strong>AND</strong> 、 <strong>NOT</strong> 和
     <strong>OR</strong> 。
@@ -147,22 +184,28 @@
       <li>
         <strong>NOT</strong> ：<br>
         <kbd><strong>-</strong><em>summary:foo</em></kbd> 會排除在摘要中有
-	<kbd>foo</kbd> 的 [%+ terms.bugs %] 。
-	等效於 <kbd><em>NOT summary:foo</em></kbd> 。
+        <kbd>foo</kbd> 的 [%+ terms.bugs %] 。
+        等效於 <kbd><em>NOT summary:foo</em></kbd> 。
       </li>
       <li>
         <strong>AND</strong> ：<br>
         <kbd><em>foo bar</em></kbd> 會搜尋包含 <kbd>foo</kbd> 和 <kbd>bar</kbd>
-	的 [% terms.bugs %] 。
-	等效於 <kbd><em>foo AND bar</em></kbd> 。
+        的 [% terms.bugs %] 。
+        等效於 <kbd><em>foo AND bar</em></kbd> 。
       </li>
       <li>
         <strong>OR</strong> ：<br>
         <kbd><em>foo<strong>|</strong>bar</em></kbd> 會搜尋包含 <kbd>foo</kbd>
-	或 <kbd>bar</kbd> 的 [% terms.bugs %] 。
-	等效於 <kbd><em>foo OR bar</em></kbd> 。
+        或 <kbd>bar</kbd> 的 [% terms.bugs %] 。
+        等效於 <kbd><em>foo OR bar</em></kbd> 。
       </li>
     </ul>
+
+    <p>如果某個欄位有多個可能的值時，不能用 | 或 OR 來列舉，而是用逗號 (,)
+      分隔。所以 <kbd>field:value1,value2</kbd> 搜尋的結果會符合你的需求，而
+      <kbd>field:value1|value2</kbd> 不會，因為它被解讀為
+      <kbd>field:value1 OR value2</kbd> ，也就是 value2 並未被限制於指定的 field 中。
+    </p>
 
     <p>OR 比 AND 有較高的優先權； AND 是最上層的運算子。
       例如：</p>
@@ -190,7 +233,7 @@
       <td class="field_nickname">
         把搜尋的<strong>第一個字</strong>設定為任何狀態，甚至是狀態的縮寫，
         就會搜尋符合該狀態的 [% terms.bugs %] 。
-	<strong><kbd>ALL</kbd></strong> 是代表「所有狀態」的特別快速鍵。
+        <strong><kbd>ALL</kbd></strong> 是代表「所有狀態」的特別快速鍵。
         <strong><kbd>OPEN</kbd></strong> 是代表「所有狀態為開啟」的特別快速鍵。
       </td>
     </tr>
@@ -198,17 +241,17 @@
       <td class="field_name">[% field_descs.resolution FILTER html %]</td>
       <td class="field_nickname">
         把搜尋的<strong>第一個字</strong>設定為任何解決方案，甚至是解決方案的縮寫，
-	就會搜尋符合該解決方案的 [% terms.bugs %] 。
-	例如：把 <kbd>FIX</kbd> 做為搜尋的第一個字，就會搜尋解決方案是
-	<kbd>FIXED</kbd> 的 [% terms.bugs %] 。
+        就會搜尋符合該解決方案的 [% terms.bugs %] 。
+        例如：把 <kbd>FIX</kbd> 做為搜尋的第一個字，就會搜尋解決方案是
+        <kbd>FIXED</kbd> 的 [% terms.bugs %] 。
     </tr>
     <tr>
       <td class="field_name">[% field_descs.priority FILTER html %]</td>
       <td class="field_nickname">"<strong>P1</strong>" （做為搜尋字串中的任一字串）
         代表「搜尋最高優先權的 [% terms.bugs %] 」。
-	"P2" 代表搜尋第二高優先權，類推。
-	<p>"<strong>P1-3</strong>" 會搜尋前三高優先權的任何 [% terms.bugs %] ，
-	類推。</p>
+        "P2" 代表搜尋第二高優先權，類推。
+        <p>"<strong>P1-3</strong>" 會搜尋前三高優先權的任何 [% terms.bugs %] ，
+        類推。</p>
       </td>
     </tr>
     <tr>
@@ -249,5 +292,29 @@
     [% END %]
   </tbody>
 </table>
+
+<h2 id="advanced_examples">複雜搜尋的範例</h2>
+
+<p>要輸入複雜的搜尋也不會太花力氣。當然，如果你的搜尋非常非常複雜時，你必須用
+  <a href="query.cgi?format=advanced">進階搜尋</a>。</p>
+
+<ul class="qs_help">
+  <li>所有由 userA@company.com 回報的 [% terms.bugs %] ，或者由他負責的
+    [% terms.bugs %] （關於 @
+    的用法，參見上方<a href="#shortcuts">進階快速鍵</a>一段）：<br>
+    <kbd>ALL @userA@company.com OR reporter:userA@company.com</kbd></li>
+  <li>所有在產品「productA」中，狀態為開啟 (OPEN) 的 [% terms.bugs %] 中
+    ，嚴重等級是 blocker 、 critical 或 major ，或者優先程度為 P1
+    ，或者設定了 blocker+ 的旗標，且並非由 userB@company.com 或
+    userC@company.com 負責（我們假設只有兩個使用者符合 userB 和 userC
+    ，不然就必須要輸入完整的登入名稱）：<br>
+    <kbd>:productA sev:blocker,critical,major OR pri:P1 OR flag:blocker+ -assign:userB,userC</kbd></li>
+  <li>所有解決方案為已解決 (FIXED) 的 [% terms.bugs %] 中，設定了
+    blocker+ 的旗標，但沒有設定 approval+ 或 approval? 的旗標：<br>
+    <kbd>FIXED flag:blocker+ -flag:approval+ -flag:approval?</kbd></li>
+  <li>摘要中含有 <em>That's a "unusual" issue</em> 字串的
+    [%+ terms.bugs %] （引號以 <em>\"</em> 方式輸入）：<br>
+    <kbd>summary:"That's a \"unusual\" issue"</kbd></li>
+</ul>
 
 [% PROCESS global/footer.html.tmpl %]

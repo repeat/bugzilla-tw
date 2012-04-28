@@ -1351,6 +1351,26 @@
     [% title = "查詢名稱過長" %]
     查詢名稱的長度不得超過 [% constants.MAX_LEN_QUERY_NAME FILTER html %] 字元。
 
+  [% ELSIF error == "quicksearch_invalid_query" %]
+    [% title = "無效的搜尋" %]
+    輸入的搜尋無效。
+    [% IF operators %]
+      [% operators.shift FILTER html %] 運算子不能放在
+      [%+ operators.shift FILTER html %] 後面。
+    [% ELSE %]
+      搜尋不能以 AND 或 OR 開頭，也不能以 AND 、 OR 或 NOT 結尾。它們是系統保留的運算子。
+      如果你要搜尋這些字串的話，請以引號 (") 將字串包起來。
+    [% END %]
+
+  [% ELSIF error == "quicksearch_unbalanced_quotes" %]
+    [% title = "搜尋格式不正確" %]
+    [% terms.Bugzilla %] 無法正確解析你所輸入的搜尋字串：
+    <em>[% string FILTER html %]</em><br>
+    如果你用引號 (") 包覆字串，請確認引號開頭和結尾都有出現。
+    如果你想要搜尋的字串中含有引號時，請在引號前加上反斜線 (\) 。
+    例如，<em>"I'm so \"special\", really"</em>（有引號）就會被解析為要搜尋
+    <em>I'm so "special", really</em> 。
+
   [% ELSIF error == "quicksearch_unknown_field" %]
     [% title = "快速搜尋發生錯誤" %]
     你的搜尋發生問題：

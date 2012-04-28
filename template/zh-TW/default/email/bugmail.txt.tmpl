@@ -50,21 +50,17 @@
 [% BLOCK generate_diffs %]
   [% urlbase %]show_bug.cgi?id=[% bug.id %]
 
-[%+ last_changer = "" %]
+[%+ last_changer = 0 %]
   [% FOREACH change = diffs %]
-    [% IF !isnew && change.who.login != last_changer %]
-      [% last_changer = change.who.login %]
+    [% IF !isnew && changer.id != last_changer %]
+      [% last_changer = changer.id %]
       [% IF change.blocker %]
         處理 [% terms.bug %] [%+ bug.id %] 之前要先處理的 [% terms.bug %] [%+ change.blocker.id %] 改變了狀態。
 
 [%+ terms.Bug %] [%+ change.blocker.id %] 摘要： [% change.blocker.short_desc %]
 [%+ urlbase %]show_bug.cgi?id=[% change.blocker.id %]
       [% ELSE %]
-        [%~ IF change.who.name %]
-          [% change.who.name _ " <" _ change.who.login _ ">" %]
-        [% ELSE %]
-          [% change.who.login %]
-        [% END %] changed:
+        [%~ changer.identity %] 已改變：
       [% END %]
 
            什麼    |移除                        |新增
