@@ -1,23 +1,9 @@
-[%# The contents of this file are subject to the Mozilla Public
-  # License Version 1.1 (the "License"); you may not use this file
-  # except in compliance with the License. You may obtain a copy of
-  # the License at http://www.mozilla.org/MPL/
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
   #
-  # Software distributed under the License is distributed on an "AS
-  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  # implied. See the License for the specific language governing
-  # rights and limitations under the License.
-  #
-  # The Original Code is the Bugzilla Bug Tracking System.
-  #
-  # The Initial Developer of the Original Code is Netscape Communications
-  # Corporation. Portions created by Netscape are
-  # Copyright (C) 1998 Netscape Communications Corporation. All
-  # Rights Reserved.
-  #
-  # Contributor(s): Gervase Markham <gerv@gerv.net>
-  #                 Frédéric Buclin <LpSolit@gmail.com>
-  #                 Max Kanat-Alexander <mkanat@bugzilla.org>
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
   #%]
 
 [%# INTERFACE:
@@ -38,8 +24,6 @@
   # Note: be aware of uniqueness of error string parameter value, since
   # nobody can guarantee the hook files processing order in the future.
   #%]
-
-[% PROCESS global/variables.none.tmpl %]
 
 [% PROCESS "global/field-descs.none.tmpl" %]
 
@@ -270,6 +254,8 @@
         <li>A ticket in a Trac installation.</li>
         <li>A b[% %]ug in a MantisBT installation.</li>
         <li>A b[% %]ug on sourceforge.net.</li>
+        <li>An issue on github.com.</li>
+        [% Hook.process('bug_url_invalid_tracker') %]
       </ul>
     [% ELSIF reason == 'id' %]
       There is no valid [% terms.bug %] id in that URL.
@@ -308,9 +294,10 @@
   [% ELSIF error == "comment_required" %]
     [% title = "Comment Required" %]
     You have to specify a
-    [% IF old && new %]
-      <b>comment</b> when changing the status of [% terms.abug %] from
-      [%+ old.name FILTER html %] to [% new.name FILTER html %].
+    [% IF old.defined && new.defined %]
+      <b>comment</b> when changing the [% field_descs.$field FILTER html %]
+      of [% terms.abug %] from [% (old || "(empty)") FILTER html %]
+      to [% (new || "(empty)") FILTER html %].
     [% ELSIF new %]
       description for this [% terms.bug %].
     [% ELSE %]
@@ -371,6 +358,11 @@
     There are [% nb FILTER html %] [%+ terms.bugs %] entered for this component!
     You must reassign those [% terms.bugs %] to another component before you
     can delete this one.
+
+  [% ELSIF error == "component_is_last" %]
+    [% title = BLOCK %]Last Component in this Product[% END %]
+    '[% comp.name FILTER html %]' is the last component of the
+    '[% comp.product.name FILTER html %]' product. You cannot delete it.
 
   [% ELSIF error == "component_name_too_long" %]
     [% title = "Component Name Is Too Long" %]
@@ -443,9 +435,8 @@
     [% title = "Email Address Confirmation Failed" %]
     Email address confirmation failed.
 
-  [% ELSIF error == "email_no_text_plain" %]
-    Your message did not contain any text.[% terms.Bugzilla %] does not
-    accept HTML-only email, or HTML email with attachments.
+  [% ELSIF error == "email_no_body" %]
+    Your message did not contain any text, as far as we could tell.
 
   [% ELSIF error == "empty_group_description" %]
     [% title = "The group description can not be empty" %]
@@ -910,9 +901,7 @@
     [% END %]
     [% IF bug_id %]
       '[% bug_id FILTER html %]' is not a valid [% terms.bug %] number
-      [% IF Param("usebugaliases") %]
-        nor an alias to [% terms.abug %]
-      [% END %].
+      nor an alias to [% terms.abug %].
     [% ELSE %]
       [% IF field %]
         The '[% field_descs.$field FILTER html %]' field
@@ -1448,6 +1437,27 @@
     The name of the query must be less than [% constants.MAX_LEN_QUERY_NAME FILTER html %]
     characters long.
 
+  [% ELSIF error == "quicksearch_invalid_query" %]
+    [% title = "Invalid Query" %]
+    Your query is invalid.
+    [% IF operators %]
+      The [% operators.shift FILTER html %] operator cannot be followed by
+      [%+ operators.shift FILTER html %].
+    [% ELSE %]
+      A query cannot start with AND or OR, nor can it end with AND, OR or NOT.
+      They are reserved operators and must be quoted if you want to look for
+      these strings.
+    [% END %]
+
+  [% ELSIF error == "quicksearch_unbalanced_quotes" %]
+    [% title = "Badly Formatted Query" %]
+    [% terms.Bugzilla %] is unable to parse your query correctly:
+    <em>[% string FILTER html %]</em>.<br>
+    If you use quotes to enclose strings, make sure both quotes are present.
+    If you really want to look for a quote in a string, type \" instead of ".
+    For instance, <em>"I'm so \"special\", really"</em> (with quotes) will be
+    interpreted as <em>I'm so "special", really</em>.
+
   [% ELSIF error == "quicksearch_unknown_field" %]
     [% title = "QuickSearch Error" %]
     There is a problem with your search:
@@ -1537,7 +1547,11 @@
     
   [% ELSIF error == "still_unresolved_bugs" %]
     [% title = "Unresolved Dependencies" %]
-    [% terms.Bug %] [%+ bug_id FILTER bug_link(bug_id) FILTER none %]
+    [% IF bug_id %]
+      [% terms.Bug %] [%+ bug_id FILTER bug_link(bug_id) FILTER none %]
+    [% ELSE %]
+       This [% terms.bug %]
+    [% END %]
     has [% dep_count FILTER none %] unresolved
     [% IF dep_count == 1 %]
       dependency
@@ -1605,7 +1619,9 @@
     [% ELSIF type == "account" %]
       an account
     [% END %]
-    token too recently to request another. Please wait a while and try again.
+    token too recently to request another. 
+    Please wait [% constants.ACCOUNT_CHANGE_INTERVAL FILTER html %] minutes
+    then try again.
 
   [% ELSIF error == "unknown_action" %]
     [% IF action %]
@@ -1633,6 +1649,11 @@
     There are [% nb FILTER html %] [%+ terms.bugs %] associated with this
     version! You must reassign those [% terms.bugs %] to another version
     before you can delete this one.
+
+  [% ELSIF error == "version_is_last" %]
+    [% title = BLOCK %]Last Version in this Product[% END %]
+    '[% version.name FILTER html %]' is the last version of the
+    '[% version.product.name FILTER html %]' product. You cannot delete it.
 
   [% ELSIF error == "users_deletion_disabled" %]
     [% title = "Deletion not activated" %]
@@ -1704,8 +1725,8 @@
 
   [% ELSIF error == "xmlrpc_illegal_content_type" %]
     When using XML-RPC, you cannot send data as
-    [%+ content_type FILTER html %]. Only text/xml 
-    and application/xml are allowed.
+    [%+ content_type FILTER html %]. Allowed content types 
+    are [% constants.XMLRPC_CONTENT_TYPE_WHITELIST.join(', ') FILTER html %].
 
   [% ELSIF error == "zero_length_file" %]
     [% title = "File Is Empty" %]
