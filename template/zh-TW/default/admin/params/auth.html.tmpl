@@ -1,24 +1,11 @@
-[%# The contents of this file are subject to the Mozilla Public
-  # License Version 1.1 (the "License"); you may not use this file
-  # except in compliance with the License. You may obtain a copy of
-  # the License at http://www.mozilla.org/MPL/
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
   #
-  # Software distributed under the License is distributed on an "AS
-  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  # implied. See the License for the specific language governing
-  # rights and limitations under the License.
-  #
-  # The Original Code is the Bugzilla Bug Tracking System.
-  #
-  # The Initial Developer of the Original Code is Netscape Communications
-  # Corporation. Portions created by Netscape are
-  # Copyright (C) 1998 Netscape Communications Corporation. All
-  # Rights Reserved.
-  #
-  # Contributor(s): Dave Miller <justdave@bugzilla.org>
-  #                 Frédéric Buclin <LpSolit@gmail.com>
-  #                 Marc Schumann <wurblzap@gmail.com>
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
   #%]
+
 [%
    title = "使用者認證"
    desc = "設定使用者認證政策"
@@ -85,10 +72,14 @@
 
   requirelogin => "若設定此選項，則所有瀏覽系統任何頁面均需要登入。不允許匿名使用者使用。",
 
-  emailregexp => "定義有效的電子郵件地址的正規表達式。" _
-                 "預設值為包括所有有效的電子郵件地址。" _
-                 "另一個常用的值是 <tt>^[^@]+$</tt> ，代表" _
-                 "「本地的使用者名稱，不允許 @ 字元。」",
+  emailregexp =>
+    "定義有效的電子郵件地址的正規表達式。" _
+    "預設值為包括所有有效的電子郵件地址。" _
+    "使用 <tt>.*</tt> 的話，將會接受所有遵守 " _
+    "<a href='http://tools.ietf.org/html/rfc2822#section-3.4.1'>RFC 2822</a> " _
+    "規範的電子郵件地址。" _
+    "另一個常用的值是 <tt>^[^@]+$</tt> ，代表" _
+    "「本地的使用者名稱，不允許 @ 字元。」",
 
   emailregexpdesc => "以<u>英文</u>表示 <tt>emailregexp</tt> 參數所允許的電子郵件地址。",
 
