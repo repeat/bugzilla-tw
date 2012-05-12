@@ -1,16 +1,9 @@
-[%# The contents of this file are subject to the Mozilla Public
-  # License Version 1.1 (the "License"); you may not use this file
-  # except in compliance with the License. You may obtain a copy of
-  # the License at http://www.mozilla.org/MPL/
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
   #
-  # Software distributed under the License is distributed on an "AS
-  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  # implied. See the License for the specific language governing
-  # rights and limitations under the License.
-  #
-  # The Original Code is the Bugzilla Bug Tracking System.
-  #
-  # Contributor(s): Marc Schumann <wurblzap@gmail.com>
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
   #%]
 
 [%# INTERFACE:
@@ -19,6 +12,10 @@
   # editusers: is viewing user member of editusers?
   # otheruser: Bugzilla::User object of user to edit
   #%]
+
+<script type="text/javascript">
+  var disable_mail_manually_set = [% (otheruser.email_disabled ? 1 : 0) FILTER js %];
+</script>
 
 <tr>
   <th><label for="login">帳號：</label></th>
@@ -86,7 +83,8 @@
     <th><label for="disable_mail">不允許寄發 [% terms.Bug %] 通知信：</label></th>
     <td>
       <input type="checkbox" name="disable_mail" id="disable_mail" value="1"
-      [% IF otheruser.email_disabled %] checked="checked" [% END %] />
+             [% IF otheruser.email_disabled %] checked="checked" [% END %]
+             onchange="disable_mail_manually_set=1;">
       （僅對 [% terms.bug %] 通知信及訂閱信有效，對重設密碼信或其他和 [% terms.bug %] 不相關的信無效）
     </td>
   </tr>
@@ -101,6 +99,7 @@
          defaultrows    = 10
          cols           = 60
          defaultcontent = otheruser.disabledtext
+         onchange       = "userDisabledTextOnChange(this);"
        %]<br>
       （只要不留白就會停用此帳號，而此說明應解釋原因為何。）
     </td>
