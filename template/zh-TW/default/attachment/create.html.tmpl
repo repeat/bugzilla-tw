@@ -1,27 +1,10 @@
-[%# The contents of this file are subject to the Mozilla Public
-  # License Version 1.1 (the "License"); you may not use this file
-  # except in compliance with the License. You may obtain a copy of
-  # the License at http://www.mozilla.org/MPL/
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
   #
-  # Software distributed under the License is distributed on an "AS
-  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  # implied. See the License for the specific language governing
-  # rights and limitations under the License.
-  #
-  # The Original Code is the Bugzilla Bug Tracking System.
-  #
-  # The Initial Developer of the Original Code is Netscape Communications
-  # Corporation. Portions created by Netscape are
-  # Copyright (C) 1998 Netscape Communications Corporation. All
-  # Rights Reserved.
-  #
-  # Contributor(s): Myk Melez <myk@mozilla.org>
-  #                 Joel Peshkin <bugreport@peshkin.net>
-  #                 Erik Stambaugh <erik@dasbistro.com>
-  #                 Marc Schumann <wurblzap@gmail.com>
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
   #%]
-
-[% PROCESS "global/field-descs.none.tmpl" %]
 
 [%# Define strings that will serve as the title and header of this page %]
 [% title = BLOCK %]新增 [% terms.Bug %] #[% bug.bug_id %] 的附件[% END %]
@@ -54,24 +37,19 @@ TUI_hide_default('attachment_text_field');
     [% PROCESS attachment/createformcontents.html.tmpl %]
 
     [%# Additional fields for attachments on existing bugs: %]
-    <tr>
-      <th>廢棄附件：</th>
-      <td>
-        <em>（選用）若勾選以下已存在的附件，在新增附件的同時會廢棄已勾選的附件。</em><br>
-        [% IF attachments.size %]
+    [% IF attachments.size %]
+      <tr>
+        <th>廢棄附件：</th>
+        <td>
+          <em>（選用）若勾選以下已存在的附件，在新增附件的同時會廢棄已勾選的附件。</em><br>
           [% FOREACH attachment = attachments %]
-            [% IF ((attachment.isprivate == 0) || user.is_insider) %]
-              <input type="checkbox" id="[% attachment.id %]"
-                     name="obsolete" value="[% attachment.id %]">
-              <a href="attachment.cgi?id=[% attachment.id %]&amp;action=edit"
-                >[% attachment.id %] ：[% attachment.description FILTER html %]</a><br>
-            [% END %]
+            <input type="checkbox" id="[% attachment.id %]"
+                 name="obsolete" value="[% attachment.id %]">
+            <a href="attachment.cgi?id=[% attachment.id %]&amp;action=edit">[% attachment.id %]：[% attachment.description FILTER html %]</a><br>
           [% END %]
-        [% ELSE %]
-            〔不會廢棄任何附件〕
-        [% END %]
-      </td>
-    </tr>
+        </td>
+      </tr>
+    [% END %]
 
     [% IF (user.id != bug.assigned_to.id) AND user.in_group("editbugs", bug.product_id) %]
       <tr>
