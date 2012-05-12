@@ -1,23 +1,9 @@
-[%# The contents of this file are subject to the Mozilla Public
-  # License Version 1.1 (the "License"); you may not use this file
-  # except in compliance with the License. You may obtain a copy of
-  # the License at http://www.mozilla.org/MPL/
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
   #
-  # Software distributed under the License is distributed on an "AS
-  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  # implied. See the License for the specific language governing
-  # rights and limitations under the License.
-  #
-  # The Original Code is the Bugzilla Bug Tracking System.
-  #
-  # The Initial Developer of the Original Code is Netscape Communications
-  # Corporation. Portions created by Netscape are
-  # Copyright (C) 1998 Netscape Communications Corporation. All
-  # Rights Reserved.
-  #
-  # Contributor(s): Gervase Markham <gerv@gerv.net>
-  #                 Frédéric Buclin <LpSolit@gmail.com>
-  #                 Max Kanat-Alexander <mkanat@bugzilla.org>
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
   #%]
 
 [%# INTERFACE:
@@ -38,8 +24,6 @@
   # Note: be aware of uniqueness of error string parameter value, since
   # nobody can guarantee the hook files processing order in the future.
   #%]
-
-[% PROCESS global/variables.none.tmpl %]
 
 [% PROCESS "global/field-descs.none.tmpl" %]
 
@@ -257,6 +241,8 @@
         <li>已安裝 Trac 中的 ticket 。</li>
         <li>已安裝 MantisBT 中的 b[% %]ug 。</li>
         <li>在 sourceforge.net 的 b[% %]ug 。</li>
+        <li>在 github.com 中的 issue 。</li>
+        [% Hook.process('bug_url_invalid_tracker') %]
       </ul>
     [% ELSIF reason == 'id' %]
       在網址中沒有有效的 [% terms.bug %] 編號。
@@ -294,9 +280,11 @@
 
   [% ELSIF error == "comment_required" %]
     [% title = "需要意見" %]
-    [% IF old && new %]
+    [% IF old.defined && new.defined %]
       當把一個 [% terms.bug %] 的狀態從
-      [% old.name FILTER html %] 變更為 [% new.name FILTER html %]
+      [% (old || "（空白）") FILTER html %]
+      變更為
+      [% (new || "（空白）") FILTER html %]
       時，你必須提供<b>意見</b>。
     [% ELSIF new %]
       你必須提供這個 [% terms.bug %] 的描述。
@@ -354,6 +342,11 @@
     [% title = BLOCK %]子產品已有 [% terms.Bugs %][% END %]
     此子產品內已經有 [% nb FILTER html %] 個 [% terms.bugs %] ！
     在刪除子產品之前，你必須將 [% terms.bugs %] 重新分配到其他的子產品。
+
+  [% ELSIF error == "component_is_last" %]
+    [% title = BLOCK %]此產品中的最後一個子產品[% END %]
+    '[% comp.name FILTER html %]' 是
+    '[% comp.product.name FILTER html %]' 產品中的最後一個子產品。你無法刪除它。
 
   [% ELSIF error == "component_name_too_long" %]
     [% title = "子產品名稱過長" %]
@@ -418,9 +411,8 @@
     [% title = "電子郵件確認失敗" %]
     電子郵件確認失敗。
 
-  [% ELSIF error == "email_no_text_plain" %]
-    你的電子郵件並未包含任何文字。 [% terms.Bugzilla %] 不允許只有
-    HTML 的電子郵件，也不允許夾帶附件而沒有內容的 HTML 電子郵件。
+  [% ELSIF error == "email_no_body" %]
+    你的電子郵件並未包含任何文字，或者無法解析出文字。
 
   [% ELSIF error == "empty_group_description" %]
     [% title = "不允許群組描述空白" %]
@@ -857,10 +849,8 @@
       [% IF bug_id %]無效的[% ELSE %]缺少[% END %] [% terms.Bug %] 編號
     [% END %]
     [% IF bug_id %]
-      '[% bug_id FILTER html %]'並非有效的 [% terms.bug %] 編號
-      [% IF Param("usebugaliases") %]
-        ，也不是 [% terms.bug %] 的別名
-      [% END %]。
+      '[% bug_id FILTER html %]'並非有效的 [% terms.bug %]
+      編號，也不是 [% terms.bug %] 的別名。
     [% ELSE %]
       [% IF field %]
         欄位 '[% field_descs.$field FILTER html %]' 不得空白。
@@ -1351,6 +1341,26 @@
     [% title = "查詢名稱過長" %]
     查詢名稱的長度不得超過 [% constants.MAX_LEN_QUERY_NAME FILTER html %] 字元。
 
+  [% ELSIF error == "quicksearch_invalid_query" %]
+    [% title = "無效的搜尋" %]
+    輸入的搜尋無效。
+    [% IF operators %]
+      [% operators.shift FILTER html %] 運算子不能放在
+      [%+ operators.shift FILTER html %] 後面。
+    [% ELSE %]
+      搜尋不能以 AND 或 OR 開頭，也不能以 AND 、 OR 或 NOT 結尾。它們是系統保留的運算子。
+      如果你要搜尋這些字串的話，請以引號 (") 將字串包起來。
+    [% END %]
+
+  [% ELSIF error == "quicksearch_unbalanced_quotes" %]
+    [% title = "搜尋格式不正確" %]
+    [% terms.Bugzilla %] 無法正確解析你所輸入的搜尋字串：
+    <em>[% string FILTER html %]</em><br>
+    如果你用引號 (") 包覆字串，請確認引號開頭和結尾都有出現。
+    如果你想要搜尋的字串中含有引號時，請在引號前加上反斜線 (\) 。
+    例如，<em>"I'm so \"special\", really"</em>（有引號）就會被解析為要搜尋
+    <em>I'm so "special", really</em> 。
+
   [% ELSIF error == "quicksearch_unknown_field" %]
     [% title = "快速搜尋發生錯誤" %]
     你的搜尋發生問題：
@@ -1436,7 +1446,11 @@
 
   [% ELSIF error == "still_unresolved_bugs" %]
     [% title = "未解決的依賴關係" %]
-    [% terms.Bug %] [%+ bug_id FILTER bug_link(bug_id) FILTER none %]
+    [% IF bug_id %]
+      [% terms.Bug %] [%+ bug_id FILTER bug_link(bug_id) FILTER none %]
+    [% ELSE %]
+      這個 [% terms.bug %]
+    [% END %]
     還有 [% dep_count FILTER none %] 個未解決的依賴關係。在你將此
     [% terms.bug %] 設定為 [% display_value("resolution", "FIXED") FILTER html %]
     之前，必須解決這些 [% terms.bugs %] 或者把它們從 "[% field_descs.dependson FILTER html %]"
@@ -1503,7 +1517,8 @@
     [% ELSIF type == "account" %]
       帳號
     [% END %]
-    token 速度過快。請過一陣子再試。
+    token 速度過快。
+    請過 [% constants.ACCOUNT_CHANGE_INTERVAL FILTER html %] 分鐘後再試。
 
   [% ELSIF error == "unknown_action" %]
     [% IF action %]
@@ -1529,6 +1544,11 @@
     [% title = BLOCK %]版本中還有 [% terms.Bugs %][% END %]
     這個版本中還有 [% nb FILTER html %] 個 [% terms.bugs %]！
     在刪除此版本前，你必須將這些 [% terms.bugs %] 重新分配至另一個版本。
+
+  [% ELSIF error == "version_is_last" %]
+    [% title = BLOCK %]此產品的最後一個版本[% END %]
+    '[% version.name FILTER html %]' 是
+    '[% version.product.name FILTER html %]' 產品的最後一個版本。你無法刪除它。
 
   [% ELSIF error == "users_deletion_disabled" %]
     [% title = "未開啟刪除功能" %]
@@ -1591,8 +1611,8 @@
 
   [% ELSIF error == "xmlrpc_illegal_content_type" %]
     使用 XML-RPC 時，你不能將資料以
-    [%+ content_type FILTER html %] 格式傳送。只允許
-    text/xml 和 application/xml 。
+    [%+ content_type FILTER html %] 格式傳送。只允許以下格式（以逗號分隔）：
+    [% constants.XMLRPC_CONTENT_TYPE_WHITELIST.join(', ') FILTER html %] 。
 
   [% ELSIF error == "zero_length_file" %]
     [% title = "0 字元的檔案" %]
