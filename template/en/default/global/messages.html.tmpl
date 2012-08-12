@@ -42,9 +42,9 @@
             [% ELSIF field == 'cryptpassword' %]
               A new password has been set.
             [% ELSIF field == 'disabledtext' %]
-              The disable text has been modified.
+              The "login disabled" text has been modified.
             [% ELSIF field == 'is_enabled' %]
-              The user has been [% otheruser.is_enabled ? 'enabled' : 'disabled' %].
+              Logging in with this user account has been [% otheruser.is_enabled ? 'enabled' : 'disabled' %].
             [% ELSIF field == 'extern_id' %]
               The user's External Login ID has been modified.
             [% ELSIF field == 'disable_mail' %]
@@ -97,8 +97,8 @@
     successfully.
 
   [% ELSIF message_tag == "account_disabled" %]
-    The user account [% account FILTER html %] is disabled, so you
-    cannot change its password.
+    Logging in with this user account [% account FILTER html %] is disabled, so
+    you cannot change its password.
 
   [% ELSIF message_tag == "attachment_creation_failed" %]
     The [% terms.bug %] was created successfully, but attachment creation
@@ -466,7 +466,7 @@
     [% title = "Logged Out" %]
     [% url = "index.cgi?GoAheadAndLogIn=1" %]
     [% link = "Log in again." %]
-    <b>Your login has been forgotten</b>.
+    <b>You logged out successfully</b>.
     The cookie that was remembering your login is now gone. You will be
     prompted for a login the next time it is required.
 
@@ -848,18 +848,6 @@
       <p>For security reasons, you have been logged out automatically.
       The cookie that was remembering your login is now gone.
     [% END %]
-
-  [% ELSIF message_tag == "tag_updated" %]
-    [% title = "Tag Updated" %]
-    The '<a href="buglist.cgi?tag=[% tag FILTER uri %]">[% tag FILTER html %]</a>'
-    tag has been
-    [% IF action == "add" %]
-      added to
-    [% ELSE %]
-      removed from
-    [% END %]
-    [%+ buglist.size > 1 ? terms.bugs : terms.bug %]
-    [%+ buglist.join(", ") FILTER html %].
 
   [% ELSIF message_tag == "term" %]
     [% terms.$term FILTER html %]
