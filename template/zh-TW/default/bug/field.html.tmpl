@@ -56,7 +56,9 @@
       <div id="con_calendar_[% field.name FILTER html %]"></div>
 
       <script type="text/javascript">
-        createCalendar('[% field.name FILTER js %]')
+       <!--
+          [%+ PROCESS "global/calendar.js.tmpl" id = field.name %]
+        //--></script>
       </script>
     [% CASE constants.FIELD_TYPE_BUG_ID %]
         <span id="[% field.name FILTER html %]_input_area">
@@ -171,19 +173,21 @@
          </script>
        [% END %]
      [% CASE constants.FIELD_TYPE_KEYWORDS %]
-       <div id="keyword_container">
+       <div id="[% field.name FILTER html %]_container">
          <input type="text" id="[% field.name FILTER html %]" size="40"
                 class="text_input" name="[% field.name FILTER html %]"
                 value="[% value FILTER html %]">
-         <div id="keyword_autocomplete"></div>
+         <div id="[% field.name FILTER html %]_autocomplete"></div>
        </div>
        <script type="text/javascript" defer="defer">
-         YAHOO.bugzilla.keyword_array = [
-           [%- FOREACH keyword = all_keywords %]
-             [%-# %]"[% keyword.name FILTER js %]"
+         if (typeof YAHOO.bugzilla.field_array === "undefined")
+           YAHOO.bugzilla.field_array = [];
+         YAHOO.bugzilla.field_array["[% field.name FILTER js %]"] = [
+           [%- FOREACH val = possible_values %]
+             [%-# %]"[% val FILTER js %]"
              [%- "," IF NOT loop.last %][% END %]];
-         YAHOO.bugzilla.keywordAutocomplete.init('[% field.name FILTER js %]',
-                                                 'keyword_autocomplete');
+         YAHOO.bugzilla.fieldAutocomplete.init('[% field.name FILTER js %]',
+                                               '[% field.name FILTER js %]_autocomplete');
        </script>
   [% END %]
 [% ELSE %]
