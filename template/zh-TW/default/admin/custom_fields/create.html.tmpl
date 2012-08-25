@@ -91,18 +91,16 @@ YAHOO.util.Event.onDOMReady(function() {onChangeType(document.getElementById('ty
     </tr>
 
     <tr>
-      <th class="narrow_label">
-        <label for="reverse_desc">反向關係描述：</label>
-      </th>
+      <th class="narrow_label">較長的描述：</th>
       <td>
-        <input type="text" id="reverse_desc" name="reverse_desc" value="" size="40" disabled="disabled">
-        <br/>
-        使用此標籤可列出因
-        [%+ field_types.${constants.FIELD_TYPE_BUG_ID} FILTER html %]
-        此欄位，而連至一個 [% terms.bug %] 的 [% terms.bugs %] 清單。
-        例如，描述是「此 [% terms.bug %] 和 ... 重複」時，
-        反向關係就會是「和此 [% terms.bug %] 重複的 [% terms.bugs %] 」。
-        如果要停用此欄位的清單，請留白。
+         [% INCLUDE global/textarea.html.tmpl
+          name           = 'long_desc'
+          id             = 'long_desc'
+          minrows        = 3
+          maxrows        = 5
+          cols           = 46
+          defaultcontent = defaultcontent
+        %]
       </td>
       <th>
         <label for="visibility_field_id">當符合下列條件時，欄位才會出現：</label>
@@ -128,7 +126,19 @@ YAHOO.util.Event.onDOMReady(function() {onChangeType(document.getElementById('ty
     </tr>
 
     <tr>
-      <td colspan="2">&nbsp;</td>
+      <th class="narrow_label">
+        <label for="reverse_desc">反向關係描述：</label>
+      </th>
+      <td>
+        <input type="text" id="reverse_desc" name="reverse_desc" value="" size="40" disabled="disabled">
+        <br/>
+        使用此標籤可列出因
+        [%+ field_types.${constants.FIELD_TYPE_BUG_ID} FILTER html %]
+        此欄位，而連至一個 [% terms.bug %] 的 [% terms.bugs %] 清單。
+        例如，描述是「此 [% terms.bug %] 和 ... 重複」時，
+        反向關係就會是「和此 [% terms.bug %] 重複的 [% terms.bugs %] 」。
+        如果要停用此欄位的清單，請留白。
+      </td>
       <th>
         <label for="value_field_id">
           控制欄位值是否在此欄位中出現的欄位：
