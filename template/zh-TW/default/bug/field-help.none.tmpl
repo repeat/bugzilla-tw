@@ -124,6 +124,12 @@ short_desc =>
 status_whiteboard =>
   "每個 $terms.bug 都有一塊狀態白板，可以加入標籤以及狀態資訊。",
 
+tag =>
+  "不像${vars.field_descs.keywords}是公開且所有使用者可見那樣，
+   ${vars.field_descs.tag}是只有自己可見，也只能由擁有者編輯。
+   編輯${vars.field_descs.tag}不會通知其他使用者。用它們來對
+   ${terms.bugs}下標籤及追蹤吧。",
+
 target_milestone =>
   "$vars.field_descs.target_milestone 欄位是用來定義工程師將
    $terms.bug 排程，並預計修復的日期。",
@@ -190,12 +196,16 @@ email1 =>
 
   [%# Add help for custom fields. %]
   [% IF !vars.help_html.${help_field}.defined %]
-    [% SET field_type = bug_fields.${help_field}.type %]
-    [% field_type_desc = BLOCK -%]
-      [% field_types.$field_type FILTER html %]
-    [%- END %]
-    [% vars.help_html.${help_field} =
+    [% IF bug_fields.${help_field}.long_desc %]
+      [% vars.help_html.${help_field} = bug_fields.${help_field}.long_desc %]
+    [% ELSE %]
+      [% SET field_type = bug_fields.${help_field}.type %]
+      [% field_type_desc = BLOCK -%]
+        [% field_types.$field_type FILTER html %]
+      [%- END %]
+      [% vars.help_html.${help_field} =
       "在此 $terms.Bugzilla 中的自訂欄位 $field_type_desc 。" %]
+    [% END %]
   [% END %]
 
   [%# Add help for the search types, for query.cgi. %]
