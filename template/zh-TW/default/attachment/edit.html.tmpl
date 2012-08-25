@@ -59,7 +59,7 @@
             [%+ attachment.datasize FILTER unitconvert %]
           [% ELSE %]
             <em>已刪除</em>
-          [% END %]，由 [%+ INCLUDE global/user.html.tmpl who = attachment.attacher %] 建立
+          [% END %]，由 [%+ INCLUDE global/user.html.tmpl who = attachment.attacher %] 於 [%+ attachment.attached FILTER time %] 建立
           [% IF attachment.isprivate %]；
             <span class="bz_private">僅 <strong>[% Param('insidergroup') FILTER html %]</strong> 群組可見</span>
           [% END %]
@@ -99,6 +99,11 @@
           <div id="attachment_creator">
             <span class="label">建立者：</span>
             [%+ INCLUDE global/user.html.tmpl who = attachment.attacher %]
+          </div>
+
+          <div id="attachment_created">
+            <span class="label">建立於：</span>
+            [%+ attachment.attached FILTER time %]
           </div>
 
           <div id="attachment_size">
@@ -247,6 +252,14 @@
               wrap    = 'soft'
               classes = classNames
             %]
+            [% IF NOT attachment.bug.cc || NOT attachment.bug.cc.contains(user.login) %]
+              <input type="checkbox" id="addselfcc" name="addselfcc"
+                [%~ ' checked="checked"'
+                    IF user.settings.state_addselfcc.value == 'always'
+                       || (!attachment.bug.user.has_any_role
+                           && user.settings.state_addselfcc.value == 'cc_unless_role') %]>
+              <label for="addselfcc">將我加入寄件副本清單中</label>
+            [% END %]
           </div>
         [% END %]
         <div id="attachment_flags">
@@ -287,10 +300,17 @@
 <div id="attachment_list">
   在 [% "$terms.bug ${attachment.bug_id}" FILTER bug_link(attachment.bug_id) FILTER none %] 裡的附件：
   [% FOREACH a = attachments %]
-    [% IF a == attachment.id %]
-      [%+ a %]
+    [% IF a.isobsolete %]
+      <span class="bz_obsolete">
+    [% END %]
+    [% IF a.id == attachment.id %]
+      [%+ a.id FILTER html %]
     [% ELSE %]
-      <a href="attachment.cgi?id=[% a %]&amp;action=edit">[% a %]</a>
+      <a href="attachment.cgi?id=[% a.id FILTER uri %]&amp;action=edit"
+         title="[% a.description FILTER html %]">[% a.id FILTER html %]</a>
+    [% END %]
+    [% IF a.isobsolete %]
+      </span>
     [% END %]
     [% " |" UNLESS loop.last() %]
   [% END %]
