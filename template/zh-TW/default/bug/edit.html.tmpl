@@ -182,11 +182,11 @@
       <table id="summary">
         <tr>
           [% IF bug.check_can_change_field('alias', 0, 1) %]
+            [% INCLUDE "bug/field-label.html.tmpl"
+               field = bug_fields.alias
+               editable = 1
+            %]
             <td>
-              <label
-                for="alias"
-                title="例如用在加入依賴關係的清單時，可以用來代替 [% terms.bug %] 編號的名稱"
-                >別名</label>：</td><td>
           [% ELSIF bug.alias %]
             <td colspan="2">(
           [% ELSE %]
@@ -202,9 +202,11 @@
         </tr>
         [%# *** Summary *** %]
         <tr>
-          <td>
-            <label accesskey="s" for="short_desc">摘要 (<u>S</u>)</label>：
-          </td>
+          [% INCLUDE "bug/field-label.html.tmpl"
+            field = bug_fields.short_desc
+            editable = 1
+            accesskey = "s"
+          %]
           <td>
             [% PROCESS input inputname => "short_desc" size => "60" colspan => 2
                              maxlength => 255 spellcheck => "true" no_td => 1 %]
@@ -522,12 +524,21 @@
         [% INCLUDE bug/field.html.tmpl
            bug = bug, field = bug_fields.keywords, value = bug.keywords
            editable = bug.check_can_change_field("keywords", 0, 1),
-           no_tds = 1
+           no_tds = 1, possible_values = all_keywords
         %]
       </td>
     </tr>
   [% END %]
 [% END %]
+
+  [% IF user.id %]
+    <tr>
+      [% INCLUDE bug/field.html.tmpl
+         bug = bug, field = bug_fields.tag, value = bug.tags.join(", "),
+         editable = 1, possible_values = user.tags.keys
+      %]
+    </tr>
+  [% END %]
 
 [%############################################################################%]
 [%# Block for Duplicates                                                     #%]
@@ -710,15 +721,10 @@
       <td>
         [% IF user.id %]
           [% IF NOT bug.cc || NOT bug.cc.contains(user.login) %]
-            [% has_role = bug.user.isreporter
-                          || bug.assigned_to.id == user.id
-                          || (Param('useqacontact')
-                              && bug.qa_contact
-                              && bug.qa_contact.id == user.id) %]
             <input type="checkbox" id="addselfcc" name="addselfcc"
               [% " checked=\"checked\""
                    IF user.settings.state_addselfcc.value == 'always'
-                      || (!has_role
+                      || (!bug.user.has_any_role
                           && user.settings.state_addselfcc.value == 'cc_unless_role') %]>
             <label for="addselfcc">把自己加入寄件副本清單</label>
             <br>
@@ -872,7 +878,7 @@
   [% USE Bugzilla %]
   [% FOREACH field = Bugzilla.active_custom_fields %]
     <tr>
-      [% PROCESS bug/field.html.tmpl value = bug.${field.name}
+      [% INCLUDE bug/field.html.tmpl value = bug.${field.name}
                                      editable = bug.check_can_change_field(field.name, 0, 1)
                                      value_span = 2 %]
     </tr>
@@ -943,27 +949,27 @@
 [% BLOCK section_timetracking %]
   <table class="bz_time_tracking_table">
     <tr>
+      [% INCLUDE "bug/field-label.html.tmpl"
+         field = bug_fields.estimated_time, editable = 1
+      %]
       <th>
-        <label for="estimated_time">原先估計時數</label>
+        現在估計時數：
       </th>
+      [% INCLUDE "bug/field-label.html.tmpl"
+         field = bug_fields.work_time, editable = 1
+      %]
+      [% INCLUDE "bug/field-label.html.tmpl"
+         field = bug_fields.remaining_time, editable = 1
+      %]
+      [% INCLUDE "bug/field-label.html.tmpl"
+         field = bug_fields.percentage_complete, editable = 1
+      %]
       <th>
-        現在估計時數
+        節省：
       </th>
-      <th>
-        <label for="work_time">已工作時數</label>
-      </th>
-      <th>
-        <label for="remaining_time">剩餘時數</label>
-      </th>
-      <th>
-       完成度 (%)
-      </th>
-      <th>
-        節省
-      </th>
-      <th>
-        <label for="deadline">截止期限</label>
-      </th>
+      [% INCLUDE "bug/field-label.html.tmpl"
+         field = bug_fields.deadline, editable = 1
+      %]
     </tr>
     <tr>
       <td>
