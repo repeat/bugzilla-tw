@@ -22,7 +22,7 @@
 [% USE Bugzilla %]
 
 <p>
-需要一組有效的帳號及密碼才能繼續。
+[% terms.Bugzilla %] 需要一組有效的帳號及密碼才能繼續。
 </p>
 
 <form name="login" action="[% target FILTER html %]" method="POST"
@@ -86,6 +86,12 @@
 
     <p>
       如果你沒有 [% terms.Bugzilla %] 帳號，你可以<a href="createaccount.cgi">建立新帳號</a>。
+      [% IF Param("requirelogin") %]
+        此一 [% terms.Bugzilla %] 僅允許獲得授權的使用者登入瀏覽，因此需要有帳號。
+      [% ELSIF target.match("_bug\.cgi$") %]
+        當需要回報一個新的 [% terms.bug %] ，或者對現有的 [% terms.bug %] 留下意見時，需要一個帳號。
+        當後續有需要更多資訊時，可以聯絡上你。
+      [% END %]
     </p>
   [% END %]
 
