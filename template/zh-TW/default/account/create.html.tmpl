@@ -34,11 +34,18 @@
   href="mailto:[% Param("maintainer") %]">[% Param("maintainer") %]</a> 。
 </p>
 
+<p>
+  當需要回報一個新的 [% terms.bug %] ，或者對現有的 [% terms.bug %] 留下意見時，需要一個帳號。
+  當後續有需要更多資訊時，可以聯絡上你。
+  這也讓其他使用者可以清楚了解是誰對 [%terms.bug %] 做了改變或留下意見。
+  <b>注意：你的電子郵件地址將<u>不會</u>顯示給訪客。只有註冊使用者才能看見它。</b>
+</p>
+
 [% IF Param('createemailregexp') == '.*' && Param('emailsuffix') == '' %]
 <p>
   <b>隱私權提醒：</b>
   <br>[% terms.Bugzilla %] 是一個開放的 [% terms.bug %] 追蹤系統。
-  <br>在大多數 [% terms.bugs %] 的活動，包括電子郵件地址，都是公眾可瀏覽的。
+  <br>在大多數 [% terms.bugs %] 的活動，包括電子郵件地址，都是可被註冊使用者瀏覽的。
   <br>我們<b>建議</b>使用次要的電子郵件，或者使用免費的網路電子郵件服務（例如 Gmail、Yahoo、Hotmail 等等），以避免你的主要電子郵件收到垃圾郵件。
 </p>
 [% END %]
