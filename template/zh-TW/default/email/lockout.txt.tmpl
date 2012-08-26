@@ -8,10 +8,10 @@
 
 From: [% Param('mailfrom') %]
 To: [% Param('maintainer') %]
-Subject: [[% terms.Bugzilla %]] 鎖帳號通知： [% locked_user.login %] ([% attempts.0.ip_addr %])
+Subject: [[% terms.Bugzilla %]] 鎖帳號通知： [% locked_user.login %] ([% address %])
 X-Bugzilla-Type: admin
 
-此 IP 位址 [% attempts.0.ip_addr %] 在登入
+此位址 [% address %] 在登入
 [% locked_user.login %] 此帳號時失敗次數過多
 （ [% constants.MAX_LOGIN_ATTEMPTS %] 次）。
 
