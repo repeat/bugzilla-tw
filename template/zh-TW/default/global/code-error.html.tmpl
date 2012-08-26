@@ -367,6 +367,10 @@
     搜尋參數 f[% id FILTER html %] 是 "CP" ，但在它之前沒有符合的
     "OP" 。
 
+  [% ELSIF error == "search_field_operator_unsupported" %]
+    [% terms.Bugzilla %] 不支援搜尋參數
+    "[% operator FILTER html %]" 。
+
   [% ELSIF error == "search_invalid_joiner" %]
     '[% joiner FILTER html %]' 對搜尋而言不是有效的 joiner 。
 
