@@ -95,6 +95,7 @@ END
     feature_updates => '自動更新通知',
     feature_xmlrpc => 'XML-RPC 介面',
     feature_detect_charset    => '自動偵測文字附件的字元編碼',
+    feature_typesniffer       => '對附件的 MIME 類別做探測(sniff)',
 
     file_remove => '移除 ##name## 中...',
     file_rename => '將 ##from## 更名為 ##to## 中...',
