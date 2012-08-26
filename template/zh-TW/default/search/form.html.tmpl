@@ -142,6 +142,7 @@ TUI_hide_default('information_query');
     %]
     <div class="search_field_row">
       [% type = field_container.field.name _ "_type" %]
+      [% possible_values = field_container.field.name == 'keywords' ? all_keywords : [] %]
       [% INCLUDE "search/field.html.tmpl"
           field => field_container.field
           types => field_container.qtypes || query_types
@@ -318,8 +319,10 @@ TUI_hide_default('information_query');
           之間
     (YYYY-MM-DD 或相對的日期)
     <script type="text/javascript">
-      createCalendar('chfieldfrom');
-      createCalendar('chfieldto');
+      <!--
+        [%+ PROCESS "global/calendar.js.tmpl" id = 'chfieldfrom' %]
+        [% PROCESS "global/calendar.js.tmpl" id = 'chfieldto' %]
+      //--></script>
     </script>
   </li>
 </ul>
