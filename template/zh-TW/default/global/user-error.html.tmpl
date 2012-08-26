@@ -230,7 +230,9 @@
       網址必須以 "http" 或 "https" 開頭。
     [% ELSIF reason == 'path_only' %]
       你必須輸入完整的網址。
-    [% ELSIF reason == 'show_bug' %]
+    [% ELSIF reason == 'id' %]
+      在網址中沒有有效的 [% terms.bug %] 編號。
+    [% ELSE %]
       [%+ field_descs.see_also FILTER html %] 的網址應該指到以下其中一個地方：
       <ul>
         <li>已安裝的 [% terms.Bugzilla %] 中的 <code>show_bug.cgi</code> 。</li>
@@ -244,8 +246,6 @@
         <li>在 github.com 中的 issue 。</li>
         [% Hook.process('bug_url_invalid_tracker') %]
       </ul>
-    [% ELSIF reason == 'id' %]
-      在網址中沒有有效的 [% terms.bug %] 編號。
     [% END %]
 
   [% ELSIF error == "bug_url_too_long" %]
@@ -407,10 +407,6 @@
     [% title = "變更電子郵件進行中" %]
     變更電子郵件進行中，請檢查你的電子郵件信箱。
 
-  [% ELSIF error == "email_confirmation_failed" %]
-    [% title = "電子郵件確認失敗" %]
-    電子郵件確認失敗。
-
   [% ELSIF error == "email_no_body" %]
     你的電子郵件並未包含任何文字，或者無法解析出文字。
 
@@ -464,6 +460,11 @@
   [% ELSIF error == "field_invalid_sortkey" %]
     [% title = "無效的欄位排序鍵" %]
     你所指定的欄位排序鍵 [% sortkey FILTER html %] 並非有效的正整數。
+
+  [% ELSIF error == "field_long_desc_too_long" %]
+    [% title = "較長的描述欄位內容太長" %]
+    你對此欄位所提供的較長的描述內容比
+    [% constants.MAX_FIELD_LONG_DESC_LENGTH FILTER html %] 字元還長。
 
   [% ELSIF error == "field_missing_description" %]
     [% title = "缺少欄位描述" %]
@@ -1204,8 +1205,8 @@
     [% END %]
 
   [% ELSIF error == "old_password_incorrect" %]
-    [% title = "不正確的舊密碼" %]
-    你並未正確地輸入舊的密碼。
+    [% title = "不正確的密碼" %]
+    你並未正確地輸入密碼。
 
   [% ELSIF error == "old_password_required" %]
     [% title = "需要輸入舊密碼" %]
