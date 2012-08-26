@@ -53,20 +53,11 @@
       [% PROCESS section_flags obj => bug %]
 
       [% IF displayfields.long_desc %]
+          [% sort_order = user.settings.comment_sort_order.value %]
+          <comment_sort_order>[% sort_order FILTER xml %]</comment_sort_order>
+
         [% FOREACH c = bug.comments %]
-          [% NEXT IF c.is_private && !user.is_insider %]
-          <long_desc isprivate="[% c.is_private FILTER xml %]">
-            <commentid>[% c.id FILTER xml %]</commentid>
-            [% IF c.is_about_attachment %]
-              <attachid>[% c.extra_data FILTER xml %]</attachid>
-            [% END %]
-            <who name="[% c.author.name FILTER xml %]">[% c.author.email FILTER email FILTER xml %]</who>
-            <bug_when>[% c.creation_ts FILTER time("%Y-%m-%d %T %z") FILTER xml %]</bug_when>
-            [% IF user.is_timetracker && (c.work_time - 0 != 0) %]
-              <work_time>[% PROCESS formattimeunit time_unit = c.work_time FILTER xml %]</work_time>
-            [% END %]
-            <thetext>[% c.body_full FILTER xml %]</thetext>
-          </long_desc>
+          [% PROCESS a_comment %]
         [% END %]
       [% END %]
 
@@ -85,7 +76,8 @@
             <filename>[% a.filename FILTER xml %]</filename>
             <type>[% a.contenttype FILTER xml %]</type>
             <size>[% a.datasize FILTER xml %]</size>
-            <attacher>[% a.attacher.email FILTER email FILTER xml %]</attacher>
+            <attacher[% IF a.attacher.name != '' %] name="[% a.attacher.name FILTER xml %]"[% END -%]>
+            [% a.attacher.email FILTER email FILTER xml %]</attacher>
             [%# This is here so automated clients can still use attachment.cgi %]
             [% IF displayfields.token && user.id %]
               <token>[% issue_hash_token([a.id, a.modification_time]) FILTER xml %]</token>
@@ -149,4 +141,21 @@
       [% END %]
     />
   [% END %]
+[% END %]
+
+[% BLOCK a_comment %]
+  [% RETURN IF c.is_private && !user.is_insider %]
+  <long_desc isprivate="[% c.is_private FILTER xml %]" >
+    <commentid>[% c.id FILTER xml %]</commentid>
+    <comment_count>[% c.count FILTER xml %]</comment_count>
+    [% IF c.is_about_attachment %]
+      <attachid>[% c.extra_data FILTER xml %]</attachid>
+    [% END %]
+    <who name="[% c.author.name FILTER xml %]">[% c.author.email FILTER email FILTER xml %]</who>
+    <bug_when>[% c.creation_ts FILTER time("%Y-%m-%d %T %z") FILTER xml %]</bug_when>
+    [% IF user.is_timetracker && (c.work_time - 0 != 0) %]
+      <work_time>[% PROCESS formattimeunit time_unit = c.work_time FILTER xml %]</work_time>
+    [% END %]
+    <thetext>[% c.body_full FILTER xml %]</thetext>
+  </long_desc>
 [% END %]
