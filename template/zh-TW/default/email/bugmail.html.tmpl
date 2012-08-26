@@ -30,6 +30,7 @@
       <p>
       [% FOREACH comment = new_comments.reverse %]
         <div>
+          [% IF comment.count %]
             <b>
               來自 [% INCLUDE global/user.html.tmpl who = comment.author %] 對
               [% "$terms.bug $bug.id" FILTER bug_link(bug, { full_url => 1, user => to_user }) FILTER none %]
