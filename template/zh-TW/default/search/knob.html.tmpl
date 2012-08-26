@@ -23,6 +23,9 @@
    "Last Changed" => "上次變更" } %]
 
 <input type="hidden" name="cmdtype" value="doit">
+[% IF user.id %]
+  <input type="hidden" name="token" value="[% issue_hash_token(['searchknob']) FILTER html %]">
+[% END %]
 
 <p>
   <label for="order">將結果以此方式排序</label>：
@@ -39,7 +42,7 @@
   <input type="submit" id="[% button_name FILTER html %]"
          value="[% button_name FILTER html %]">
   [% IF known_name %]
-    [%# We store known_name in case the user add a boolean chart. %]
+    [%# We store known_name in case the user adds a boolean chart. %]
     <input type="hidden" name="known_name" value="[% known_name FILTER html %]">
 
     [%# The name of the existing query will be passed to buglist.cgi. %]
@@ -51,17 +54,21 @@
   [% END %]
 </p>
 
-<p>
-  &nbsp;&nbsp;&nbsp;
-  <input type="checkbox" id="remasdefault"
-         name="remtype" value="asdefault">
-  <label for="remasdefault">
-    將這些設定設為我的搜尋選項的預設值
-  </label>
-</p>
+[% IF user.id %]
+  <p>
+    &nbsp;&nbsp;&nbsp;
+    <input type="checkbox" id="remasdefault"
+           name="remtype" value="asdefault">
+    <label for="remasdefault">
+      將這些設定設為我的搜尋選項的預設值
+    </label>
+  </p>
+[% END %]
 
 [% IF userdefaultquery %]
   <p>
-    <a href="query.cgi?nukedefaultquery=1">將我的搜尋選項預設值設回系統預設值</a>。
+    <a href="query.cgi?nukedefaultquery=1&amp;token=
+       [%- issue_hash_token(['nukedefaultquery']) FILTER uri %]">
+      將我的搜尋選項預設值設回系統預設值</a>。
   </p>
 [% END %]
