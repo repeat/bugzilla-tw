@@ -39,9 +39,9 @@
             [% ELSIF field == 'cryptpassword' %]
               已設定新密碼。
             [% ELSIF field == 'disabledtext' %]
-              已修改停用文字。
+              已修改「無法使用此帳號登入」文字。
             [% ELSIF field == 'is_enabled' %]
-              此使用者已[% otheruser.is_enabled ? '啟用' : '停用' %]。
+              已[% otheruser.is_enabled ? '可' : '無法' %]使用此帳號登入。
             [% ELSIF field == 'extern_id' %]
               已修改使用者的外部登入帳號。
             [% ELSIF field == 'disable_mail' %]
@@ -92,7 +92,7 @@
     已成功刪除使用者 [% otheruser.login FILTER html %] 。
 
   [% ELSIF message_tag == "account_disabled" %]
-    使用者帳號 [% account FILTER html %] 已停用，所以你無法變更他的密碼。
+    已無法使用 [% account FILTER html %] 此帳號登入，所以你無法變更他的密碼。
 
   [% ELSIF message_tag == "attachment_creation_failed" %]
     成功建立 [% terms.bug %] ，但無法建立附件。
@@ -449,7 +449,7 @@
     [% title = "已登出" %]
     [% url = "index.cgi?GoAheadAndLogIn=1" %]
     [% link = "再次登入。" %]
-    <b>你已經登出</b>。記錄你登入的 cookie 已刪除。將會在需要帳號密碼時再次要求登入。
+    <b>你已經成功登出</b>。記錄你登入的 cookie 已刪除。將會在需要帳號密碼時再次要求登入。
 
   [% ELSIF message_tag == "login_changed" %]
     [% title = "$terms.Bugzilla 帳號已變更" %]
@@ -807,18 +807,6 @@
     [% IF userid %]
       <p>為了安全起見，你已被自動登出。記錄你登入的 cookie 已刪除。
     [% END %]
-
-  [% ELSIF message_tag == "tag_updated" %]
-    [% title = "已更新標籤" %]
-    已對 [% terms.bugs %]
-    [%+ buglist.join(", ") FILTER html %]
-    [% IF action == "add" %]
-      新增
-    [% ELSE %]
-      移除
-    [% END %]
-    '<a href="buglist.cgi?tag=[% tag FILTER uri %]">[% tag FILTER html %]</a>'
-    標籤。
 
   [% ELSIF message_tag == "term" %]
     [% terms.$term FILTER html %]
