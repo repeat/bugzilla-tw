@@ -77,9 +77,13 @@
 
   [% ELSIF error == "alias_in_use" %]
     [% title = "Alias In Use" %]
-    [% terms.Bug %] [%+ bug_id FILTER bug_link(bug_id) FILTER none %]
+    [% IF user.can_see_bug(bug_id) %]
+      [% terms.Bug %] [%+ bug_id FILTER bug_link(bug_id) FILTER none %]
+    [% ELSE %]
+      Another [% terms.bug %]
+    [% END %]
     has already taken the alias <em>[% alias FILTER html %]</em>.
-    Please choose another one.
+    Please choose another alias.
 
   [% ELSIF error == "alias_is_numeric" %]
     [% title = "Alias Is Numeric" %]
@@ -263,7 +267,7 @@
 
   [% ELSIF error == "bug_url_too_long" %]
     [% title = "Invalid $terms.Bug URL" %]
-    [% terms.Bug %] URLs can not be longer than 
+    [% terms.Bug %] URLs cannot be longer than 
     [%+ constants.MAX_BUG_URL_LENGTH FILTER none %] characters long.
     <code>[% url FILTER html %]</code> is too long.
 
@@ -332,8 +336,8 @@
     integer between 0 and [% constants.MAX_SMALLINT FILTER html %].
 
   [% ELSIF error == "classification_not_deletable" %]
-    [% title = "Default Classification Can Not Be Deleted" %]
-    You can not delete the default classification
+    [% title = "Default Classification Cannot Be Deleted" %]
+    You cannot delete the default classification
 
   [% ELSIF error == "classification_has_products" %]
      Sorry, there are products for this classification. You
@@ -435,11 +439,11 @@
     Your message did not contain any text, as far as we could tell.
 
   [% ELSIF error == "empty_group_description" %]
-    [% title = "The group description can not be empty" %]
+    [% title = "The group description cannot be empty" %]
     You must enter a description for the group.
 
   [% ELSIF error == "empty_group_name" %]
-    [% title = "The group name can not be empty" %]
+    [% title = "The group name cannot be empty" %]
     You must enter a name for the group.
   
   [% ELSIF error == "entry_access_denied" %]
@@ -1167,7 +1171,7 @@
     [% title = "Missing Search" %]
     [% docslinks = {'query.html' => "Searching for $terms.bugs",
                     'query.html#list' => "$terms.Bug lists"} %]
-    The search named <em>[% queryname FILTER html %]</em>
+    The search named <em>[% name FILTER html %]</em>
     [% IF sharer_id && sharer_id != user.id %]
       has not been made visible to you.
     [% ELSE %]
@@ -1475,10 +1479,24 @@
         <a href="page.cgi?id=quicksearch.html#fields">listed here</a>.</p>
     [% END %]
 
+  [% ELSIF error == "quip_too_long" %]
+    [% title = "Quip Too Long" %]
+    You entered a quip with a length of [% length FILTER none %] characters, 
+    but the maximum allowed length is [% constants.MAX_QUIP_LENGTH FILTER none %] 
+    characters.
+
   [% ELSIF error == "reassign_to_empty" %]
     [% title = "Illegal Reassignment" %]
     To reassign [% terms.abug %], you must provide an address for
     the new assignee.
+
+  [% ELSIF error == "report_name_missing" %]
+    [% title = "No Report Name Specified" %]
+    You must enter a name for your report.
+
+  [% ELSIF error == "report_access_denied" %]
+    [% title = "Report Access Denied" %]
+    You cannot access this report.
 
   [% ELSIF error == "require_component" %]
     [% title = "Component Needed" %]
