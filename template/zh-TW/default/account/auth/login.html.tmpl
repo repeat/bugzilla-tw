@@ -111,6 +111,7 @@
       <input type="hidden" name="a" value="reqpw">
       如果你有帳號，但是忘記密碼的話，在下方輸入你的帳號並按「重設密碼」鍵來變更密碼。<br>
       <input size="35" name="loginname">
+      <input type="hidden" id="token" name="token" value="[% issue_hash_token(['reqpw']) FILTER html %]">
       <input type="submit" id="request" value="重設密碼">
     </form>
   [% END %]
