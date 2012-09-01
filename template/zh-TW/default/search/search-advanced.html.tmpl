@@ -31,7 +31,13 @@
 
 
 [% js_data = BLOCK %]
-var queryform = "queryform"
+var queryform = "queryform";
+function remove_token() {
+  if (queryform.token) {
+    var asDefault = document.getElementById('remasdefault');
+    queryform.token.disabled = !asDefault.checked;
+  }
+}
 [% END %]
 
 [% PROCESS global/header.html.tmpl
@@ -53,7 +59,8 @@ var queryform = "queryform"
 
 <p id="search_help">將滑鼠移到每個欄位的標籤上，即會顯示得該欄位的提示。</p>
 
-<form method="post" action="buglist.cgi" name="queryform" id="queryform">
+<form method="post" action="buglist.cgi" name="queryform" id="queryform"
+      onsubmit="remove_token()">
 
 [% PROCESS search/form.html.tmpl %]
 
