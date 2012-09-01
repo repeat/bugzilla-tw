@@ -1100,7 +1100,7 @@
     [% title = "缺少搜尋" %]
     [% docslinks = {'query.html' => "搜尋 $terms.bugs",
                     'query.html#list' => "$terms.Bug 清單"} %]
-    名稱是 <em>[% queryname FILTER html %]</em> 的搜尋
+    名稱是 <em>[% name FILTER html %]</em> 的搜尋
     [% IF sharer_id && sharer_id != user.id %]
       並未對你公開。
     [% ELSE %]
