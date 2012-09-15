@@ -764,6 +764,15 @@
     由於已將此 [% terms.bug %] 關閉，或只是將它從其中一種關閉的狀態變更為另一種，因此
     [% field_descs.remaining_time FILTER html %] 欄位已自動設為 0 。
 
+  [% ELSIF message_tag == "report_created" %]
+    已建立名稱為 <em>[% reportname FILTER html %]</em> 的新報告。
+
+  [% ELSIF message_tag == "report_deleted" %]
+    已刪除名稱為 <em>[% reportname FILTER html %]</em> 的報告。
+
+  [% ELSIF message_tag == "report_updated" %]
+    已更新名稱為 <em>[% reportname FILTER html %]</em> 的報告。
+
   [% ELSIF message_tag == "sanitycheck" %]
     [%# We use this way to call sanitycheck-specific messages so that
       # we can still use get_text(). %]
