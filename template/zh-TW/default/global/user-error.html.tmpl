@@ -66,9 +66,13 @@
 
   [% ELSIF error == "alias_in_use" %]
     [% title = "別名使用中" %]
-    [% terms.Bug %] [% bug_id FILTER bug_link(bug_id) FILTER none %]
+    [% IF user.can_see_bug(bug_id) %]
+      [% terms.Bug %] [%+ bug_id FILTER bug_link(bug_id) FILTER none %]
+    [% ELSE %]
+      另一個 [% terms.bug %]
+    [% END %]
     已使用別名 <em>[% alias FILTER html %]</em> 。
-    請選擇另一個別名。
+    請選擇其他的別名。
 
   [% ELSIF error == "alias_is_numeric" %]
     [% title = "別名不能全為數字" %]
@@ -1091,7 +1095,7 @@
     [% title = "缺少搜尋" %]
     [% docslinks = {'query.html' => "搜尋 $terms.bugs",
                     'query.html#list' => "$terms.Bug 清單"} %]
-    名稱是 <em>[% queryname FILTER html %]</em> 的搜尋
+    名稱是 <em>[% name FILTER html %]</em> 的搜尋
     [% IF sharer_id && sharer_id != user.id %]
       並未對你公開。
     [% ELSE %]
@@ -1378,6 +1382,11 @@
         <a href="id=quicksearch.html#fields">列於此處</a>。</p>
     [% END %]
 
+  [% ELSIF error == "quip_too_long" %]
+    [% title = "智語過長" %]
+    你輸入了長度為 [% length FILTER none %] 字元的智語，但是允許的智語長度為
+    [% constants.MAX_QUIP_LENGTH FILTER none %] 字元。
+
   [% ELSIF error == "reassign_to_empty" %]
     [% title = "無效的重新分配" %]
     要重新分配 [% terms.bug %] ，你必須輸入新的負責人的電子郵件地址。
@@ -1386,6 +1395,14 @@
     [% title = "偵測到關係迴圈" %]
     [% terms.bug %] [%+ bug_id FILTER html %] 的 [% field_descs.$field_name FILTER html %]
     對 [% terms.bug %] [%+ dep_id FILTER html %] 的依賴關係是個迴圈。
+
+  [% ELSIF error == "report_name_missing" %]
+    [% title = "未指定報告名稱" %]
+    你必須為報告指定一個名稱。
+
+  [% ELSIF error == "report_access_denied" %]
+    [% title = "拒絕存取" %]
+    你無法瀏覽此報告。
 
   [% ELSIF error == "request_queue_group_invalid" %]
     群組欄位 <em>[% group FILTER html %]</em> 無效。
