@@ -624,12 +624,13 @@
 [% BLOCK section_dependson_blocks %]
   <tr>
     [% INCLUDE dependencies
-         field = bug_fields.blocked deps = bug.blocks_obj %]
+         field = bug_fields.dependson deps = bug.depends_on_obj %]
   </tr>
 
   <tr>
-    [% PROCESS dependencies accesskey = "b"
-               dep = { title => "會擋掉這些 $terms.bug (<u>B</u>)", fieldname => "blocked" } %]
+    [% INCLUDE dependencies
+         field = bug_fields.blocked deps = bug.blocks_obj %]
+  </tr>
 
   <tr>
     <th>&nbsp;</th>
