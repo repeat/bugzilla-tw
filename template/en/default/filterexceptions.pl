@@ -90,7 +90,6 @@
   'formaturl', 
   'other_format.name', 
   'switchbase',
-  'format',
   'cumulate',
 ],
 
@@ -192,7 +191,6 @@
 
 'global/confirm-user-match.html.tmpl' => [
   'script',
-  'fields.${field_name}.flag_type.name',
 ],
 
 'global/site-navigation.html.tmpl' => [
@@ -350,7 +348,7 @@
 ],
 
 'admin/table.html.tmpl' => [
-  'link_uri'
+  'contentlink'
 ],
 
 'admin/custom_fields/cf-js.js.tmpl' => [
