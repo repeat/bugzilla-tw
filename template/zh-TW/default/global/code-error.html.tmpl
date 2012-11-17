@@ -302,9 +302,9 @@
     [%+ msg FILTER html %]
 
   [% ELSIF error == "mismatched_bug_ids_on_obsolete" %]
-    附件 [% attach_id FILTER html %] （[% description FILTER html %]）是附加在 [% terms.bug %]
-    [%+ attach_bug_id FILTER html %] 的附件，但在對 [% terms.bug %]
-    [%+ my_bug_id FILTER html %] 新增附件時，你嘗試將它標記為「已廢棄的附件」。
+    附件 [% attach_id FILTER html %] 是附加在另一個 [% terms.bug %]
+    的附件，但在對 [% terms.bug %] [%+ my_bug_id FILTER html %]
+    新增附件時，你嘗試將它標記為「已廢棄的附件」。
 
   [% ELSIF error == "missing_bug_id" %]
     並未輸入 [% terms.bug %] 編號。

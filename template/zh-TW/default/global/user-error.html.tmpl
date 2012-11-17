@@ -1680,7 +1680,7 @@
 
     [% FOREACH q = Bugzilla.user.queries %]
       [% IF q.name == namedcmd %]
-        或是<a href="query.cgi?[% q.url FILTER uri %]">編輯</a>
+        或是<a href="query.cgi?[% q.url FILTER html %]">編輯</a>
       [% END %]
     [% END %]
 
