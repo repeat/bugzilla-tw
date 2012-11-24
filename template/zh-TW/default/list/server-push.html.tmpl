@@ -14,9 +14,11 @@
 <html>
   <head>
     <title>[% terms.Bugzilla %] 正在執行你的搜尋</title>
+    <link href="[% 'skins/standard/global.css' FILTER mtime %]"
+          rel="stylesheet" type="text/css">
   </head>
   <body>
-    <h1 style="margin-top: 20%; text-align: center;">請稍候...</h1>
+    <h1 style="margin-top: 20%; text-align: center; font-size: xx-large;">請稍候...</h1>
 
     [% IF debug %]
       <p>[% query FILTER html %]</p>
