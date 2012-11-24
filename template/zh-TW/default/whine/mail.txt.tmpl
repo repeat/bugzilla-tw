@@ -36,18 +36,21 @@
   [% FOREACH bug=query.bugs %]
   [% terms.Bug +%] [%+ bug.bug_id %]：
   [%+ urlbase %]show_bug.cgi?id=[% bug.bug_id +%]
-  優先程度： [%+ display_value("priority", bug.priority) -%]
-  [% field_descs.bug_severity %]： [%+ display_value("bug_severity", bug.bug_severity) -%]
-  [%+ field.descs.rep_platform %]： [%+ display_value("rep_platform", bug.rep_platform) %]
-    負責人： [%+ bug.assigned_to %]
-      狀態： [%+ display_value("bug_status", bug.bug_status) %]
-             [%- IF bug.resolution -%] 解決方案： [% display_value("resolution", bug.resolution) -%]
-             [%- END %]
-      摘要： [% bug.short_desc %]
-
-   [% END %]
+  [% largest_title = 0 %]
+  [% FOREACH col = query.columnlist %]
+    [% NEXT IF col == 'bug_id' %]
+    [% IF field_descs.${col}.length > largest_title %]
+      [% largest_title = field_descs.${col}.length %]
+    [% END %]
+  [% END %]
+  [% FOREACH col = query.columnlist %]
+    [% NEXT IF col == 'bug_id' %]
+  [%+ " " FILTER repeat(largest_title - field_descs.${col}.length) %]
+  [% field_descs.$col %]： [% display_value($col, bug.$col) %]
+  [% END %]
 
   [% END %]
+
 以 [% terms.bug %] 清單檢視： [% urlbase %]buglist.cgi?cmdtype=runnamed&namedcmd=[% query.name FILTER uri %]
 [% ELSE %]
 
