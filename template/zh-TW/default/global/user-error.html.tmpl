@@ -214,6 +214,10 @@
     [% title = "附件已移除" %]
     你嘗試讀取的附件已被移除。
 
+  [% ELSIF error == "bad_page_cgi_id" %]
+    [% title = "無效的頁面編號" %]
+    頁面編號 <code>[% page_id FILTER html %]</code> 並非有效的頁面編號。
+
   [% ELSIF error == "bug_access_denied" %]
     [% title = "沒有瀏覽權限" %]
     [% admindocslinks = {'groups.html' => '群組安全性'} %]
@@ -430,6 +434,10 @@
   [% ELSIF error == "extension_create_no_name" %]
     因此程式需要，你必須替你的附加元件命名，以做為參數。
 
+  [% ELSIF error == "extension_disabled" %]
+    [% title = "附加元件已停用" %]
+    你無法瀏覽此頁面，因為附加元件 '[% name FILTER html %]' 已停用。
+
   [% ELSIF error == "extension_first_letter_caps" %]
     你的附加元件名稱的第一個字母必須為大寫。
     （你指定的是 '[% name FILTER html %]' 。）
@@ -441,6 +449,14 @@
     [% IF existing_login_name %]
        ([% existing_login_name FILTER html %])
     [% END %]。
+
+  [% ELSIF error == "feature_disabled" %]
+    這台機器上的 [% terms.Bugzilla %] 並不允許 [% install_string("feature_$feature") FILTER html %]
+    這項功能。
+    [% IF user.in_group('admin') %]
+      如果你想要啟用此項功能，請執行
+      <kbd>checksetup.pl</kbd> 以確認啟用此功能所必須要的最低需求。
+    [% END %]
 
   [% ELSIF error == "field_already_exists" %]
     [% title = "欄位已存在" %]
@@ -548,7 +564,8 @@
   [% ELSIF error == "fieldvalue_sortkey_invalid" %]
     [% title = "無效的欄位值排序鍵" %]
     欄位 '[% field.description FILTER html %]' 的排序鍵
-    '[% sortkey FILTER html %]' 並非有效的（正）整數。
+    '[% sortkey FILTER html %]' 必須為 0 和
+    [% constants.MAX_SMALLINT FILTER none %] 之間的整數。
 
   [% ELSIF error == "fieldvalue_still_has_bugs" %]
     [% title = "無法刪除此欄位值" %]
@@ -579,6 +596,10 @@
     [%+ max_limit.nsort.last FILTER html %] KB 。<br>
     我們建議你將附件儲存在其他地方，然後在適當的文字欄位貼上網址做為附件。
     <br>如果你的附件是圖片的話，你可以先將它轉換為 JPG 或 PNG 格式，然後再試一次。
+
+  [% ELSIF error == "flag_requestee_disabled" %]
+    [% title = "無法要求特定的人設定旗標" %]
+    你不能要求特定的人設定 <em>[% type.name FILTER html %]</em> 。
 
   [% ELSIF error == "flag_requestee_needs_privs" %]
     [% title = "旗標設定者需要權限" %]
@@ -882,6 +903,10 @@
     [% title = "無效的資料組" %]
     <em>[% datasets.join(":") FILTER html %]</em> 是無效的資料組。僅允許數字、英文字母以及冒號 (:)。
 
+  [% ELSIF error == "invalid_dimensions" %]
+    [% title = "無效的維度" %]
+    所指定的寬度或高度並非正整數。
+
   [% ELSIF error == "invalid_format" %]
     [% title = "無效的格式" %]
     格式 "[% format FILTER html %]" 無效。必須是
@@ -896,6 +921,9 @@
   [% ELSIF error == "invalid_group_name" %]
     [% title = "無效的群組名稱" %]
     你所指定的群組名稱 [% name FILTER html %] 無效。
+
+  [% ELSIF error == "invalid_keyword_id" %]
+    找不到關鍵字編號 <em>[% id FILTER html %]</em> 。
 
   [% ELSIF error == "invalid_maxrows" %]
     [% title = "無效的最大列數" %]
@@ -912,6 +940,16 @@
   [% ELSIF error == "invalid_regexp" %]
     [% title = "無效的正規表達式" %]
     你所輸入的正規表達式無效。
+
+  [% ELSIF error == "invalid_user" %]
+    [% title = "無效的使用者" %]
+    [% IF user_id %]
+      沒有帳號為 <em>[% user_id FILTER html %]</em> 的使用者。
+    [% ELSIF user_login %]
+      沒有帳號為 <em>[% user_login FILTER html %]</em> 的使用者。
+    [% ELSE %]
+      並未輸入使用者帳號。
+    [% END %]
 
   [% ELSIF error == "invalid_user_group" %]
     [% title = "無效的使用者群組" %]
@@ -1044,9 +1082,17 @@
     [% title = "日期順序錯誤" %]
     你的開始日期 ([% datefrom FILTER html %]) 晚於結束日期 ([% dateto FILTER html %])。
 
+  [% ELSIF error == "mismatched_bug_ids_on_obsolete" %]
+    附件 [% attach_id FILTER html %] （[% description FILTER html %]）是附加在 [% terms.bug %]
+    [%+ attach_bug_id FILTER html %] 的附件，但在對 [% terms.bug %]
+    [%+ my_bug_id FILTER html %] 新增附件時，你嘗試將它標記為「已廢棄的附件」。
+
   [% ELSIF error == "missing_attachment_description" %]
     [% title = "缺少附件描述" %]
     你必須為附件輸入描述。
+
+  [% ELSIF error == "missing_bug_id" %]
+    並未輸入 [% terms.bug %] 編號。
 
   [% ELSIF error == "missing_category" %]
     [% title = "缺少分類" %]
@@ -1067,10 +1113,6 @@
   [% ELSIF error == "missing_content_type" %]
     [% title = "未指定 MIME 類別" %]
      你要求 [% terms.Bugzilla %] 自動偵測 MIME 類別，但在上傳檔案的時候你的瀏覽器並未指明 MIME 類別，因此你必須手動輸入。
-
-  [% ELSIF error == "missing_content_type_method" %]
-    [% title = "缺少 MIME 類別偵測方式" %]
-    你必須自下列選項中選擇一種偵測 MIME 類別的方式：<em>自動偵測</em>、<em>自清單中選擇</em>或是<em>手動輸入</em>。
 
   [% ELSIF error == "missing_cookie" %]
     [% title = "缺少 cookie" %]
@@ -1128,6 +1170,10 @@
     [% title = "需要智語" %]
     [% docslinks = {'quips.html' => '關於智語'} %]
     請在文字欄輸入智語。
+
+  [% ELSIF error == "need_quipid" %]
+    [% title = "需要智語編號" %]
+    需要輸入有效的智語編號。
 
   [% ELSIF error == "new_password_missing" %]
     [% title = "未輸入新的密碼" %]
@@ -1395,6 +1441,13 @@
     [% title = "偵測到關係迴圈" %]
     [% terms.bug %] [%+ bug_id FILTER html %] 的 [% field_descs.$field_name FILTER html %]
     對 [% terms.bug %] [%+ dep_id FILTER html %] 的依賴關係是個迴圈。
+
+  [% ELSIF error == "report_axis_invalid" %]
+    <em>[% val FILTER html %]</em> 對
+    [%+ IF    fld == "x" %] X 軸
+    [%+ ELSIF fld == "y" %] Y 軸
+    [%+ ELSIF fld == "z" %]多表格／多圖
+    [%+ ELSE %]一份報告的座標[% END %]而言，並非有效的值。
 
   [% ELSIF error == "report_name_missing" %]
     [% title = "未指定報告名稱" %]
@@ -1698,7 +1751,7 @@
 
     [% FOREACH q = Bugzilla.user.queries %]
       [% IF q.name == namedcmd %]
-        或是<a href="query.cgi?[% q.url FILTER uri %]">編輯</a>
+        或是<a href="query.cgi?[% q.url FILTER html %]">編輯</a>
       [% END %]
     [% END %]
 
