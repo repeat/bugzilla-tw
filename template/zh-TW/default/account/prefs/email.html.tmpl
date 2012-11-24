@@ -19,6 +19,14 @@
   #               receiving mail for that reason when in that role.
   #%]
 
+[%# If the user's bugmail has been disabled by admins, show a warning. %]
+[% IF user.email_disabled %]
+  <div class="warningmessages">
+    你的 [% terms.bug %] 變更狀態通知信已被管理員停用。請聯絡
+    [% Param('maintainer') %] 以啟用 [% terms.bug %] 變更狀態通知信。
+  </div>
+[% END %]
+
 <p>
 如果你不想要收到 [% terms.bug %] 變更狀態的通知信，你可以用以下設定來過濾部份或全部的通知信。
 </p>
