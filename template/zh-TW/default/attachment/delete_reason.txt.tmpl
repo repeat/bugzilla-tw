@@ -9,16 +9,10 @@
 [%# INTERFACE:
   # attachment: object of the attachment the user wants to delete.
   # reason: string; The reason provided by the user.
-  # date: the date when the request to delete the attachment was made.
   #%]
 
-附件 [% attachment.id %] 的內容已被 [%+ user.identity %] 刪除。
-[% IF reason %]
-刪除原因為：
+附件 [% attachment.id %] 的內容已被刪除
+[%~ IF reason %]，原因為：
 
 [%+ reason %]
-[% ELSE %]
-並未說明刪除原因。
 [% END %]
-
-用來刪除此附件的 token 產生於 [% date FILTER time %] 。
