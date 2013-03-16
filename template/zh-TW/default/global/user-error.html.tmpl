@@ -1536,6 +1536,11 @@
     [% title = "未知的 tab" %]
     <code>[% current_tab_name FILTER html %]</code>並非有效的 tab 名稱。
 
+  [% ELSIF error == "value_inactive" %]
+    [% title = "數值未啟用" %]
+    [% type = BLOCK %][% INCLUDE object_name class = class %][% END %]
+    [% type FILTER html %] 的數值 '[% value FILTER html %]' 並未啟用。
+
   [% ELSIF error == "version_already_exists" %]
     [% title = "版本已存在" %]
     [% admindocslinks = {'versions.html' => '管理版本'} %]
