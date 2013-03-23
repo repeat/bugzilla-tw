@@ -741,7 +741,10 @@
     [% title = "Format Not Found" %]
     The requested format <em>[% format FILTER html %]</em> does not exist with
     a content type of <em>[% ctype FILTER html %]</em>.
-    
+    [% IF invalid %]
+      Both parameters must contain letters and hyphens only.
+    [% END %]
+
   [% ELSIF error == "flag_type_sortkey_invalid" %]
     [% title = "Flag Type Sort Key Invalid" %]
     The sort key <em>[% sortkey FILTER html %]</em> must be an integer
@@ -1046,6 +1049,8 @@
       [%+ remaining FILTER html %] more attempt(s), you will be
       locked out of this account for 
       [%+ constants.LOGIN_LOCKOUT_INTERVAL FILTER html %] minutes.
+      To avoid being locked out, you can reset your password using
+      the "Forgot Password" link.
     [% END %]
 
   [% ELSIF error == "json_rpc_get_method_required" %]
@@ -1602,6 +1607,17 @@
     and the "matches" search can only be used with the "content"
     field.
 
+  [% ELSIF error == "search_grouped_field_invalid" %]
+    [% terms.Bugzilla %] does not support using the 
+    "[%+ field_descs.$field FILTER html %]" ([% field FILTER html %])
+    field with grouped search conditions.
+
+  [% ELSIF error == "search_grouped_invalid_nesting" %]
+    You cannot nest clauses within grouped search conditions.
+
+  [% ELSIF error == "search_grouped_field_mismatch" %]
+    All conditions under a groups search must use the same field.
+
   [% ELSIF error == "search_field_operator_invalid" %]
     [% terms.Bugzilla %] does not support using the 
     "[%+ field_descs.$field FILTER html %]" ([% field FILTER html %])
@@ -1708,6 +1724,11 @@
   [% ELSIF error == "unknown_tab" %]
     [% title = "Unknown Tab" %]
     <code>[% current_tab_name FILTER html %]</code> is not a legal tab name.
+
+  [% ELSIF error == "value_inactive" %]
+    [% title = "Value is Not Active" %]
+    [% type = BLOCK %][% INCLUDE object_name class = class %][% END %]
+    The [% type FILTER html %] value '[% value FILTER html %]' is not active.
 
   [% ELSIF error == "version_already_exists" %]
     [% title = "Version Already Exists" %]
