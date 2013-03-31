@@ -1039,7 +1039,7 @@
       <label for="comment" accesskey="c"><b>附加意見
         (<u>C</u>)</b></label> ：
 
-      [% IF user.is_insider %]
+      [% IF user.is_insider && bug.check_can_change_field('longdesc', 0, 1) %]
         <input type="checkbox" name="comment_is_private" value="1"
                id="newcommentprivacy"
                onClick="updateCommentTagControl(this, 'comment')">
@@ -1051,14 +1051,18 @@
 
       <!-- This table keeps the submit button aligned with the box. -->
       <table><tr><td>
-        [% INCLUDE global/textarea.html.tmpl
-                   name      = 'comment'
-                   id        = 'comment'
-                   minrows   = 10
-                   maxrows   = 25
-                   cols      = constants.COMMENT_COLS
-        %]
-        [% Hook.process("after_comment_textarea", 'bug/edit.html.tmpl') %]
+        [% IF bug.check_can_change_field('longdesc', 0, 1) %]
+          [% INCLUDE global/textarea.html.tmpl
+                     name      = 'comment'
+                     id        = 'comment'
+                     minrows   = 10
+                     maxrows   = 25
+                     cols      = constants.COMMENT_COLS
+          %]
+          [% Hook.process("after_comment_textarea", 'bug/edit.html.tmpl') %]
+        [% ELSE %]
+          你並未被允許在這個 [% terms.bug %] 新增留言。
+        [% END %]
         <br>
         [% PROCESS commit_button id=""%]
 
