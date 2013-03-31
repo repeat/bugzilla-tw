@@ -59,10 +59,14 @@
     TUI_hide_default('custom_search_advanced');
   </script>
   <script type="text/javascript" src="[% 'js/custom-search.js' FILTER mtime %]"></script>
-  <script type="text/javascript" src="[% 'js/history.js/native.history.js' FILTER mtime %]"></script>
   <script type="text/javascript">
     redirect_html4_browsers();
+    [%# These are alternative labels for the AND and OR options in and_all_select %]
+    var cs_and_label = '符合下列「所有」條件：';
+    var cs_or_label  = '符合下列「任一」條件：';
+    cs_reconfigure('custom_search_last_row');
   </script>
+  <script type="text/javascript" src="[% 'js/history.js/native.history.js' FILTER mtime %]"></script>
 </div>
 
 
@@ -118,7 +122,8 @@
       (
       [% indent_level = indent_level + 1 %]
     [% ELSIF condition.f == "CP" %]
-      <input type="hidden" name="f[% cond_num FILTER html %]" value="CP">
+      <input type="hidden" name="f[% cond_num FILTER html %]"
+             id="f[% cond_num FILTER html %]" value="CP">
       )
     [% ELSE %]
       <select name="f[% cond_num FILTER html %]" title="Field"
@@ -162,9 +167,11 @@
   <div class="any_all_select">
     <select name="[% name FILTER html %]" id="[% name FILTER html %]"
             onchange="fix_query_string(this)">
-      <option value="AND">符合以下「所有」條件：</option>
+      <option value="AND">分別符合下列「所有」條件：</option>
       <option value="OR" [% ' selected="selected"' IF selected == "OR" %]>
-        符合以下「任何」條件：</option>
+        分別符合下列「任一」條件：</option>
+      <option value="AND_G" [% ' selected' IF selected == "AND_G" %]>
+        在同一欄位中符合下列「所有」條件：</option>
     </select>
     [% IF with_advanced_link %]
       <a id="custom_search_advanced_controller"
