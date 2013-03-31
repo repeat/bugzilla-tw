@@ -94,21 +94,6 @@
 </table>
 
 [% IF verify_bug_groups %]
-  <h3>認證 [% terms.Bug %] 的群組</h3>
-
-  [% IF old_groups.size %]
-    <p>對 '[% product.name FILTER html %]' 產品而言，這些群組已經無效；或者你不被允許將 [% terms.bugs %] 限制於這些群組中。如果不加入其他群組的話， [%+ terms.Bugs %] 將不再被限制於這些群組，且會變為公開：<br>
-    [% FOREACH group = old_groups %]
-      <input type="checkbox" id="group_[% group.id FILTER html %]"
-             name="groups" disabled="disabled" value="[% group.name FILTER html %]">
-      <label for="group_[% group.id FILTER html %]">
-        [% group.name FILTER html %]: [% group.description FILTER html %]
-      </label>
-      <br>
-    [% END %]
-    </p>
-  [% END %]
-
   [% mandatory_groups = [] %]
   [% optional_groups = [] %]
 
@@ -124,6 +109,24 @@
       [% optional_groups.push(group) %]
     [% END %]
   [% END %]
+
+  [% IF old_groups.size || optional_groups.size || mandatory_groups.size %]
+    <h3>認證 [% terms.Bug %] 的群組</h3>
+  [% END %]
+
+  [% IF old_groups.size %]
+    <p>對 '[% product.name FILTER html %]' 產品而言，這些群組已經無效；或者你不被允許將 [% terms.bugs %] 限制於這些群組中。如果不加入其他群組的話， [%+ terms.Bugs %] 將不再被限制於這些群組，且會變為公開：<br>
+    [% FOREACH group = old_groups %]
+      <input type="checkbox" id="group_[% group.id FILTER html %]"
+             name="groups" disabled="disabled" value="[% group.name FILTER html %]">
+      <label for="group_[% group.id FILTER html %]">
+        [% group.name FILTER html %]: [% group.description FILTER html %]
+      </label>
+      <br>
+    [% END %]
+    </p>
+  [% END %]
+
 
   [% IF optional_groups.size %]
     <p>這些群組是選用的。你可以決定將 [% terms.bugs %] 限制在下列一或多個群組中：<br>
