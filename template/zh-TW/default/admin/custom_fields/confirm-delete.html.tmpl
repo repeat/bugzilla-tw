@@ -19,6 +19,7 @@
 
 [% PROCESS global/header.html.tmpl
            title = title
+           style_urls = ['skins/standard/admin.css']
            doc_section = "custom-fields.html#delete-custom-fields"
 %]
 
@@ -43,7 +44,7 @@
 
 <h2>確認</h2>
 
-<p>
+<p class="confirmation">
   你確定要從資料庫中刪除此自訂欄位嗎？<br>
   <em>此動作僅在該欄位已廢棄，且從未於任何 [% terms.bug FILTER html %] 中使用過，才會成功。</em>
 </p>
