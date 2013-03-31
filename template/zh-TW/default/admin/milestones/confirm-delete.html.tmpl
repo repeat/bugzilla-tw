@@ -18,6 +18,7 @@
 
 [% PROCESS global/header.html.tmpl
   title = title
+  style_urls = ['skins/standard/admin.css']
 %]
 
 <table border="1" cellpadding="4" cellspacing="0">
@@ -52,14 +53,11 @@
 
 [% IF milestone.bug_count %]
 
-  <table border="0" cellpadding="20" width="70%" bgcolor="red">
-  <tr><td>
+  <p class="confirmation">
     在此里程碑中還有 [% milestone.bug_count FILTER none %] 個 [%+ terms.bugs %] ！
     <br>當你刪除此里程碑時，<b><blink>所有</blink></b> [% terms.bugs %] 的里程碑將會被指到
     '[% product.name FILTER html %]' 產品的預設里程碑 [% product.default_milestone FILTER html %] 。
-  </td></tr>
-  </table>
-
+  </p>
 [% END %]
 
 <p>你確定要刪除此里程碑嗎？</p>
