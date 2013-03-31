@@ -128,7 +128,7 @@
                   <b>[% query.value.users.0.identity FILTER html %]</b>
                 [% END %]
             [% ELSE %]
-                [% IF (query.key.length < 3) && !Param('emailsuffix') %]
+                [% IF query.key.length < 3 %]
                   <font color="#FF0000">要搜尋的子字串太短
                   (至少 3 個字元)</font>
                 [% ELSE %]
