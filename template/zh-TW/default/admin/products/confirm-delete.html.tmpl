@@ -184,7 +184,7 @@
 
   [% IF !Param("allowbugdeletion") %]
 
-    <p>很抱歉，此產品還有 [% product.bug_count FILTER html %] 個 [% terms.bugs %] 。
+    <p class="confirmation">很抱歉，此產品還有 [% product.bug_count FILTER html %] 個 [% terms.bugs %] 。
     在你刪除此產品之前，你必須將它[% '們' IF product.bug_count > 1 %]變更至其他產品中。</p>
 
   [% ELSE %]
