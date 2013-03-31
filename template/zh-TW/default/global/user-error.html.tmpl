@@ -699,6 +699,10 @@
     所要求的格式 <em>[% format FILTER html %]</em> 並不是
     <em>[% ctype FILTER html %]</em> 的一種 MIME 類別。
 
+    [% IF invalid %]
+      兩者的參數只能有字母和減號 (-) 。
+    [% END %]
+
   [% ELSIF error == "flag_type_sortkey_invalid" %]
     [% title = "無效的旗標排序鍵" %]
     排序鍵 <em>[% sortkey FILTER html %]</em> 必須是在 0 和
@@ -984,6 +988,7 @@
       [%+ remaining FILTER html %] 次後仍無法輸入正確的密碼，
       你將會有
       [%+ constants.LOGIN_LOCKOUT_INTERVAL FILTER html %] 分鐘無法登入此帳號。
+      如要避免帳號被鎖住，可以用「忘記密碼」的連結來重設密碼。
     [% END %]
 
   [% ELSIF error == "json_rpc_get_method_required" %]
@@ -1496,6 +1501,17 @@
     [% title = "無效的搜尋" %]
     「內容」欄位只能被用於「符合」搜尋，而「符合」搜尋也只能用於「內容」欄位。
 
+  [% ELSIF error == "search_grouped_field_invalid" %]
+    在群組搜尋條件中， [% terms.Bugzilla %] 不支援使用
+    "[%+ field_descs.$field FILTER html %]" ([% field FILTER html %])
+    欄位。
+
+  [% ELSIF error == "search_grouped_invalid_nesting" %]
+    你不能在群組搜尋條件中使用巢狀條件。
+
+  [% ELSIF error == "search_grouped_field_mismatch" %]
+    在群組搜尋中，所有條件必須使用同一欄位。
+
   [% ELSIF error == "search_field_operator_invalid" %]
     [% terms.Bugzilla %] 不支援在
     "[%+ field_descs.$field FILTER html %]" ([% field FILTER html %])
@@ -1601,6 +1617,11 @@
   [% ELSIF error == "unknown_tab" %]
     [% title = "未知的 tab" %]
     <code>[% current_tab_name FILTER html %]</code>並非有效的 tab 名稱。
+
+  [% ELSIF error == "value_inactive" %]
+    [% title = "數值未啟用" %]
+    [% type = BLOCK %][% INCLUDE object_name class = class %][% END %]
+    [% type FILTER html %] 的值 '[% value FILTER html %]' 未啟用。
 
   [% ELSIF error == "version_already_exists" %]
     [% title = "版本已存在" %]
