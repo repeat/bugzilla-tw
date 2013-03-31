@@ -18,6 +18,7 @@
 
 [% PROCESS global/header.html.tmpl
   title = title
+  style_urls = ['skins/standard/admin.css']
 %]
 
 <table border="1" cellpadding="4" cellspacing="0">
@@ -89,7 +90,7 @@
 [% IF comp.bug_count %]
 
   [% IF !Param("allowbugdeletion") %]
-  <p>
+  <p class="confirmation">
     很抱歉，此子產品中還有 [% comp.bug_count %] 個 [%+ terms.bug %]
     等待處理。你必須將它[% '們' IF comp.bug_count > 1 %]分配到其他子產品之後，才能刪除此子產品。
   </p>
