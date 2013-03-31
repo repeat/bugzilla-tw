@@ -13,11 +13,11 @@
 <form method=post action="editclassifications.cgi">
   <table border=0 cellpadding=4 cellspacing=0>
     <tr>
-      <td valign="top">分類：</td>
+      <th align="right">分類：</th>
       <td valign="top" colspan=3>[% classification.name FILTER html %]</td>
 
     </tr><tr>
-      <td valign="top">描述：</td>
+      <th align="right">描述：</th>
       <td valign="top" colspan=3>
         [% IF classification.description %]
           [% classification.description FILTER html_light %]
@@ -27,11 +27,11 @@
       </td>
 
     </tr><tr>
-      <td valign="top">排序鍵：</td>
+      <th align="right">排序鍵：</th>
       <td valign="top" colspan=3>[% classification.sortkey FILTER html %]</td>
 
     </tr><tr>
-      <td valign="top">產品：</td>
+      <th align="right">產品：</th>
       <td valign="top">其他分類</td>
       <td></td>
       <td valign="top">此分類</td>
