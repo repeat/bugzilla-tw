@@ -18,6 +18,7 @@
 
 [% PROCESS global/header.html.tmpl
   title = title
+  style_urls = ['skins/standard/admin.css']
 %]
 
 <table border="1" cellpadding="4" cellspacing="0">
@@ -50,7 +51,7 @@
 <h2>確認</h2>
 
 [% IF version.bug_count %]
-  <p>
+  <p class="confirmation">
   很抱歉，在此版本中還有 [% version.bug_count FILTER none %] 個未解決的 [%+ terms.bugs %] 。<br>
   在刪除這個版本之前，你必須將它[% '們' IF version.bug_count > 1 %]移動至另一個版本。
   </p>
