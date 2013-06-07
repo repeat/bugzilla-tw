@@ -51,7 +51,10 @@
 
   [% END %]
 
+  [% IF author.login == recipient.login %]
 以 [% terms.bug %] 清單檢視： [% urlbase %]buglist.cgi?cmdtype=runnamed&namedcmd=[% query.name FILTER uri %]
+  [% END %]
+  [% END %]
 [% ELSE %]
 
   找不到符合搜尋標準的 [% terms.bugs %] 。
