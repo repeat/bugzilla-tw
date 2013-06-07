@@ -347,23 +347,6 @@ END
     http://cyberelk.net/tim/patchutils/
 END
     no_such_module => "在 CPAN 上找不到叫 ##module## 的 Perl 模組。",
-    ppm_repo_add => <<EOT,
-***********************************************************************
-* 給 Windows 使用者                                                   *
-***********************************************************************
-* 如要安裝以下模組，你必須先以 Administrator （系統管理員）的身份     *
-* 執行以下指令：                                                      *
-*                                                                     *
-*   ppm repo add theory58S ##theory_url##
-EOT
-    ppm_repo_up => <<EOT,
-*                                                                     *
-* 然後你必須要再以 Administrator 的身份執行：                         *
-*                                                                     *
-*   ppm repo up theory58S                                             *
-*                                                                     *
-* 重複以上指令，一直到你在已顯示的列表上方看到 "theory58S" 字樣。     *
-EOT
     template_precompile   => "預先編譯模版中...",
     template_removal_failed => <<END,
 警告：無法移除目錄 '##template_cache##' 。
