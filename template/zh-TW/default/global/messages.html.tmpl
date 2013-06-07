@@ -403,6 +403,8 @@
           [% CASE 'visible_to_me_remove' %]
             <li>此群組已無法看見下列群組的使用者：
               [%+ changes.visible_to_me_remove.join(', ') FILTER html %]</li>
+          [% CASE %]
+            [% Hook.process('group_updated_fields') %]
         [% END %]
       [% END %]
       </ul>
