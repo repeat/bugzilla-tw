@@ -65,9 +65,11 @@
       [% END %]
     </table>
 
-    <p align="left">
-    <a href="[% urlbase FILTER html %]buglist.cgi?cmdtype=runnamed&amp;namedcmd=[% query.name FILTER uri %]">以 [% terms.bug %] 清單檢視</a>
-    </p>
+    [% IF author.login == recipient.login %]
+      <p align="left">
+        <a href="[% urlbase FILTER html %]buglist.cgi?cmdtype=runnamed&amp;namedcmd=[% query.name FILTER uri %]">View as [% terms.bug %] list</a>
+      </p>
+    [% END %]
   [% END %]
 [% ELSE %]
 
