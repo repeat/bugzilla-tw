@@ -94,6 +94,7 @@ END
     feature_mod_perl          => 'mod_perl',
     feature_moving            => 'Move Bugs Between Installations',
     feature_patch_viewer      => 'Patch Viewer',
+    feature_rest              => 'REST Interface',
     feature_smtp_auth         => 'SMTP Authentication',
     feature_smtp_ssl          => 'SSL Support for SMTP',
     feature_updates           => 'Automatic Update Notifications',
@@ -371,7 +372,7 @@ OPTIONAL NOTE: If you want to be able to use the 'difference between two
 patches' feature of Bugzilla (which requires the PatchReader Perl module
 as well), you should install patchutils from:
 
-    http://cyberelk.net/tim/patchutils/
+    http://cyberelk.net/tim/software/patchutils/
 END
     template_precompile   => "Precompiling templates...",
     template_removal_failed => <<END,

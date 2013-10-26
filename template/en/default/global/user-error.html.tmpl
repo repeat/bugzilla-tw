@@ -231,12 +231,12 @@
     valid page identifier.
 
   [% ELSIF error == "bug_access_denied" %]
-    [% title = "Access Denied" %]
+    [% title = "$terms.Bug Access Denied" %]
     [% admindocslinks = {'groups.html' => 'Group Security'} %]
     You are not authorized to access [% terms.bug %] #[% bug_id FILTER html %].
 
   [% ELSIF error == "bug_access_query" %]
-    [% title = "Access Denied" %]
+    [% title = "$terms.Bug Access Denied" %]
     [% docslinks = {'myaccount.html' => 'Creating an account'} %]
     You are not authorized to access [% terms.bug %] #[% bug_id FILTER html %].
     To see this [% terms.bug %], you must
@@ -633,9 +633,14 @@
     <br>Alternately, if your attachment is an image, you could convert
     it to a compressible format like JPG or PNG and try again.
 
-  [% ELSIF error == "flag_requestee_disabled" %]
+  [% ELSIF error == "flag_type_requestee_disabled" %]
     [% title = "Flag not Requestable from Specific Person" %]
     You can't ask a specific person for <em>[% type.name FILTER html %]</em>.
+
+  [% ELSIF error == "flag_requestee_disabled" %]
+    [% title = "Flag Requestee Disabled" %]
+    You can't ask <em>[% requestee.identity FILTER html %]</em> because that
+    account is disabled.
 
   [% ELSIF error == "flag_requestee_needs_privs" %]
     [% title = "Flag Requestee Needs Privileges" %]
@@ -886,6 +891,13 @@
     Your group control combination for group &quot;
     [% groupname FILTER html %]&quot; is illegal.
 
+  [% ELSIF error == "illegal_pronoun" %]
+    [% title = "Illegal Pronoun" %]
+    The pronoun you used ([% pronoun FILTER html %]) is illegal. You must use
+    one of the approved pronouns. Please see
+    <a href="[% docs_urlbase FILTER html %]query.html#pronouns">Pronoun Substitution</a>
+    for a complete list.
+
   [% ELSIF error == "illegal_query_name" %]
     [% title = "Illegal Search Name" %]
     The name of your search cannot contain any of the following characters: 
@@ -995,10 +1007,6 @@
     [% title = "Invalid Parameter" %]
     The new value for [% name FILTER html %] is invalid: [% err FILTER html %].
 
-  [% ELSIF error == "invalid_product_name" %]
-    [% title = "Invalid Product Name" %]
-    The product name '[% product FILTER html %]' is invalid or does not exist.
-
   [% ELSIF error == "invalid_regexp" %]
     [% title = "Invalid regular expression" %]
     The regular expression you entered is invalid.
@@ -1053,6 +1061,11 @@
       the "Forgot Password" link.
     [% END %]
 
+  [% ELSIF error == "invalid_cookies_or_token" %]
+    [% title = "Invalid Cookies or Token" %]
+    The cookies or token provide were not valid or have expired.
+    You may login again to get new cookies or a new token.
+
   [% ELSIF error == "json_rpc_get_method_required" %]
     When using JSON-RPC over GET, you must specify a 'method'
     parameter. See the documentation at
@@ -1076,6 +1089,13 @@
   [% ELSIF error == "json_rpc_post_only" %]
     For security reasons, you must use HTTP POST to call the
     '[% method FILTER html %]' method.
+
+  [% ELSIF error == "rest_invalid_resource" %]
+    A REST API resource was not found for '[% method FILTER html +%] [%+ path FILTER html %]'.
+
+  [% ELSIF error == "get_products_invalid_type" %]
+    The product type '[% type FILTER html %]' is invalid. Valid choices
+    are 'accessible', 'selectable', and 'enterable'.
 
   [% ELSIF error == "keyword_already_exists" %]
     [% title = "Keyword Already Exists" %]
@@ -1279,6 +1299,8 @@
       to modify.
     [% ELSIF action == "view" %]
       to view.
+    [% ELSIF action == 'summarize' %]
+      for viewing time summaries.
     [% END %]
 
   [% ELSIF error == "no_tag_to_edit" %]
@@ -1289,6 +1311,11 @@
     [% title = "No Initial $terms.Bug Status" %]
     No [% terms.bug %] status is available on [% terms.bug %] creation.
     Please report the problem to [% Param("maintainer") %].
+    
+  [% ELSIF error == "no_keywords" %]
+    [% title = "No Keywords" %]
+    [% admindocslinks = {'keywords.html' => 'Setting up a keyword'} %]
+    No keywords have been defined for this installation.
 
   [% ELSIF error == "no_new_quips" %]
     [% title = "No New Quips" %]
@@ -1347,8 +1374,7 @@
       Either you mis-typed the name or that user has not yet registered
       for a [% terms.Bugzilla %] account.
     [% ELSIF class == "Bugzilla::Keyword" %]
-      The legal keyword names are <a href="describekeywords.cgi">listed
-      here</a>.
+      See the list of available <a href="describekeywords.cgi">keywords</a>.
     [% END %]
 
   [% ELSIF error == "old_password_incorrect" %]
@@ -1381,21 +1407,21 @@
     [%+ constants.USER_PASSWORD_MIN_LENGTH FILTER html %] characters long.
 
   [% ELSIF error == "password_not_complex" %]
-     [% title = "Password Fails Requirements" %]
-     [% passregex = Param('password_complexity') %]
-     The password must contain at least one:
-     <ul>
-       [% IF passregex.search('letters') %]
-         <li>UPPERCASE letter</li>
-         <li>lowercase letter</li>
-       [% END %]
-       [% IF passregex.search('numbers') %]
-         <li>digit</li>
-       [% END %]
-       [% IF passregex.search('specialchars') %]
-         <li>special character</li>
-       [% END %]
-     </ul>
+    [% title = "Password Fails Requirements" %]
+    [% passregex = Param('password_complexity') %]
+    The password must contain at least one:
+    <ul>
+      [% IF passregex == 'letters_numbers_specialchars' %]
+        <li>letter</li>
+        <li>special character</li>
+      [% ELSIF passregex.search('letters') %]
+        <li>UPPERCASE letter</li>
+        <li>lowercase letter</li>
+      [% END %]
+      [% IF passregex.search('numbers') %]
+        <li>digit</li>
+      [% END %]
+    </ul>
 
   [% ELSIF error == "product_access_denied" %]
     [% title = "Product Access Denied" %]
@@ -1723,7 +1749,7 @@
 
   [% ELSIF error == "unknown_tab" %]
     [% title = "Unknown Tab" %]
-    <code>[% current_tab_name FILTER html %]</code> is not a legal tab name.
+    There is no tab named <code>[% current_tab_name FILTER html %]</code>.
 
   [% ELSIF error == "value_inactive" %]
     [% title = "Value is Not Active" %]
@@ -1797,6 +1823,11 @@
     [% title = "User Not In Insidergroup" %]
     Sorry, but you are not allowed to (un)mark comments or attachments
     as private.
+
+  [% ELSIF error == "webdot_too_large" %]
+    [% title = "Dependency Graph Too Large" %]
+    The dependency graph contains too many [% terms.bugs %] to display (more
+    than [% constants.MAX_WEBDOT_BUGS FILTER html %] [%+ terms.bugs %]).
 
   [% ELSIF error == "wrong_token_for_cancelling_email_change" %]
     [% title = "Wrong Token" %]

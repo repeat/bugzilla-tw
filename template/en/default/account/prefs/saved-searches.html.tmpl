@@ -31,7 +31,7 @@
 <p>Your saved searches are as follows:</p>
 
 <blockquote>
-  <table border="1" cellpadding="3">  
+  <table id="saved_search_prefs" border="1" cellpadding="3">
     <tr>
       <th>
         Search
@@ -55,6 +55,7 @@
           Share With a Group
         </th>
       [% END %]
+      [% Hook.process('saved-header') %]
     </tr>
     <tr>
       <td>My [% terms.Bugs %]</td>
@@ -79,6 +80,7 @@
           &mdash;
         </td>
       [% END %]
+      [% Hook.process('saved-row') %]
     </tr>
     [% FOREACH q = user.queries %]
       <tr>
@@ -133,6 +135,7 @@
             [% END %]
           </td>
         [% END %]
+        [% Hook.process('saved-row') %]
       </tr>
     [% END %]
   </table>
@@ -146,7 +149,7 @@
 [% IF user.queries_available.size %]
   <p>You may use these searches saved and shared by others:</p>
 
-  <table border="1" cellpadding="3">  
+  <table id="shared_search_prefs" border="1" cellpadding="3">
     <tr>
       <th>
         Search

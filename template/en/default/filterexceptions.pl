@@ -262,16 +262,13 @@
 
 
 'bug/time.html.tmpl' => [
-  'time_unit FILTER format(\'%.1f\')', 
-  'time_unit FILTER format(\'%.2f\')', 
+  "time_unit.replace('0\\Z', '')",
   '(act / (act + rem)) * 100 
        FILTER format("%d")', 
 ],
 
 'bug/process/results.html.tmpl' => [
-  'title.$type', 
-  '"$terms.Bug $id" FILTER bug_link(id)',
-  '"$terms.bug $id" FILTER bug_link(id)',
+  'title.$type.ucfirst',
 ],
 
 'bug/create/create.html.tmpl' => [
@@ -389,8 +386,6 @@
 ],
 
 'admin/flag-type/edit.html.tmpl' => [
-  'type.id', 
-  'type.sortkey || 1',
   'selname',
 ],
 
