@@ -13,21 +13,24 @@
   #%]
 
 <table>
-  <tr>
-    <td colspan="3">
-      請輸入你的密碼以確認帳號設定的變更。
-    </td>
-  </tr>
-  <tr>
-    <th align="right">密碼：</th>
-    <td>
-      <input type="hidden" name="old_login" value="[% user.login FILTER html %]">
-      <input type="password" name="old_password">
-    </td>
-  </tr>
-  <tr>
-    <td colspan="2"><hr></td>
-  </tr>
+  [% IF user.authorizer.can_change_password
+        || (user.authorizer.can_change_email && Param('allowemailchange')) %]
+    <tr>
+      <td colspan="3">
+        請輸入你的密碼以確認帳號設定的變更。
+      </td>
+    </tr>
+    <tr>
+      <th align="right">密碼：</th>
+      <td>
+        <input type="hidden" name="old_login" value="[% user.login FILTER html %]">
+        <input type="password" name="old_password">
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2"><hr></td>
+    </tr>
+  [% END %]
   [% IF user.authorizer.can_change_password %]
     <tr>
       <th align="right">新的密碼：</th>

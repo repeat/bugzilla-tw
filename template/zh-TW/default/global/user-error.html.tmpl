@@ -1287,21 +1287,21 @@
     密碼不得短於 [% constants.USER_PASSWORD_MIN_LENGTH FILTER html %] 字元。
 
   [% ELSIF error == "password_not_complex" %]
-     [% title = "密碼不符合要求" %]
-     [% passregex = Param('password_complexity') %]
-     密碼必須至少包含一個：
-     <ul>
-       [% IF passregex.search('letters') %]
-         <li>大寫字母</li>
-         <li>小寫字母</li>
-       [% END %]
-       [% IF passregex.search('numbers') %]
-         <li>數字</li>
-       [% END %]
-       [% IF passregex.search('specialchars') %]
-         <li>特殊符號</li>
-       [% END %]
-     </ul>
+    [% title = "密碼不符合要求" %]
+    [% passregex = Param('password_complexity') %]
+    密碼必須至少包含一個：
+    <ul>
+      [% IF passregex == 'letters_numbers_specialchars' %]
+        <li>字母</li>
+        <li>特殊字元</li>
+      [% ELSIF passregex.search('letters') %]
+        <li>大寫字母</li>
+        <li>小寫字母</li>
+      [% END %]
+      [% IF passregex.search('numbers') %]
+        <li>數字</li>
+      [% END %]
+    </ul>
 
   [% ELSIF error == "product_access_denied" %]
     [% title = "拒絕存取產品" %]
