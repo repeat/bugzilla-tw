@@ -69,6 +69,9 @@
   [% ELSIF error == "bug_error" %]
     在試圖傳回 [% terms.bug %] [%+ bug.bug_id FILTER html %] 時，傳回錯誤 [% bug.error FILTER html %] 。
 
+  [% ELSIF error == "cancel_token_does_not_exist" %]
+    要取消的 token 不存在。
+
   [% ELSIF error == "chart_data_not_generated" %]
     [% admindocslinks = {'extraconfig.html' => '設定圖表'} %]
     [% IF product %]
@@ -249,6 +252,10 @@
   [% ELSIF error == "invalid_series_id" %]
     [% title = "無效的系列" %]
     系列編號 [% series_id FILTER html %] 無效。可能是該系列已刪除。
+
+  [% ELSIF error == "invalid_timestamp" %]
+    所輸入的時間值 <code>[% timestamp FILTER html %]</code>
+    無法被轉換為合法的日期與時間。
 
   [% ELSIF error == "invalid_webservergroup" %]
     沒有此群組： [% group FILTER html %] 。<br>
