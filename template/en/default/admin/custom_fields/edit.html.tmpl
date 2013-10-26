@@ -1,16 +1,9 @@
-[%# The contents of this file are subject to the Mozilla Public
-  # License Version 1.1 (the "License"); you may not use this file
-  # except in compliance with the License. You may obtain a copy of
-  # the License at http://www.mozilla.org/MPL/
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
   #
-  # Software distributed under the License is distributed on an "AS
-  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  # implied. See the License for the specific language governing
-  # rights and limitations under the License.
-  #
-  # The Original Code is the Bugzilla Bug Tracking System.
-  #
-  # Contributor(s): Frédéric Buclin <LpSolit@gmail.com>
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
   #%]
 
 [%# INTERFACE:
@@ -83,24 +76,17 @@
                  [%- ' checked="checked"' IF field.is_mandatory %]></td>
     </tr>
     <tr>
-      [% IF field.type == constants.FIELD_TYPE_BUG_ID %]
-        <th class="narrow_label">
-          <label for="reverse_desc">Reverse Relationship Description:</label>
-        </th>
-        <td>
-          <input type="text" id="reverse_desc" name="reverse_desc" size="40"
-                 value="[% field.reverse_desc FILTER html %]">
-          <br/>
-          Use this label for the list of [% terms.bugs %] that link to
-          [%+ terms.abug %] with this 
-          [%+ field_types.${constants.FIELD_TYPE_BUG_ID} FILTER html %] field.
-          For example, if the description is "Is a duplicate of",
-          the reverse description would be "Duplicates of this [% terms.bug %]".
-          Leave blank to disable the list for this field.
-        </td>
-      [% ELSE %]
-        <td colspan="2">&nbsp;</td>
-      [% END %]
+      <th class="narrow_label">Long Description:</th>
+      <td>
+        [% INCLUDE global/textarea.html.tmpl
+         name           = 'long_desc'
+         id             = 'long_desc'
+         minrows        = 3
+         maxrows        = 5
+         cols           = 46
+         defaultcontent = field.long_desc
+       %]
+      </td>
       <th>
         <label for="visibility_field_id">Field only appears when:</label>
       </th>
@@ -135,6 +121,25 @@
         </select>
       </td>
     </tr>
+    [% IF field.type == constants.FIELD_TYPE_BUG_ID %]
+      <tr>
+        <th class="narrow_label">
+          <label for="reverse_desc">Reverse Relationship Description:</label>
+        </th>
+        <td>
+          <input type="text" id="reverse_desc" name="reverse_desc" size="40"
+                 value="[% field.reverse_desc FILTER html %]">
+          <br/>
+          Use this label for the list of [% terms.bugs %] that link to
+          [%+ terms.abug %] with this 
+          [%+ field_types.${constants.FIELD_TYPE_BUG_ID} FILTER html %] field.
+          For example, if the description is "Is a duplicate of",
+          the reverse description would be "Duplicates of this [% terms.bug %]".
+          Leave blank to disable the list for this field.
+        </td>
+        <td colspan="2">&nbsp;</td>
+      </tr>
+    [% END %]
     [% IF field.is_select %]
       <tr>
         <th>&nbsp;</th>

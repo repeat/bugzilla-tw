@@ -1,23 +1,9 @@
-[%# The contents of this file are subject to the Mozilla Public
-  # License Version 1.1 (the "License"); you may not use this file
-  # except in compliance with the License. You may obtain a copy of
-  # the License at http://www.mozilla.org/MPL/
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
   #
-  # Software distributed under the License is distributed on an "AS
-  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  # implied. See the License for the specific language governing
-  # rights and limitations under the License.
-  #
-  # The Original Code is the Bugzilla Bug Tracking System.
-  #
-  # The Initial Developer of the Original Code is Netscape Communications
-  # Corporation. Portions created by Netscape are
-  # Copyright (C) 1998 Netscape Communications Corporation. All
-  # Rights Reserved.
-  #
-  # Contributor(s): Myk Melez <myk@mozilla.org>
-  #                 Frédéric Buclin <LpSolit@gmail.com>
-  #                 Max Kanat-Alexander <mkanat@bugzilla.org>
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
   #%]
 
 [%# INTERFACE:
@@ -30,8 +16,6 @@
   #
   # verify_bug_groups: If groups need to be confirmed in addition to fields.
   #%]
-
-[% PROCESS global/variables.none.tmpl %]
 
 [% PROCESS global/header.html.tmpl
   title = 'Verify New Product Details...' %]
@@ -116,7 +100,25 @@
 </table>
 
 [% IF verify_bug_groups %]
-  <h3>Verify [% terms.Bug %] Group</h3>
+  [% mandatory_groups = [] %]
+  [% optional_groups = [] %]
+
+  [% FOREACH gid = product.group_controls.keys %]
+    [% group = product.group_controls.$gid %]
+    [% NEXT UNLESS group.group.is_active %]
+
+    [% IF group.membercontrol == constants.CONTROLMAPMANDATORY
+          || (group.othercontrol ==  constants.CONTROLMAPMANDATORY && !user.in_group(group.group.name)) %]
+      [% mandatory_groups.push(group) %]
+    [% ELSIF (group.membercontrol != constants.CONTROLMAPNA && user.in_group(group.group.name))
+              || group.othercontrol != constants.CONTROLMAPNA %]
+      [% optional_groups.push(group) %]
+    [% END %]
+  [% END %]
+  
+  [% IF old_groups.size || optional_groups.size || mandatory_groups.size %]
+    <h3>Verify [% terms.Bug %] Group</h3>
+  [% END %]
   
   [% IF old_groups.size %]
     <p>These groups are not legal for the '[% product.name FILTER html %]'
@@ -134,21 +136,6 @@
     </p>
   [% END %]
 
-  [% mandatory_groups = [] %]
-  [% optional_groups = [] %]
-
-  [% FOREACH gid = product.group_controls.keys %]
-    [% group = product.group_controls.$gid %]
-    [% NEXT UNLESS group.group.is_active %]
-
-    [% IF group.membercontrol == constants.CONTROLMAPMANDATORY
-          || (group.othercontrol ==  constants.CONTROLMAPMANDATORY && !user.in_group(group.group.name)) %]
-      [% mandatory_groups.push(group) %]
-    [% ELSIF (group.membercontrol != constants.CONTROLMAPNA && user.in_group(group.group.name))
-              || group.othercontrol != constants.CONTROLMAPNA %]
-      [% optional_groups.push(group) %]
-    [% END %]
-  [% END %]
 
   [% IF optional_groups.size %]
     <p>These groups are optional. You can decide to restrict [% terms.bugs %] to
@@ -202,4 +189,3 @@
 [% END %]
 
 [% PROCESS global/footer.html.tmpl %]
-

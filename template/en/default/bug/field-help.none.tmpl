@@ -1,22 +1,9 @@
-[%# The contents of this file are subject to the Mozilla Public
-  # License Version 1.1 (the "License"); you may not use this file
-  # except in compliance with the License. You may obtain a copy of
-  # the License at http://www.mozilla.org/MPL/
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
   #
-  # Software distributed under the License is distributed on an "AS
-  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  # implied. See the License for the specific language governing
-  # rights and limitations under the License.
-  #
-  # The Original Code is the Bugzilla Bug Tracking System.
-  #
-  # The Initial Developer of the Original Code is Netscape Communications
-  # Corporation. Portions created by Netscape are
-  # Copyright (C) 1998 Netscape Communications Corporation. All
-  # Rights Reserved.
-  #
-  # Contributor(s): Gervase Markham <gerv@gerv.net>
-  #                 Max Kanat-Alexander <mkanat@bugzilla.org>
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
   #%]
 
 [%# This file describes both bug fields and search fields.
@@ -91,7 +78,7 @@ estimated_time =>
 
 keywords =>
    "You can add keywords from a defined list to $terms.bugs, in order"
-   _ " to tag and group them.",
+   _ " to easily identify and group them.",
 
 longdesc =>
   "$terms.Bugs have comments added to them by $terms.Bugzilla users."
@@ -149,6 +136,13 @@ short_desc =>
 status_whiteboard =>
   "Each $terms.bug has a free-form single line text entry box for"
   _ " adding tags and status information.",
+
+tag =>
+  "Unlike ${vars.field_descs.keywords} which are global and visible by
+   all users, ${vars.field_descs.tag} are personal and can only be
+   viewed and edited by their author.
+   Editing them won't send any notification to other users. Use them
+   to tag and keep track of ${terms.bugs}.",
 
 target_milestone =>
    "The $vars.field_descs.target_milestone field is used to define when the"
@@ -220,13 +214,17 @@ email1 =>
 
   [%# Add help for custom fields. %]
   [% IF !vars.help_html.${help_field}.defined %]
-    [% SET field_type = bug_fields.${help_field}.type %]
-    [% field_type_desc = BLOCK -%]
-      [% field_types.$field_type FILTER html %]
-    [%- END %]
-    [% vars.help_html.${help_field} = 
-      "A custom $field_type_desc field in this installation"
-      _ " of ${terms.Bugzilla}." %]
+    [% IF bug_fields.${help_field}.long_desc %]
+      [% vars.help_html.${help_field} = bug_fields.${help_field}.long_desc %]
+    [% ELSE %]
+      [% SET field_type = bug_fields.${help_field}.type %]
+      [% field_type_desc = BLOCK -%]
+        [% field_types.$field_type FILTER html %]
+      [%- END %]
+      [% vars.help_html.${help_field} = 
+        "A custom $field_type_desc field in this installation"
+        _ " of ${terms.Bugzilla}." %]
+    [% END %]
   [% END %]
 
   [%# Add help for the search types, for query.cgi. %]

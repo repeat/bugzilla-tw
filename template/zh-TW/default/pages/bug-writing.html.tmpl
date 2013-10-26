@@ -1,31 +1,10 @@
-[%# The contents of this file are subject to the Mozilla Public
-  # License Version 1.1 (the "License"); you may not use this file
-  # except in compliance with the License. You may obtain a copy of
-  # the License at http://www.mozilla.org/MPL/
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
   #
-  # Software distributed under the License is distributed on an "AS
-  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  # implied. See the License for the specific language governing
-  # rights and limitations under the License.
-  #
-  # The Original Code is the Bugzilla Bug Tracking System.
-  #
-  # The Initial Developer of the Original Code is Netscape Communications
-  # Corporation. Portions created by Netscape are
-  # Copyright (C) 1998 Netscape Communications Corporation. All
-  # Rights Reserved.
-  #
-  # Contributor(s): Eli Goldberg <eli@prometheus-music.com>
-  #                 Gervase Markham <gerv@gerv.net>
-  #                 Vera Horiuchi
-  #                 Claudius Gayle
-  #                 Peter Mock
-  #                 Chris Pratt
-  #                 Tom Schutter
-  #                 Chris Yeh
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
   #%]
-
-[% PROCESS "global/field-descs.none.tmpl" %]
 
 [% INCLUDE global/header.html.tmpl title = "$terms.Bug 回報寫作技巧" %]
 
@@ -66,9 +45,9 @@
     此欄位為必填。點選「子產品」可以看見每項子產品的描述。如果沒有適當的子產品，試著尋找「一般」子產品。
     </p>
 
-    <p><b>作業系統：</b>在哪個作業系統發現的？（例如 Linux 、 Windows XP 、 Mac OS X 。）<br>
+    <p><b>[% field_descs.op_sys FILTER html %]：</b>在哪個作業系統發現的？（例如 Linux 、 Windows XP 、 Mac OS X 。）<br>
     如果你知道這個 [% terms.bug %] 會發生在多種作業系統，選擇<em>[% display_value("op_sys", "全部 (All)") FILTER html %]</em> 。
-    如果你的作業系統不在清單上，選擇<em>[% display_value("op_sys", "其他 (Other)") FILTER html %]</em> 。</p>
+    如果你的[% field_descs.op_sys FILTER html %]不在清單上，選擇<em>[% display_value("op_sys", "其他 (Other)") FILTER html %]</em> 。</p>
 
     <p><b>摘要：</b>你如何以少於 60 個字元的長度，來描述這個 [% terms.bug %] ？<br>
     一個好的摘要應該能夠<b>快速並獨一無二地識別 [% terms.bug %] 的回報。</b>
@@ -118,7 +97,7 @@
 </pre>
       </blockquote>
 
-      <p><b>build 日期以及硬體平台：</b>第一次遇到這個 [% terms.bug %] 時，硬體平台的 build 以及日期。</p>
+      <p><b>build 日期以及[% field_descs.rep_platform FILTER html %]：</b>第一次遇到這個 [% terms.bug %] 時，[% field_descs.rep_platform FILTER html %]的 build 以及日期。</p>
 
       <blockquote>
 <pre>

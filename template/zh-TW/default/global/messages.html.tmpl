@@ -1,31 +1,14 @@
-[%# The contents of this file are subject to the Mozilla Public
-  # License Version 1.1 (the "License"); you may not use this file
-  # except in compliance with the License. You may obtain a copy of
-  # the License at http://www.mozilla.org/MPL/
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
   #
-  # Software distributed under the License is distributed on an "AS
-  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  # implied. See the License for the specific language governing
-  # rights and limitations under the License.
-  #
-  # The Original Code is the Bugzilla Bug Tracking System.
-  #
-  # The Initial Developer of the Original Code is Netscape Communications
-  # Corporation. Portions created by Netscape are
-  # Copyright (C) 1998 Netscape Communications Corporation. All
-  # Rights Reserved.
-  #
-  # Contributor(s): Gervase Markham <gerv@gerv.net>
-  #                 Max Kanat-Alexander <mkanat@bugzilla.org>
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
   #%]
 
 [%# This is a list of all the possible messages. Please keep them in
   # alphabetical order by message tag, and leave a blank line between messages.
   #%]
-
-[% PROCESS global/variables.none.tmpl %]
-
-[% PROCESS "global/field-descs.none.tmpl" %]
 
 [% message_tag = message %]
 
@@ -56,9 +39,9 @@
             [% ELSIF field == 'cryptpassword' %]
               已設定新密碼。
             [% ELSIF field == 'disabledtext' %]
-              已修改停用文字。
+              已修改「無法使用此帳號登入」文字。
             [% ELSIF field == 'is_enabled' %]
-              此使用者已[% otheruser.is_enabled ? '啟用' : '停用' %]。
+              已[% otheruser.is_enabled ? '可' : '無法' %]使用此帳號登入。
             [% ELSIF field == 'extern_id' %]
               已修改使用者的外部登入帳號。
             [% ELSIF field == 'disable_mail' %]
@@ -109,7 +92,7 @@
     已成功刪除使用者 [% otheruser.login FILTER html %] 。
 
   [% ELSIF message_tag == "account_disabled" %]
-    使用者帳號 [% account FILTER html %] 已停用，所以你無法變更他的密碼。
+    已無法使用 [% account FILTER html %] 此帳號登入，所以你無法變更他的密碼。
 
   [% ELSIF message_tag == "attachment_creation_failed" %]
     成功建立 [% terms.bug %] ，但無法建立附件。
@@ -208,7 +191,7 @@
         <li>預設負責人已更新為 '[% comp.default_assignee.login FILTER html %]'</li>
       [% END %]
       [% IF changes.initialqacontact.defined %]
-        [% IF comp.default_qa_contact.id %]
+        [% IF comp.default_qa_contact %]
           <li>預設 QA 連絡人已更新為 '[% comp.default_qa_contact.login FILTER html %]'</li>
         [% ELSE %]
           <li>已刪除預設 QA 連絡人</li>
@@ -269,8 +252,6 @@
 
   [% ELSIF message_tag == "extension_created" %]
     已在 [% path FILTER html %] 新增名為 [% name FILTER html %] 的附加元件。
-    請確認你已在程式中將 "YOUR NAME" 和 "YOUR EMAL ADDRESS" 更換成
-    你的姓名和電子郵件地址。
 
   [% ELSIF message_tag == "field_value_created" %]
     [% title = "已建立新的欄位值" %]
@@ -422,6 +403,8 @@
           [% CASE 'visible_to_me_remove' %]
             <li>此群組已無法看見下列群組的使用者：
               [%+ changes.visible_to_me_remove.join(', ') FILTER html %]</li>
+          [% CASE %]
+            [% Hook.process('group_updated_fields') %]
         [% END %]
       [% END %]
       </ul>
@@ -468,7 +451,7 @@
     [% title = "已登出" %]
     [% url = "index.cgi?GoAheadAndLogIn=1" %]
     [% link = "再次登入。" %]
-    <b>你已經登出</b>。記錄你登入的 cookie 已刪除。將會在需要帳號密碼時再次要求登入。
+    <b>你已經成功登出</b>。記錄你登入的 cookie 已刪除。將會在需要帳號密碼時再次要求登入。
 
   [% ELSIF message_tag == "login_changed" %]
     [% title = "$terms.Bugzilla 帳號已變更" %]
@@ -766,8 +749,7 @@
 
   [% ELSIF message_tag == "product_created" %]
     [% title = "已建立產品" %]
-    已建立產品 <em>[% product.name FILTER html %]</em> 。在此產品輸入 [% terms.bugs %]
-    之前，你必須<a href="editcomponents.cgi?action=add&product=[% product.name FILTER uri %]">新增至少一項子產品</a>。
+    已建立產品 <em>[% product.name FILTER html %]</em> 。
 
   [% ELSIF message_tag == "product_deleted" %]
     [% title = "已刪除產品" %]
@@ -783,6 +765,15 @@
   [% ELSIF message_tag == "remaining_time_zeroed" %]
     由於已將此 [% terms.bug %] 關閉，或只是將它從其中一種關閉的狀態變更為另一種，因此
     [% field_descs.remaining_time FILTER html %] 欄位已自動設為 0 。
+
+  [% ELSIF message_tag == "report_created" %]
+    已建立名稱為 <em>[% reportname FILTER html %]</em> 的新報告。
+
+  [% ELSIF message_tag == "report_deleted" %]
+    已刪除名稱為 <em>[% reportname FILTER html %]</em> 的報告。
+
+  [% ELSIF message_tag == "report_updated" %]
+    已更新名稱為 <em>[% reportname FILTER html %]</em> 的報告。
 
   [% ELSIF message_tag == "sanitycheck" %]
     [%# We use this way to call sanitycheck-specific messages so that
@@ -805,7 +796,7 @@
 
   [% ELSIF message_tag == "sudo_ended" %]
     [% title = "已結束 sudo" %]
-      已結束 sudo 。接下來你所做的任何動作，都是以你自己的身份進行。
+      已結束 sudo 。接下來所做的動作將影響自己的帳號。
 
   [% ELSIF message_tag == "series_created" %]
     [% title = "系列已新增" %]
@@ -827,18 +818,6 @@
     [% IF userid %]
       <p>為了安全起見，你已被自動登出。記錄你登入的 cookie 已刪除。
     [% END %]
-
-  [% ELSIF message_tag == "tag_updated" %]
-    [% title = "已更新標籤" %]
-    已對 [% terms.bugs %]
-    [%+ buglist.join(", ") FILTER html %]
-    [% IF action == "add" %]
-      新增
-    [% ELSE %]
-      移除
-    [% END %]
-    '<a href="buglist.cgi?tag=[% tag FILTER uri %]">[% tag FILTER html %]</a>'
-    標籤。
 
   [% ELSIF message_tag == "term" %]
     [% terms.$term FILTER html %]

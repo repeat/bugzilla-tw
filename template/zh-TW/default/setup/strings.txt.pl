@@ -1,20 +1,9 @@
-# The contents of this file are subject to the Mozilla Public
-# License Version 1.1 (the "License"); you may not use this file
-# except in compliance with the License. You may obtain a copy of
-# the License at http://www.mozilla.org/MPL/
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Software distributed under the License is distributed on an "AS
-# IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-# implied. See the License for the specific language governing
-# rights and limitations under the License.
-#
-# The Initial Developer of the Original Code is Everything Solved.
-# Portions created by Everything Solved are Copyright (C) 2007
-# Everything Solved. All Rights Reserved.
-#
-# The Original Code is the Bugzilla Bug Tracking System.
-#
-# Contributor(s): Max Kanat-Alexander <mkanat@bugzilla.org>
+# This Source Code Form is "Incompatible With Secondary Licenses", as
+# defined by the Mozilla Public License, v. 2.0.
 
 # This file contains a single hash named %strings, which is used by the
 # installation code to display strings before Template-Toolkit can safely
@@ -102,9 +91,11 @@ END
     feature_moving => '在不同機器間搬移 Bugs',
     feature_patch_viewer => 'Patch Viewer',
     feature_smtp_auth => 'SMTP 認證',
+    feature_smtp_ssl => 'SMTP 的 SSL 支援',
     feature_updates => '自動更新通知',
     feature_xmlrpc => 'XML-RPC 介面',
     feature_detect_charset    => '自動偵測文字附件的字元編碼',
+    feature_typesniffer       => '對附件的 MIME 類別做探測(sniff)',
 
     file_remove => '移除 ##name## 中...',
     file_rename => '將 ##from## 更名為 ##to## 中...',
@@ -356,23 +347,6 @@ END
     http://cyberelk.net/tim/patchutils/
 END
     no_such_module => "在 CPAN 上找不到叫 ##module## 的 Perl 模組。",
-    ppm_repo_add => <<EOT,
-***********************************************************************
-* 給 Windows 使用者                                                   *
-***********************************************************************
-* 如要安裝以下模組，你必須先以 Administrator （系統管理員）的身份     *
-* 執行以下指令：                                                      *
-*                                                                     *
-*   ppm repo add theory58S ##theory_url##
-EOT
-    ppm_repo_up => <<EOT,
-*                                                                     *
-* 然後你必須要再以 Administrator 的身份執行：                         *
-*                                                                     *
-*   ppm repo up theory58S                                             *
-*                                                                     *
-* 重複以上指令，一直到你在已顯示的列表上方看到 "theory58S" 字樣。     *
-EOT
     template_precompile   => "預先編譯模版中...",
     template_removal_failed => <<END,
 警告：無法移除目錄 '##template_cache##' 。

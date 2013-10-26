@@ -1,16 +1,9 @@
-[%# The contents of this file are subject to the Mozilla Public
-  # License Version 1.1 (the "License"); you may not use this file
-  # except in compliance with the License. You may obtain a copy of
-  # the License at http://www.mozilla.org/MPL/
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
   #
-  # Software distributed under the License is distributed on an "AS
-  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  # implied. See the License for the specific language governing
-  # rights and limitations under the License.
-  #
-  # The Original Code is the Bugzilla Bug Tracking System.
-  #
-  # Contributor(s): Gavin Shelley <bugzilla@chimpychompy.org>
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
   #%]
 
 [%# INTERFACE:
@@ -201,7 +194,7 @@
 
   [% IF !Param("allowbugdeletion") %]
 
-    <p>Sorry, there
+    <p class="confirmation">Sorry, there
 
     [% IF product.bug_count > 1 %]
       are [% product.bug_count FILTER html %] [%+ terms.bugs %]
@@ -231,7 +224,7 @@
             is 1 [% terms.bug %]
           [% END %]
           entered for this product!  When you delete this
-          product, <b><blink>ALL</blink></b> stored [% terms.bugs %] and
+          product, <b>ALL</b> stored [% terms.bugs %] and
           their history will be deleted, too.
         </td>
       </tr>

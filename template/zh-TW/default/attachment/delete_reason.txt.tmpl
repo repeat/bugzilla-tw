@@ -1,31 +1,18 @@
-[%# The contents of this file are subject to the Mozilla Public
-  # License Version 1.1 (the "License"); you may not use this file
-  # except in compliance with the License. You may obtain a copy of
-  # the License at http://www.mozilla.org/MPL/
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
   #
-  # Software distributed under the License is distributed on an "AS
-  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  # implied. See the License for the specific language governing
-  # rights and limitations under the License.
-  #
-  # The Original Code is the Bugzilla Bug Tracking System.
-  #
-  # Contributor(s): Frédéric Buclin <LpSolit@gmail.com>
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
   #%]
 
 [%# INTERFACE:
   # attachment: object of the attachment the user wants to delete.
   # reason: string; The reason provided by the user.
-  # date: the date when the request to delete the attachment was made.
   #%]
 
-附件 [% attachment.id %] 的內容已被 [%+ user.identity %] 刪除。
-[% IF reason %]
-刪除原因為：
+附件 [% attachment.id %] 的內容已被刪除
+[%~ IF reason %]，原因為：
 
 [%+ reason %]
-[% ELSE %]
-並未說明刪除原因。
 [% END %]
-
-用來刪除此附件的 token 產生於 [% date FILTER time %] 。

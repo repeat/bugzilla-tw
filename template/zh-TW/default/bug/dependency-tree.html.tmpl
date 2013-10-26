@@ -1,27 +1,10 @@
-[%# The contents of this file are subject to the Mozilla Public
-  # License Version 1.1 (the "License"); you may not use this file
-  # except in compliance with the License. You may obtain a copy of
-  # the License at http://www.mozilla.org/MPL/
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
   #
-  # Software distributed under the License is distributed on an "AS
-  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  # implied. See the License for the specific language governing
-  # rights and limitations under the License.
-  #
-  # The Original Code is the Bugzilla Bug Tracking System.
-  #
-  # The Initial Developer of the Original Code is Netscape Communications
-  # Corporation. Portions created by Netscape are
-  # Copyright (C) 1998 Netscape Communications Corporation. All
-  # Rights Reserved.
-  #
-  # Contributor(s): Tobias Burnus <burnus@net-b.de>
-  #                 Ville Skyttä <ville.skytta@iki.fi>
-  #                 Myk Melez <myk@mozilla.org>
-  #                 André Batosti <batosti@async.com.br>
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
   #%]
-
-[% PROCESS 'global/field-descs.none.tmpl' %]
 
 [% filtered_desc = blocked_tree.$bugid.short_desc FILTER html %]
 [% PROCESS global/header.html.tmpl
@@ -80,11 +63,27 @@
     [% END %]
   </h3>
   [% IF ids.size %]
-    ([% IF maxdepth -%]最多到 [% maxdepth %] 層 |[% END -%]<a
-     href="buglist.cgi?bug_id=[% ids.join(",") %]">以 [% terms.bug %] 清單方式瀏覽</a>
-    [% IF user.in_group('editbugs') && ids.size > 1 %]
-      | <a href="buglist.cgi?bug_id=[% ids.join(",") %]&amp;tweak=1">變更多個</a>
-    [% END %])
+    [%# 27 chars is the length of buglist.cgi?tweak=&bug_id=" %]
+    [% use_post = (ids.join(",").length > constants.CGI_URI_LIMIT - 27 ) ? 1 : 0 %]
+    [% IF use_post %]
+      <form action="buglist.cgi" method="post">
+      <input type="hidden" name="bug_id" value="[% ids.join(",") %]">
+    [% END %]
+
+    [% IF maxdepth -%]最多到 [% maxdepth %] 層 | [% END -%]
+    [% IF use_post %]
+      <button>以 [% terms.bug %] 清單方式瀏覽</button>
+      [% IF user.in_group('editbugs') && ids.size > 1 %]
+        | <button type="submit" name="tweak" value="1">變更多個</button>
+      [% END %]
+      </form>
+    [% ELSE %]
+      <a href="buglist.cgi?bug_id=[% ids.join(",") %]">以 [% terms.bug %] 清單方式瀏覽</a>
+      [% IF user.in_group('editbugs') && ids.size > 1 %]
+        | <a href="buglist.cgi?bug_id=[% ids.join(",") %]&amp;tweak=1">變更多個</a>
+      [% END %]
+    [% END %]
+
     <ul class="tree">
       [% INCLUDE display_tree tree=$tree_name %]
     </ul>
@@ -219,7 +218,7 @@
    <td>
    <form method="get" action="showdependencytree.cgi"
          style="display: inline; margin: 0px;">
-     [%# Limit entry form: the button can not do anything when total depth
+     [%# Limit entry form: the button cannot do anything when total depth
          is less than two, so disable it %]
      <input name="maxdepth" size="4" maxlength="4" value="[%
          maxdepth > 0 && maxdepth <= realdepth ? maxdepth : ""

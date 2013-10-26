@@ -1,24 +1,9 @@
-[%# The contents of this file are subject to the Mozilla Public
-  # License Version 1.1 (the "License"); you may not use this file
-  # except in compliance with the License. You may obtain a copy of
-  # the License at http://www.mozilla.org/MPL/
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
   #
-  # Software distributed under the License is distributed on an "AS
-  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  # implied. See the License for the specific language governing
-  # rights and limitations under the License.
-  #
-  # The Original Code is the Bugzilla Bug Tracking System.
-  #
-  # The Initial Developer of the Original Code is Netscape Communications
-  # Corporation. Portions created by Netscape are
-  # Copyright (C) 1998 Netscape Communications Corporation. All
-  # Rights Reserved.
-  #
-  # Contributor(s): Gervase Markham <gerv@gerv.net>
-  #                 Vaskin Kissoyan <vkissoyan@yahoo.com>
-  #                 Vitaly Harisov <vitaly@rathedg.com>
-  #                 Svetlana Harisova <light@rathedg.com>
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
   #%]
 
 [%# INTERFACE:
@@ -110,12 +95,8 @@
     [% SET yui = yui_resolve_deps(yui, yui_deps) %]
     [% SET css_sets = css_files(style_urls, yui, yui_css) %]
 
-    [%# CSS cascade, part 1: Standard Bugzilla stylesheet set (persistent).
-      # Always present.
-      #%]
-    [%# This allows people to switch back to the "Classic" skin if they
-      # are in another skin. 
-      #%]
+    [%# CSS cascade, parts 1 & 2: YUI & Standard Bugzilla stylesheet set (persistent).
+      # Always present. %]
     <link href="[% 'skins/standard/global.css' FILTER mtime FILTER html %]"
           rel="alternate stylesheet" 
           title="[% setting_descs.standard FILTER html %]">
@@ -123,22 +104,12 @@
       [% PROCESS format_css_link css_set_name = 'standard' %]
     [% END %]
 
-    [%# CSS cascade, part 2 & 3: Third-party stylesheet set (selected and
-      # selectable). All third-party skins are present as alternate
-      # stylesheets, even if they are not currently in use.
-      #%]
+    [%# CSS cascade, part 3: Third-party stylesheet set, per user prefs. %]
     [% FOREACH style_url = css_sets.skin %]
       [% PROCESS format_css_link css_set_name = user.settings.skin.value %]
     [% END %]
 
-    [% FOREACH alternate_skin = css_sets.alternate.keys %]
-      [% FOREACH style_url = css_sets.alternate.$alternate_skin %]
-        [% PROCESS format_css_link css_set_name = alternate_skin %]
-      [% END %]
-    [% END %]
-
-    [%# CSS cascade, part 4: page-specific styles.
-      #%]
+    [%# CSS cascade, part 4: page-specific styles. %]
     [% IF style %]
       <style type="text/css">
         [% style %]
@@ -249,7 +220,7 @@
   #%]
 
   <body onload="[% onload %]"
-        class="[% urlbase.replace('^https?://','').replace('/$','').replace('[-~@:/.]+','-') %]
+        class="[% urlbase.replace('^https?://','').replace('/$','').replace('[-~@:/.]+','-') FILTER css_class_quote %]
                [% FOREACH class = bodyclasses %]
                  [% ' ' %][% class FILTER css_class_quote %]
                [% END %] yui-skin-sam">
@@ -311,7 +282,7 @@
 [% END %]
 
 [% IF message %]
-<div id="message">[% message %]</div>
+  <div id="message">[% message %]</div>
 [% END %]
 
 [% BLOCK format_css_link %]
@@ -323,26 +294,15 @@
         #%]
   [% END %]
 
-  [% IF css_set_name == 'standard'
-       OR css_set_name == user.settings.skin.value
-  %]
-    [% SET css_rel = 'stylesheet' %]
-    [% SET css_set_display_name = setting_descs.${user.settings.skin.value}
-                                  || user.settings.skin.value %]
-  [% ELSE %]
-    [% SET css_rel = 'alternate stylesheet' %]
-    [% SET css_set_display_name = setting_descs.$css_set_name || css_set_name %]
-  [% END %]
-
   [% IF css_set_name == 'standard' %]
     [% SET css_title_link = '' %]
   [% ELSE %]
     [% css_title_link = BLOCK ~%]
-      title="[% css_set_display_name FILTER html %]"
+      title="[% setting_descs.${user.settings.skin.value} || user.settings.skin.value FILTER html %]"
     [% END %]
   [% END %]
 
-  <link href="[% style_url FILTER html %]" rel="[% css_rel FILTER none %]"
+  <link href="[% style_url FILTER html %]" rel="stylesheet"
         type="text/css" [% css_title_link FILTER none %]>
 
   [% '<![endif]-->' IF style_url.match('/IE-fixes\.css') %]

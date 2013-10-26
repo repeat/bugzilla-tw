@@ -1,23 +1,9 @@
-[%# The contents of this file are subject to the Mozilla Public
-  # License Version 1.1 (the "License"); you may not use this file
-  # except in compliance with the License. You may obtain a copy of
-  # the License at http://www.mozilla.org/MPL/
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
   #
-  # Software distributed under the License is distributed on an "AS
-  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  # implied. See the License for the specific language governing
-  # rights and limitations under the License.
-  #
-  # The Original Code is the Bugzilla Bug Tracking System.
-  #
-  # The Initial Developer of the Original Code is Netscape Communications
-  # Corporation. Portions created by Netscape are
-  # Copyright (C) 1998 Netscape Communications Corporation. All
-  # Rights Reserved.
-  #
-  # Contributor(s): Gervase Markham <gerv@gerv.net>
-  #                 Frédéric Buclin <LpSolit@gmail.com>
-  #                 Max Kanat-Alexander <mkanat@bugzilla.org>
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
   #%]
 
 [%# INTERFACE:
@@ -38,8 +24,6 @@
   # Note: be aware of uniqueness of error string parameter value, since
   # nobody can guarantee the hook files processing order in the future.
   #%]
-
-[% PROCESS global/variables.none.tmpl %]
 
 [% PROCESS "global/field-descs.none.tmpl" %]
 
@@ -82,9 +66,13 @@
 
   [% ELSIF error == "alias_in_use" %]
     [% title = "別名使用中" %]
-    [% terms.Bug %] [% bug_id FILTER bug_link(bug_id) FILTER none %]
+    [% IF user.can_see_bug(bug_id) %]
+      [% terms.Bug %] [%+ bug_id FILTER bug_link(bug_id) FILTER none %]
+    [% ELSE %]
+      另一個 [% terms.bug %]
+    [% END %]
     已使用別名 <em>[% alias FILTER html %]</em> 。
-    請選擇另一個別名。
+    請選擇其他的別名。
 
   [% ELSIF error == "alias_is_numeric" %]
     [% title = "別名不能全為數字" %]
@@ -226,6 +214,10 @@
     [% title = "附件已移除" %]
     你嘗試讀取的附件已被移除。
 
+  [% ELSIF error == "bad_page_cgi_id" %]
+    [% title = "無效的頁面編號" %]
+    頁面編號 <code>[% page_id FILTER html %]</code> 並非有效的頁面編號。
+
   [% ELSIF error == "bug_access_denied" %]
     [% title = "沒有瀏覽權限" %]
     [% admindocslinks = {'groups.html' => '群組安全性'} %]
@@ -246,7 +238,9 @@
       網址必須以 "http" 或 "https" 開頭。
     [% ELSIF reason == 'path_only' %]
       你必須輸入完整的網址。
-    [% ELSIF reason == 'show_bug' %]
+    [% ELSIF reason == 'id' %]
+      在網址中沒有有效的 [% terms.bug %] 編號。
+    [% ELSE %]
       [%+ field_descs.see_also FILTER html %] 的網址應該指到以下其中一個地方：
       <ul>
         <li>已安裝的 [% terms.Bugzilla %] 中的 <code>show_bug.cgi</code> 。</li>
@@ -257,9 +251,9 @@
         <li>已安裝 Trac 中的 ticket 。</li>
         <li>已安裝 MantisBT 中的 b[% %]ug 。</li>
         <li>在 sourceforge.net 的 b[% %]ug 。</li>
+        <li>在 github.com 中的 issue 。</li>
+        [% Hook.process('bug_url_invalid_tracker') %]
       </ul>
-    [% ELSIF reason == 'id' %]
-      在網址中沒有有效的 [% terms.bug %] 編號。
     [% END %]
 
   [% ELSIF error == "bug_url_too_long" %]
@@ -294,9 +288,11 @@
 
   [% ELSIF error == "comment_required" %]
     [% title = "需要意見" %]
-    [% IF old && new %]
+    [% IF old.defined && new.defined %]
       當把一個 [% terms.bug %] 的狀態從
-      [% old.name FILTER html %] 變更為 [% new.name FILTER html %]
+      [% (old || "（空白）") FILTER html %]
+      變更為
+      [% (new || "（空白）") FILTER html %]
       時，你必須提供<b>意見</b>。
     [% ELSIF new %]
       你必須提供這個 [% terms.bug %] 的描述。
@@ -354,6 +350,11 @@
     [% title = BLOCK %]子產品已有 [% terms.Bugs %][% END %]
     此子產品內已經有 [% nb FILTER html %] 個 [% terms.bugs %] ！
     在刪除子產品之前，你必須將 [% terms.bugs %] 重新分配到其他的子產品。
+
+  [% ELSIF error == "component_is_last" %]
+    [% title = BLOCK %]此產品中的最後一個子產品[% END %]
+    '[% comp.name FILTER html %]' 是
+    '[% comp.product.name FILTER html %]' 產品中的最後一個子產品。你無法刪除它。
 
   [% ELSIF error == "component_name_too_long" %]
     [% title = "子產品名稱過長" %]
@@ -414,13 +415,8 @@
     [% title = "變更電子郵件進行中" %]
     變更電子郵件進行中，請檢查你的電子郵件信箱。
 
-  [% ELSIF error == "email_confirmation_failed" %]
-    [% title = "電子郵件確認失敗" %]
-    電子郵件確認失敗。
-
-  [% ELSIF error == "email_no_text_plain" %]
-    你的電子郵件並未包含任何文字。 [% terms.Bugzilla %] 不允許只有
-    HTML 的電子郵件，也不允許夾帶附件而沒有內容的 HTML 電子郵件。
+  [% ELSIF error == "email_no_body" %]
+    你的電子郵件並未包含任何文字，或者無法解析出文字。
 
   [% ELSIF error == "empty_group_description" %]
     [% title = "不允許群組描述空白" %]
@@ -438,6 +434,10 @@
   [% ELSIF error == "extension_create_no_name" %]
     因此程式需要，你必須替你的附加元件命名，以做為參數。
 
+  [% ELSIF error == "extension_disabled" %]
+    [% title = "附加元件已停用" %]
+    你無法瀏覽此頁面，因為附加元件 '[% name FILTER html %]' 已停用。
+
   [% ELSIF error == "extension_first_letter_caps" %]
     你的附加元件名稱的第一個字母必須為大寫。
     （你指定的是 '[% name FILTER html %]' 。）
@@ -449,6 +449,14 @@
     [% IF existing_login_name %]
        ([% existing_login_name FILTER html %])
     [% END %]。
+
+  [% ELSIF error == "feature_disabled" %]
+    這台機器上的 [% terms.Bugzilla %] 並不允許 [% install_string("feature_$feature") FILTER html %]
+    這項功能。
+    [% IF user.in_group('admin') %]
+      如果你想要啟用此項功能，請執行
+      <kbd>checksetup.pl</kbd> 以確認啟用此功能所必須要的最低需求。
+    [% END %]
 
   [% ELSIF error == "field_already_exists" %]
     [% title = "欄位已存在" %]
@@ -472,6 +480,11 @@
   [% ELSIF error == "field_invalid_sortkey" %]
     [% title = "無效的欄位排序鍵" %]
     你所指定的欄位排序鍵 [% sortkey FILTER html %] 並非有效的正整數。
+
+  [% ELSIF error == "field_long_desc_too_long" %]
+    [% title = "較長的描述欄位內容太長" %]
+    你對此欄位所提供的較長的描述內容比
+    [% constants.MAX_FIELD_LONG_DESC_LENGTH FILTER html %] 字元還長。
 
   [% ELSIF error == "field_missing_description" %]
     [% title = "缺少欄位描述" %]
@@ -551,7 +564,8 @@
   [% ELSIF error == "fieldvalue_sortkey_invalid" %]
     [% title = "無效的欄位值排序鍵" %]
     欄位 '[% field.description FILTER html %]' 的排序鍵
-    '[% sortkey FILTER html %]' 並非有效的（正）整數。
+    '[% sortkey FILTER html %]' 必須為 0 和
+    [% constants.MAX_SMALLINT FILTER none %] 之間的整數。
 
   [% ELSIF error == "fieldvalue_still_has_bugs" %]
     [% title = "無法刪除此欄位值" %]
@@ -582,6 +596,10 @@
     [%+ max_limit.nsort.last FILTER html %] KB 。<br>
     我們建議你將附件儲存在其他地方，然後在適當的文字欄位貼上網址做為附件。
     <br>如果你的附件是圖片的話，你可以先將它轉換為 JPG 或 PNG 格式，然後再試一次。
+
+  [% ELSIF error == "flag_requestee_disabled" %]
+    [% title = "無法要求特定的人設定旗標" %]
+    你不能要求特定的人設定 <em>[% type.name FILTER html %]</em> 。
 
   [% ELSIF error == "flag_requestee_needs_privs" %]
     [% title = "旗標設定者需要權限" %]
@@ -680,6 +698,10 @@
     [% title = "找不到格式" %]
     所要求的格式 <em>[% format FILTER html %]</em> 並不是
     <em>[% ctype FILTER html %]</em> 的一種 MIME 類別。
+
+    [% IF invalid %]
+      兩者的參數只能有字母和減號 (-) 。
+    [% END %]
 
   [% ELSIF error == "flag_type_sortkey_invalid" %]
     [% title = "無效的旗標排序鍵" %]
@@ -857,10 +879,8 @@
       [% IF bug_id %]無效的[% ELSE %]缺少[% END %] [% terms.Bug %] 編號
     [% END %]
     [% IF bug_id %]
-      '[% bug_id FILTER html %]'並非有效的 [% terms.bug %] 編號
-      [% IF Param("usebugaliases") %]
-        ，也不是 [% terms.bug %] 的別名
-      [% END %]。
+      '[% bug_id FILTER html %]'並非有效的 [% terms.bug %]
+      編號，也不是 [% terms.bug %] 的別名。
     [% ELSE %]
       [% IF field %]
         欄位 '[% field_descs.$field FILTER html %]' 不得空白。
@@ -887,6 +907,10 @@
     [% title = "無效的資料組" %]
     <em>[% datasets.join(":") FILTER html %]</em> 是無效的資料組。僅允許數字、英文字母以及冒號 (:)。
 
+  [% ELSIF error == "invalid_dimensions" %]
+    [% title = "無效的維度" %]
+    所指定的寬度或高度並非正整數。
+
   [% ELSIF error == "invalid_format" %]
     [% title = "無效的格式" %]
     格式 "[% format FILTER html %]" 無效。必須是
@@ -901,6 +925,9 @@
   [% ELSIF error == "invalid_group_name" %]
     [% title = "無效的群組名稱" %]
     你所指定的群組名稱 [% name FILTER html %] 無效。
+
+  [% ELSIF error == "invalid_keyword_id" %]
+    找不到關鍵字編號 <em>[% id FILTER html %]</em> 。
 
   [% ELSIF error == "invalid_maxrows" %]
     [% title = "無效的最大列數" %]
@@ -917,6 +944,16 @@
   [% ELSIF error == "invalid_regexp" %]
     [% title = "無效的正規表達式" %]
     你所輸入的正規表達式無效。
+
+  [% ELSIF error == "invalid_user" %]
+    [% title = "無效的使用者" %]
+    [% IF user_id %]
+      沒有帳號為 <em>[% user_id FILTER html %]</em> 的使用者。
+    [% ELSIF user_login %]
+      沒有帳號為 <em>[% user_login FILTER html %]</em> 的使用者。
+    [% ELSE %]
+      並未輸入使用者帳號。
+    [% END %]
 
   [% ELSIF error == "invalid_user_group" %]
     [% title = "無效的使用者群組" %]
@@ -951,6 +988,7 @@
       [%+ remaining FILTER html %] 次後仍無法輸入正確的密碼，
       你將會有
       [%+ constants.LOGIN_LOCKOUT_INTERVAL FILTER html %] 分鐘無法登入此帳號。
+      如要避免帳號被鎖住，可以用「忘記密碼」的連結來重設密碼。
     [% END %]
 
   [% ELSIF error == "json_rpc_get_method_required" %]
@@ -1049,9 +1087,17 @@
     [% title = "日期順序錯誤" %]
     你的開始日期 ([% datefrom FILTER html %]) 晚於結束日期 ([% dateto FILTER html %])。
 
+  [% ELSIF error == "mismatched_bug_ids_on_obsolete" %]
+    附件 [% attach_id FILTER html %] （[% description FILTER html %]）是附加在 [% terms.bug %]
+    [%+ attach_bug_id FILTER html %] 的附件，但在對 [% terms.bug %]
+    [%+ my_bug_id FILTER html %] 新增附件時，你嘗試將它標記為「已廢棄的附件」。
+
   [% ELSIF error == "missing_attachment_description" %]
     [% title = "缺少附件描述" %]
     你必須為附件輸入描述。
+
+  [% ELSIF error == "missing_bug_id" %]
+    並未輸入 [% terms.bug %] 編號。
 
   [% ELSIF error == "missing_category" %]
     [% title = "缺少分類" %]
@@ -1072,10 +1118,6 @@
   [% ELSIF error == "missing_content_type" %]
     [% title = "未指定 MIME 類別" %]
      你要求 [% terms.Bugzilla %] 自動偵測 MIME 類別，但在上傳檔案的時候你的瀏覽器並未指明 MIME 類別，因此你必須手動輸入。
-
-  [% ELSIF error == "missing_content_type_method" %]
-    [% title = "缺少 MIME 類別偵測方式" %]
-    你必須自下列選項中選擇一種偵測 MIME 類別的方式：<em>自動偵測</em>、<em>自清單中選擇</em>或是<em>手動輸入</em>。
 
   [% ELSIF error == "missing_cookie" %]
     [% title = "缺少 cookie" %]
@@ -1100,7 +1142,7 @@
     [% title = "缺少搜尋" %]
     [% docslinks = {'query.html' => "搜尋 $terms.bugs",
                     'query.html#list' => "$terms.Bug 清單"} %]
-    名稱是 <em>[% queryname FILTER html %]</em> 的搜尋
+    名稱是 <em>[% name FILTER html %]</em> 的搜尋
     [% IF sharer_id && sharer_id != user.id %]
       並未對你公開。
     [% ELSE %]
@@ -1133,6 +1175,10 @@
     [% title = "需要智語" %]
     [% docslinks = {'quips.html' => '關於智語'} %]
     請在文字欄輸入智語。
+
+  [% ELSIF error == "need_quipid" %]
+    [% title = "需要智語編號" %]
+    需要輸入有效的智語編號。
 
   [% ELSIF error == "new_password_missing" %]
     [% title = "未輸入新的密碼" %]
@@ -1214,8 +1260,8 @@
     [% END %]
 
   [% ELSIF error == "old_password_incorrect" %]
-    [% title = "不正確的舊密碼" %]
-    你並未正確地輸入舊的密碼。
+    [% title = "不正確的密碼" %]
+    你並未正確地輸入密碼。
 
   [% ELSIF error == "old_password_required" %]
     [% title = "需要輸入舊密碼" %]
@@ -1351,6 +1397,26 @@
     [% title = "查詢名稱過長" %]
     查詢名稱的長度不得超過 [% constants.MAX_LEN_QUERY_NAME FILTER html %] 字元。
 
+  [% ELSIF error == "quicksearch_invalid_query" %]
+    [% title = "無效的搜尋" %]
+    輸入的搜尋無效。
+    [% IF operators %]
+      [% operators.shift FILTER html %] 運算子不能放在
+      [%+ operators.shift FILTER html %] 後面。
+    [% ELSE %]
+      搜尋不能以 AND 或 OR 開頭，也不能以 AND 、 OR 或 NOT 結尾。它們是系統保留的運算子。
+      如果你要搜尋這些字串的話，請以引號 (") 將字串包起來。
+    [% END %]
+
+  [% ELSIF error == "quicksearch_unbalanced_quotes" %]
+    [% title = "搜尋格式不正確" %]
+    [% terms.Bugzilla %] 無法正確解析你所輸入的搜尋字串：
+    <em>[% string FILTER html %]</em><br>
+    如果你用引號 (") 包覆字串，請確認引號開頭和結尾都有出現。
+    如果你想要搜尋的字串中含有引號時，請在引號前加上反斜線 (\) 。
+    例如，<em>"I'm so \"special\", really"</em>（有引號）就會被解析為要搜尋
+    <em>I'm so "special", really</em> 。
+
   [% ELSIF error == "quicksearch_unknown_field" %]
     [% title = "快速搜尋發生錯誤" %]
     你的搜尋發生問題：
@@ -1367,6 +1433,11 @@
         <a href="id=quicksearch.html#fields">列於此處</a>。</p>
     [% END %]
 
+  [% ELSIF error == "quip_too_long" %]
+    [% title = "智語過長" %]
+    你輸入了長度為 [% length FILTER none %] 字元的智語，但是允許的智語長度為
+    [% constants.MAX_QUIP_LENGTH FILTER none %] 字元。
+
   [% ELSIF error == "reassign_to_empty" %]
     [% title = "無效的重新分配" %]
     要重新分配 [% terms.bug %] ，你必須輸入新的負責人的電子郵件地址。
@@ -1375,6 +1446,21 @@
     [% title = "偵測到關係迴圈" %]
     [% terms.bug %] [%+ bug_id FILTER html %] 的 [% field_descs.$field_name FILTER html %]
     對 [% terms.bug %] [%+ dep_id FILTER html %] 的依賴關係是個迴圈。
+
+  [% ELSIF error == "report_axis_invalid" %]
+    <em>[% val FILTER html %]</em> 對
+    [%+ IF    fld == "x" %] X 軸
+    [%+ ELSIF fld == "y" %] Y 軸
+    [%+ ELSIF fld == "z" %]多表格／多圖
+    [%+ ELSE %]一份報告的座標[% END %]而言，並非有效的值。
+
+  [% ELSIF error == "report_name_missing" %]
+    [% title = "未指定報告名稱" %]
+    你必須為報告指定一個名稱。
+
+  [% ELSIF error == "report_access_denied" %]
+    [% title = "拒絕存取" %]
+    你無法瀏覽此報告。
 
   [% ELSIF error == "request_queue_group_invalid" %]
     群組欄位 <em>[% group FILTER html %]</em> 無效。
@@ -1415,6 +1501,17 @@
     [% title = "無效的搜尋" %]
     「內容」欄位只能被用於「符合」搜尋，而「符合」搜尋也只能用於「內容」欄位。
 
+  [% ELSIF error == "search_grouped_field_invalid" %]
+    在群組搜尋條件中， [% terms.Bugzilla %] 不支援使用
+    "[%+ field_descs.$field FILTER html %]" ([% field FILTER html %])
+    欄位。
+
+  [% ELSIF error == "search_grouped_invalid_nesting" %]
+    你不能在群組搜尋條件中使用巢狀條件。
+
+  [% ELSIF error == "search_grouped_field_mismatch" %]
+    在群組搜尋中，所有條件必須使用同一欄位。
+
   [% ELSIF error == "search_field_operator_invalid" %]
     [% terms.Bugzilla %] 不支援在
     "[%+ field_descs.$field FILTER html %]" ([% field FILTER html %])
@@ -1436,7 +1533,11 @@
 
   [% ELSIF error == "still_unresolved_bugs" %]
     [% title = "未解決的依賴關係" %]
-    [% terms.Bug %] [%+ bug_id FILTER bug_link(bug_id) FILTER none %]
+    [% IF bug_id %]
+      [% terms.Bug %] [%+ bug_id FILTER bug_link(bug_id) FILTER none %]
+    [% ELSE %]
+      這個 [% terms.bug %]
+    [% END %]
     還有 [% dep_count FILTER none %] 個未解決的依賴關係。在你將此
     [% terms.bug %] 設定為 [% display_value("resolution", "FIXED") FILTER html %]
     之前，必須解決這些 [% terms.bugs %] 或者把它們從 "[% field_descs.dependson FILTER html %]"
@@ -1503,7 +1604,8 @@
     [% ELSIF type == "account" %]
       帳號
     [% END %]
-    token 速度過快。請過一陣子再試。
+    token 速度過快。
+    請過 [% constants.ACCOUNT_CHANGE_INTERVAL FILTER html %] 分鐘後再試。
 
   [% ELSIF error == "unknown_action" %]
     [% IF action %]
@@ -1515,6 +1617,11 @@
   [% ELSIF error == "unknown_tab" %]
     [% title = "未知的 tab" %]
     <code>[% current_tab_name FILTER html %]</code>並非有效的 tab 名稱。
+
+  [% ELSIF error == "value_inactive" %]
+    [% title = "數值未啟用" %]
+    [% type = BLOCK %][% INCLUDE object_name class = class %][% END %]
+    [% type FILTER html %] 的值 '[% value FILTER html %]' 未啟用。
 
   [% ELSIF error == "version_already_exists" %]
     [% title = "版本已存在" %]
@@ -1529,6 +1636,11 @@
     [% title = BLOCK %]版本中還有 [% terms.Bugs %][% END %]
     這個版本中還有 [% nb FILTER html %] 個 [% terms.bugs %]！
     在刪除此版本前，你必須將這些 [% terms.bugs %] 重新分配至另一個版本。
+
+  [% ELSIF error == "version_is_last" %]
+    [% title = BLOCK %]此產品的最後一個版本[% END %]
+    '[% version.name FILTER html %]' 是
+    '[% version.product.name FILTER html %]' 產品的最後一個版本。你無法刪除它。
 
   [% ELSIF error == "users_deletion_disabled" %]
     [% title = "未開啟刪除功能" %]
@@ -1591,8 +1703,8 @@
 
   [% ELSIF error == "xmlrpc_illegal_content_type" %]
     使用 XML-RPC 時，你不能將資料以
-    [%+ content_type FILTER html %] 格式傳送。只允許
-    text/xml 和 application/xml 。
+    [%+ content_type FILTER html %] 格式傳送。只允許以下格式（以逗號分隔）：
+    [% constants.XMLRPC_CONTENT_TYPE_WHITELIST.join(', ') FILTER html %] 。
 
   [% ELSIF error == "zero_length_file" %]
     [% title = "0 字元的檔案" %]
@@ -1660,7 +1772,7 @@
 
     [% FOREACH q = Bugzilla.user.queries %]
       [% IF q.name == namedcmd %]
-        或是<a href="query.cgi?[% q.url FILTER uri %]">編輯</a>
+        或是<a href="query.cgi?[% q.url FILTER html %]">編輯</a>
       [% END %]
     [% END %]
 

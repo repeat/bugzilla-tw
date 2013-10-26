@@ -1,30 +1,10 @@
-[%# The contents of this file are subject to the Mozilla Public
-  # License Version 1.1 (the "License"); you may not use this file
-  # except in compliance with the License. You may obtain a copy of
-  # the License at http://www.mozilla.org/MPL/
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
   #
-  # Software distributed under the License is distributed on an "AS
-  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  # implied. See the License for the specific language governing
-  # rights and limitations under the License.
-  #
-  # The Original Code is the Bugzilla Bug Tracking System.
-  #
-  # The Initial Developer of the Original Code is Netscape Communications
-  # Corporation. Portions created by Netscape are
-  # Copyright (C) 1998 Netscape Communications Corporation. All
-  # Rights Reserved.
-  #
-  # Contributor(s): Gervase Markham <gerv@gerv.net>
-  #                 Ville Skyttä <ville.skytta@iki.fi>
-  #                 Shane H. W. Travis <travis@sedsystems.ca>
-  #                 Marc Schumann <wurblzap@gmail.com>
-  #                 Akamai Technologies <bugzilla-dev@akamai.com>
-  #                 Max Kanat-Alexander <mkanat@bugzilla.org>
-  #                 Frédéric Buclin <LpSolit@gmail.com>
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
   #%]
-
-[% PROCESS "global/field-descs.none.tmpl" %]
 
 [% title = BLOCK %]Enter [% terms.Bug %]: [% product.name FILTER html %][% END %]
 
@@ -122,30 +102,31 @@ function set_assign_to() {
             }
         [% END %]
 
-        // First, we disable all flags. Then we re-enable those
-        // which are available for the selected component.
-        var inputElements = document.getElementsByTagName("select");
-        var inputElement, flagField;
-        for ( var i=0 ; i<inputElements.length ; i++ ) {
-            inputElement = inputElements.item(i);
-            if (inputElement.name.search(/^flag_type-(\d+)$/) != -1) {
-                var id = inputElement.name.replace(/^flag_type-(\d+)$/, "$1");
-                inputElement.disabled = true;
-                // Also hide the requestee field, if it exists.
-                inputElement = document.getElementById("requestee_type-" + id);
-                if (inputElement)
-                  YAHOO.util.Dom.addClass(inputElement.parentNode, 'bz_default_hidden');
+        // We show or hide the available flags depending on the selected component.
+        var flag_rows = YAHOO.util.Dom.getElementsByClassName('bz_flag_type', 'tbody');
+        for (var i = 0; i < flag_rows.length; i++) {
+            // Each flag table row should have one flag form select element
+            // We get the flag type id from the id attribute of the select.
+            var flag_select = YAHOO.util.Dom.getElementsByClassName('flag_select', 
+                                                                    'select', 
+                                                                    flag_rows[i])[0];
+            var type_id = flag_select.id.split('-')[1];
+            var can_set = flag_select.options.length > 1 ? 1 : 0;
+            var show = 0;
+            // Loop through the allowed flag ids for the selected component
+            // and if we match, then show the row, otherwise hide the row.
+            for (var j = 0; j < flags[index].length; j++) {
+                if (flags[index][j] == type_id) {
+                    show = 1;
+                    break;
+                }
             }
-        }
-        // Now enable flags available for the selected component.
-        for (var i = 0; i < flags[index].length; i++) {
-            flagField = document.getElementById("flag_type-" + flags[index][i]);
-            // Do not enable flags the user cannot set nor request.
-            if (flagField && flagField.options.length > 1) {
-                flagField.disabled = false;
-                // Re-enabling the requestee field depends on the status
-                // of the flag.
-                toggleRequesteeField(flagField, 1);
+            if (show && can_set) {
+                flag_select.disabled = false;
+                YAHOO.util.Dom.removeClass(flag_rows[i], 'bz_default_hidden');
+            } else {
+                flag_select.disabled = true;
+                YAHOO.util.Dom.addClass(flag_rows[i], 'bz_default_hidden');
             }
         }
     }
@@ -251,7 +232,7 @@ TUI_hide_default('attachment_text_field');
       <script type="text/javascript">
        <!--
          [%+ INCLUDE "bug/field-events.js.tmpl" 
-                    field = bug_fields.component %]
+                     field = bug_fields.component, product = product %]
        //-->
        </script>
     </td>
@@ -303,7 +284,7 @@ TUI_hide_default('attachment_text_field');
        bug = default, field = bug_fields.op_sys, editable = 1, 
        value = default.op_sys %]
   </tr>
-  [% IF !Param('defaultplatform') || !Param('defaultopsys') %]
+  [% IF (!Param('defaultplatform') || !Param('defaultopsys')) && !cloned_bug_id %]
     <tr>
       <th colspan="3">&nbsp;</th>
       <td id="os_guess_note" class="comment">
@@ -352,9 +333,8 @@ TUI_hide_default('attachment_text_field');
 
     <td>&nbsp;</td>
     [%# Calculate the number of rows we can use for flags %]
-    [% num_rows = 6 + (Param("useqacontact") ? 1 : 0) +
-                      (user.is_timetracker ? 3 : 0) +
-                      (Param("usebugaliases") ? 1 : 0)
+    [% num_rows = 7 + (Param("useqacontact") ? 1 : 0) +
+                      (user.is_timetracker ? 3 : 0)
     %]
 
     <td rowspan="[% num_rows FILTER html %]">
@@ -464,7 +444,6 @@ TUI_hide_default('attachment_text_field');
   </tr>
 [% END %]
 
-[% IF Param("usebugaliases") %]
   <tr>
     [% INCLUDE "bug/field-label.html.tmpl"
       field = bug_fields.alias editable = 1
@@ -473,7 +452,6 @@ TUI_hide_default('attachment_text_field');
       <input name="alias" size="20" value="[% alias FILTER html %]">
     </td>
   </tr>
-[% END %]
 
   <tr>
     [% INCLUDE "bug/field-label.html.tmpl"
@@ -622,8 +600,8 @@ TUI_hide_default('attachment_text_field');
       <tr>
         [% INCLUDE bug/field.html.tmpl
            bug = default, field = bug_fields.keywords, editable = 1,
-           value = keywords, desc_url = "describekeywords.cgi",
-           value_span = 2
+           value = keywords, possible_values = all_keywords,
+           desc_url = "describekeywords.cgi", value_span = 2
         %]
       </tr>
     [% END %]

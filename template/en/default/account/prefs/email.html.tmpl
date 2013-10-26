@@ -1,23 +1,9 @@
-[%# The contents of this file are subject to the Mozilla Public
-  # License Version 1.1 (the "License"); you may not use this file
-  # except in compliance with the License. You may obtain a copy of
-  # the License at http://www.mozilla.org/MPL/
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
   #
-  # Software distributed under the License is distributed on an "AS
-  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  # implied. See the License for the specific language governing
-  # rights and limitations under the License.
-  #
-  # The Original Code is the Bugzilla Bug Tracking System.
-  #
-  # The Initial Developer of the Original Code is Netscape Communications
-  # Corporation. Portions created by Netscape are
-  # Copyright (C) 1998 Netscape Communications Corporation. All
-  # Rights Reserved.
-  #
-  # Contributor(s): Gervase Markham <gerv@gerv.net>
-  #                 Myk Melez <myk@mozilla.org>
-  #                 Shane H. W. Travis <travis@sedsystems.ca>
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
   #%]
 
 [%# INTERFACE:
@@ -33,7 +19,20 @@
   #               receiving mail for that reason when in that role.
   #%]
 
-[% PROCESS global/variables.none.tmpl %]
+[%# If the user's bugmail has been disabled by admins, show a warning. %]
+[% IF user.email_disabled %]
+  <div class="warningmessages">
+    Your [% terms.bug %]mail has been disabled by the [% terms.Bugzilla %]
+    administrator.  Please contact [% Param('maintainer') %] to enable
+    [%+ terms.bug %]mails.
+  </div>
+[% END %]
+
+<p>
+  If you want to change your e-mail address <b>[% user.email FILTER html %]</b>
+  to which [% terms.Bugzilla %] sends notifications, click the "Account
+  Information" tab above.
+</p>
 
 <p>
   If you don't like getting a notification for "trivial"
@@ -48,7 +47,7 @@ function SetCheckboxes(setting) {
     var theinput = document.userprefsform.elements[count];
     if (theinput.type == "checkbox" && !theinput.disabled) {
       if (theinput.name.match("neg")) {
-        theinput.checked = false;
+        theinput.checked = !setting;
       }
       else {
         theinput.checked = setting;
@@ -119,6 +118,8 @@ document.write('<input type="button" value="Disable All Mail" onclick="SetCheckb
       description = "A new $terms.bug is created" },
     { id = constants.EVT_OPENED_CLOSED,
       description = "The $terms.bug is resolved or reopened" },
+    { id = constants.EVT_COMPONENT,
+      description = "The product or component changes" },
     { id = constants.EVT_PROJ_MANAGEMENT,
       description = "The priority, status, severity, or milestone changes" },
     { id = constants.EVT_COMMENT,

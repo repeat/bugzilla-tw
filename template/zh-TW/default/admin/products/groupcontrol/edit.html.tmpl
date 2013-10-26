@@ -1,24 +1,10 @@
-[%# The contents of this file are subject to the Mozilla Public
-  # License Version 1.1 (the "License"); you may not use this file
-  # except in compliance with the License. You may obtain a copy of
-  # the License at http://www.mozilla.org/MPL/
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
   #
-  # Software distributed under the License is distributed on an "AS
-  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  # implied. See the License for the specific language governing
-  # rights and limitations under the License.
-  #
-  # The Original Code is the Bugzilla Bug Tracking System.
-  #
-  # The Initial Developer of the Original Code is Netscape Communications
-  # Corporation. Portions created by Netscape are
-  # Copyright (C) 1998 Netscape Communications Corporation. All
-  # Rights Reserved.
-  #
-  # Contributor(s): Joel Peshkin <bugreport@peshkin.net>
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
   #%]
-
-[% PROCESS global/variables.none.tmpl %]
 
 [% title = BLOCK %]
     編輯 [% product.name FILTER html %] 的群組控管
@@ -27,124 +13,116 @@
    title = title
 %]
 
-<form method="post" action="editproducts.cgi">
-  <input type="hidden" name="action" value="updategroupcontrols">
-  <input type="hidden" name="product" value="[% product.name FILTER html %]">
-  <input type="hidden" name="token" value="[% token FILTER html %]">
-  <input type="hidden" name="classification"
-         value="[% classification.name FILTER html %]">
+[% display_headers = 1 %]
+[% FOREACH group = product.group_controls(1).values.sort("name") %]
+  [% NEXT UNLESS group.group.isactive OR group.bug_count %]
+  [% IF display_headers %]
+    [% display_headers = 0 %]
+    <form method="post" action="editproducts.cgi">
+      <input type="hidden" name="action" value="updategroupcontrols">
+      <input type="hidden" name="product" value="[% product.name FILTER html %]">
+      <input type="hidden" name="token" value="[% token FILTER html %]">
 
-  <table id="form" cellspacing="0" cellpadding="4" border="1">
-    <tr bgcolor="#6666ff">
-      <th>群組</th>
-      <th>ENTRY</th>
-      <th>成員控管</th>
-      <th>其他控管</th>
-      <th>CANEDIT</th>
-      <th>editcomponents</th>
-      <th>canconfirm</th>
-      <th>editbugs</th>
-      <th>[% terms.Bugs %]</th>
-    </tr>
-    [% FOREACH group = product.group_controls(1).values.sort("name") %]
-      [% IF !group.group.isactive AND group.bug_count %]
-        <tr bgcolor="#bbbbbb">
-          <td>
-            [% group.group.name FILTER html %]
-          </td>
-          <td align="center" colspan=7>
-            停用
-          </td>
-          <td>
-            [% group.bug_count FILTER html %]
-          </td>
-        <tr>
-      [% ELSIF group.isactive != 0 %]
-        <tr>
-          <td>
-            [% group.group.name FILTER html %]
-          </td>
-          <td>
-            <input type=checkbox value=1 name=entry_[% group.id %]
-            [% " checked=\"checked\"" IF group.entry %]>
-          </td>
-          <td>
-            <select name="membercontrol_[% group.id %]">
-              <option value=[% constants.CONTROLMAPNA %]
-                [% " selected=\"selected\""
-                  IF group.membercontrol == constants.CONTROLMAPNA %]
-                >不適用 (NA)
-              </option>
-              <option value=[% constants.CONTROLMAPSHOWN %]
-                [% " selected=\"selected\""
-                  IF group.membercontrol == constants.CONTROLMAPSHOWN %]
-                >顯示 (SHOWN)
-              </option>
-              <option value=[% constants.CONTROLMAPDEFAULT %]
-                [% " selected=\"selected\""
-                  IF group.membercontrol == constants.CONTROLMAPDEFAULT %]
-                >預設 (DEFAULT)
-              </option>
-              <option value=[% constants.CONTROLMAPMANDATORY %]
-                [% " selected=\"selected\""
-                  IF group.membercontrol == constants.CONTROLMAPMANDATORY %]
-                >強制 (MANDATORY)
-              </option>
-            </select>
-          </td>
-          <td>
-            <select name="othercontrol_[% group.id %]">
-              <option value=[% constants.CONTROLMAPNA %]
-                [% " selected=\"selected\""
-                  IF group.othercontrol == constants.CONTROLMAPNA %]
-                >不適用 (NA)
-              </option>
-              <option value=[% constants.CONTROLMAPSHOWN %]
-                [% " selected=\"selected\""
-                  IF group.othercontrol == constants.CONTROLMAPSHOWN %]
-                >顯示 (SHOWN)
-              </option>
-              <option value=[% constants.CONTROLMAPDEFAULT %]
-                [% " selected=\"selected\""
-                  IF group.othercontrol == constants.CONTROLMAPDEFAULT %]
-                >預設 (DEFAULT)
-              </option>
-              <option value=[% constants.CONTROLMAPMANDATORY %]
-                [% " selected=\"selected\""
-                  IF group.othercontrol == constants.CONTROLMAPMANDATORY %]
-                >強制 (MANDATORY)
-              </option>
-            </select>
-          </td>
-          <td>
-            <input type=checkbox value=1 name=canedit_[% group.id %]
-            [% " checked=\"checked\"" IF group.canedit %]>
-          </td>
-          <td>
-            <input type=checkbox value=1 name=editcomponents_[% group.id %]
-            [% " checked=\"checked\"" IF group.editcomponents %]>
-          </td>
-          <td>
-            <input type=checkbox value=1 name=canconfirm_[% group.id %]
-            [% " checked=\"checked\"" IF group.canconfirm %]>
-          </td>
-          <td>
-            <input type=checkbox value=1 name=editbugs_[% group.id %]
-            [% " checked=\"checked\"" IF group.editbugs %]>
-          </td>
-          <td>
-            [% group.bug_count || 0 FILTER html %]
-          </td>
+      <table id="form" cellspacing="0" cellpadding="4" border="1">
+        <tr bgcolor="#6666ff">
+          <th>群組</th>
+          <th>Entry</th>
+          <th>成員控管</th>
+          <th>其他控管</th>
+          <th>Canedit</th>
+          <th>editcomponents</th>
+          <th>canconfirm</th>
+          <th>editbugs</th>
+          <th>[% terms.Bugs %]</th>
         </tr>
-      [% END %]
-    [% END %]
 
-  </table>
-  <br>
-  <input type=submit name="submit" value="送出">
-  <br>
-</form>
+  [% END %]
+  [% IF !group.group.isactive %]
+    <tr bgcolor="#bbbbbb">
+      <td>[% group.group.name FILTER html %]</td>
+      <td align="center" colspan="7">停用</td>
+      <td>[% group.bug_count FILTER html %]</td>
+    </tr>
+  [% ELSE %]
+    <tr>
+      <td>[% group.group.name FILTER html %]</td>
+      <td>
+        <input type=checkbox value=1 name=entry_[% group.id %]
+          [% " checked='checked'" IF group.entry %]>
+      </td>
+      <td>
+        <select name="membercontrol_[% group.id %]">
+          <option value=[% constants.CONTROLMAPNA %]
+            [% " selected='selected'" IF group.membercontrol == constants.CONTROLMAPNA %]
+            >不適用 (NA)
+          </option>
+          <option value=[% constants.CONTROLMAPSHOWN %]
+            [% " selected='selected'" IF group.membercontrol == constants.CONTROLMAPSHOWN %]
+            >顯示 (Shown)
+          </option>
+          <option value=[% constants.CONTROLMAPDEFAULT %]
+            [% " selected='selected'" IF group.membercontrol == constants.CONTROLMAPDEFAULT %]
+            >預設 (Default)
+          </option>
+          <option value=[% constants.CONTROLMAPMANDATORY %]
+            [% " selected='selected'" IF group.membercontrol == constants.CONTROLMAPMANDATORY %]
+            >強制 (Mandatory)
+          </option>
+        </select>
+      </td>
+      <td>
+        <select name="othercontrol_[% group.id %]">
+          <option value=[% constants.CONTROLMAPNA %]
+            [% " selected='selected'" IF group.othercontrol == constants.CONTROLMAPNA %]
+            >不適用 (NA)
+          </option>
+          <option value=[% constants.CONTROLMAPSHOWN %]
+            [% " selected='selected'" IF group.othercontrol == constants.CONTROLMAPSHOWN %]
+            >顯示 (Shown)
+          </option>
+          <option value=[% constants.CONTROLMAPDEFAULT %]
+            [% " selected='selected'" IF group.othercontrol == constants.CONTROLMAPDEFAULT %]
+            >預設 (Default)
+          </option>
+          <option value=[% constants.CONTROLMAPMANDATORY %]
+            [% " selected='selected'" IF group.othercontrol == constants.CONTROLMAPMANDATORY %]
+            >強制 (Mandatory)
+          </option>
+        </select>
+      </td>
+      <td>
+        <input type=checkbox value=1 name=canedit_[% group.id %]
+        [% " checked='checked'" IF group.canedit %]>
+      </td>
+      <td>
+        <input type=checkbox value=1 name=editcomponents_[% group.id %]
+        [% " checked='checked'" IF group.editcomponents %]>
+      </td>
+      <td>
+        <input type=checkbox value=1 name=canconfirm_[% group.id %]
+        [% " checked='checked'" IF group.canconfirm %]>
+      </td>
+      <td>
+        <input type=checkbox value=1 name=editbugs_[% group.id %]
+        [% " checked='checked'" IF group.editbugs %]>
+      </td>
+      <td>[% group.bug_count || 0 FILTER html %]</td>
+    </tr>
+  [% END %]
+[% END %]
 
+[% IF display_headers %]
+  <p>沒有適合產品的群組。
+  [% IF user.in_group('creategroups') %]
+    <a href="editgroups.cgi?action=add">建立新群組</a>
+  [% END %]
+  </p>
+[% ELSE %]
+    </table>
+    <br>
+    <input type=submit name="submit" value="送出">
+  </form>
+[% END %]
 
 <p>
   這些設定控制此項產品和群組的關係。
@@ -308,4 +286,3 @@
   顯示 (SHOWN) 等等〕將會產生錯誤訊息。
 </p>
 [% PROCESS global/footer.html.tmpl %]
-

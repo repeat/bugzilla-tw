@@ -1,21 +1,9 @@
-[%# The contents of this file are subject to the Mozilla Public
-  # License Version 1.1 (the "License"); you may not use this file
-  # except in compliance with the License. You may obtain a copy of
-  # the License at http://www.mozilla.org/MPL/
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
   #
-  # Software distributed under the License is distributed on an "AS
-  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  # implied. See the License for the specific language governing
-  # rights and limitations under the License.
-  #
-  # The Original Code is the Bugzilla Bug Tracking System.
-  #
-  # The Initial Developer of the Original Code is Netscape Communications
-  # Corporation. Portions created by Netscape are
-  # Copyright (C) 1998 Netscape Communications Corporation. All
-  # Rights Reserved.
-  #
-  # Contributor(s): Gervase Markham <gerv@gerv.net>
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
   #%]
 
 [%# INTERFACE:
@@ -31,8 +19,6 @@
   # Note that you must explicitly filter every single template variable
   # in this file; if you do not wish to change it, use the "none" filter.
   #%]
-
-[% PROCESS "global/field-descs.none.tmpl" %]
 
 [% DEFAULT title = "Internal Error" %]
 
@@ -53,11 +39,6 @@
   [% ELSIF error == "authres_unhandled" %]
     The result value of [% value FILTER html %] was not handled by
     the login code.
-
-  [% ELSIF error == "bad_page_cgi_id" %]
-    [% title = "Invalid Page ID" %]
-    The ID <code>[% page_id FILTER html %]</code> is not a
-    valid page identifier.
 
   [% ELSIF error == "bad_arg" %]
     Bad argument <code>[% argument FILTER html %]</code> sent to
@@ -142,11 +123,6 @@
       address.
     [% END %]
 
-  [% ELSIF error == "extension_disabled" %]
-    [% title = "Extension Disabled" %]
-    You cannot access this page because the extension '[% name FILTER html %]'
-    is disabled.
-
   [% ELSIF error == "extension_must_be_subclass" %]
     <code>[% package FILTER html %]</code> from 
     <code>[% filename FILTER html %]</code> is not a subclass of
@@ -193,27 +169,12 @@
     [% title = "Field Type Not Specified" %]
     You must specify a type when creating a custom field.
 
-  [% ELSIF error == "illegal_content_type_method" %]
-    Your form submission got corrupted somehow.  The <em>content
-    method</em> field, which specifies how the content type gets determined,
-    should have been either <em>autodetect</em>, <em>list</em>,
-    or <em>manual</em>, but was instead
-    <em>[% contenttypemethod FILTER html %]</em>.
-
   [% ELSIF error == "illegal_field" %]
     A legal [% field FILTER html %] was not set.
 
-  [% ELSIF error == "invalid_attach_id_to_obsolete" %]
-     The attachment number of one of the attachments you wanted to obsolete,
-     [%+ attach_id FILTER html %], is invalid.
-          
   [% ELSIF error == "invalid_customfield_type" %]
     [% title = "Invalid Field Type" %]
     The type <em>[% type FILTER html %]</em> is not a valid field type.
-
-  [% ELSIF error == "invalid_dimensions" %]
-    [% title = "Invalid Dimensions" %]
-    The width or height specified is not a positive integer.
 
   [% ELSIF error == "invalid_feature" %]
     [% title = "Invalid Feature Name" %]
@@ -243,31 +204,11 @@
     There is no such group: [% group FILTER html %]. Check your $webservergroup
     setting in [% constants.bz_locations.localconfig FILTER html %].
 
-  [% ELSIF error == "mismatched_bug_ids_on_obsolete" %]
-    Attachment [% attach_id FILTER html %] ([% description FILTER html %]) 
-    is attached to [% terms.bug %] [%+ attach_bug_id FILTER html %], 
-    but you tried to flag it as obsolete while creating a new attachment to 
-    [%+ terms.bug %] [%+ my_bug_id FILTER html %].
-
-  [% ELSIF error == "feature_disabled" %]
-    The [% install_string("feature_$feature") FILTER html %] feature is not
-    available in this [% terms.Bugzilla %]. 
-    [% IF user.in_group('admin') %]
-      If you would like to enable this feature, please run 
-      <kbd>checksetup.pl</kbd> to see how to install the necessary
-      requirements for this feature.
-    [% END %]
-
   [% ELSIF error == "flag_unexpected_object" %]
     [% title = "Object Not Recognized" %]
     Flags cannot be set for objects of type [% caller FILTER html %].
     They can only be set for [% terms.bugs %] and attachments.
 
-  [% ELSIF error == "flag_requestee_disabled" %]
-    [% title = "Flag not Requestable from Specific Person" %]
-    You can't ask a specific person for
-    <em>[% type.name FILTER html %]</em>.
-  
   [% ELSIF error == "flag_type_inactive" %]
     [% title = "Inactive Flag Type" %]
     The flag type [% type FILTER html %] is inactive and cannot be used
@@ -279,21 +220,6 @@
   
   [% ELSIF error == "invalid_field_name" %]
     Can't use [% field FILTER html %] as a field name.
-
-  [% ELSIF error == "invalid_keyword_id" %]
-    The keyword ID <em>[% id FILTER html %]</em> couldn't be
-    found.
-
-  [% ELSIF error == "invalid_user" %]
-    [% title = "Invalid User" %]
-    There is no user account
-    [% IF user_id %]
-      with ID <em>[% user_id FILTER html %]</em>.
-    [% ELSIF user_login %]
-      with login name <em>[% user_login FILTER html %]</em>.
-    [% ELSE %]
-      given.
-    [% END %]
 
   [% ELSIF error == "jobqueue_insert_failed" %]
    [% title = "Job Queue Failure" %]
@@ -336,17 +262,11 @@
     to '[% mail.header('To') FILTER html %]':
     [%+ msg FILTER html %]
 
-  [% ELSIF error == "missing_bug_id" %]
-    No [% terms.bug %] ID was given.
-    
   [% ELSIF error == "missing_series_id" %]
     Having inserted a series into the database, no series_id was returned for
     it. Series: [% series.category FILTER html %] / 
     [%+ series.subcategory FILTER html %] / 
     [%+ series.name FILTER html %].
-    
-  [% ELSIF error == "need_quipid" %]
-    A valid quipid is needed.
 
   [% ELSIF error == "object_dep_sort_loop" %]
     There is a loop in VALIDATOR_DEPENDENCIES involving
@@ -405,13 +325,6 @@
     An error occurred while preparing for a RADIUS authentication request:
     <code>[% errstr FILTER html %]</code>.
 
-  [% ELSIF error == "report_axis_invalid" %]
-    <em>[% val FILTER html %]</em> is not a valid value for 
-    [%+ IF    fld == "x" %]the horizontal axis
-    [%+ ELSIF fld == "y" %]the vertical axis
-    [%+ ELSIF fld == "z" %]the multiple tables/images
-    [%+ ELSE %]a report axis[% END %] field.
-
   [% ELSIF error == "search_cp_without_op" %]
     Search argument f[% id FILTER html %] is "CP" but there is no
     matching "OP" before it.
@@ -467,6 +380,10 @@
   [% ELSIF error == "invalid_post_bug_submit_action" %]
     Invalid setting for post_bug_submit_action
 
+  [% ELSIF error == "search_field_operator_unsupported" %]
+    [% terms.Bugzilla %] does not support the search type
+    "[% operator FILTER html %]".
+
   [% ELSE %]
     [%# Try to find hooked error messages %]
     [% error_message = Hook.process("errors") %]
@@ -503,12 +420,14 @@
    admindocslinks = admindocslinks
 %]
 
+<p>
+  An unexpected error occurred. This could be a temporary problem, or some code
+  is behaving incorrectly. If this problem persists, please email this page
+  to <a href="mailto:[% Param("maintainer") %]">[% Param("maintainer") %]</a>
+  with details of what you were doing at the time this message appeared.
+</p>
+
 <tt>
-  <p>
-    [% terms.Bugzilla %] has suffered an internal error. Please save this page and send
-    it to [% Param("maintainer") %] with details of what you were doing at
-    the time this message appeared.
-  </p>
   <script type="text/javascript"> <!--
     document.write("<p>URL: " + 
                     document.location.href.replace(/&/g,"&amp;")
@@ -520,10 +439,8 @@
 
 <table cellpadding="20">
   <tr>
-    <td bgcolor="#ff0000">
-      <font size="+2">
-        [% error_message FILTER none %]
-      </font>
+    <td id="error_msg" class="throw_error">
+      [% error_message FILTER none %]
     </td>
   </tr>
 </table>

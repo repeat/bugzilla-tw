@@ -1,28 +1,10 @@
-[%# The contents of this file are subject to the Mozilla Public
-  # License Version 1.1 (the "License"); you may not use this file
-  # except in compliance with the License. You may obtain a copy of
-  # the License at http://www.mozilla.org/MPL/
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
   #
-  # Software distributed under the License is distributed on an "AS
-  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  # implied. See the License for the specific language governing
-  # rights and limitations under the License.
-  #
-  # The Original Code is the Bugzilla Bug Tracking System.
-  #
-  # The Initial Developer of the Original Code is Netscape Communications
-  # Corporation. Portions created by Netscape are
-  # Copyright (C) 1998 Netscape Communications Corporation. All
-  # Rights Reserved.
-  #
-  # Contributor(s): Myk Melez <myk@mozilla.org>
-  #                 Max Kanat-Alexander <mkanat@bugzilla.org>
-  #                 Frédéric Buclin <LpSolit@gmail.com>
-  #                 Guy Pyrzak <guy.pyrzak@gmail.com>
-  #                 Reed Loden <reed@reedloden.com>
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
   #%]
-
-[% PROCESS global/variables.none.tmpl %]
 
 [% dontchange = "--do_not_change--" %]
 <input type="hidden" name="dontchange" value="[% dontchange FILTER html %]">
@@ -97,7 +79,8 @@
 
     <th>
       <label for="rep_platform">
-        <a href="page.cgi?id=fields.html#rep_platform">Platform</a>:
+        <a href="page.cgi?id=fields.html#rep_platform">
+          [% field_descs.rep_platform FILTER html %]</a>:
       </label>
     </th>
     <td>
@@ -107,7 +90,8 @@
 
     <th>
       <label for="bug_severity">
-        <a href="page.cgi?id=fields.html#bug_severity">Severity</a>:
+        <a href="page.cgi?id=fields.html#bug_severity">
+          [% field_descs.bug_severity FILTER html %]</a>:
       </label>
     </th>
     <td>
@@ -120,7 +104,7 @@
   <tr>
     <th>
       <label for="op_sys">
-        <a href="page.cgi?id=fields.html#op_sys">OS</a>:
+        <a href="page.cgi?id=fields.html#op_sys">[% field_descs.op_sys FILTER html %]</a>:
       </label>
     </th>
     <td [% " colspan=\"3\"" IF !Param("usetargetmilestone") %]>
@@ -143,7 +127,9 @@
   </tr>
   [% IF user.is_timetracker %]
     <tr>
-      <th><label for="estimated_time">Estimated Hours:</label></th>
+      [% INCLUDE "bug/field-label.html.tmpl"
+         field = bug_fields.estimated_time, editable = 1
+      %]
       <td>
         <input id="estimated_time"
                name="estimated_time"
@@ -155,7 +141,9 @@
           editable = 1, allow_dont_change = 1 %]
     </tr>
     <tr>
-      <th><label for="remaining_time">Remaining Hours:</label></th>
+      [% INCLUDE "bug/field-label.html.tmpl"
+         field = bug_fields.remaining_time, editable = 1
+      %]
       <td>
         <input id="remaining_time"
                name="remaining_time"

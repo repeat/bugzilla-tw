@@ -1,22 +1,9 @@
-[%# The contents of this file are subject to the Mozilla Public
-  # License Version 1.1 (the "License"); you may not use this file
-  # except in compliance with the License. You may obtain a copy of
-  # the License at http://www.mozilla.org/MPL/
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
   #
-  # Software distributed under the License is distributed on an "AS
-  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  # implied. See the License for the specific language governing
-  # rights and limitations under the License.
-  #
-  # The Original Code is the Bugzilla Bug Tracking System.
-  #
-  # The Initial Developer of the Original Code is Netscape Communications
-  # Corporation. Portions created by Netscape are
-  # Copyright (C) 1998 Netscape Communications Corporation. All
-  # Rights Reserved.
-  #
-  # Contributor(s): Gervase Markham <gerv@gerv.net>
-  #                 Toms Baugis <toms@myrealbox.com>
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
   #%]
 
 [%# INTERFACE:
@@ -27,8 +14,6 @@
  [% target = "index.cgi" %]
 [% END %]
 
-[% PROCESS global/variables.none.tmpl %]
-
 [% PROCESS global/header.html.tmpl
   title = "登入 $terms.Bugzilla",
   onload = "document.forms['login'].Bugzilla_login.focus()"
@@ -37,7 +22,7 @@
 [% USE Bugzilla %]
 
 <p>
-需要一組有效的帳號及密碼才能繼續。
+[% terms.Bugzilla %] 需要一組有效的帳號及密碼才能繼續。
 </p>
 
 <form name="login" action="[% target FILTER html %]" method="POST"
@@ -90,6 +75,8 @@
   </p>
 </form>
 
+[% Hook.process('additional_methods') %]
+
 [%# Allow the user to create a new account, or request a token to change
   # their password, assuming that our auth method allows that.
   #%]
@@ -99,6 +86,12 @@
 
     <p>
       如果你沒有 [% terms.Bugzilla %] 帳號，你可以<a href="createaccount.cgi">建立新帳號</a>。
+      [% IF Param("requirelogin") %]
+        此一 [% terms.Bugzilla %] 僅允許獲得授權的使用者登入瀏覽，因此需要有帳號。
+      [% ELSIF target.match("_bug\.cgi$") %]
+        當需要回報一個新的 [% terms.bug %] ，或者對現有的 [% terms.bug %] 留下意見時，需要一個帳號。
+        當後續有需要更多資訊時，可以聯絡上你。
+      [% END %]
     </p>
   [% END %]
 
@@ -109,6 +102,7 @@
       <input type="hidden" name="a" value="reqpw">
       如果你有帳號，但是忘記密碼的話，在下方輸入你的帳號並按「重設密碼」鍵來變更密碼。<br>
       <input size="35" name="loginname">
+      <input type="hidden" id="token" name="token" value="[% issue_hash_token(['reqpw']) FILTER html %]">
       <input type="submit" id="request" value="重設密碼">
     </form>
   [% END %]

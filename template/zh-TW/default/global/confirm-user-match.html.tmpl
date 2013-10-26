@@ -1,22 +1,9 @@
-[%# The contents of this file are subject to the Mozilla Public
-  # License Version 1.1 (the "License"); you may not use this file
-  # except in compliance with the License. You may obtain a copy of
-  # the License at http://www.mozilla.org/MPL/
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
   #
-  # Software distributed under the License is distributed on an "AS
-  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  # implied. See the License for the specific language governing
-  # rights and limitations under the License.
-  #
-  # The Original Code is the Bugzilla Bug Tracking System.
-  #
-  # The Initial Developer of the Original Code is Netscape Communications
-  # Corporation. Portions created by Netscape are
-  # Copyright (C) 1998 Netscape Communications Corporation. All
-  # Rights Reserved.
-  #
-  # Contributor(s): Myk Melez <myk@mozilla.org>
-  #                 Erik Stambaugh <not_erik@dasbistro.com>
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
   #%]
 
 [%# INTERFACE:
@@ -34,9 +21,6 @@
   # script: string; The name of the calling script, used to create a
   #     self-referential URL
   #%]
-
-[%# use the global field descs %]
-[% PROCESS "global/field-descs.none.tmpl" %]
 
 [%# This lists fields which use the user auto-completion feature and which
   # are not listed in field_descs. %]
@@ -142,11 +126,9 @@
                 [% ELSE %]
                   符合
                   <b>[% query.value.users.0.identity FILTER html %]</b>
-                  <input type="hidden" name="[% field.key FILTER html %]"
-                         value="[% query.value.users.0.login FILTER html %]">
                 [% END %]
             [% ELSE %]
-                [% IF (query.key.length < 3) && !Param('emailsuffix') %]
+                [% IF query.key.length < 3 %]
                   <font color="#FF0000">要搜尋的子字串太短
                   (至少 3 個字元)</font>
                 [% ELSE %]
@@ -168,8 +150,10 @@
 
 [% IF matchsuccess == 1 %]
 
-  [% SET exclude_these =
-           matches.keys.merge(['Bugzilla_login', 'Bugzilla_password']) %]
+  [% SET exclude_these = ['Bugzilla_login', 'Bugzilla_password'] %]
+  [% FOREACH key IN matches.keys %]
+    [% exclude_these.push(key) IF cgi.param(key) == '' %]
+  [% END %]
   [% SET exclude = '^' _ exclude_these.join('|') _ '$' %]
   [% PROCESS "global/hidden-fields.html.tmpl" exclude = exclude %]
 
@@ -191,7 +175,7 @@
   [% ELSIF field_labels.$field_name %]
     [% field_labels.$field_name FILTER html %]
   [% ELSIF field_name.match("^requestee") %]
-    [% fields.${field_name}.flag_type.name %] 位被要求者
+    [% fields.${field_name}.flag_type.name FILTER html %] 位被要求者
   [% ELSE %]
     [% field_name FILTER html %]
   [% END %]

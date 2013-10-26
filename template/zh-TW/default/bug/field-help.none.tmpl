@@ -1,22 +1,9 @@
-[%# The contents of this file are subject to the Mozilla Public
-  # License Version 1.1 (the "License"); you may not use this file
-  # except in compliance with the License. You may obtain a copy of
-  # the License at http://www.mozilla.org/MPL/
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
   #
-  # Software distributed under the License is distributed on an "AS
-  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  # implied. See the License for the specific language governing
-  # rights and limitations under the License.
-  #
-  # The Original Code is the Bugzilla Bug Tracking System.
-  #
-  # The Initial Developer of the Original Code is Netscape Communications
-  # Corporation. Portions created by Netscape are
-  # Copyright (C) 1998 Netscape Communications Corporation. All
-  # Rights Reserved.
-  #
-  # Contributor(s): Gervase Markham <gerv@gerv.net>
-  #                 Max Kanat-Alexander <mkanat@bugzilla.org>
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
   #%]
 
 [%# This file describes both bug fields and search fields.
@@ -82,7 +69,7 @@ estimated_time =>
   "估計解決這個 $terms.bug 會需要的時間。",
 
 keywords =>
-  "為了替 $terms.bugs 加上標籤並分類，你可以在已定義的列表中對 $terms.bugs 加入關鍵字。",
+  "為了讓 $terms.bugs 容易辨識及分類，你可以在已定義的列表中對 $terms.bugs 加入關鍵字。",
 
 longdesc =>
   "$terms.Bugzilla 使用者可以在 $terms.Bugs 加入描述或意見。"
@@ -136,6 +123,12 @@ short_desc =>
 
 status_whiteboard =>
   "每個 $terms.bug 都有一塊狀態白板，可以加入標籤以及狀態資訊。",
+
+tag =>
+  "不像${vars.field_descs.keywords}是公開且所有使用者可見那樣，
+   ${vars.field_descs.tag}是只有自己可見，也只能由擁有者編輯。
+   編輯${vars.field_descs.tag}不會通知其他使用者。用它們來對
+   ${terms.bugs}下標籤及追蹤吧。",
 
 target_milestone =>
   "$vars.field_descs.target_milestone 欄位是用來定義工程師將
@@ -203,12 +196,16 @@ email1 =>
 
   [%# Add help for custom fields. %]
   [% IF !vars.help_html.${help_field}.defined %]
-    [% SET field_type = bug_fields.${help_field}.type %]
-    [% field_type_desc = BLOCK -%]
-      [% field_types.$field_type FILTER html %]
-    [%- END %]
-    [% vars.help_html.${help_field} =
+    [% IF bug_fields.${help_field}.long_desc %]
+      [% vars.help_html.${help_field} = bug_fields.${help_field}.long_desc %]
+    [% ELSE %]
+      [% SET field_type = bug_fields.${help_field}.type %]
+      [% field_type_desc = BLOCK -%]
+        [% field_types.$field_type FILTER html %]
+      [%- END %]
+      [% vars.help_html.${help_field} =
       "在此 $terms.Bugzilla 中的自訂欄位 $field_type_desc 。" %]
+    [% END %]
   [% END %]
 
   [%# Add help for the search types, for query.cgi. %]

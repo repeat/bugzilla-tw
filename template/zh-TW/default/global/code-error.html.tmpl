@@ -1,21 +1,9 @@
-[%# The contents of this file are subject to the Mozilla Public
-  # License Version 1.1 (the "License"); you may not use this file
-  # except in compliance with the License. You may obtain a copy of
-  # the License at http://www.mozilla.org/MPL/
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
   #
-  # Software distributed under the License is distributed on an "AS
-  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  # implied. See the License for the specific language governing
-  # rights and limitations under the License.
-  #
-  # The Original Code is the Bugzilla Bug Tracking System.
-  #
-  # The Initial Developer of the Original Code is Netscape Communications
-  # Corporation. Portions created by Netscape are
-  # Copyright (C) 1998 Netscape Communications Corporation. All
-  # Rights Reserved.
-  #
-  # Contributor(s): Gervase Markham <gerv@gerv.net>
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
   #%]
 
 [%# INTERFACE:
@@ -31,8 +19,6 @@
   # Note that you must explicitly filter every single template variable
   # in this file; if you do not wish to change it, use the "none" filter.
   #%]
-
-[% PROCESS "global/field-descs.none.tmpl" %]
 
 [% DEFAULT title = "內部發生錯誤" %]
 
@@ -50,10 +36,6 @@
 
   [% ELSIF error == "authres_unhandled" %]
     [% value FILTER html %] 結果值並非由登入碼處理。
-
-  [% ELSIF error == "bad_page_cgi_id" %]
-    [% title = "無效的頁面編號" %]
-    頁面編號 <code>[% page_id FILTER html %]</code> 並非有效的頁面編號。
 
   [% ELSIF error == "bad_arg" %]
     送到 <code>[% function FILTER html %]</code> 函數的是不正確的參數 <code>[% argument FILTER html %]</code> 。
@@ -124,10 +106,6 @@
       你必須設定 "auth_env_email" 參數到包含使用者的電子郵件地址的該環境變數名稱中。
     [% END %]
 
-  [% ELSIF error == "extension_disabled" %]
-    [% title = "附加元件已停用" %]
-    你無法瀏覽此頁面，因為附加元件 '[% name FILTER html %]' 已停用。
-
   [% ELSIF error == "extension_must_be_subclass" %]
     來自 <code>[% filename FILTER html %]</code> 的 <code>[% package FILTER html %]</code>
     並不是 <code>[% class FILTER html %]</code> 的 subclass 。
@@ -157,13 +135,6 @@
     在資料庫中， '[% username FILTER html %]' 對應到外部編號
     '[% extern_id FILTER html %]' ，但是你的帳號來源說 '[% extern_user FILTER html %]' 擁有該外部編號。
 
-  [% ELSIF error == "feature_disabled" %]
-    這台機器上的 [% terms.Bugzilla %] 並不允許 [% install_string("feature_$feature") FILTER html %] 這項功能。
-    [% IF user.in_group('admin') %]
-      如果你想要啟用此項功能，請執行
-      <kbd>checksetup.pl</kbd> 以確認啟用此功能所必須要的最低需求。
-    [% END %]
-
   [% ELSIF error == "field_choice_must_use_type" %]
     當你在 <code>Bugzilla::Field::Choice</code> 呼叫一個 class method
     時，你必須呼叫 <code>Bugzilla::Field::Choice-&gt;type('some_field')</code>
@@ -178,10 +149,6 @@
     [% title = "未指定欄位種類" %]
     在新增自訂欄位時，你必須指定欄位的種類。
 
-  [% ELSIF error == "flag_requestee_disabled" %]
-    [% title = "無法要求特定的人設定旗標" %]
-    你不能要求特定的人設定 <em>[% type.name FILTER html %]</em> 。
-
   [% ELSIF error == "flag_type_inactive" %]
     [% title = "無效的旗標類型" %]
     旗標類型 [% type FILTER html %] 無效，也不能用於建立新旗標。
@@ -194,28 +161,14 @@
     無法對種類是 [% caller FILTER html %] 的物件設定旗標。
     旗標僅能設定於 [% terms.bugs %] 和附件上。
 
-  [% ELSIF error == "illegal_content_type_method" %]
-    送出的表單因故損壞。標明如何決定內容類別的欄位
-    <em>content method</em> 的值，應該是<em>自動偵側
-    (autodetect)</em> 、<em>自清單中選擇
-    (list)</em>或<em>手動輸入 (manual)</em> ，但表單收到的卻是
-    <em>[% contenttypemethod FILTER html %]</em> 。
-
   [% ELSIF error == "illegal_field" %]
     並未設定有效的 [% field FILTER html %] 。
-
-  [% ELSIF error == "invalid_attach_id_to_obsolete" %]
-    你想要廢棄的附件編號其中之一（[% attach_id FILTER html %]）無效。
 
   [% ELSIF error == "invalid_customfield_type" %]
     [% title = "無效的欄位種類" %]
     <em>[% type FILTER html %]</em> 並非有效的欄位種類。
 
-  [% ELSIF error == "invalid_dimensions" %]
-    [% title = "無效的維度" %]
-    所指定的寬度或高度並非正整數。
-
-[% ELSIF error == "invalid_feature" %]
+  [% ELSIF error == "invalid_feature" %]
     [% title = "無效的功能名稱" %]
     [% feature FILTER html %] 並非有效的功能名稱。請參考
     <code>Bugzilla::Install::Requirements</code> 的
@@ -248,19 +201,6 @@
 
   [% ELSIF error == "invalid_field_name" %]
     不能把 [% field FILTER html %] 做為欄位名稱。
-
-  [% ELSIF error == "invalid_keyword_id" %]
-    找不到關鍵字編號 <em>[% id FILTER html %]</em> 。
-
-  [% ELSIF error == "invalid_user" %]
-    [% title = "無效的使用者" %]
-    [% IF user_id %]
-      沒有帳號為 <em>[% user_id FILTER html %]</em> 的使用者。
-    [% ELSIF user_login %]
-      沒有帳號為 <em>[% user_login FILTER html %]</em> 的使用者。
-    [% ELSE %]
-      並未輸入使用者帳號。
-    [% END %]
 
   [% ELSIF error == "jobqueue_insert_failed" %]
    [% title = "Job 排程失敗" %]
@@ -301,14 +241,6 @@
     從 '[% mail.header('From') FILTER html %]' 寄信到 '[% mail.header('To') FILTER html %]' 時，出現錯誤：
     [%+ msg FILTER html %]
 
-  [% ELSIF error == "mismatched_bug_ids_on_obsolete" %]
-    附件 [% attach_id FILTER html %] （[% description FILTER html %]）是附加在 [% terms.bug %]
-    [%+ attach_bug_id FILTER html %] 的附件，但在對 [% terms.bug %]
-    [%+ my_bug_id FILTER html %] 新增附件時，你嘗試將它標記為「已廢棄的附件」。
-
-  [% ELSIF error == "missing_bug_id" %]
-    並未輸入 [% terms.bug %] 編號。
-
   [% ELSIF error == "missing_series_id" %]
     已將一系列插入至資料庫，但是並未傳回 series_id 的值。系列為：
     [% series.category FILTER html %] /
@@ -318,9 +250,6 @@
   [% ELSIF error == "must_be_patch" %]
     [% title = "附件必須是 patch" %]
     附件 #[% attach_id FILTER html %] 必須是一個 patch 。
-
-  [% ELSIF error == "need_quipid" %]
-    需要輸入有效的智語編號。
 
   [% ELSIF error == "not_in_transaction" %]
     未開始變更就嘗試結束。
@@ -370,16 +299,13 @@
     在準備 RADIUS 認證要求時發生錯誤：
     <code>[% errstr FILTER html %]</code>。
 
-  [% ELSIF error == "report_axis_invalid" %]
-    <em>[% val FILTER html %]</em> 對
-    [%+ IF    fld == "x" %] X 軸
-    [%+ ELSIF fld == "y" %] Y 軸
-    [%+ ELSIF fld == "z" %]多表格／多圖
-    [%+ ELSE %]一份報告的座標[% END %]而言，並非有效的值。
-
   [% ELSIF error == "search_cp_without_op" %]
     搜尋參數 f[% id FILTER html %] 是 "CP" ，但在它之前沒有符合的
     "OP" 。
+
+  [% ELSIF error == "search_field_operator_unsupported" %]
+    [% terms.Bugzilla %] 不支援搜尋參數
+    "[% operator FILTER html %]" 。
 
   [% ELSIF error == "search_invalid_joiner" %]
     '[% joiner FILTER html %]' 對搜尋而言不是有效的 joiner 。
@@ -453,11 +379,13 @@
    admindocslinks = admindocslinks
 %]
 
+<p>
+  發生了未預期的錯誤。這可能是暫時性的問題，也有可能有程式不正確地運作。
+  如果問題持續的話，請將此頁面，以及出現此訊息前你所做過的動作一併寄到
+  <a href="mailto:[% Param("maintainer") %]">[% Param("maintainer") %]</a> 。
+</p>
+
 <tt>
-  <p>
-    [% terms.Bugzilla %] 內部發生錯誤。請將此頁面，以及出現此訊息前你所做過的動作一併寄到
-    [% Param("maintainer") %]。
-  </p>
   <script type="text/javascript"> <!--
     document.write("<p>網址： " +
                     document.location.href.replace(/&/g,"&amp;")
@@ -469,10 +397,8 @@
 
 <table cellpadding="20">
   <tr>
-    <td bgcolor="#ff0000">
-      <font size="+2">
-        [% error_message FILTER none %]
-      </font>
+    <td id="error_msg" class="throw_error">
+      [% error_message FILTER none %]
     </td>
   </tr>
 </table>

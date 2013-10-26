@@ -1,31 +1,14 @@
-[%# The contents of this file are subject to the Mozilla Public
-  # License Version 1.1 (the "License"); you may not use this file
-  # except in compliance with the License. You may obtain a copy of
-  # the License at http://www.mozilla.org/MPL/
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
   #
-  # Software distributed under the License is distributed on an "AS
-  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  # implied. See the License for the specific language governing
-  # rights and limitations under the License.
-  #
-  # The Original Code is the Bugzilla Bug Tracking System.
-  #
-  # The Initial Developer of the Original Code is Netscape Communications
-  # Corporation. Portions created by Netscape are
-  # Copyright (C) 1998 Netscape Communications Corporation. All
-  # Rights Reserved.
-  #
-  # Contributor(s): Gervase Markham <gerv@gerv.net>
-  #                 Max Kanat-Alexander <mkanat@bugzilla.org>
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
   #%]
 
 [%# This is a list of all the possible messages. Please keep them in
   # alphabetical order by message tag, and leave a blank line between messages.
   #%]
-
-[% PROCESS global/variables.none.tmpl %]
-
-[% PROCESS "global/field-descs.none.tmpl" %]
 
 [% message_tag = message %]
 
@@ -59,9 +42,9 @@
             [% ELSIF field == 'cryptpassword' %]
               A new password has been set.
             [% ELSIF field == 'disabledtext' %]
-              The disable text has been modified.
+              The "login disabled" text has been modified.
             [% ELSIF field == 'is_enabled' %]
-              The user has been [% otheruser.is_enabled ? 'enabled' : 'disabled' %].
+              Logging in with this user account has been [% otheruser.is_enabled ? 'enabled' : 'disabled' %].
             [% ELSIF field == 'extern_id' %]
               The user's External Login ID has been modified.
             [% ELSIF field == 'disable_mail' %]
@@ -114,8 +97,8 @@
     successfully.
 
   [% ELSIF message_tag == "account_disabled" %]
-    The user account [% account FILTER html %] is disabled, so you
-    cannot change its password.
+    Logging in with this user account [% account FILTER html %] is disabled, so
+    you cannot change its password.
 
   [% ELSIF message_tag == "attachment_creation_failed" %]
     The [% terms.bug %] was created successfully, but attachment creation
@@ -221,7 +204,7 @@
         <li>Default assignee updated to '[% comp.default_assignee.login FILTER html %]'</li>
       [% END %]
       [% IF changes.initialqacontact.defined %]
-        [% IF comp.default_qa_contact.id %]
+        [% IF comp.default_qa_contact %]
           <li>Default QA contact updated to '[% comp.default_qa_contact.login FILTER html %]'</li>
         [% ELSE %]
           <li>Default QA contact deleted</li>
@@ -289,8 +272,7 @@
 
   [% ELSIF message_tag == "extension_created" %]
     An extension named [% name FILTER html %] has been created
-    in [% path FILTER html %]. Make sure you change "YOUR NAME" and 
-    "YOUR EMAIL ADDRESS" in the code to your name and your email address.
+    in [% path FILTER html %].
 
   [% ELSIF message_tag == "field_value_created" %]
     [% title = "New Field Value Created" %]
@@ -439,6 +421,8 @@
           [% CASE 'visible_to_me_remove' %]
             <li>This group may no longer see users in the following groups:
               [%+ changes.visible_to_me_remove.join(', ') FILTER html %]</li>
+          [% CASE %]
+            [% Hook.process('group_updated_fields') %]
         [% END %]
       [% END %]
       </ul>
@@ -484,7 +468,7 @@
     [% title = "Logged Out" %]
     [% url = "index.cgi?GoAheadAndLogIn=1" %]
     [% link = "Log in again." %]
-    <b>Your login has been forgotten</b>.
+    <b>You logged out successfully</b>.
     The cookie that was remembering your login is now gone. You will be
     prompted for a login the next time it is required.
 
@@ -796,9 +780,7 @@
 
   [% ELSIF message_tag == "product_created" %]
     [% title = "Product Created" %]
-    The product <em>[% product.name FILTER html %]</em> has been created. You will need to
-    <a href="editcomponents.cgi?action=add&product=[% product.name FILTER uri %]">
-    add at least one component</a> before anyone can enter [% terms.bugs %] against this product.
+    The product <em>[% product.name FILTER html %]</em> has been created.
 
   [% ELSIF message_tag == "product_deleted" %]
     [% title = "Product Deleted" %]
@@ -814,6 +796,15 @@
     The product <em>[% product FILTER html %]</em> does not exist
     or you don't have access to it. The following is a list of the
     products you can choose from.
+
+  [% ELSIF message_tag == "report_created" %]
+    OK, you have a new saved report named <em>[% reportname FILTER html %]</em>.
+
+  [% ELSIF message_tag == "report_deleted" %]
+    OK, the <em>[% reportname FILTER html %]</em> report is gone.
+
+  [% ELSIF message_tag == "report_updated" %]
+    The saved report <em>[% reportname FILTER html %]</em> has been updated.
 
   [% ELSIF message_tag == "remaining_time_zeroed" %]
     The [% field_descs.remaining_time FILTER html %] field has been 
@@ -842,8 +833,8 @@
   
   [% ELSIF message_tag == "sudo_ended" %]
     [% title = "Sudo session complete" %]
-      The sudo session has been ended.  From this point forward, everything you 
-      do you do as yourself.
+      Your sudo session has ended. All future actions will be attributed
+      to your own account.
 
   [% ELSIF message_tag == "series_created" %]
     [% title = "Series Created" %]
@@ -868,18 +859,6 @@
       <p>For security reasons, you have been logged out automatically.
       The cookie that was remembering your login is now gone.
     [% END %]
-
-  [% ELSIF message_tag == "tag_updated" %]
-    [% title = "Tag Updated" %]
-    The '<a href="buglist.cgi?tag=[% tag FILTER uri %]">[% tag FILTER html %]</a>'
-    tag has been
-    [% IF action == "add" %]
-      added to
-    [% ELSE %]
-      removed from
-    [% END %]
-    [%+ buglist.size > 1 ? terms.bugs : terms.bug %]
-    [%+ buglist.join(", ") FILTER html %].
 
   [% ELSIF message_tag == "term" %]
     [% terms.$term FILTER html %]
