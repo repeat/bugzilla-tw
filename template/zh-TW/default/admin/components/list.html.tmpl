@@ -92,7 +92,7 @@
        content => my_component.default_assignee.login
      }
   %]
-  [% overrides.initialqacontact.name.${component.name} = {
+  [% overrides.initialqacontact.name.${my_component.name} = {
        override_content => 1
        content => my_component.default_qa_contact.login
      }
