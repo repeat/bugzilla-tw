@@ -254,8 +254,8 @@
     系列編號 [% series_id FILTER html %] 無效。可能是該系列已刪除。
 
   [% ELSIF error == "invalid_timestamp" %]
-    所輸入的時間值 <code>[% timestamp FILTER html %]</code>
-    無法被轉換為合法的日期與時間。
+    所輸入的時間戳記 <code>[% timestamp FILTER html %]</code>
+    無法被轉換為有效的日期和時間。
 
   [% ELSIF error == "invalid_webservergroup" %]
     沒有此群組： [% group FILTER html %] 。<br>
