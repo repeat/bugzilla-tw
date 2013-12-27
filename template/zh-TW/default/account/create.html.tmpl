@@ -54,7 +54,13 @@
   <table>
     <tr>
       <td align="right">
-        <b>電子郵件：</b>
+        <b>
+          [% IF Param('emailsuffix') %]
+            帳號：
+          [% ELSE %]
+            電子郵件：
+          [% END %]
+        </b>
       </td>
       <td>
         <input size="35" id="login" name="login">
