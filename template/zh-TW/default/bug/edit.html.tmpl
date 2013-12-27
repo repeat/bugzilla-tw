@@ -636,6 +636,7 @@
 
       <input type="checkbox" value="[% group.name FILTER html %]"
              name="groups" id="group_[% group.bit %]"
+             [% ' checked="checked"' IF group.ison %]
              [% ' disabled="disabled"' IF NOT group.ingroup %]>
       <label for="group_[% group.bit %]">
       [%- group.description FILTER html_light %]</label>
