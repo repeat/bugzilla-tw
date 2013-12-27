@@ -36,7 +36,7 @@
 <form id="flagtype_properties" method="post" action="editflagtypes.cgi">
   <input type="hidden" name="action" value="[% action FILTER html %]">
   <input type="hidden" name="can_fully_edit" value="[% can_fully_edit FILTER html %]">
-  <input type="hidden" name="id" value="[% type.id %]">
+  <input type="hidden" name="id" value="[% type.id FILTER html %]">
   <input type="hidden" name="token" value="[% token FILTER html %]">
   <input type="hidden" name="target_type" value="[% type.target_type FILTER html %]">
   <input type="hidden" name="check_clusions" value="[% check_clusions FILTER none %]">
@@ -130,8 +130,8 @@
       <td>
         輸入介於 1 和 [% constants.MAX_SMALLINT FILTER none %] 之間的數字。
         當以清單顯示給使用者時，將會以該方法排序。如果你想要以字母做排序，或不在乎排序，則無須填入。<br>
-        <input type="text" name="sortkey" value="[% type.sortkey || 1 %]" size="5" maxlength="5"
-                [%- ' disabled="disabled"' UNLESS can_fully_edit %]>
+        <input type="text" name="sortkey" value="[% type.sortkey || 1 FILTER html %]" size="5"
+               maxlength="5" [% ' disabled="disabled"' UNLESS can_fully_edit %]>
       </td>
     </tr>
 

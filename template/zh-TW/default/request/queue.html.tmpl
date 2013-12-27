@@ -144,19 +144,17 @@
     <tr>
       <th></th>
       <td>
-        <label><input type="radio" name="do_union" value="0"
-            [% 'checked="checked"' IF !cgi.param('do_union') %]>AND *</label>
-        <label><input type="radio" name="do_union" value="1"
-            [% 'checked="checked"' IF cgi.param('do_union') %]>OR *</label>
+        <select id="do_union" name="do_union">
+          <option value="0">符合要求者以及被要求者</option>
+          <option value="1" [% 'selected="selected"' IF cgi.param('do_union') %]>
+            符合要求者或被要求者</option>
+        </select>
       </td>
       <td colspan="3"></td>
       </td>
       <td><input type="submit" id="filter" value="篩選"></td>
     </tr>
   </table>
-
-  <p>（* 在要求者和被要求者之間的邏輯運算）</p>
-
 </form>
 
 [% column_headers = {
