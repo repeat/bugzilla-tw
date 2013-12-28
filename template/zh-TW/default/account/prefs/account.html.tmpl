@@ -13,31 +13,35 @@
   #%]
 
 <table>
-  <tr>
-    <td colspan="3">
-      請輸入你的密碼以確認帳號設定的變更。
-    </td>
-  </tr>
-  <tr>
-    <th align="right">密碼：</th>
-    <td>
-      <input type="hidden" name="old_login" value="[% user.login FILTER html %]">
-      <input type="password" name="old_password">
-    </td>
-  </tr>
-  <tr>
-    <td colspan="2"><hr></td>
-  </tr>
+[% IF user.authorizer.can_change_password
+        || (user.authorizer.can_change_email && Param('allowemailchange')) %]
+    <tr>
+      <td colspan="3">
+        請輸入你的密碼以確認帳號設定的變更。
+      </td>
+    </tr>
+    <tr>
+      <th>密碼：</th>
+      <td>
+        <input type="hidden" name="old_login" value="[% user.login FILTER html %]">
+        <input type="password" name="old_password">
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2"><hr></td>
+    </tr>
+  [% END %]
+
   [% IF user.authorizer.can_change_password %]
     <tr>
-      <th align="right">新的密碼：</th>
+      <th>新的密碼：</th>
       <td>
         <input type="password" name="new_password1">
       </td>
     </tr>
 
     <tr>
-      <th align="right">確認新的密碼：</th>
+      <th>確認新的密碼：</th>
       <td>
         <input type="password" name="new_password2">
       </td>
@@ -45,7 +49,7 @@
   [% END %]
 
   <tr>
-    <th align="right">真實姓名（選填，但鼓勵填寫）：</th>
+    <th>真實姓名（選填，但鼓勵填寫）：</th>
     <td>
       <input size="35" name="realname" value="[% realname FILTER html %]">
     </td>
@@ -55,26 +59,26 @@
     [% IF login_change_date %]
       [% IF new_login_name %]
         <tr>
-          <th align="right">未決定的電子郵件地址：</th>
+          <th>未決定的電子郵件地址：</th>
           <td>[% new_login_name FILTER html %]</td>
         </tr>
         <tr>
-          <th align="right">變更的要求將在此時間過期：</th>
+          <th>變更的要求將在此時間過期：</th>
           <td>[% login_change_date FILTER time %]</td>
         </tr>
       [% ELSE %]
         <tr>
-          <th align="right">確認的電子郵件地址：</th>
+          <th>確認的電子郵件地址：</th>
           <td>[% user.login FILTER html %]</td>
         </tr>
         <tr>
-          <th align="right">完成日期：</th>
+          <th>完成日期：</th>
           <td>[% login_change_date FILTER time %]</td>
         </tr>
       [% END %]
     [% ELSE %]
       <tr>
-        <th align="right">新的電子郵件地址：</th>
+        <th>新的電子郵件地址：</th>
         <td>
           <input size="35" name="new_login_name">
         </td>
