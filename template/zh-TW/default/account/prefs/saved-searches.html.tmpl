@@ -31,7 +31,7 @@
 <p>你已儲存的搜尋如下：</p>
 
 <blockquote>
-  <table border="1" cellpadding="3">
+  <table id="saved_search_prefs" border="1" cellpadding="3">
     <tr>
       <th>
         搜尋
@@ -54,6 +54,7 @@
           和一群人分享
         </th>
       [% END %]
+      [% Hook.process('saved-header') %]
     </tr>
     <tr>
       <td>我的 [% terms.Bugs %]</td>
@@ -78,6 +79,7 @@
           &mdash;
         </td>
       [% END %]
+      [% Hook.process('saved-row') %]
     </tr>
     [% FOREACH q = user.queries %]
       <tr>
@@ -131,6 +133,7 @@
             [% END %]
           </td>
         [% END %]
+        [% Hook.process('saved-row') %]
       </tr>
     [% END %]
   </table>
@@ -142,7 +145,7 @@
 [% IF user.queries_available.size %]
   <p>你可以使用這些已存並由他人分享的搜尋：</p>
 
-  <table border="1" cellpadding="3">
+  <table id="shared_search_prefs" border="1" cellpadding="3">
     <tr>
       <th>
         搜尋
