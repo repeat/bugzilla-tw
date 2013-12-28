@@ -26,26 +26,26 @@
   <input type="hidden" name="a" value="confirm_new_account">
   <table>
     <tr>
-      <th align="right">電子郵件地址：</th>
+      <th>電子郵件地址：</th>
       <td>[% email FILTER html %]</td>
     </tr>
     <tr>
-      <th align="right"><small><i>（選填）</i></small> <label for="realname">真實姓名</label>：</th>
+      <th><small><i>（選填）</i></small> <label for="realname">真實姓名</label>：</th>
       <td><input type="text" id="realname" name="realname" value=""></td>
     </tr>
     <tr>
-      <th align="right"><label for="passwd1">輸入你的密碼</label>：</th>
+      <th><label for="passwd1">輸入你的密碼</label>：</th>
       <td>
         <input type="password" id="passwd1" name="passwd1" value="">
         (最少 [% constants.USER_PASSWORD_MIN_LENGTH FILTER none %] 個字元)
       </td>
     </tr>
     <tr>
-      <th align="right"><label for="passwd2">確認你的密碼</label>：</th>
+      <th><label for="passwd2">確認你的密碼</label>：</th>
       <td><input type="password" id="passwd2" name="passwd2" value=""></td>
     </tr>
     <tr>
-      <th align="right">&nbsp;</th>
+      <th>&nbsp;</th>
       <td><input type="submit" id="confirm" value="建立"></td>
     </tr>
   </table>
