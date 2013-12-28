@@ -31,16 +31,21 @@
 如果你不想要收到 [% terms.bug %] 變更狀態的通知信，你可以用以下設定來過濾部份或全部的通知信。
 </p>
 
-<p>
-如果想要變更 [% terms.Bugzilla %] 發送通知信的電子郵件 <b>[% user.email FILTER html %]</b> ，點擊上方的「帳號資訊」頁籤。
-</p>
+[% IF user.authorizer.can_change_email && Param('allowemailchange') %]
+  <p>
+    如果想要變更 [% terms.Bugzilla %] 發送通知信的電子郵件 <b>[% user.email FILTER html %]</b> ，點擊上方的「帳號資訊」頁籤。
+  </p>
+[% END %]
 
 <script type="text/javascript">
 <!--
 function SetCheckboxes(setting) {
   for (var count = 0; count < document.userprefsform.elements.length; count++) {
     var theinput = document.userprefsform.elements[count];
-    if (theinput.type == "checkbox" && !theinput.disabled) {
+    if (theinput.type == "checkbox"
+        && !theinput.disabled
+        && !theinput.name.match("remove_ignored_bug"))
+    {
       if (theinput.name.match("neg")) {
         theinput.checked = !setting;
       }
@@ -120,7 +125,7 @@ document.write('<input type="button" value="全不選" onclick="SetCheckboxes(fa
     { id = constants.EVT_ATTACHMENT,
       description = "新增附件" },
     { id = constants.EVT_ATTACHMENT_DATA,
-      description = "部份附件內容變更" },
+      description = "附件細節變更" },
     { id = constants.EVT_KEYWORD,
       description = "關鍵字欄位變更" },
     { id = constants.EVT_CC,
@@ -160,7 +165,7 @@ document.write('<input type="button" value="全不選" onclick="SetCheckboxes(fa
 
 [% num_columns = relationships.size %]
 
-<table class="bz_emailprefs" border="1">
+<table class="bz_emailprefs" id="email_prefs" border="1">
   <tr>
     <td colspan="[% num_columns FILTER html %]" align="center" width="50%">
       <b>當我和這個 [% terms.bug %] 的關係是：</b>
@@ -172,7 +177,7 @@ document.write('<input type="button" value="全不選" onclick="SetCheckboxes(fa
 
   <tr>
     [% FOREACH relationship = relationships %]
-      <th align="center" width="9%">
+      <th width="9%">
         [% relationship.description FILTER html %]
       </th>
     [% END %]
@@ -275,6 +280,39 @@ document.write('<input type="button" value="全不選" onclick="SetCheckboxes(fa
   [% END %]
 </p>
 
-<hr>
+<b>忽略 [% terms.Bugs %]</b>
 
-<br>
+<p>
+  你可以指定忽略的 [% terms.bug %] 清單。在這個清單中的 [% terms.bug %] 不會以任何電子郵件通知你。
+  指定清單的方式為輸入一個以逗號 (,) 分隔的 [% terms.bug %] 編號。
+  移除的方式是在目前的忽略清單中選擇它。移除之後就會重新啟用通知。
+</p>
+[% IF user.bugs_ignored.size %]
+  <p>
+    你現在忽略的有：
+    <table>
+    [% FOREACH bug = user.bugs_ignored %]
+      <tr>
+        <td>
+          <input type="checkbox" name="remove_ignored_bug_[% bug.id FILTER html %]" value="1">
+        </td>
+        <td><a href="[% urlbase FILTER html %]show_bug.cgi?id=[% bug.id FILTER uri %]">
+          [% bug.id FILTER html %]</a>
+        </td>
+        <td>[% bug.status FILTER html %]</td>
+        <td>
+          [% IF user.can_see_bug(bug.id) %]
+            - [% bug.summary FILTER html %]
+          [% ELSE %]
+            （不公開）
+          [% END %]
+        </td>
+      </tr>
+    [% END %]
+    </table>
+  </p>
+[% END %]
+
+<p>新增 [% terms.bug %] ：<br>
+  <input type="text" id="add_ignored_bugs"
+         name="add_ignored_bugs" size="60"></p>
