@@ -12,34 +12,18 @@
   #%]
 
 <dl>
-[% PROCESS emails
-   description = "寄發電子郵件到"
-   names = sent_bugmail.sent
-%]
-
-[% PROCESS emails
-   description = "但不包括"
-   names = sent_bugmail.excluded
-%]
-</dl>
-
-[%############################################################################%]
-[%# Block for a set of email addresses                                       #%]
-[%############################################################################%]
-
-[% BLOCK emails %]
-  <dt>[% description FILTER html %]：</dt>
+  <dt>寄發電子郵件到：</dt>
   <dd>
   [% IF user.can_see_bug(mailing_bugid) %]
-    [% IF names.size > 0 %]
-      [%+ FOREACH name = names %]
+    [% IF sent_bugmail.sent.size %]
+      [% FOREACH name = sent_bugmail.sent %]
         <code>[% name FILTER html %]</code>[% ", " UNLESS loop.last() %]
       [% END %]
     [% ELSE %]
       沒有人
     [% END %]
   [% ELSE %]
-    (無法取得電子郵件列表)
+    （無法取得電子郵件列表）
   [% END %]
   </dd>
-[% END %]
+</dl>
