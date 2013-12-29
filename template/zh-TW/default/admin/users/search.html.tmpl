@@ -56,9 +56,13 @@
 [% END %]
 
 <p>
-  <input type="checkbox" name="enabled_only" value="1" id="enabled_only"
-         checked="checked">
-  <label for="enabled_only">只搜尋已啟用的使用者帳號</label>
+  將搜尋範圍限制在
+  <select name="is_enabled">
+      <option value="2">所有的</option>
+      <option value="1" selected>已啟用的</option>
+      <option value="0">已停用的</option>
+  </select>
+  使用者。
 </p>
 
 [% Hook.process('end') %]
