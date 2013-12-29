@@ -211,7 +211,7 @@ TUI_hide_default('attachment_text_field');
           [% NEXT IF NOT c.is_active %]
           <option value="[% c.name FILTER html %]"
                   id="v[% c.id FILTER html %]_component"
-            [% IF c.name == default.component_ %]
+            [% IF c.name.lower == default.component_.lower %]
               [%# This is for bug/field.html.tmpl, for visibility-related
                 # controls. %]
               [% default.component_id = c.id %]
@@ -490,7 +490,8 @@ TUI_hide_default('attachment_text_field');
     </td>
   </tr>
 
-  [% IF feature_enabled('jsonrpc') AND !cloned_bug_id %]
+  [% IF feature_enabled('jsonrpc') AND !cloned_bug_id
+        AND user.settings.possible_duplicates.value == 'on' %]
     <tr id="possible_duplicates_container" class="bz_default_hidden">
       <th>可能<br>重複：</th>
       <td colspan="3">
@@ -595,16 +596,17 @@ TUI_hide_default('attachment_text_field');
 </tbody>
 
 <tbody class="expert_fields">
+  [% IF use_keywords %]
+    <tr>
+      [% INCLUDE bug/field.html.tmpl
+         bug = default, field = bug_fields.keywords, editable = 1,
+         value = keywords, possible_values = all_keywords,
+         desc_url = "describekeywords.cgi", value_span = 2
+      %]
+    </tr>
+  [% END %]
+
   [% IF user.in_group('editbugs', product.id) %]
-    [% IF use_keywords %]
-      <tr>
-        [% INCLUDE bug/field.html.tmpl
-           bug = default, field = bug_fields.keywords, editable = 1,
-           value = keywords, possible_values = all_keywords,
-           desc_url = "describekeywords.cgi", value_span = 2
-        %]
-      </tr>
-    [% END %]
 
     <tr>
       [% INCLUDE "bug/field-label.html.tmpl"
