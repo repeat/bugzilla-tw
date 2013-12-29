@@ -118,12 +118,14 @@
 [% END %]
 
 [% IF warning %]
-<h2 class="warning">警告：
+<h2 class="warning">
+  警告：
   [% IF warning == "interdiff1" %]
-  在比較不同的檔案的時候，兩個 patch 之間的差異可能會因為 [% terms.Bugzilla %] 的限制而把結果擺錯位置。
-  [% END %]
-  [% IF warning == "interdiff2" %]
-  在比較不同版本的 patch 差異時，可能會因為 [% terms.Bugzilla %] 的限制而有所不正確。
+    在比較不同的檔案的時候，兩個 patch 之間的差異可能會因為 [% terms.Bugzilla %] 的限制而把結果擺錯位置。
+  [% ELSIF warning == "interdiff2" %]
+    在比較不同版本的 patch 差異時，可能會因為 [% terms.Bugzilla %] 的限制而有所不正確。
+  [% ELSIF warning == "interdiff3" %]
+    在比較這些 patch 時， interdiff 發生錯誤。
   [% END %]
 </h2>
 [% ELSE %]
