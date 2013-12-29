@@ -43,10 +43,13 @@
   [% ELSIF error == "bug_error" %]
     在試圖傳回 [% terms.bug %] [%+ bug.bug_id FILTER html %] 時，傳回錯誤 [% bug.error FILTER html %] 。
 
+  [% ELSIF error == "cancel_token_does_not_exist" %]
+    要取消的 token 不存在。
+
   [% ELSIF error == "chart_data_not_generated" %]
     [% admindocslinks = {'extraconfig.html' => '設定圖表'} %]
-    [% IF product %]
-      因為自建立產品以來尚未收集產生圖表用的資料，所以目前尚未有產品 <em>[% product FILTER html %]</em> 的圖表。
+    [% IF product.id %]
+      因為自建立產品以來尚未收集產生圖表用的資料，所以目前尚未有產品 <em>[% product.name FILTER html %]</em> 的圖表。
     [% ELSE %]
       尚未收集圖表用的資料。
     [% END %]
