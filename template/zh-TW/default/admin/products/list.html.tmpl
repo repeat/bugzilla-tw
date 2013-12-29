@@ -43,7 +43,12 @@
        name => "is_active"
        heading => "允許回報新的 $terms.bugs"
        yesno_field => 1
-     }
+     },
+     {
+       name => "allows_unconfirmed"
+       heading => "允許狀態為未確認 (UNCONFIRMED) 的 $terms.Bugs"
+       yesno_field => 1
+     },
 ] %]
 
 [% IF showbugcounts %]
