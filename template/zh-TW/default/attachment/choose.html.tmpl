@@ -7,7 +7,7 @@
   #%]
 
 [% PROCESS global/header.html.tmpl
-   title = "定位附件所在處",
+   title = "定位或新增附件",
    onload = "document.forms['choose-id'].id.focus()"
  %]
 
@@ -26,4 +26,10 @@
   </p>
 </form>
 
+<form method="get" action="attachment.cgi">
+  <p>或者，在下方輸入 [% terms.bug %] 編號來新增附件：</p>
+  <p>[% terms.Bug %] 編號：<input name="bugid" size="6">
+    <button name="action" value="enter" id="action">新增附件</button>
+  </p>
+</form>
 [% PROCESS global/footer.html.tmpl %]
