@@ -219,12 +219,12 @@
     頁面編號 <code>[% page_id FILTER html %]</code> 並非有效的頁面編號。
 
   [% ELSIF error == "bug_access_denied" %]
-    [% title = "沒有瀏覽權限" %]
+    [% title = "沒有瀏覽 $terms.bug 的權限" %]
     [% admindocslinks = {'groups.html' => '群組安全性'} %]
     你沒有瀏覽 [% terms.bug %] #[% bug_id FILTER html %] 的權限。
 
   [% ELSIF error == "bug_access_query" %]
-    [% title = "權限不足" %]
+    [% title = "沒有瀏覽 $terms.bug 的權限" %]
     [% docslinks = {'myaccount.html' => '建立新帳號'} %]
     你並未授權瀏覽 [% terms.bug %] #[% bug_id FILTER html %] 。
     要瀏覽這個 [% terms.bug %] ，你必須先以擁有適當權限的帳號<a
@@ -597,9 +597,13 @@
     我們建議你將附件儲存在其他地方，然後在適當的文字欄位貼上網址做為附件。
     <br>如果你的附件是圖片的話，你可以先將它轉換為 JPG 或 PNG 格式，然後再試一次。
 
-  [% ELSIF error == "flag_requestee_disabled" %]
+  [% ELSIF error == "flag_type_requestee_disabled" %]
     [% title = "無法要求特定的人設定旗標" %]
     你不能要求特定的人設定 <em>[% type.name FILTER html %]</em> 。
+
+  [% ELSIF error == "flag_requestee_disabled" %]
+    [% title = "所要求的人帳號已停用" %]
+    你不能向 <em>[% requestee.identity FILTER html %]</em> 提出要求，因為該帳號已停用。
 
   [% ELSIF error == "flag_requestee_needs_privs" %]
     [% title = "旗標設定者需要權限" %]
@@ -714,6 +718,13 @@
     你在 [% field_descs.$field FILTER html %] 欄位輸入的文字太長了（
     [% text.length FILTER html %] 字元，超過所允許的文字長度上限
     [% constants.MAX_FREETEXT_LENGTH FILTER none %] 字元）。
+
+  [% ELSIF error == "get_products_invalid_type" %]
+    產品類別 '[% type FILTER html %]' 無效。
+    有效的選項為：
+    「可瀏覽」 (accessible) 、
+    「可選擇」 (selectable) 、
+    「可進入」 (enterable) 。
 
   [% ELSIF error == "group_cannot_delete" %]
     [% title = "無法刪除群組" %]
@@ -839,6 +850,12 @@
     [% admindocslinks = {'groups.html' => '分配群組控管至產品'} %]
     你對群組 &quot;[% groupname FILTER html %]&quot; 所做的群組合併無效。
 
+  [% ELSIF error == "illegal_pronoun" %]
+    [% title = "無效的代名詞" %]
+    你所使用的代名詞 ([% pronoun FILTER html %]) 無效。你必須使用核可的代名詞。
+    詳細列表請參考
+    <a href="[% docs_urlbase FILTER html %]query.html#pronouns">代名詞替換</a>。
+
   [% ELSIF error == "illegal_query_name" %]
     [% title = "無效的搜尋名稱" %]
     你的搜尋名稱不得包含下列任一字元： &lt; 、 &gt; 、 &amp; 。
@@ -903,6 +920,11 @@
     [% title = "無效的內容" %]
     內容 [% context FILTER html %] 無效〔必須是一個數字， 'file' （檔案）或者 'patch' 〕。
 
+  [% ELSIF error == "invalid_cookies_or_token" %]
+    [% title = "無效的 cookies 或 token" %]
+    所提供的 cookies 或 token 無效或已過期。
+    你可能需要重新登入，以取得新的 cookies 或 token 。
+
   [% ELSIF error == "invalid_datasets" %]
     [% title = "無效的資料組" %]
     <em>[% datasets.join(":") FILTER html %]</em> 是無效的資料組。僅允許數字、英文字母以及冒號 (:)。
@@ -936,10 +958,6 @@
   [% ELSIF error == "invalid_parameter" %]
     [% title = "無效的參數" %]
     [% name FILTER html %] 的新數值是無效的，原因： [% err FILTER html %] 。
-
-  [% ELSIF error == "invalid_product_name" %]
-    [% title = "無效的產品名稱" %]
-    產品名稱 '[% product FILTER html %]' 無效或不存在。
 
   [% ELSIF error == "invalid_regexp" %]
     [% title = "無效的正規表達式" %]
@@ -1192,14 +1210,24 @@
   [% ELSIF error == "no_bugs_chosen" %]
     [% title = BLOCK %]未選擇 [% terms.Bugs %][% END %]
     你並未選擇要
-    [% IF action == "modify" %]修改
-    [% ELSIF action == "view" %]瀏覽[% END %]
+    [% IF action == "modify" %]
+      修改
+    [% ELSIF action == "view" %]
+      瀏覽
+    [% ELSIF action == 'summarize' %]
+      瀏覽時間總計
+    [% END %]
     的 [% terms.bugs %] 。
 
   [% ELSIF error == "no_initial_bug_status" %]
     [% title = "沒有初始的 $terms.Bug 狀態" %]
     在新增 [% terms.bug %]時沒有初始的 [% terms.bug %] 狀態可以選。
     請將此問題回報給 [% Param("maintainer") %] 。
+
+  [% ELSIF error == "no_keywords" %]
+    [% title = "沒有關鍵字" %]
+    [% admindocslinks = {'keywords.html' => '設定關鍵字'} %]
+    此 Bugzilla 沒有定義關鍵字。
 
   [% ELSIF error == "no_new_quips" %]
     [% title = "沒有新的智語" %]
@@ -1256,7 +1284,7 @@
     [%- IF class == "Bugzilla::User" %]
       可能是你輸入了錯誤的名稱，或者該使用者尚未建立 [% terms.Bugzilla %] 帳號。
     [% ELSIF class == "Bugzilla::Keyword" %]
-      有效的關鍵字名稱<a href="describekeywords.cgi">列於此處</a>。
+      參考可用的<a href="describekeywords.cgi">關鍵字</a>列表。
     [% END %]
 
   [% ELSIF error == "old_password_incorrect" %]
@@ -1287,21 +1315,21 @@
     密碼不得短於 [% constants.USER_PASSWORD_MIN_LENGTH FILTER html %] 字元。
 
   [% ELSIF error == "password_not_complex" %]
-     [% title = "密碼不符合要求" %]
-     [% passregex = Param('password_complexity') %]
-     密碼必須至少包含一個：
-     <ul>
-       [% IF passregex.search('letters') %]
-         <li>大寫字母</li>
-         <li>小寫字母</li>
-       [% END %]
-       [% IF passregex.search('numbers') %]
-         <li>數字</li>
-       [% END %]
-       [% IF passregex.search('specialchars') %]
-         <li>特殊符號</li>
-       [% END %]
-     </ul>
+    [% title = "密碼不符合要求" %]
+    [% passregex = Param('password_complexity') %]
+    密碼必須至少包含一個：
+    <ul>
+      [% IF passregex == 'letters_numbers_specialchars' %]
+        <li>字母</li>
+        <li>特殊符號</li>
+      [% ELSIF passregex.search('letters') %]
+        <li>大寫字母</li>
+        <li>小寫字母</li>
+      [% END %]
+      [% IF passregex.search('numbers') %]
+        <li>數字</li>
+      [% END %]
+    </ul>
 
   [% ELSIF error == "product_access_denied" %]
     [% title = "拒絕存取產品" %]
@@ -1490,6 +1518,11 @@
     [% title = "不允許設定解決方案" %]
     你不能對狀態是開啟的 [% terms.bugs %] 設定解決方案。
 
+  [% ELSIF error == "rest_invalid_resource" %]
+    對於
+    '[% method FILTER html +%] [%+ path FILTER html %]'
+    沒有找到相對應的 REST API 。
+
   [% ELSIF error == "saved_search_used_by_whines" %]
     [% title = "搜尋名稱使用中" %]
     [% docslinks = {'whining.html' => '關於訂閱'} %]
@@ -1616,7 +1649,7 @@
 
   [% ELSIF error == "unknown_tab" %]
     [% title = "未知的 tab" %]
-    <code>[% current_tab_name FILTER html %]</code>並非有效的 tab 名稱。
+    沒有名為 <code>[% current_tab_name FILTER html %]</code> 的 tab 。
 
   [% ELSIF error == "value_inactive" %]
     [% title = "數值未啟用" %]
@@ -1679,6 +1712,13 @@
   [% ELSIF error == "user_not_insider" %]
     [% title = "使用者無適當的群組權限" %]
     很抱歉，但你並未被允許將意見或附件標記或取消隱藏。
+
+  [% ELSIF error == "webdot_too_large" %]
+    [% title = "相依性圖表過大" %]
+    相依性圖表含有過多的 [% terms.bug %] 以致於無法顯示。
+    （多於
+    [% constants.MAX_WEBDOT_BUGS FILTER html %]
+    個 [%+ terms.bug %] ）。
 
   [% ELSIF error == "wrong_token_for_cancelling_email_change" %]
     [% title = "錯誤的 token" %]
