@@ -35,13 +35,13 @@
     [% PROCESS "admin/products/edit-common.html.tmpl" %]
 
     <tr>
-      <th align="right">版本：</th>
+      <th>版本：</th>
       <td><input size="20" maxlength="64" name="version"
                 value="[% version FILTER html %]">
       </td>
     </tr>
     <tr>
-      <th align="right">新增此產品的圖表資料集：</th>
+      <th>新增此產品的圖表資料集：</th>
       <td>
         <input type="checkbox" name="createseries" value="1" checked="checked">
       </td>
