@@ -11,29 +11,29 @@
 [% END %]
 
 [% PROCESS global/header.html.tmpl title = title %]
+
 [% FOREACH group = mandatory_groups %]
-<p>
-由於群組 '[% group.name FILTER html %]' 設定為強制 (MANDATORY)，因此將新增受該群組影響的
-[% group.count %] 個 [%+ terms.bugs %] 。</p>
+  <p>
+    由於群組 '[% group.name FILTER html %]' 設定為強制 (MANDATORY)，因此將新增受該群組影響的
+    [% group.count %] 個 [%+ terms.bugs %] 。
+  </p>
 [% END %]
 
 [% FOREACH group = na_groups %]
-<p>
-群組 '[% group.name FILTER html %]' 影響了 [% group.count %] 個 [% terms.bugs %] ，這些
-[% terms.bugs %] 已不再適用於此群組，因此將會被移除。</p>
-[% END %]
-<form action="editproducts.cgi" method="post" >
-
-  [% PROCESS "global/hidden-fields.html.tmpl" exclude="^Bugzilla_(login|password)$" %]
-
-  <br>
-     點選「繼續」鍵確認上方的所有變更。如果你不想做出上列變更，請點選「上一頁」按鍵回到上一頁。
   <p>
-    <input type="hidden" name="confirmed" value="confirmed">
-    <input type="submit" id="update" value="繼續">
+    群組 '[% group.name FILTER html %]' 影響了 [% group.count %] 個 [% terms.bugs %] ，這些
+    [% terms.bugs %] 已不再適用於此群組，因此將會被移除。
   </p>
+[% END %]
 
+<form action="editproducts.cgi" method="post" >
+  [% PROCESS "global/hidden-fields.html.tmpl" exclude="^Bugzilla_(login|password)$" %]
+  <p>
+    <br>
+    點選「繼續」鍵確認上方的所有變更。如果你不想做出上列變更，請點選「上一頁」按鍵回到上一頁。
+  </p>
+  <input type="hidden" name="confirmed" value="confirmed">
+  <input type="submit" id="update" value="繼續">
 </form>
-
 
 [% PROCESS global/footer.html.tmpl %]
