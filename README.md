@@ -4,7 +4,9 @@
 請至 github 的 [releases](https://github.com/repeat/bugzilla-tw/releases) 功能，選擇需要的版本及格式下載。
 
 ### 安裝
-以 .tar.gz 為例，解壓縮後會有一個 `bugzilla-tw-X.Y.Z/template/zh-TW` 的資料夾，請把 `zh-TW` 資料夾整個複製到所安裝的 Bugzilla 的 `template/` 資料夾底下即可。 `pax_global_header` 這個檔案是 github 自動產生的，並不會用到。
+
+1. 以 .tar.gz 為例，解壓縮後會有一個 `bugzilla-tw-X.Y.Z/template/zh-TW` 的資料夾，請把 `zh-TW` 資料夾整個複製到所安裝的 Bugzilla 的 `template/` 資料夾底下即可。
+2. `pax_global_header` 這個檔案是 github 自動產生的，並不會用到。
 
 ### 備註
 
