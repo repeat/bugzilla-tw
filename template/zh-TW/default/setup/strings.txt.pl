@@ -90,6 +90,7 @@ END
     feature_mod_perl => 'mod_perl',
     feature_moving => '在不同機器間搬移 Bugs',
     feature_patch_viewer => 'Patch Viewer',
+    feature_rest => 'REST 介面',
     feature_smtp_auth => 'SMTP 認證',
     feature_smtp_ssl => 'SMTP 的 SSL 支援',
     feature_updates => '自動更新通知',
@@ -344,7 +345,7 @@ END
 （它需要 PatchReader 這個 Perl 模組），你應該從以下網址安裝 patchutils
 ：
 
-    http://cyberelk.net/tim/patchutils/
+    http://cyberelk.net/tim/software/patchutils/
 END
     no_such_module => "在 CPAN 上找不到叫 ##module## 的 Perl 模組。",
     template_precompile   => "預先編譯模版中...",
