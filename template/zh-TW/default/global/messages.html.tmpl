@@ -548,7 +548,7 @@
 
   [% ELSIF message_tag == "password_change_request" %]
     [% title = "要求變更密碼" %]
-    已寄出內含有認證碼的變更密碼用信件。
+    已將內含有認證碼的變更密碼用信件寄到 [% login_name FILTER html %] 。
     依照信件內的指示來變更密碼。
 
   [% ELSIF message_tag == "password_changed" %]
