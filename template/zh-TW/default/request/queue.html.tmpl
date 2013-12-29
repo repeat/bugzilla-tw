@@ -144,6 +144,11 @@
     <tr>
       <th></th>
       <td>
+        <select id="do_union" name="do_union">
+          <option value="0">符合要求者以及被要求者</option>
+          <option value="1" [% 'selected="selected"' IF cgi.param('do_union') %]>
+            符合要求者或被要求者</option>
+        </select>
         <label><input type="radio" name="do_union" value="0"
             [% 'checked="checked"' IF !cgi.param('do_union') %]>AND *</label>
         <label><input type="radio" name="do_union" value="1"
@@ -154,9 +159,6 @@
       <td><input type="submit" id="filter" value="篩選"></td>
     </tr>
   </table>
-
-  <p>（* 在要求者和被要求者之間的邏輯運算）</p>
-
 </form>
 
 [% column_headers = {
@@ -201,6 +203,8 @@
     </tr>
   [% END %]
   [% PROCESS display_buglist %]
+  <br><br>
+  <a href="request.cgi?[% urlquerypart FILTER html %]&amp;ctype=csv">以 CSV 清單方式檢視</a>
 [% END %]
 
 [% PROCESS global/footer.html.tmpl %]
@@ -258,6 +262,6 @@
   </table>
   [% NEXT UNLESS buglist.keys.size %]
   <a href="buglist.cgi?bug_id=
-          [%- buglist.keys.nsort.join(",") FILTER html %]">（以
-  [%+ terms.bug %] 清單方式檢視）</a>
+          [%- buglist.keys.nsort.join(",") FILTER html %]">以
+  [%+ terms.bug %] 清單方式檢視</a>
 [% END %]
