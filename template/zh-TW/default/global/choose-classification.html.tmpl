@@ -12,16 +12,17 @@
   #%]
 
 [% IF target == "enter_bug.cgi" %]
-  [% title = "選擇分類" %]
-  [% subheader = "請選擇分類。" %]
+  [% title = "輸入 $terms.bug" %]
+  [% subheader = "選擇分類" %]
 [% END %]
 
 [% DEFAULT title = "選擇分類" %]
 [% PROCESS global/header.html.tmpl %]
 
+<h2>首先，你必須選擇一個分類來輸入 [% terms.bug %] ：</h2>
 <table>
   <tr>
-    <th align="right">
+    <th>
       <a href="[% target FILTER uri %]?classification=__all
             [% IF cloned_bug_id %]&amp;cloned_bug_id=[% cloned_bug_id FILTER uri %][% END -%]
             [%- IF format %]&amp;format=[% format FILTER uri %][% END %]">
@@ -36,7 +37,7 @@
 
 [% FOREACH class = classifications %]
   <tr>
-    <th align="right">
+    <th>
       <a href="[% target FILTER uri %]?classification=[% class.name FILTER uri -%]
             [%- IF cloned_bug_id %]&amp;cloned_bug_id=[% cloned_bug_id FILTER uri %][% END -%]
             [%- IF format %]&amp;format=[% format FILTER uri %][% END %]">
