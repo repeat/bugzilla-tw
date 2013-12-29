@@ -17,7 +17,11 @@
 
 [% IF target == "enter_bug.cgi" %]
   [% title = "輸入 $terms.Bug" %]
-  [% h2 = BLOCK %]在輸入 [% terms.bug %] 之前，你必須先選擇一項產品：[% END %]
+  [% subheader = "選擇產品" %]
+  [% h2 = BLOCK %]
+    [% IF Param('useclassification') %]其次[% ELSE %]首先[% END %]，
+    在輸入 [% terms.bug %] 之前，你必須先選擇一項產品：
+  [% END %]
 [% ELSIF target == "describecomponents.cgi" %]
   [% title = "瀏覽" %]
   [% h2 = "選擇要瀏覽的產品分類：" %]
@@ -33,14 +37,14 @@
 [% FOREACH c = classifications %]
   [% IF c.object %]
     <tr>
-      <th colspan="2" align="left">[% c.object.name FILTER html %]:
+      <th colspan="2" class="left">[% c.object.name FILTER html %]:
       [%+ c.object.description FILTER html_light %]</th>
     </tr>
   [% END %]
 
   [% FOREACH p = c.products %]
     <tr>
-      <th align="right" valign="top">
+      <th valign="top">
         <a href="[% target %]?product=[% p.name FILTER uri -%]
               [%- IF cloned_bug_id %]&amp;cloned_bug_id=[% cloned_bug_id FILTER uri %][% END -%]
               [%- IF format %]&amp;format=[% format FILTER uri %][% END %]">
