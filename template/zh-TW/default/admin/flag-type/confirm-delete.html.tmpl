@@ -10,6 +10,7 @@
 
 [% PROCESS global/header.html.tmpl
   title = title
+  style_urls = ['skins/standard/admin.css']
   doc_section = "flags-overview.html#flags-delete"
 %]
 
@@ -23,24 +24,17 @@
   href="editflagtypes.cgi?action=deactivate&amp;id=[% flag_type.id %]&amp;token=
   [%- token FILTER html %]">停用</a>。如果選擇停用，那麼此一旗標類型
   [%- IF flag_type.flag_count %]以及這些旗標[% END %]仍會儲存在資料庫中，但不會在
-  [% terms.Bugzilla %] 使用者介面裡顯示。
+  Bugzilla 使用者介面裡顯示。
 </p>
 
-<table>
-   <tr>
-      <td colspan="2">
-         你確定要刪除此一旗標類型嗎？
-      </td>
-   </tr>
-   <tr>
-      <td>
-         <a href="editflagtypes.cgi?action=delete&amp;id=[% flag_type.id %]&amp;token=
-                 [%- token FILTER html %]">是的，刪除</a>
-      </td>
-      <td align="right">
-         <a href="editflagtypes.cgi">不，不要刪除</a>
-      </td>
-   </tr>
-</table>
+<p class="confirmation">
+  你確定要刪除此一旗標類型嗎？
+</p>
+
+<p>
+  <a href="editflagtypes.cgi?action=delete&amp;id=[% flag_type.id %]&amp;token=
+           [%- token FILTER html %]">是的，刪除</a> -
+  <a href="editflagtypes.cgi">不，不要刪除</a>
+</p>
 
 [% PROCESS global/footer.html.tmpl %]
