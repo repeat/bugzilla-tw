@@ -30,59 +30,40 @@
 
 <p>你已儲存的搜尋如下：</p>
 
-<blockquote>
-  <table id="saved_search_prefs" border="1" cellpadding="3">
-    <tr>
-      <th>
-        搜尋
-      </th>
-      <th>
-        執行
-      </th>
-      <th>
-        編輯
-      </th>
-      <th>
-        刪除
-      </th>
-      <th>
-        於頁尾顯示
-      </th>
+  <table id="saved_search_prefs">
+    <tr class="column_header">
+      <th>搜尋</th>
+      <th>執行</th>
+      <th>編輯</th>
+      <th>刪除</th>
+      <th>於頁尾顯示</th>
       [% may_share = user.in_group(Param('querysharegroup')) && queryshare_groups.size %]
       [% IF may_share %]
-        <th>
-          和一群人分享
-        </th>
+        <th>和一群人分享</th>
       [% END %]
       [% Hook.process('saved-header') %]
     </tr>
+
     <tr>
       <td>我的 [% terms.Bugs %]</td>
       <td>
         [% filtered_username = user.login FILTER uri %]
         <a href="[% Param('mybugstemplate').replace('%userid%', filtered_username) %]">執行</a>
       </td>
-      <td>
-        &nbsp;
-      </td>
-      <td>
-        &nbsp;
-      </td>
+      <td></td>
+      <td></td>
       <td align="center">
-        <input type="checkbox"
-               name="showmybugslink"
-               value="1"
-               [% " checked" IF user.showmybugslink %]>
+        <input type="checkbox" name="showmybugslink" value="1"
+               [%+ 'checked="checked"' IF user.showmybugslink %]>
       </td>
       [% IF may_share %]
-        <td>
-          &mdash;
-        </td>
+        <td>&mdash;</td>
       [% END %]
       [% Hook.process('saved-row') %]
     </tr>
+
     [% FOREACH q = user.queries %]
-      <tr>
+      <tr [% 'class="shared_search"' IF q.shared_with_group.id %]>
         <td>[% q.name FILTER html %]</td>
         <td>
           <a href="buglist.cgi?cmdtype=dorem&amp;remaction=run&amp;namedcmd=[% q.name FILTER uri %]
@@ -101,7 +82,7 @@
                      [% issue_hash_token([q.id, q.name]) FILTER uri %]">刪除</a>
           [% END %]
         </td>
-        <td align="center">
+        <td class="center">
           <input type="checkbox"
                  name="link_in_footer_[% q.id FILTER html %]"
                  value="1"
@@ -137,35 +118,24 @@
       </tr>
     [% END %]
   </table>
+
 [% IF user.can_bless %]
   <p>注意：對於每個選擇「加到頁尾」的搜尋，在你按下「儲存設定」鍵之後，將會把選擇分享的搜尋加到群組中的每一位成員的頁尾。</p>
 [% END %]
-</blockquote>
 
 [% IF user.queries_available.size %]
   <p>你可以使用這些已存並由他人分享的搜尋：</p>
 
-  <table id="shared_search_prefs" border="1" cellpadding="3">
-    <tr>
-      <th>
-        搜尋
-      </th>
-      <th>
-        分享者
-      </th>
-      <th>
-        分享給
-      </th>
-      <th>
-        執行
-      </th>
-      <th>
-        編輯
-      </th>
-      <th>
-        顯示於頁尾
-      </th>
+  <table id="shared_search_prefs">
+    <tr class="column_header">
+      <th>搜尋</th>
+      <th>分享者</th>
+      <th>分享給</th>
+      <th>執行</th>
+      <th>編輯</th>
+      <th>顯示於頁尾</th>
     </tr>
+
     [% FOREACH q = user.queries_available %]
       <tr>
         <td>[% q.name FILTER html %]</td>
@@ -180,7 +150,7 @@
           <a href="query.cgi?[% q.edit_link FILTER html %]&amp;known_name=
                    [% q.name FILTER uri %]">編輯</a>
         </td>
-        <td align="center">
+        <td class="center">
           <input type="checkbox"
                  name="link_in_footer_[% q.id FILTER html %]"
                  value="1"
