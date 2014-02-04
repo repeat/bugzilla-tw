@@ -15,7 +15,7 @@
 [% title = BLOCK %]以 '[% email FILTER html %]' 建立新帳號[% END %]
 [% PROCESS "global/header.html.tmpl"
            title = title
-           onload = "document.forms['confirm_account_form'].realname.focus();" %]
+%]
 
 <p>
 要建立你的帳號，必須在下方的表單中輸入密碼。你的電子郵件地址以及真實姓名（如果有提供的話）會和你所做的變動一併顯示。
@@ -31,7 +31,7 @@
     </tr>
     <tr>
       <th><small><i>（選填）</i></small> <label for="realname">真實姓名</label>：</th>
-      <td><input type="text" id="realname" name="realname" value=""></td>
+      <td><input id="realname" name="realname" autofocus></td>
     </tr>
     <tr>
       <th><label for="passwd1">輸入你的密碼</label>：</th>
@@ -52,7 +52,7 @@
 </form>
 
 <p>
-如果在 <u>[% expiration_ts FILTER time("%Y-%m-%d %H:%M %Z") %]</u> 之前，未完成此一表單的話，將不會建立此一帳號。
+如果在 <b>[% expiration_ts FILTER time("%Y-%m-%d %H:%M %Z") %]</b> 之前，未完成此一表單的話，將不會建立此一帳號。
 </p>
 
 <p>
