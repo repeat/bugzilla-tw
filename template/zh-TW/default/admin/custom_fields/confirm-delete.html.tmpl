@@ -23,23 +23,23 @@
            doc_section = "custom-fields.html#delete-custom-fields"
 %]
 
-<table border="1" cellpadding="4" cellspacing="0">
-<tr bgcolor="#6666FF">
-  <th valign="top" class="left">欄位</th>
-  <th valign="top" class="left">值</th>
-</tr>
-<tr>
-  <td valign="top">自訂欄位：</td>
-  <td valign="top">[% field.name FILTER html %]</td>
-</tr>
-<tr>
-  <td valign="top">描述：</td>
-  <td valign="top">[% field.description FILTER html %]</td>
-</tr>
-<tr>
-  <td valign="top">種類：</td>
-  <td valign="top">[% field_types.${field.type} FILTER html %]</td>
-</tr>
+<table id="admin_table">
+  <tr class="column_header">
+    <th>欄位</th>
+    <th>值</th>
+  </tr>
+  <tr>
+    <td>自訂欄位</td>
+    <td>[% field.name FILTER html %]</td>
+  </tr>
+  <tr>
+    <td>描述</td>
+    <td>[% field.description FILTER html %]</td>
+  </tr>
+  <tr>
+    <td>種類</td>
+    <td>[% field_types.${field.type} FILTER html %]</td>
+  </tr>
 </table>
 
 <h2>確認</h2>
