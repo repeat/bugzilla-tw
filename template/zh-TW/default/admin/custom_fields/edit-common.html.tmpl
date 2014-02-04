@@ -12,9 +12,9 @@
 
 [% PROCESS "global/field-descs.none.tmpl" %]
 
-<table border="0" cellspacing="0" cellpadding="5" id="edit_custom_field">
+<table id="admin_table_edit">
   <tr>
-    <th class="narrow_label"><label for="name">名稱：</label></th>
+    <th><label for="name">名稱：</label></th>
     <td>
       [% IF field %]
         [% field.name FILTER html %]
@@ -34,7 +34,7 @@
   </tr>
 
   <tr>
-    <th class="narrow_label"><label for="desc">描述：</label></th>
+    <th><label for="desc">描述：</label></th>
     <td>
       <input type="text" id="desc" name="desc" size="40"
              value="[% field.description FILTER html %]">
@@ -50,7 +50,7 @@
   </tr>
 
   <tr>
-    <th class="narrow_label"><label for="type">種類：</label></th>
+    <th><label for="type">種類：</label></th>
     <td>
       [% IF field %]
         [% field_types.${field.type} FILTER html %]
@@ -72,7 +72,7 @@
   </tr>
 
   <tr>
-    <th class="narrow_label"><label for="sortkey">排序鍵：</label></th>
+    <th><label for="sortkey">排序鍵：</label></th>
     <td>
       <input type="text" id="sortkey" name="sortkey" size="6" maxlength="6"
              value="[% field.sortkey FILTER html %]">
@@ -86,7 +86,7 @@
   </tr>
 
   <tr>
-    <th class="narrow_label">較長的描述：</th>
+    <th>較長的描述：</th>
     <td>
       [% INCLUDE global/textarea.html.tmpl
        name           = 'long_desc'
@@ -147,7 +147,7 @@
           <a href="editvalues.cgi?field=[% field.name FILTER uri %]">編輯此欄位的有效值</a>。
         </td>
       [% ELSE %]
-        <th class="narrow_label">
+        <th>
           <label for="reverse_desc">反向關係描述：</label>
         </th>
         <td>
@@ -165,7 +165,7 @@
       [% END %]
 
       [% IF !field || field.is_select %]
-        <th class="narrow_label">
+        <th>
           <label for="value_field_id">
             控制欄位值是否在此欄位中出現的欄位：
           </label>
