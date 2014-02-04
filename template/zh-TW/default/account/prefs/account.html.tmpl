@@ -78,9 +78,16 @@
       [% END %]
     [% ELSE %]
       <tr>
-        <th>新的電子郵件地址：</th>
+        <th>
+          [% IF Param('emailsuffix') %]
+            新的帳號：
+          [% ELSE %]
+            新的電子郵件地址：
+          [% END %]
+        </th>
         <td>
-          <input size="35" name="new_login_name">
+          <input size="35" id="new_login_name" name="new_login_name"
+                 [%- ' type="email"' UNLESS Param('emailsuffix') %]>
         </td>
       </tr>
     [% END %]
