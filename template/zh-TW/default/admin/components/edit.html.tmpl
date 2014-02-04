@@ -25,40 +25,38 @@
 %]
 
 <form method="post" action="editcomponents.cgi">
-  <table border="0" cellpadding="4" cellspacing="0">
+  <table id="admin_table_edit">
 
     [% PROCESS "admin/components/edit-common.html.tmpl" %]
 
     <tr>
-      <th class="field_label"><label for="isactive">開啟回報 [% terms.Bugs %] 功能：</label></th>
+      <th><label for="isactive">開啟回報 [% terms.Bugs %] 功能：</label></th>
       <td><input id="isactive" name="isactive" type="checkbox" value="1"
                  [% 'checked="checked"' IF comp.isactive %]></td>
     </tr>
     <tr>
-      <th class="field_label">[% terms.Bugs %]：</th>
+      <th>[% terms.Bugs %]：</th>
       <td>
-[% IF comp.bug_count > 0 %]
-        <a title="在子產品 '[% comp.name FILTER html %]' 中的 [% terms.Bugs %]"
-           href="buglist.cgi?component=
-                [%- comp.name FILTER uri %]&amp;product=
-                [%- product.name FILTER uri %]">[% comp.bug_count %]</a>
-[% ELSE %]
-        無
-[% END %]
+        [% IF comp.bug_count > 0 %]
+          <a title="在子產品 '[% comp.name FILTER html %]' 中的 [% terms.Bugs %]"
+             href="buglist.cgi?component=
+                  [%- comp.name FILTER uri %]&amp;product=
+                  [%- product.name FILTER uri %]">[% comp.bug_count %]</a>
+        [% ELSE %]
+          無
+        [% END %]
       </td>
     </tr>
-
   </table>
 
    <input type="hidden" name="action" value="update">
    <input type="hidden" name="componentold" value="[% comp.name FILTER html %]">
    <input type="hidden" name="product" value="[% product.name FILTER html %]">
    <input type="hidden" name="token" value="[% token FILTER html %]">
-   <input type="submit" value="儲存設定" id="update">，或是<a
-        href="editcomponents.cgi?action=del&amp;product=
-        [%- product.name FILTER uri %]&amp;component=
-        [%- comp.name FILTER uri %]">刪除</a>此一子產品。
-
+   <input type="submit" value="儲存設定" id="update">，或是
+   <a href="editcomponents.cgi?action=del&amp;product=
+            [%- product.name FILTER uri %]&amp;component=
+            [%- comp.name FILTER uri %]">刪除</a>此一子產品。
 </form>
 
 [% PROCESS admin/components/footer.html.tmpl
