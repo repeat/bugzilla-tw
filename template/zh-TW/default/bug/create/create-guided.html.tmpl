@@ -36,6 +36,7 @@
 <script type="text/javascript">
 var descriptions = [
 [% FOREACH c = product.components %]
+  [% NEXT IF NOT c.is_active %]
   '[% c.description FILTER js %]',
 [% END %]
 ];
@@ -154,6 +155,7 @@ function PutDescription() {
                 [% default.component_ = "通用" %]
               [% END %]
               [% FOREACH c = product.components %]
+                [% NEXT IF NOT c.is_active %]
                 <option value="[% c.name FILTER html %]"
                   [% " selected=\"selected\"" IF c.name == default.component_ %]>
                   [% c.name FILTER html %]
