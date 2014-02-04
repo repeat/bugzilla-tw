@@ -15,47 +15,38 @@
   #                   if he declines submission.
   #%]
 
-[% PROCESS global/header.html.tmpl title = "可疑的動作"
-                                   style_urls = ['skins/standard/global.css'] %]
+[% PROCESS global/header.html.tmpl
+  title = "可疑的動作"
+%]
 
 [% IF abuser %]
   <div class="throw_error">
-    <p>當你瀏覽 [% terms.Bugzilla %] 的管理表格時，將會隨機產生 token
+    <p>當你瀏覽 Bugzilla 的管理表格時，將會隨機產生 token
     ，並儲存在資料庫以及瀏覽器載入的表格中，以確保所做出的變更要求是由
-    [% terms.Bugzilla %] 的表格送出。很遺憾的是，目前使用的 token
+    Bugzilla 的表格送出。很遺憾的是，目前使用的 token
     並不正確，代表你可能並非來自正確的頁面。
     <br>以下的 token 已被使用：</p>
 
-    <table border="0" cellpadding="5" cellspacing="0">
-      [% IF token_action != expected_action %]
-        <tr>
-          <th>儲存的動作：</th>
-          <td>[% token_action FILTER html %]</td>
-        </tr>
-        <tr>
-          <th>&nbsp;</th>
-          <td>
-            此動作並不符合預料的動作 ([% expected_action FILTER html %]) 。
-          </td>
-        </tr>
-      [% END %]
+    [% IF token_action != expected_action %]
+      <p>
+        <span class="label">儲存的動作：</span>
+        [%+ token_action FILTER html %]
+        <br>
+        此動作並不符合預料的動作 ([% expected_action FILTER html %]) 。
+      </p>
+    [% END %]
 
-      [% IF abuser != user.identity %]
-        <tr>
-          <th>由誰產生：</th>
-          <td>[% abuser FILTER html %]</td>
-        </tr>
-        <tr>
-          <th>&nbsp;</th>
-          <td>
-            這個 token 並非由你產生。可能是有人嘗試作弄你！
-          </td>
-        </tr>
-      [% END %]
-    </table>
+    [% IF abuser != user.identity %]
+      <p>
+        <span class="label">由誰產生：</span>
+        [%+ abuser FILTER html %]
+        <br>
+        這個 token 並非由你產生。可能是有人嘗試作弄你！
+      </p>
+    [% END %]
+    </div>
 
-    <p>請向 [%+ Param("maintainer") FILTER html %] 回報此問題。</p>
-  </div>
+  <p>請向 [% Param("maintainer") FILTER html %] 回報此問題。</p>
 [% ELSE %]
   <div class="throw_error">
     看起來你並非從正確的頁面過來（你在執行 '[% script_name FILTER html%]'
