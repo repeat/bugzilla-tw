@@ -258,7 +258,8 @@ TUI_hide_default('attachment_text_field');
       field = bug_fields.version editable = 1 rowspan = 3 
     %]
     <td rowspan="3">
-      <select name="version" id="version" size="5">
+      <select name="version" id="version" size="5" aria-required="true"
+              class="required">
         [%- FOREACH v = version %]
           [% NEXT IF NOT v.is_active %]
           <option value="[% v.name FILTER html %]"
@@ -633,13 +634,13 @@ TUI_hide_default('attachment_text_field');
     <td colspan="3">
       <br>
         <strong>
-          Only users in all of the selected groups can view this 
+          Only users in [%+ IF Param('or_groups') %]at least one[% ELSE %]all[% END %] of the selected groups can view this 
           [%+ terms.bug %]:
         </strong>
       <br>
-      <font size="-1">
+      <span class="bz_info">
         (Leave all boxes unchecked to make this a public [% terms.bug %].)
-      </font>
+      </span>
       <br>
       <br>
 

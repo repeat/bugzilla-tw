@@ -8,6 +8,31 @@
 
 [% PROCESS bug/time.html.tmpl %]
 
+[% IF Param('comment_taggers_group') %]
+  [% IF user.can_tag_comments %]
+    <div id="bz_ctag_div" class="bz_default_hidden">
+      <a href="javascript:void(0)" onclick="YAHOO.bugzilla.commentTagging.hideInput()">x</a>
+      <div>
+        <input id="bz_ctag_add" size="10" placeholder="add tag"
+              maxlength="[% constants.MAX_COMMENT_TAG_LENGTH FILTER html %]">
+        <span id="bz_ctag_autocomp"></span>
+      </div>
+      &nbsp;
+    </div>
+    <div id="bz_ctag_error" class="bz_default_hidden">
+      <a href="javascript:void(0)" onclick="YAHOO.bugzilla.commentTagging.hideError()">x</a>
+      <span id="bz_ctag_error_msg"></span>
+    </div>
+  [% END %]
+  [% IF user.id %]
+    <script type="text/javascript">
+      YAHOO.bugzilla.commentTagging.init([% user.can_tag_comments ? 'true' : 'false' %]);
+      YAHOO.bugzilla.commentTagging.min_len = [% constants.MIN_COMMENT_TAG_LENGTH FILTER js %];
+      YAHOO.bugzilla.commentTagging.max_len = [% constants.MAX_COMMENT_TAG_LENGTH FILTER js %];
+    </script>
+  [% END %]
+[% END %]
+
 <script type="text/javascript">
 <!--
 [% IF user.is_timetracker %]
@@ -46,7 +71,6 @@
 <form name="changeform" id="changeform" method="post" action="process_bug.cgi">
 
   <input type="hidden" name="delta_ts" value="[% bug.delta_ts %]">
-  <input type="hidden" name="longdesclength" value="[% bug.comments.size %]">
   <input type="hidden" name="id" value="[% bug.bug_id %]">
   <input type="hidden" name="token" value="[% issue_hash_token([bug.id, bug.delta_ts]) FILTER html %]">
 
@@ -89,7 +113,7 @@
       </td>
       [%# 2nd Column %]
       <td id="bz_show_bug_column_2" class="bz_show_bug_column">
-        <table cellpadding="3" cellspacing="1">
+        <table>
         [%# *** Reported and modified dates *** %]
          [% PROCESS section_dates %]
 
@@ -119,7 +143,8 @@
     </tr>
   </table>
 
-  <table id="bz_big_form_parts" cellspacing="0" cellpadding="0"><tr>
+  <table id="bz_big_form_parts">
+  <tr>
   <td>
     [% IF user.is_timetracker %]
       [% PROCESS section_timetracking %]
@@ -594,7 +619,7 @@
     <tr>
       <th>&nbsp;</th>
 
-      <td colspan="2" align="left" id="show_dependency_tree_or_graph">
+      <td colspan="2" id="show_dependency_tree_or_graph">
         Show dependency <a href="showdependencytree.cgi?id=[% bug.bug_id %]&amp;hide_resolved=1">tree</a>
 
         [% IF Param('webdotbase') %]
@@ -627,8 +652,9 @@
       [% IF NOT emitted_description %]
         [% emitted_description = 1 %]
           <div id="bz_restrict_group_visibility_help">
-            <b>Only users in all of the selected groups can view this 
-              [%+ terms.bug %]:</b>
+            <b>Only users in
+              [%+ IF Param('or_groups') %]at least one[% ELSE %]all[% END %]
+              of the selected groups can view this [% terms.bug %]:</b>
              <p class="instructions">
                Unchecking all boxes makes this a more public [% terms.bug %].
              </p>
@@ -712,7 +738,7 @@
       Reported:
     </th>
     <td>
-     [% bug.creation_ts FILTER time %] by [% INCLUDE global/user.html.tmpl who = bug.reporter %]
+     [% bug.creation_ts FILTER time("%Y-%m-%d %H:%M %Z") %] by [% INCLUDE global/user.html.tmpl who = bug.reporter %]
     </td>
   </tr>
   
@@ -721,7 +747,7 @@
       Modified:
     </th>
     <td>
-      [% bug.delta_ts FILTER time FILTER replace(':\d\d$', '') FILTER replace(':\d\d ', ' ')%] 
+      [% bug.delta_ts FILTER time("%Y-%m-%d %H:%M %Z") %]
       (<a href="show_activity.cgi?id=[% bug.bug_id %]">[%# terms.Bug %]History</a>)
     </td>
   
@@ -1098,8 +1124,7 @@
         <br>
         [% PROCESS commit_button id=""%]
 
-        <table id="bug_status_bottom"
-               class="status" cellspacing="0" cellpadding="0">
+        <table id="bug_status_bottom" class="status">
           <tr>
             <th class="field_label">
               <a href="page.cgi?id=fields.html#bug_status">Status</a>:

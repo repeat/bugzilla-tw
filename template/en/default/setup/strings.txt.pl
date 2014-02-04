@@ -91,6 +91,7 @@ END
     feature_jsonrpc_faster    => 'Make JSON-RPC Faster',
     feature_new_charts        => 'New Charts',
     feature_old_charts        => 'Old Charts',
+    feature_memcached         => 'Memcached Support',
     feature_mod_perl          => 'mod_perl',
     feature_moving            => 'Move Bugs Between Installations',
     feature_patch_viewer      => 'Patch Viewer',
@@ -196,6 +197,22 @@ blank, then MySQL's compiled-in default will be used. You probably
 want that.
 END
     localconfig_db_user => "Who we connect to the database as.",
+    localconfig_db_mysql_ssl_ca_file => <<'END',
+Path to a PEM file with a list of trusted SSL CA certificates.
+The file must be readable by web server user.
+END
+    localconfig_db_mysql_ssl_ca_path => <<'END',
+Path to a directory containing trusted SSL CA certificates in PEM format.
+Directory and files inside must be readable by the web server user.
+END
+    localconfig_db_mysql_ssl_client_cert => <<'END',
+Full path to the client SSL certificate in PEM format we will present to the DB server.
+The file must be readable by web server user.
+END
+    localconfig_db_mysql_ssl_client_key => <<'END',
+Full path to the private key corresponding to the client SSL certificate.
+The file must not be password-protected and must be readable by web server user.
+END
     localconfig_diffpath => <<'END',
 For the "Difference Between Two Patches" feature to work, we need to know
 what directory the "diff" bin is in. (You only need to set this if you
@@ -343,8 +360,7 @@ WARNING: We are about to convert your table storage format to UTF-8. This
          recommend that you stop checksetup.pl NOW and run contrib/recode.pl.
 END
     no_checksetup_from_cgi => <<END,
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-          "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html>
 <html>
   <head>
     <title>checksetup.pl cannot run from a web browser</title>
@@ -355,8 +371,8 @@ END
     <p>
       You <b>must not</b> execute this script from your web browser.
       To install or upgrade Bugzilla, run this script from
-      the command-line (e.g. <tt>bash</tt> or <tt>ssh</tt> on Linux
-      or <tt>cmd.exe</tt> on Windows), and follow instructions given there.
+      the command-line (e.g. <kbd>bash</kbd> or <kbd>ssh</kbd> on Linux
+      or <kbd>cmd.exe</kbd> on Windows), and follow instructions given there.
     </p>
 
     <p>

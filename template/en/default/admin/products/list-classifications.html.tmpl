@@ -16,6 +16,7 @@
 
 [% PROCESS global/header.html.tmpl
   title = "Select Classification"
+  style_urls = ['skins/standard/admin.css']
 %]
 
 [% columns = [
@@ -31,7 +32,7 @@
      },
      { 
        name => "product_count"
-       align => "right"
+       class => "right"
        heading => "Product Count"
      }
    ]

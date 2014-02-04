@@ -15,6 +15,7 @@
                    '[% product.name FILTER html %]'[% END %]
 [% PROCESS global/header.html.tmpl
   title = title
+  style_urls = ['skins/standard/admin.css']
 %]
 
 [% edit_contentlink = BLOCK %]editversions.cgi?action=edit&amp;product=
@@ -44,7 +45,7 @@
   [% columns.push({
        name => "bug_count"
        heading => "$terms.Bugs"
-       align => "right"
+       class => "right"
        contentlink => bug_count_contentlink
      })
   %]

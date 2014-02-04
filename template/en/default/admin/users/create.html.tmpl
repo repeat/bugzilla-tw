@@ -15,7 +15,6 @@
 [% PROCESS global/header.html.tmpl
   title = "Add user"
   style_urls = ['skins/standard/editusers.css']
-  onload = "document.forms['f'].login.focus()"
   doc_section = "useradmin.html#createnewusers"
 %]
 
@@ -32,8 +31,8 @@
   %]
 </table>
 <p>
-  <input type="submit" id="add" value="Add"/>
-  <input type="hidden" name="action" value="new" />
+  <input type="submit" id="add" value="Add">
+  <input type="hidden" name="action" value="new">
   <input type="hidden" name="token" value="[% token FILTER html %]">
   [% INCLUDE listselectionhiddenfields %]
 </p>

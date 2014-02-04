@@ -16,6 +16,7 @@
 
 [% PROCESS global/header.html.tmpl
   title = "Select keyword"
+  style_urls = ['skins/standard/admin.css']
 %]
 
 [% columns = [
@@ -32,7 +33,7 @@
      { 
        name => "bug_count"
        heading => "$terms.Bugs"
-       align => "right"
+       class => "right"
        contentlink => "buglist.cgi?keywords=%%name%%"
      },
      { 

@@ -11,7 +11,7 @@
 %]
 
 [% param_descs = {
-  makeproductgroups => "If this is on, $terms.Bugzilla will associate $terms.abug group " _
+  makeproductgroups => "If this is on, Bugzilla will associate $terms.abug group " _
                        "with each product in the database, and use it for querying ${terms.bugs}.",
 
   chartgroup => "The name of the group of users who can use the 'New Charts' " _
@@ -29,18 +29,28 @@
   querysharegroup => "The name of the group of users who can share their " _
                      "saved searches with others.",
 
+  comment_taggers_group => "The name of the group of users who can tag comment." _
+                           " Setting this to empty disables comment tagging.",
+
   debug_group => "The name of the group of users who can view the actual " _
                  "SQL query generated when viewing $terms.bug lists and reports.",
 
   usevisibilitygroups => "Do you wish to restrict visibility of users to members of " _
                          "specific groups?",
-  
+
   strict_isolation => "Don't allow users to be assigned to, " _
                       "be qa-contacts on, " _
                       "be added to CC list, " _
                       "or make or remove dependencies " _
                       "involving any bug that is in a product on which that " _
-                      "user is forbidden to edit.", 
+                      "user is forbidden to edit.",
 
+ or_groups => "Define the visibility of $terms.abug which is in multiple " _
+              "groups. If this is on (recommended), a user only needs to " _
+              "be a member of one of the $terms.bug's groups in order to " _
+              "view it. If it is off, a user needs to be a member of all " _
+              "the $terms.bug's groups. Note that in either case, if the " _
+              "user has a role on the $terms.bug (e.g. reporter) that may " _
+              "also affect their permissions."
  }
 %]

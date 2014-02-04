@@ -19,17 +19,17 @@
 [% DEFAULT title = "Choose the classification" %]
 [% PROCESS global/header.html.tmpl %]
 
+[% previous_params = cgi.canonicalise_query('classification') %]
 <h2>First, you must pick a classification on which to enter [% terms.abug %]:</h2>
-<table>
+<table id="choose_classification">
   <tr>
-    <th>
+    <th class="right">
       <a href="[% target FILTER uri %]?classification=__all
-            [% IF cloned_bug_id %]&amp;cloned_bug_id=[% cloned_bug_id FILTER uri %][% END -%] 
-            [%- IF format %]&amp;format=[% format FILTER uri %][% END %]">
+            [%- IF previous_params %]&amp;[% previous_params FILTER none %][% END -%]">
       All</a>:
     </th>
 
-    <td valign="top">&nbsp;Show all products</td>
+    <td>Show all products</td>
   </tr>
   <tr>
     <th colspan="2">&nbsp;</th>
@@ -37,15 +37,14 @@
 
 [% FOREACH class = classifications %]
   <tr>
-    <th>
+    <th class="right">
       <a href="[% target FILTER uri %]?classification=[% class.name FILTER uri -%]
-            [%- IF cloned_bug_id %]&amp;cloned_bug_id=[% cloned_bug_id FILTER uri %][% END -%] 
-            [%- IF format %]&amp;format=[% format FILTER uri %][% END %]">
+            [%- IF previous_params %]&amp;[% previous_params FILTER none %][% END -%]">
       [% class.name FILTER html %]</a>:
     </th>
 
     [% IF class.description %]
-      <td valign="top">&nbsp;[% class.description FILTER html_light %]</td>
+      <td>[% class.description FILTER html_light %]</td>
     [% END %]
   </tr>
 [% END %]

@@ -29,12 +29,12 @@
     </p>
   [% END %]
 
-  <table border="0" cellpadding="8">
+  <table id="user_prefs">
     [% FOREACH name = setting_names %]
       [% default_name = name _ '-isdefault' %]
       [% default_val = settings.${name}.default_value %]
       <tr>
-        <td align="right">
+        <td class="right">
           [% setting_descs.$name OR name FILTER html %]
         </td>
         <td>

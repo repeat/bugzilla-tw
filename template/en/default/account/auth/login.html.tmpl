@@ -15,8 +15,7 @@
 [% END %]
 
 [% PROCESS global/header.html.tmpl
-  title = "Log in to $terms.Bugzilla",
-  onload = "document.forms['login'].Bugzilla_login.focus()"
+  title = "Log in to $terms.Bugzilla"
 %]
 
 [% USE Bugzilla %]
@@ -39,7 +38,8 @@
         </label>
       </th>
       <td>
-        <input size="35" id="Bugzilla_login" name="Bugzilla_login">
+        <input size="35" id="Bugzilla_login" name="Bugzilla_login"
+               [%- ' type="email"' UNLESS Param('emailsuffix') %] autofocus>
         [% Param('emailsuffix') FILTER html %]
       </td>
     </tr>
@@ -97,7 +97,7 @@
       If you don't have a [% terms.Bugzilla %] account, you can
       <a href="createaccount.cgi">create a new account</a>.
       [% IF Param("requirelogin") %]
-        A user account is required because this [% terms.Bugzilla %]
+        A user account is required because this Bugzilla
         installation is only accessible to authenticated users.
       [% ELSIF target.match("_bug\.cgi$") %]
         A user account is required to file a new [% terms.bug %] or to comment

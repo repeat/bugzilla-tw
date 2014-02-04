@@ -26,6 +26,7 @@
 
 [% PROCESS global/header.html.tmpl
   title = "Select product $classification_title"
+  style_urls = ['skins/standard/admin.css']
 %]
 
 [% columns = [
@@ -46,7 +47,8 @@
      },
      {
        name => "allows_unconfirmed"
-       heading => "Allow UNCONFIRMED $terms.Bugs"
+       heading => "Allow " _ display_value('bug_status', 'UNCONFIRMED') _
+                       " " _ terms.Bugs
        yesno_field => 1
      },
 ] %]
@@ -56,7 +58,7 @@
   [% columns.push({
        name => "bug_count"
        heading => "$terms.Bug Count"
-       align => 'right'
+       class => 'right'
        contentlink => 'buglist.cgi?product=%%name%%'
      })
   %]

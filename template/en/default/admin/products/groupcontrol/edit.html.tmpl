@@ -10,7 +10,8 @@
     Edit Group Controls for [% product.name FILTER html %]
 [% END %]
 [% PROCESS global/header.html.tmpl 
-   title = title 
+  title = title
+  style_urls = ['skins/standard/admin.css']
 %]
 
 [% display_headers = 1 %]
@@ -23,8 +24,8 @@
       <input type="hidden" name="product" value="[% product.name FILTER html %]">
       <input type="hidden" name="token" value="[% token FILTER html %]">
 
-      <table id="form" cellspacing="0" cellpadding="4" border="1">
-        <tr bgcolor="#6666ff">
+      <table id="admin_table">
+        <tr class="column_header">
           <th>Group</th>
           <th>Entry</th>
           <th>MemberControl</th>
@@ -37,9 +38,9 @@
         </tr>
   [% END %]
   [% IF !group.group.isactive %]
-    <tr bgcolor="#bbbbbb">
+    <tr class="disabled">
       <td>[% group.group.name FILTER html %]</td>
-      <td align="center" colspan="7">Disabled</td>
+      <td class="center" colspan="7">Disabled</td>
       <td>[% group.bug_count FILTER html %]</td>
     </tr>
   [% ELSE %]
@@ -129,15 +130,17 @@ product.
 </p>
 <p>
 If any group has <b>Entry</b> selected, then this product will
-restrict [% terms.bug %] entry to only those users who are members of all the
-groups with entry selected.
+restrict [% terms.bug %] entry to only those users who are members of
+[%+ IF Param('or_groups') %]at least one of[% ELSE %]all[% END %] the groups
+with entry selected.
 </p>
 <p>
 If any group has <b>Canedit</b> selected, then this product
-will be read-only for any users who are not members of all of
-the groups with Canedit selected. ONLY users who are members of
-all the canedit groups will be able to edit. This is an additional
-restriction that further restricts what can be edited by a user.
+will be read-only for any users who are not members of
+[%+ IF Param('or_groups') %]one[% ELSE %]all[% END %] of the groups with
+Canedit selected. ONLY users who are members of
+[%+ IF Param('or_groups') %]at least one of[% ELSE %]all[% END %] the canedit groups
+will be able to edit. This is an additional restriction that further restricts what can be edited by a user.
 </p>
 <p>
 The following settings control let you choose privileges on a <b>per-product basis</b>.
@@ -164,7 +167,7 @@ indicate which [% terms.bugs %] will be placed in
 this group according to the following definitions.
 </p>
 
-<table border=1>
+<table id="group_settings_desc">
   <tr>
     <th>
       MemberControl
