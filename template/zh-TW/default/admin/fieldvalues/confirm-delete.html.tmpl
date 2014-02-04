@@ -22,31 +22,34 @@
   style_urls = ['skins/standard/admin.css']
 %]
 
-<table border="1" cellpadding="4" cellspacing="0">
-<tr bgcolor="#6666FF">
-  <th valign="top" class="left">欄位</th>
-  <th valign="top" class="left">值</th>
-</tr>
-<tr>
-  <td valign="top">欄位名稱：</td>
-  <td valign="top">[% field.description FILTER html %]</td>
-</tr>
-<tr>
-  <td valign="top">欄位數值：</td>
-  <td valign="top">[% value.name FILTER html %]</td>
-</tr>
-<tr>
-  <td valign="top">[% terms.Bugs %] ：</td>
-  <td valign="top">
-[% IF value.bug_count %]
-  <a title="列出 '[% field.description FILTER html %]' 是 '[% value.name FILTER html %]' 的 [% terms.bugs %]"
-     href="buglist.cgi?[% field.name FILTER uri %]=[% value.name FILTER uri %]"
-    >[% value.bug_count FILTER html %]</a>
-[% ELSE %]
-  無
-[% END %]
-  </td>
-</tr>
+<table id="admin_table">
+  <tr class="column_header">
+    <th>欄位</th>
+    <th>值</th>
+  </tr>
+  <tr>
+    <td>欄位名稱</td>
+    <td>[% field.description FILTER html %]</td>
+  </tr>
+  <tr>
+    <td>欄位數值</td>
+    <td>[% value.name FILTER html %]</td>
+  </tr>
+  <tr>
+    <td>[% terms.Bugs %]</td>
+    <td>
+      [% IF value.bug_count %]
+        <a title="列出 '
+                 [%- field.description FILTER html %]' 是 '
+                 [%- value.name FILTER html %]' 的 [% terms.bugs %]"
+           href="buglist.cgi?[% field.name FILTER uri %]=
+                 [%- value.name FILTER uri %]">
+          [%- value.bug_count FILTER html %]</a>
+      [% ELSE %]
+        無
+      [% END %]
+    </td>
+  </tr>
 </table>
 
 <h2>確認</h2>
@@ -125,6 +128,6 @@
 
 [% PROCESS admin/fieldvalues/footer.html.tmpl
   no_edit_link = 1
- +%]
+%]
 
 [% PROCESS global/footer.html.tmpl %]
