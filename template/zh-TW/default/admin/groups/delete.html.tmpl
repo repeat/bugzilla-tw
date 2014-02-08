@@ -13,21 +13,28 @@
   #                 group.
   #%]
 
-
+[% title = BLOCK %]刪除群組 '[% group.name FILTER html %]'[% END %]
 [% PROCESS global/header.html.tmpl
-  title = "刪除群組"
+  title = title
+  style_urls = ['skins/standard/admin.css']
   doc_section = "groups.html"
 %]
 
-<table border="1">
-  <tr>
-    <th>編號</th>
-    <th>名稱</th>
-    <th>描述</th>
+<table id="admin_table">
+  <tr class="column_header">
+    <th>欄位</th>
+    <th>值</th>
   </tr>
   <tr>
+    <td>編號</td>
     <td>[% group.id FILTER html %]</td>
+  </tr>
+  <tr>
+    <td>名稱</td>
     <td>[% group.name FILTER html %]</td>
+  </tr>
+  <tr>
+    <td>描述</td>
     <td>[% group.description FILTER html_light %]</td>
   </tr>
 </table>
@@ -130,7 +137,9 @@
 
   <h2>確認</h2>
 
-  <p>你確定要刪除此一群組嗎？</p>
+  <p class="confirmation">
+    你確定要刪除此一群組嗎？
+  </p>
   [% IF group.users.size || group.bugs.size || group.products.size
         || group.flags.size
   %]
