@@ -21,32 +21,34 @@
   style_urls = ['skins/standard/admin.css']
 %]
 
-<table border="1" cellpadding="4" cellspacing="0">
-<tr bgcolor="#6666FF">
-  <th valign="top" class="left">欄位</th>
-  <th valign="top" class="left">值</th>
-</tr>
-<tr>
-  <td valign="top">里程碑：</td>
-  <td valign="top">[% milestone.name FILTER html %]</td>
-</tr>
-<tr>
-  <td valign="top">產品名稱：</td>
-  <td valign="top">[% product.name FILTER html %]</td>
-</tr>
-<tr>
-  <td valign="top">[% terms.Bugs %] ：</td>
-  <td valign="top">
-[% IF milestone.bug_count %]
-  <a title="列出里程碑在 '[% milestone.name FILTER html %]' 的 [% terms.bugs %] 清單"
-     href="buglist.cgi?target_milestone=[% milestone.name FILTER uri %]&amp;product=
-          [%- product.name FILTER uri %]"
-          >[% milestone.bug_count FILTER none %]</a>
-[% ELSE %]
-  無
-[% END %]
-  </td>
-</tr>
+<table id="admin_table">
+  <tr class="column_header">
+    <th>欄位</th>
+    <th>值</th>
+  </tr>
+  <tr>
+    <td>里程碑</td>
+    <td>[% milestone.name FILTER html %]</td>
+  </tr>
+  <tr>
+    <td>里程碑所屬的產品</td>
+    <td>[% product.name FILTER html %]</td>
+  </tr>
+  <tr>
+    <td>[% terms.Bugs %]</td>
+    <td>
+      [% IF milestone.bug_count %]
+        <a title="列出里程碑在 '
+                 [%- milestone.name FILTER html %]'
+                 的 [% terms.bugs %] 清單"
+           href="buglist.cgi?target_milestone=[% milestone.name FILTER uri %]&amp;product=
+                [%- product.name FILTER uri %]">
+           [% milestone.bug_count FILTER none %]</a>
+      [% ELSE %]
+        無
+      [% END %]
+    </td>
+  </tr>
 </table>
 
 <h2>確認</h2>
