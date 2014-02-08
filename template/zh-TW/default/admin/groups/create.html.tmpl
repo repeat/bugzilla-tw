@@ -13,29 +13,34 @@
 [% PROCESS global/header.html.tmpl
   title = "新增群組"
   subheader = "此頁面允許你新增一個使用者群組。"
+  style_urls = ['skins/standard/admin.css']
   doc_section = "groups.html#create-groups"
 %]
 
 <form method="post" action="editgroups.cgi">
-  <table border="1" cellpadding="4" cellspacing="0"><tr>
-    <th>名稱</th>
-    <th>描述</th>
-    <th>使用者正規表達式</th>
-    <th>使用於 [% terms.Bugs %]</th>
-  </tr><tr>
-    <td><input size="20" name="name"></td>
-    <td><input size="40" name="desc"></td>
-    <td><input size="30" name="regexp"></td>
-    <td><input type="checkbox" name="isactive" value="1" checked></td>
-  </tr>
-  <tr>
-    <th>圖示網址：</th>
-    <td colspan="3"><input type="text" size="70" maxlength="255" id="icon_url" name="icon_url"></td>
-  </tr>
-  [% Hook.process('field') %]
+  <table id="admin_table_edit">
+    <tr>
+      <th>群組名稱：</th>
+      <td><input size="60" maxlength="255" name="name"></td>
+    </tr>
+    <tr>
+      <th>描述：</th>
+      <td><input size="60" name="desc"></td>
+    </tr>
+    <tr>
+      <th>使用者正規表達式：</th>
+      <td><input size="60" name="regexp"></td>
+    </tr>
+    <tr>
+      <th>圖示網址：</th>
+      <td><input type="text" size="60" id="icon_url" name="icon_url"></td>
+    </tr>
+    <tr>
+      <th>Use For [% terms.Bugs %]:</th>
+      <td><input type="checkbox" name="isactive" value="1" checked></td>
+    </tr>
+    [% Hook.process('field') %]
   </table>
-
-  <hr>
 
   <input type="checkbox" id="insertnew" name="insertnew" value="1"
     [% IF Param("makeproductgroups") %] checked[% END %]>
@@ -46,9 +51,11 @@
   <input type="hidden" name="token" value="[% token FILTER html %]">
 </form>
 
+<hr>
+
 <p>
    <b>名稱</b><br>
-   用於 B<!-- -->ugzilla&rarr;user&rarr;in_group() 函數，以及所有自訂的 cgi 檔案中。<br>
+   用於 B[%%]ugzilla&rarr;user&rarr;in_group() 函數，以及所有自訂的 cgi 檔案中。<br>
    也可以用於以電子郵件送出 [% terms.bugs %] 時，限制 [% terms.bug %] 於特定的群組中。
 </p>
 
@@ -58,13 +65,6 @@
    群組成員可以選擇此 [% terms.bug %] 是否僅限制於同群組的其他成員可以看見。
 </p>
 
-<p>
-   <b>使用於 [% terms.Bugs %]</b><br>
-   此一旗標決定此群組是否可以被用於 [% terms.bugs %] 中。<br>
-   如不選擇，使用者將無法再加入 [% terms.bugs %] 到此一群組中，不過已於此群組中的
-   [% terms.bugs %] 並不會被影響。這麼做會比刪除該群組還要好一點。<br>
-   <b>注意：如果你在新增群組，那麼你應該希望此群組可以接受 [% terms.bugs %]，因此你應該勾選此選項。</b>
-</p>
 
 <p>
    <b>使用者正規表達式</b><br>
@@ -76,6 +76,14 @@
    <b>圖示網址</b><br>
    選填，是用來辨識此群組的圖示的網址。<br>
    可以是相對路徑，或是絕對路徑。將會在 [% terms.bugs %] 意見作者的旁邊顯示此圖示。
+</p>
+
+<p>
+   <b>使用於 [% terms.Bugs %]</b><br>
+   此一旗標決定此群組是否可以被用於 [% terms.bugs %] 中。<br>
+   如不選擇，使用者將無法再加入 [% terms.bugs %] 到此一群組中，不過已於此群組中的
+   [% terms.bugs %] 並不會被影響。這麼做會比刪除該群組還要好一點。<br>
+   <b>注意：如果你在新增群組，那麼你應該希望此群組可以接受 [% terms.bugs %]，因此你應該勾選此選項。</b>
 </p>
 
 [% IF Param("makeproductgroups") %]
@@ -90,6 +98,6 @@
   </p>
 [% END %]
 
-<p>回到 <a href="./">[% terms.bugs %] 主頁</a>，或是<a href="editgroups.cgi">群組列表</a>。
+<p>回到<a href="editgroups.cgi">群組列表</a>。
 
 [% PROCESS global/footer.html.tmpl %]
