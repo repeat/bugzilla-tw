@@ -16,20 +16,19 @@
 [% PROCESS global/header.html.tmpl
   title = title
   subheader = subheader
-  onload = "document.forms['f'].milestone.focus()"
+  style_urls = ['skins/standard/admin.css']
 %]
 
 <form name="f" method="post" action="editmilestones.cgi">
-  <table border="0" cellpadding="4" cellspacing="0">
+  <table id="admin_table_edit">
     <tr>
       <th><label for="milestone">里程碑：</label></th>
       <td><input id="milestone" size="64" maxlength="64" name="milestone"
-                 value=""></td>
+                 autofocus></td>
     </tr>
     <tr>
       <th><label for="sortkey">排序鍵：</label></th>
-      <td><input id="sortkey" size="20" maxlength="20" name="sortkey"
-                 value=""></td>
+      <td><input id="sortkey" size="20" maxlength="20" name="sortkey"></td>
     </tr>
   </table>
   <input type="submit" id="create" value="新增">
