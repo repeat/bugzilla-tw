@@ -17,7 +17,7 @@
   的功能。啟用此功能將會強制瀏覽器在拜訪你指定的域名時，總是使用 SSL
   連線，且絕對不會接受無效的認證，因而大幅增加安全性。啟用此項功能的前提是：你必須啟用
   <code>ssl_redirect</code> 參數、確認
-  [% terms.Bugzilla %] 是唯一在指定域名中執行的程式（也就是說，你的
+  Bugzilla 是唯一在指定域名中執行的程式（也就是說，你的
   <code>urlbase</code> 必須像是 <code>http://bugzilla.example.com/</code> ），
   並且你絕對不會把 <code>ssl_redirect</code> 參數設為停用。
   <ul>
@@ -30,7 +30,7 @@
     <li>
       include_subdomains - 傳送 HSTS header 時加入 <code>includeSubDomains</code>
       旗標，這將會使所有子域名的安全性變更生效。當你的 <code>attachment_base</code>
-      是在 [% terms.Bugzilla %] 主域名下的一個子域名時，這項設定就很有用了。
+      是在 Bugzilla 主域名下的一個子域名時，這項設定就很有用了。
     </li>
   </ul>
 [% END %]
@@ -38,19 +38,19 @@
 [% param_descs = {
   cookiedomain =>
     "如果你的網站是 'www.foo.com' ，則把此參數設定為"
-    _ " '.foo.com' 時，將會允許 'bar.foo.com' 存取 $terms.Bugzilla"
+    _ " '.foo.com' 時，將會允許 'bar.foo.com' 存取 Bugzilla"
     _ " 的 cookie 。這對於同一個網站伺服器有多個域名，且希望共享"
-    _ " $terms.Bugzilla 的 cookie 時很有用。",
+    _ " Bugzilla 的 cookie 時很有用。",
 
   inbound_proxies =>
-    "當透過代理伺服器連線至 $terms.Bugzilla 時，"
-    _ " $terms.Bugzilla 將每個使用者都認定為該代理伺服器的 IP 位址。"
+    "當透過代理伺服器連線至 Bugzilla 時，"
+    _ " Bugzilla 將每個使用者都認定為該代理伺服器的 IP 位址。"
     _ "如果在參數中輸入以逗號 (,) 分隔的 IP 列表，"
-    _ "那麼 $terms.Bugzilla 將會信任來自這些 IP 的 <code>X-Forwarded-For</code> Header ，"
+    _ "那麼 Bugzilla 將會信任來自這些 IP 的 <code>X-Forwarded-For</code> Header ，"
     _ "並使用 Header 的值來做為使用者的 IP 位址。",
 
   proxy_url =>
-    "$terms.Bugzilla 可以自動連線到網路並擷取關於最新版的版本資訊，參考"
+    "Bugzilla 可以自動連線到網路並擷取關於最新版的版本資訊，參考"
     _ " <tt>upgrade_notification</tt> 參數。如果透過代理伺服器連線，"
     _ "可能需要設定代理伺服器的網址，以免 HTTP_PROXY 環境變數無法被存取。"
     _ "如需認證，使用 <code>http://user:pass@proxy_url/</code> 的格式。",
