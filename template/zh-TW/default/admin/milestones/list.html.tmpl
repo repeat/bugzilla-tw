@@ -18,6 +18,7 @@
 [% title = BLOCK %]選擇產品 '[% product.name FILTER html %]' 的里程碑[% END %]
 [% PROCESS global/header.html.tmpl
   title = title
+  style_urls = ['skins/standard/admin.css']
 %]
 
 [% edit_contentlink = BLOCK %]editmilestones.cgi?action=edit&amp;product=
@@ -51,7 +52,7 @@
   [% columns.push({
        name => "bug_count"
        heading => "$terms.Bugs"
-       align => "right"
+       class => "right"
        contentlink => bug_count_contentlink
      })
   %]
