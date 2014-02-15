@@ -16,37 +16,41 @@
   #%]
 
 [% PROCESS global/header.html.tmpl
-   title = "預設的使用偏好"
+  title = "預設的使用偏好"
+  style_urls = ['skins/standard/admin.css']
  %]
 
 [% PROCESS "global/setting-descs.none.tmpl" %]
 
 <p>
-此頁面可讓你編輯預設的使用偏好值。
+  此頁面可讓你編輯預設的使用偏好值。
+  每項偏好的「預設值」將會適用於所有未選擇自己的偏好設定的使用者，以及未登入的訪客。
 </p>
-<p>
-每項偏好的「預設值」將會適用於所有未選擇自己的偏好設定的使用者，以及未登入的訪客。
-</p>
-<p>
-「啟用」的勾選框控制此一偏好值是否可供使用者選用。<br>
-如果勾選，使用者可以在他們的偏好設定頁面看見此一偏好設定，並可以選擇是否變更。<br>
-如果不勾選，此一偏好設定將不會顯示在偏好設定頁面上，所有使用者將會使用預設值。
-</p>
-<hr>
 
-[% IF settings.size %]
-    <form name="adminsettingform" method="post" action="editsettings.cgi">
-      <table border="1" cellpadding="4">
-      <tr>
-        <th>偏好</th>
-        <th>預設值</th>
-        <th>啟用</th>
-      </tr>
+<div>
+  「啟用」的勾選框控制此一偏好值是否可供使用者選用：
+  <ul>
+    <li>
+      如果勾選，使用者可以在他們的偏好設定頁面看見此一偏好設定，並可以選擇是否變更。
+    </li>
+    <li>
+      如果不勾選，此一偏好設定將不會顯示在偏好設定頁面上，所有使用者將會使用預設值。
+    </li>
+  </ul>
+</div>
 
-      [% FOREACH name = settings.keys %]
+    <form id="settings" method="post" action="editsettings.cgi">
+      <table id="admin_table">
+        <tr class="column_header">
+          <th>偏好</th>
+          <th>預設值</th>
+          <th>啟用</th>
+        </tr>
+
+        [% FOREACH name = settings.keys %]
           [% checkbox_name = name _ '-enabled' %]
           <tr>
-            <td align="right">
+            <td>
               [% setting_descs.$name OR name FILTER html %]
             </td>
             <td>
@@ -59,7 +63,7 @@
                 [% END %]
               </select>
             </td>
-            <td align="center">
+            <td class="center">
               <input type="checkbox"
                 name="[% checkbox_name FILTER html %]"
                 id="[% checkbox_name FILTER html %]"
@@ -67,23 +71,12 @@
               <br>
             </td>
           </tr>
-      [% END %]
+        [% END %]
       </table>
 
     <input type="hidden" name="action" value="update">
     <input type="hidden" name="token" value="[% token FILTER html %]">
-    <table>
-      <tr>
-        <td width="150"></td>
-        <td>
-          <input type="submit" id="update" value="儲存設定">
-        </td>
-      </tr>
-    </table>
-
+    <input type="submit" id="update" value="儲存設定">
   </form>
-[% ELSE %]
-  沒有使用偏好可以編輯。
-[% END %]
 
 [% PROCESS global/footer.html.tmpl %]
