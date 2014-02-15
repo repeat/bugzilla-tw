@@ -16,20 +16,24 @@
 [% title = BLOCK %]編輯產品 '[%- product.name FILTER html %]' 的版本 '[% version.name FILTER html %]'[% END %]
 [% PROCESS global/header.html.tmpl
   title = title
+  style_urls = ['skins/standard/admin.css']
 %]
 
 <form method="post" action="editversions.cgi">
-  <table border="0" cellpadding="4" cellspacing="0">
-
+  <table id="admin_table_edit">
     <tr>
-      <th class="field_label"><label for="version">版本：</label></th>
-      <td><input id="version" size="64" maxlength="64" name="version" value="
-      [%- version.name FILTER html %]"></td>
+      <th><label for="version">版本：</label></th>
+      <td>
+        <input id="version" size="64" maxlength="64" name="version"
+               value="[% version.name FILTER html %]">
+      </td>
     </tr>
     <tr>
-      <th class="field_label"><label for="isactive">開啟回報 [% terms.Bugs %] 功能：</label></th>
-      <td><input id="isactive" name="isactive" type="checkbox" value="1"
-                 [% 'checked="checked"' IF version.isactive %]></td>
+      <th><label for="isactive">開啟回報 [% terms.Bugs %] ：</label></th>
+      <td>
+        <input id="isactive" name="isactive" type="checkbox" value="1"
+                 [% 'checked="checked"' IF version.isactive %]>
+      </td>
     </tr>
   </table>
 
