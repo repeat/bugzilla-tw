@@ -257,7 +257,8 @@ TUI_hide_default('attachment_text_field');
       field = bug_fields.version editable = 1 rowspan = 3
     %]
     <td rowspan="3">
-      <select name="version" id="version" size="5">
+      <select name="version" id="version" size="5" aria-required="true"
+              class="required">
         [%- FOREACH v = version %]
           [% NEXT IF NOT v.is_active %]
           <option value="[% v.name FILTER html %]"
@@ -634,13 +635,19 @@ TUI_hide_default('attachment_text_field');
     <td colspan="3">
       <br>
         <strong>
-          只有在所有已選擇的群組的使用者才能瀏覽這個
+          只有在
+          [% IF Param('or_groups') %]
+            已選擇的群組中至少一個群組
+          [% ELSE %]
+            所有已選擇的群組
+          [% END %]
+          的使用者才能瀏覽這個
           [+% terms.bug %] ：
         </strong>
       <br>
-      <font size="-1">
+      <span class="bz_info">
         (若均不勾選，則此 [% terms.bug %] 將會公開。)
-      </font>
+      </span>
       <br>
       <br>
 
