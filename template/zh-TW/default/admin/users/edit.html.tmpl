@@ -52,7 +52,7 @@
           </tr>
           <tr>
             [% IF editusers %]
-              <td style="text-align: center; font-weight: bold">|</td>
+              <th class="checkbox">|</th>
             [% END %]
             <th colspan="2">使用者是下列群組的成員</th>
           </tr>
@@ -65,7 +65,7 @@
                   [% %]<input type="checkbox"
                               name="bless_[% group.id %]"
                               value="1"
-                              [% ' checked="checked"' IF perms.directbless %] />
+                              [% ' checked="checked"' IF perms.directbless %]>
                   [% ']' IF perms.indirectbless %]</td>
               [% END %]
               <td class="checkbox">
@@ -75,7 +75,7 @@
                            id="group_[% group.id %]"
                            name="group_[% group.id %]"
                            value="1"
-                           [% ' checked="checked"' IF perms.directmember %] />
+                           [% ' checked="checked"' IF perms.directmember %]>
                 [% '*' IF perms.regexpmember %]
                 [% ']' IF perms.derivedmember %]</td>
               <td class="groupname">
