@@ -39,9 +39,8 @@
    doc_section = "parameters.html"
 %]
 
-<table border="0" width="100%">
-  <tr>
-    <td>
+<div class="table">
+  <div class="cell">
       [%# NAVIGATION BAR %]
       <table id="menu">
         <tr>
@@ -65,21 +64,21 @@
           </tr>
         [% END %]
       </table>
-    </td>
-    <td>
-      [% IF curpanel == -1 %]
-        [% PROCESS admin/params/index.html.tmpl panels = panels %]
-      [% ELSE %]
+  </div>
+  
+  <div class="cell">
+    <div class="contribute"><strong>備註：</strong>
+      Bugzilla 完全由志願參加者進行開發。
+      回饋給 Bugzilla 計畫的最好方式就是做點
+      <a href="http://www.bugzilla.org/contribute/">貢獻</a>！
+      不一定要當程式設計師才能夠貢獻，有其他各種方式可以回饋。
+    </div>
 
-        <div class="contribute"><strong>備註：</strong>
-          B[% %]ugzilla 完全由志願參加者進行開發。
-          回饋給 B[% %]ugzilla 計畫的最好方式就是做點<a
-          href="http://www.bugzilla.org/contribute/">貢獻</a>！
-          不一定要當程式設計師才能夠貢獻，有其他各種方式可以回饋。
-        </div>
-
+    [% IF curpanel == -1 %]
+      [% PROCESS admin/params/index.html.tmpl panels = panels %]
+    [% ELSE %]
         <p>
-          此頁面允許你編輯 [% terms.Bugzilla %] 的基本運作參數。<br>
+          此頁面允許你編輯 Bugzilla 的基本運作參數。<br>
           請小心！任何你勾選「重設」選項的參數將會回到系統預設值。
         </p>
 
@@ -91,9 +90,8 @@
           <input type="hidden" name="token" value="[% token FILTER html %]">
           <input type="submit" id="save-params" value="儲存設定">
         </form>
-      [% END %]
-    </td>
-  </tr>
-</table>
+    [% END %]
+  </div>
+</div>
 
 [% INCLUDE global/footer.html.tmpl %]
