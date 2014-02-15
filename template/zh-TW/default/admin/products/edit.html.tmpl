@@ -30,61 +30,58 @@
 %]
 
 <form method="post" action="editproducts.cgi">
-  <table border="0" cellpadding="4" cellspacing="0">
+  <table id="admin_table_edit">
 
     [% PROCESS "admin/products/edit-common.html.tmpl" %]
 
     <tr>
-      <th valign="top">
-        <a href="editcomponents.cgi?product=[% product.name FILTER uri %]"
-        >編輯子產品：</a>
+      <th>
+        <a href="editcomponents.cgi?product=[% product.name FILTER uri %]">
+        編輯子產品：</a>
       </th>
       <td>
         [% IF product.components.size -%]
           [% FOREACH component = product.components %]
             <a href="editcomponents.cgi?action=edit&product=
             [%- product.name FILTER uri %]&component=
-            [%- component.name FILTER uri %]">[% component.name FILTER html %]</a>：&nbsp;
-            [% IF component.description %]
-              [% component.description FILTER html_light %]
-            [% ELSE %]
-              <font color="red">缺少描述</font>
-            [% END %]
+            [%- component.name FILTER uri %]">[% component.name FILTER html %]</a>：
+            [% component.description FILTER html_light %]
             <br>
           [% END %]
         [% ELSE %]
-          <font color="red">缺少</font>
+          <span class="warning">缺少</span>
         [% END %]
       </td>
     </tr>
     <tr>
-      <th valign="top">
-        <a href="editversions.cgi?product=[% product.name FILTER uri %]"
-        >編輯版本：</a>
+      <th>
+        <a href="editversions.cgi?product=[% product.name FILTER uri %]">編輯版本：</a>
       </th>
       <td>
         [%- IF product.versions.size -%]
-          [% FOREACH v = product.versions %]
-            [% v.name FILTER html %]
-            <br>
-          [% END %]
+          <div class="multi-columns">
+            [% FOREACH v = product.versions %]
+              [% v.name FILTER html %]<br>
+            [% END %]
+          </div>
         [% ELSE %]
-          <font color="red">缺少</font>
+          <span class="warning">缺少</span>
         [% END %]
       </td>
     </tr>
     [% IF Param('usetargetmilestone') %]
       <tr>
-        <th valign="top">
-          <a href="editmilestones.cgi?product=[% product.name FILTER uri %]"
-          >編輯里程碑：</a>
+        <th>
+          <a href="editmilestones.cgi?product=[% product.name FILTER uri %]">
+          編輯里程碑：</a>
         </th>
         <td>
           [%- IF product.milestones.size -%]
-            [%- FOREACH m = product.milestones -%]
-              [% m.name FILTER html %]
-            <br>
-            [% END %]
+            <div class="multi-columns">
+              [%- FOREACH m = product.milestones -%]
+                [% m.name FILTER html %]<br>
+              [% END %]
+            </div>
           [% ELSE %]
             <font color="red">缺少</font>
           [% END %]
@@ -92,7 +89,7 @@
       </tr>
     [% END %]
     <tr>
-      <th valign="top">
+      <th>
         <a href="editproducts.cgi?action=editgroupcontrols&product=
           [%- product.name FILTER uri %]">
           編輯群組控管：</a>
@@ -100,7 +97,7 @@
       <td>
         [% IF product.group_controls.size %]
           [% FOREACH g = product.group_controls.values.sort("name") %]
-            <b>[% g.group.name FILTER html %] ：</b>&nbsp;
+            <b>[% g.group.name FILTER html %] ：</b>
             [% IF g.group.isactive %]
               [% group_control.${g.membercontrol} FILTER html %]/
               [% group_control.${g.othercontrol} FILTER html %]
@@ -121,8 +118,11 @@
     </tr>
     <tr>
       <th>[% terms.Bugs %] ：</th>
-      <td><a href="buglist.cgi?product=[% product.name FILTER uri %]"
-            > [% product.bug_count FILTER html %]</a></td>
+      <td>
+        <a href="buglist.cgi?product=[% product.name FILTER uri %]">
+          [% product.bug_count FILTER html %]</a>
+      </td>
+
     </tr>
   </table>
 
