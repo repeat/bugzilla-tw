@@ -26,23 +26,17 @@
     <a href="attachment.cgi?bugid=[% bug.id FILTER html %]&amp;action=viewall">點此連結</a>。
   </div>
 [% END %]
-<br>
 
 [% FOREACH a = attachments %]
-
-  <div align="center">
-  <table class="attachment_info" cellspacing="0" cellpadding="4" border="1" width="75%">
+<div class="viewall_frame_container">
+  <table class="viewall_desc">
     <tr>
-      <td valign="top" bgcolor="#cccccc" colspan="6">
-        <big><b>附件 #[% a.id %]</b></big>
-      </td>
+      <th colspan="6" class="bz_attach_footer">附件 #[% a.id %]</th>
     </tr>
     <tr>
-      <td valign="top">
-        [% a.description FILTER html FILTER obsolete(a.isobsolete) %]
-      </td>
+      <td>[% a.description FILTER html FILTER obsolete(a.isobsolete) %]</td>
 
-      <td valign="top">
+      <td>
         [% IF a.ispatch %]
           <i>patch</i>
         [% ELSE %]
@@ -50,10 +44,10 @@
         [% END %]
       </td>
 
-      <td valign="top">[% a.attached FILTER time %]</td>
-      <td valign="top">[% a.datasize FILTER unitconvert %]</td>
+      <td>[% a.attached FILTER time %]</td>
+      <td>[% a.datasize FILTER unitconvert %]</td>
 
-      <td valign="top">
+      <td>
         [% IF a.flags.size == 0 %]
           <i>沒有旗標</i>
         [% ELSE %]
@@ -68,9 +62,7 @@
         [% END %]
       </td>
 
-      <td valign="top">
-        <a href="attachment.cgi?id=[% a.id %]&amp;action=edit">詳細資料</a>
-      </td>
+      <td><a href="attachment.cgi?id=[% a.id %]&amp;action=edit">詳細資料</a></td>
     </tr>
   </table>
 
