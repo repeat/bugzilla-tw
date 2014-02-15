@@ -7,13 +7,12 @@
   #%]
 
 [% PROCESS global/header.html.tmpl
-   title = "定位或新增附件",
-   onload = "document.forms['choose-id'].id.focus()"
+   title = "定位或新增附件"
  %]
 
 <form name="choose-id" method="get" action="attachment.cgi">
   <p>以在下方表格輸入附件編號的方式，瀏覽一個附件：</p>
-  <p>附件編號：<input name="id" size="6">
+  <p>附件編號：<input name="id" size="6" autofocus required>
   <button name="action" value="edit" id="edit">詳細資料</button>
   <button name="action" value="view" id="view">瀏覽</button>
   </p>
@@ -21,14 +20,14 @@
 
 <form method="get" action="show_bug.cgi">
   <p>或者以和其相關的 [% terms.bug %] 回報來瀏覽附件清單：</p>
-  <p>[% terms.Bug %] 編號：<input name="id" size="6">
+  <p>[% terms.Bug %] 編號：<input name="id" size="6" required>
   <input type="submit" name="action" value="瀏覽" id="action">
   </p>
 </form>
 
 <form method="get" action="attachment.cgi">
   <p>或者，在下方輸入 [% terms.bug %] 編號來新增附件：</p>
-  <p>[% terms.Bug %] 編號：<input name="bugid" size="6">
+  <p>[% terms.Bug %] 編號：<input name="bugid" size="6" required>
     <button name="action" value="enter" id="action">新增附件</button>
   </p>
 </form>
