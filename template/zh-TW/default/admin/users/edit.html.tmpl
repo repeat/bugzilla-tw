@@ -115,9 +115,9 @@
 </table>
 
 <p>
-  <input type="submit" id="update" value="儲存變更" />
-  <input type="hidden" name="userid" value="[% otheruser.id %]" />
-  <input type="hidden" name="action" value="update" />
+  <input type="submit" id="update" value="儲存變更">
+  <input type="hidden" name="userid" value="[% otheruser.id %]">
+  <input type="hidden" name="action" value="update">
   <input type="hidden" name="token" value="[% token FILTER html %]">
   [% INCLUDE listselectionhiddenfields %]
 
@@ -138,9 +138,9 @@
 [% IF Param('allowuserdeletion') && editusers %]
   <form method="post" action="editusers.cgi">
   <p>
-    <input type="submit" id="delete" value="刪除使用者" />
-    <input type="hidden" name="action" value="del" />
-    <input type="hidden" name="userid" value="[% otheruser.id %]" />
+    <input type="submit" id="delete" value="刪除使用者">
+    <input type="hidden" name="action" value="del">
+    <input type="hidden" name="userid" value="[% otheruser.id %]">
     [% INCLUDE listselectionhiddenfields %]
   </p>
   </form>
