@@ -6,32 +6,22 @@
   # defined by the Mozilla Public License, v. 2.0.
   #%]
 
-<p>
-  所有參數以段落顯示如下。如果你不能找到的話，就代表該參數不存在。
-</p>
+<div id="params_index">
+  <p>
+    所有參數以段落顯示如下。如果你不能找到的話，就代表該參數不存在。
+  </p>
 
-<div align="center">
-  <table>
-    <tr>
-      <th>參數</th>
-      <th>段落</th>
-    </tr>
-    [% FOREACH panel = panels %]
+  [% FOREACH panel = panels %]
+    <h3>[% panel.title FILTER html %]</h3>
+
+    <ul>
       [% FOREACH param = panel.param_list.sort('name') %]
-        <tr>
-          <td>
-            <a href="editparams.cgi?section=
-              [%- panel.name FILTER uri %]#[% param.name FILTER uri %]_desc">
-              [% param.name FILTER html %]</a>
-          </td>
-          <td>
-            [% panel.title FILTER html %]
-          </td>
-        </tr>
+        <li>
+          <a href="editparams.cgi?section=
+                   [%- panel.name FILTER uri %]#[% param.name FILTER uri %]_desc">
+            [% param.name FILTER html %]</a>
+        </li>
       [% END %]
-      <tr>
-        <td>&nbsp;</td><td>&nbsp;</td>
-      </tr>
-    [% END %]
-  </table>
+    </ul>
+  [% END %]
 </div>
