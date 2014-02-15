@@ -40,14 +40,18 @@
                                      javascript_urls = "js/attachment.js"
                                      style_urls = ['skins/standard/attachment.css'] %]
 [% ELSE %]
+  <!DOCTYPE html>
   <html>
+    <head>
+      <link href="[% 'skins/standard/global.css' FILTER mtime %]"
+            rel="stylesheet" type="text/css">
+      <link href="[% 'skins/standard/attachment.css' FILTER mtime %]"
+            rel="stylesheet" type="text/css">
+      <script src="[% 'js/attachment.js' FILTER mtime %]"
+              type="text/javascript"></script>
+    </head>
+    <body onload="[% onload FILTER html %]">
   <head>
-  <link href="[% 'skins/standard/attachment.css' FILTER mtime %]"
-        rel="stylesheet" type="text/css">
-  <script src="[% 'js/attachment.js' FILTER mtime %]"
-          type="text/javascript"></script>
-  </head>
-  <body onload="[% onload FILTER html %]">
 [% END %]
 
 [%# If we have attachid, we are in diff, otherwise we're in interdiff %]
@@ -56,13 +60,15 @@
   [% IF headers %]
     <a href="[% PROCESS viewurl id=attachid %]">瀏覽</a>
     | <a href="[% PROCESS editurl id=attachid %]">詳細資料</a>
-    | <a href="[% PROCESS diffurl id=attachid %]&amp;context=[% context FILTER uri %]&amp;collapsed=[% collapsed FILTER uri %]&amp;headers=[% headers FILTER uri %]&amp;format=raw">原始檔案</a>
+    | <a href="[% PROCESS diffurl id=attachid %]&amp;context=[%
+               context FILTER uri %]&amp;collapsed=[% collapsed FILTER uri %]&amp;headers=[%
+               headers FILTER uri %]&amp;format=raw">原始檔案</a>
     | 回到 [% "$terms.bug $bugid" FILTER bug_link(bugid) FILTER none %]
   [% END %]
   [% IF other_patches.size > 0 %]
     [% IF headers %] |[%END%]
     在
-    <form style="display: inline" action="attachment.cgi">
+    <form class="inline" action="attachment.cgi">
       <select name="oldid">
       [% FOREACH patch = other_patches %]
         <option value="[% patch.id %]"
@@ -92,13 +98,13 @@
    onmouseout="window.status = lastStatus; return true"
    onclick="return collapse_all()">展開全部</a> |
 <a href="#"
-   onmouseover="lastStatus = window.status; window.status='堆疊全部'; return true"
+   onmouseover="lastStatus = window.status; window.status='折疊全部'; return true"
    onmouseout="window.status = lastStatus; return true"
-   onclick="return expand_all()">堆疊全部</a>
+   onclick="return expand_all()">折疊全部</a>
 
 [% IF do_context %]
   [%# only happens for normal viewing, not interdiff %]
-  | <span style='font-weight: bold'>內容：</span>
+  | <strong>內容：</strong>
   [% IF context == "patch" %]
     (<strong>Patch</strong> /
   [% ELSE %]
@@ -114,16 +120,22 @@
     [% context = 3 %]
   [% END %]
   [%# textbox for context %]
-  <form style="display: inline" action="attachment.cgi"><input type="hidden" name="action" value="diff"><input type="hidden" name="id" value="[% attachid %]"><input type="hidden" name="collapsed" value="[% collapsed FILTER html %]"><input type="hidden" name="headers" value="[% headers FILTER html %]"><input type="text" name="context" value="[% context FILTER html %]" size="3"></form>)
+  <form class="inline" action="attachment.cgi">
+    <input type="hidden" name="action" value="diff">
+    <input type="hidden" name="id" value="[% attachid %]">
+    <input type="hidden" name="collapsed" value="[% collapsed FILTER html %]">
+    <input type="hidden" name="headers" value="[% headers FILTER html %]">
+    <input type="text" name="context" value="[% context FILTER html %]" size="3">
+  </form>)
 [% END %]
 
 [% IF warning %]
 <h2 class="warning">
   警告：
   [% IF warning == "interdiff1" %]
-    在比較不同的檔案的時候，兩個 patch 之間的差異可能會因為 [% terms.Bugzilla %] 的限制而把結果擺錯位置。
+    在比較不同的檔案的時候，兩個 patch 之間的差異可能會因為 Bugzilla 的限制而把結果擺錯位置。
   [% ELSIF warning == "interdiff2" %]
-    在比較不同版本的 patch 差異時，可能會因為 [% terms.Bugzilla %] 的限制而有所不正確。
+    在比較不同版本的 patch 差異時，可能會因為 Bugzilla 的限制而有所不正確。
   [% ELSIF warning == "interdiff3" %]
     在比較這些 patch 時， interdiff 發生錯誤。
   [% END %]
@@ -134,4 +146,4 @@
 
 [%# Restore Stuff %]
 <form name="checkboxform" action="attachment.cgi">
-<input type="checkbox" name="restore_indicator" style="display: none">
+<input type="checkbox" name="restore_indicator" class="bz_default_hidden">
