@@ -83,7 +83,7 @@
               [% END %]
             </div>
           [% ELSE %]
-            <font color="red">缺少</font>
+            <span class="warning">缺少</span>
           [% END %]
         </td>
       </tr>
@@ -122,7 +122,6 @@
         <a href="buglist.cgi?product=[% product.name FILTER uri %]">
           [% product.bug_count FILTER html %]</a>
       </td>
-
     </tr>
   </table>
 
