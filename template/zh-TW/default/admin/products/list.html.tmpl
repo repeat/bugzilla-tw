@@ -26,6 +26,7 @@
 
 [% PROCESS global/header.html.tmpl
   title = "選擇${classification_title}產品"
+  style_urls = ['skins/standard/admin.css']
 %]
 
 [% columns = [
@@ -46,7 +47,8 @@
      },
      {
        name => "allows_unconfirmed"
-       heading => "允許狀態為未確認 (UNCONFIRMED) 的 $terms.Bugs"
+       heading => "允許狀態為" _ display_value('bug_status', 'UNCONFIRMED') _
+                  "的" _ terms.Bugs
        yesno_field => 1
      },
 ] %]
@@ -56,7 +58,7 @@
   [% columns.push({
        name => "bug_count"
        heading => "$terms.Bug 數目"
-       align => 'right'
+       class => 'right'
        contentlink => 'buglist.cgi?product=%%name%%'
      })
   %]
