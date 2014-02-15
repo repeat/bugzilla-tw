@@ -14,17 +14,17 @@
 [% param_descs = {
   shadowdbhost => "Shadow 資料庫在的主機。",
 
-  shadowdbport => "Shadow 資料庫所在的連接埠。若 <tt>shadowdbhost</tt> 設為空白，則會忽略此設定。" _
+  shadowdbport => "Shadow 資料庫所在的連接埠。若 <var>shadowdbhost</var> 設為空白，則會忽略此設定。" _
                   "注意：如果主機是本地的機器，那麼 MySQL 會忽略此設定，因此你必須在下方指定 socket 。",
 
   shadowdbsock => "如果主機是本地的機器的話，此選項用來指定連線到 shadow 資料庫的 socket 。" _
                   "因為在從客戶端連線到本地伺服器時， MySQL 會忽略客戶端所指定的連接埠，" _
                   "而使用它內建（在 unix 機器上）的 socket 路徑連線。" _
                   "如果設為空白，並且在 localhost 安裝資料庫的話， " _
-                  "<tt>shadowdbport</tt> 參數將被忽略。",
+                  "<var>shadowdbport</var> 參數將被忽略。",
 
-  shadowdb => "如果不設為空白，那麼這就是另一個資料庫的名稱，並且被 $terms.Bugzilla 用來做唯讀的複製備份。" _
+  shadowdb => "如果不設為空白，那麼這就是另一個資料庫的名稱，並且被 Bugzilla 用來做唯讀的複製備份。" _
               "這麼做的好處是在執行又長又慢的唯讀程序時，可以使用此一資料庫，而不會讓其他人因此鎖死。" _
-              "這個資料庫必須設在 <tt>shadowdbhost</tt> 上，且必須存在。 " _
-              "$terms.Bugzilla 並不會更新它，因此如果你使用此一參數，那麼你必須替你的資料庫設定複製。" }
+              "這個資料庫必須設在 <var>shadowdbhost</var> 上，且必須存在。 " _
+              "Bugzilla 並不會更新它，因此如果你使用此一參數，那麼你必須替你的資料庫設定複製。" }
 %]
