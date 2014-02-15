@@ -18,7 +18,6 @@
 [% PROCESS global/header.html.tmpl
   title = "搜尋使用者"
   style_urls = ['skins/standard/editusers.css']
-  onload = "document.forms['f'].matchstr.focus()"
   doc_section = "useradmin.html#user-account-search"
 %]
 
@@ -27,7 +26,7 @@
 %]
 
 <form name="f" method="get" action="editusers.cgi">
-<input type="hidden" name="action" value="list" />
+<input type="hidden" name="action" value="list">
 <p><label for="matchvalue">以下列條件列出使用者</label>
 <select id="matchvalue" name="matchvalue">
   <option value="login_name">帳號</option>
@@ -35,17 +34,18 @@
   <option value="userid">使用者編號</option>
 </select>
 <label for="matchstr">符合</label>
-<input size="32" name="matchstr" id="matchstr" />
+<input size="32" name="matchstr" id="matchstr" autofocus>
 <select name="matchtype">
   <option value="substr" selected="selected">子字串（忽略大小寫）</option>
   <option value="regexp">正規表達式（忽略大小寫）</option>
   <option value="notregexp">不符合正規表達式（忽略大小寫）</option>
   <option value="exact">完全符合（搜尋該使用者）</option>
 </select>
-<input type="submit" id="search" value="搜尋" /></p>
+<input type="submit" id="search" value="搜尋">
+</p>
 
 [% IF restrictablegroups.size %]
-  <p><input type="checkbox" name="grouprestrict" value="1" id="grouprestrict" />
+  <p><input type="checkbox" name="grouprestrict" value="1" id="grouprestrict">
   <label for="grouprestrict">限制使用者屬於群組…</label>
   <select name="groupid"
           onchange="document.forms['f'].grouprestrict.checked=true">
