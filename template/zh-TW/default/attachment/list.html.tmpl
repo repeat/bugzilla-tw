@@ -42,7 +42,7 @@ function toggle_display(link) {
 </script>
 
 <br>
-<table id="attachment_table" cellspacing="0" cellpadding="4">
+<table id="attachment_table">
   <tr id="a0">
     <th colspan="[% show_attachment_flags ? 3 : 2 %]" class="left">
       附件
@@ -65,7 +65,7 @@ function toggle_display(link) {
                  [% " bz_private" IF attachment.isprivate %]
                  [% " bz_tr_obsolete bz_default_hidden"
                      IF attachment.isobsolete %]">
-        <td valign="top">
+        <td>
           [% IF attachment.datasize %]
             <a href="attachment.cgi?id=[% attachment.id %]"
                title="瀏覽附件的內容">
@@ -88,7 +88,7 @@ function toggle_display(link) {
             <br>
             <a href="#attach_[% attachment.id %]"
                title="瀏覽和該附件有關的意見"
-              >[%- attachment.attached FILTER time %]</a>，
+              >[%- attachment.attached FILTER time("%Y-%m-%d %H:%M %Z") %]</a>，
 
             [%# No need to recreate the exact same template if we already have it. %]
             [% attacher_id = attachment.attacher.id %]
@@ -102,7 +102,7 @@ function toggle_display(link) {
         </td>
 
         [% IF show_attachment_flags %]
-          <td class="bz_attach_flags" valign="top">
+          <td class="bz_attach_flags">
             [% IF attachment.flags.size == 0 %]
               <i>沒有旗標</i>
             [% ELSE %]
@@ -129,7 +129,7 @@ function toggle_display(link) {
           </td>
         [% END %]
 
-        <td valign="top">
+        <td>
           <a href="attachment.cgi?id=[% attachment.id %]&amp;action=edit">詳細資料</a>
           [% IF attachment.ispatch && feature_enabled('patch_viewer') %]
             | <a href="attachment.cgi?id=[% attachment.id %]&amp;action=diff">比較差異 (Diff)</a>
