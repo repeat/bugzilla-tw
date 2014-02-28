@@ -712,7 +712,7 @@
     將 table '[% old FILTER html %]' 更名為 '[% new FILTER html %]' 中...
 
   [% ELSIF message_tag == "install_urlbase_default" %]
-    你現在已安裝 [% terms.Bugzilla %]
+    你現在已安裝 Bugzilla
     。請瀏覽「參數設定」頁面（在管理者帳號的頁尾有連結），以確保所有設定都正確，包括將
     'urlbase' 選項設定為正確的網址。
 
@@ -727,7 +727,7 @@
     <b><u>警告！</u></b>你沒有在 localconfig 輸入 "webservergroup" 參數。
     <br>這代表著某些需要以你和網頁伺服器編輯的檔案和目錄，變成所有人都可以寫入，
     <br>此外，其他檔案（包括儲存你的資料庫密碼的 localconfig 檔案），變成所有人都可以讀取。
-    <br>這代表著擁有瀏覽這台機器的<u>任何人</u>可以對你安裝的 [% terms.Bugzilla %]
+    <br>這代表著擁有瀏覽這台機器的<u>任何人</u>可以對你安裝的 Bugzilla
     做任何事情，甚至也可以執行任何 Perl 程式。
 
     你真的，真的，真的需要變更此項設定。
@@ -738,14 +738,14 @@
     <br>a) 並沒有將這個 script 以 [% constants.ROOT_USER FILTER html %] 執行；或者你
     <br>b) 並不是該群組的成員。
     <br>這將造成權限問題，並降低安全性。
-    <br>如果你在執行 [% terms.Bugzilla %] scripts 時發生任何問題，以
+    <br>如果你在執行 Bugzilla scripts 時發生任何問題，以
     [% constants.ROOT_USER FILTER html %] 登入，並重新執行這個 script ，成為該群組的成員，
     或是刪除 "webservergroup" 參數的值。
 
   [% ELSIF message_tag == "install_webservergroup_windows" %]
     <b><u>警告：</u></b>你將 webservergroup 設定在 [% constants.bz_locations.localconfig FILTER html %] 中。
     <br>若在 Windows 下執行，這樣設定並不會有任何安全性。
-    <br>請確認在你的 [% terms.Bugzilla %] 目錄的檔案權限是否適合你的系統，並避免不必要的寫入權限。
+    <br>請確認在你的 Bugzilla 目錄的檔案權限是否適合你的系統，並避免不必要的寫入權限。
 
   [% ELSIF message_tag == "product_created" %]
     [% title = "已建立產品" %]
@@ -761,6 +761,19 @@
   [% ELSIF message_tag == "product_invalid" %]
     [% title = "$terms.Bugzilla 子產品描述" %]
     產品 <em>[% product FILTER html %]</em> 不存在，或是你沒有權限瀏覽。下列清單是你可以選擇的產品。
+
+  [% ELSIF message_tag == "quips_added" %]
+    已新增你所輸入的智語「<em>[% added_quip FILTER html %]</em>」。
+    [% IF Param("quip_list_entry_control") == "moderated" AND
+          !user.in_group('bz_quip_moderators') %]
+      在審核之後就會儘快採用。
+    [% END %]
+
+  [% ELSIF message_tag == "quips_deleted" %]
+    已刪除智語「<em>[% deleted_quip FILTER html %]</em>」。
+
+  [% ELSIF message_tag == "quips_approved_unapproved" %]
+    有 [% approved.size %] 則智語已審核， [% unapproved.size %] 則智語未審核。
 
   [% ELSIF message_tag == "remaining_time_zeroed" %]
     由於已將此 [% terms.bug %] 關閉，或只是將它從其中一種關閉的狀態變更為另一種，因此
@@ -788,6 +801,12 @@
 
   [% ELSIF message_tag == "series_subcategory" %]
     -全部-
+
+  [% ELSIF message_tag == "series_updated" %]
+    [% title = "系列已更新" %]
+    系列 <em>[% default.category FILTER html %] /
+    [%+ default.subcategory FILTER html %] /
+    [%+ default.name FILTER html %]</em> 已更新。
 
   [% ELSIF message_tag == "sudo_started" %]
     [% title = "已開始 sudo" %]
@@ -878,7 +897,7 @@
 [%# Give sensible error if the message function is used incorrectly. #%]
 [% IF !message %]
   [% message = BLOCK %]
-    你不正確的使用 [% terms.Bugzilla %] 的訊息功能。你輸入了字串 '[% cancelaction %]' 。正確的用法是輸入一個標籤，並且在
+    你不正確的使用 Bugzilla 的訊息功能。你輸入了字串 '[% cancelaction %]' 。正確的用法是輸入一個標籤，並且在
     messages.html.tmpl 檔案中定義該標籤。<br>
     <br>
     如果你是一個 [% terms.Bugzilla %] 的使用者，但卻看到此一訊息時，請將它轉寄給 [% Param('maintainer') %] 。
