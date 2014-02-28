@@ -69,7 +69,7 @@
 [%############################################################################%]
 
 [% tableheader = BLOCK %]
-  <table class="bz_buglist" cellspacing="0" cellpadding="4" width="100%">
+  <table class="bz_buglist">
     <tr class="bz_buglist_header bz_first_buglist_header">
       [% IF dotweak %]
       <th>&nbsp;</th>
@@ -177,12 +177,12 @@
     [% END %]
     <td class="first-child bz_id_column">
       <a href="show_bug.cgi?id=[% bug.bug_id %]">[% bug.bug_id %]</a>
-      <span style="display: none">[%+ '[SEC]' IF bug.secure_mode %]</span>
+      <span class="bz_default_hidden">[%+ '[SEC]' IF bug.secure_mode %]</span>
     </td>
 
     [% FOREACH column = displaycolumns %]
       [% col_abbrev = abbrev.$column %]
-    <td [% 'style="white-space: nowrap"' IF NOT col_abbrev.wrap %]
+    <td [% 'class="nowrap"' IF NOT col_abbrev.wrap %]
         class="bz_[% column FILTER css_class_quote %]_column">
       [% IF col_abbrev.maxlength %]
         <span title="[%- display_value(column, bug.$column) FILTER html %]">
@@ -205,6 +205,11 @@
       [% ELSIF bug_fields.$column.type == constants.FIELD_TYPE_BUG_ID %]
         <a href="show_bug.cgi?id=[% bug.$column FILTER html %]">
           [%- bug.$column.truncate(col_abbrev.maxlength, col_abbrev.ellipsis) FILTER html -%]
+        </a>
+      [% ELSIF column == 'bug_file_loc' && is_safe_url(bug.bug_file_loc) %]
+        <a href="[% bug.bug_file_loc FILTER html %]" target="_blank"
+           title="[% bug.bug_file_loc FILTER html %]">
+          [%- display_value(column, bug.$column).truncate(col_abbrev.maxlength, col_abbrev.ellipsis) FILTER html -%]
         </a>
       [% ELSE %]
         [%- display_value(column, bug.$column).truncate(col_abbrev.maxlength, col_abbrev.ellipsis) FILTER html -%]
