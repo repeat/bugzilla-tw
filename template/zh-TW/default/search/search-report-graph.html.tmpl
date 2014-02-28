@@ -51,71 +51,63 @@ var queryform = "reportform"
 [% button_name = "產生報告" %]
 
 <form method="get" action="report.cgi" name="reportform" id="reportform">
+  <table id="graphical_reports_menu">
+    <tr>
+      <th id="reports_menu_vertical_axis">
+        Y 軸：<br>
+        [% PROCESS select name = 'y_axis_field' %]<br>
+        <br>
+        資料集排列：<br>
+        <input type="radio" id="cumulate_indiv" name="cumulate" value="0"
+        [%+ 'checked="checked"' IF default.cumulate.0 != "1" %]>
+        <label for="cumulate_indiv">個別排列</label><br>
+        <input type="radio" id="cumulate_stacked" name="cumulate" value="1"
+        [%+ 'checked="checked"' IF default.cumulate.0 == "1" %]>
+        <label for="cumulate_stacked">堆疊排列</label>
+      </th>
+      <th id="reports_menu_multiple_tables">
+        顯示多個圖案：<br>
+        [% PROCESS select name = 'z_axis_field' %]
+      </th>
+      <th id="reports_menu_format">
+        格式：<br>
+        [% chart_formats = [
+             { name => "line", description => "折線圖" },
+             { name => "bar",  description => "長條圖" },
+             { name => "pie",  description => "圓餅圖" } ] %]
+        [% default.chart_format.0 = default.chart_format.0 || "bar" %]
 
-<table align="center">
-  <tr>
-    <td valign="middle">
-      <b>Y 軸：</b><br>
-      <noscript><small>(圓餅圖不適用)</small><br></noscript>
-      [% PROCESS select name = 'y_axis_field' %]<br>
-      <br>
-        <b>資料集排列：</b><br>
-        <input type="radio" name="cumulate" value="0"
-        [% " checked" IF default.cumulate.0 != "1" %]>
-        個別排列<br>
-        <input type="radio" name="cumulate" value="1"
-        [% " checked" IF default.cumulate.0 == "1" %]>
-        堆疊排列
-    </td>
-    <td width="150" height="150">
-      <table border="1" width="100%" height="100%">
-        <tr>
-          <td align="center" valign="middle">
-            <b>顯示多個圖案：</b><br>
-            [% PROCESS select name = 'z_axis_field' %]
-          </td>
-        </tr>
-      </table>
-    </td>
-    <td rowspan="2">
-      <b>格式：</b><br>
-      [% chart_formats = [
-        { name => "line", description => "折線圖" },
-        { name => "bar",  description => "長條圖" },
-        { name => "pie",  description => "圓餅圖" } ] %]
-      [% default.chart_format.0 = default.chart_format.0 || "bar" %]
+        [% FOREACH chart_format = chart_formats %]
+          <input type="radio" id="format_[% chart_format.name FILTER html %]"
+                 name="format" value="[% chart_format.name FILTER html %]"
+                 onchange="chartTypeChanged()"
+                 [%+ 'checked="checked"' IF default.chart_format.0 == chart_format.name %]>
+          <label for="format_[% chart_format.name FILTER html %]">
+            [% chart_format.description FILTER html %]
+          </label><br>
+        [% END %]
+      </th>
+    </tr>
 
-      [% FOREACH chart_format = chart_formats %]
-        <input type="radio" name="format"
-               value="[% chart_format.name FILTER html %]"
-               onchange="chartTypeChanged()"
-          [% " checked" IF default.chart_format.0 == chart_format.name %]>
-          [% chart_format.description FILTER html %]<br>
-      [% END %]
-    </td>
-  </tr>
+    <tr>
+      <th></th>
+      <th id="reports_menu_horizontal_axis">
+        X 軸：<br>
+        [% PROCESS select name = 'x_axis_field' %]<br>
+        <input type="checkbox" name="x_labels_vertical" id="x_labels_vertical"
+               value="1"
+               [%+ 'checked="checked"' IF default.x_labels_vertical.0 == "1" %]>
+        <label for="x_labels_vertical">Y 軸標籤：</label>
+      </th>
+      <th></th>
+    </tr>
+  </table>
 
-  <tr>
-    <td>
-    </td>
-    <td align="left">
-      <b>X 軸：</b>
-      [% PROCESS select name = 'x_axis_field' %]<br>
-      <label for="x_labels_vertical"><b>Y 軸標籤：</b></label>
-      <input type="checkbox" name="x_labels_vertical" id="x_labels_vertical"
-             value="1"
-         [% " checked" IF default.x_labels_vertical.0 == "1" %]>
-     </td>
-    <td>
-    </td>
-  </tr>
-</table>
+  <hr>
 
-<hr>
+  [% PROCESS search/form.html.tmpl %]
 
-[% PROCESS search/form.html.tmpl %]
-
-[% PROCESS "search/boolean-charts.html.tmpl" %]
+  [% PROCESS "search/boolean-charts.html.tmpl" %]
 
   <div id="knob">
     <input type="submit" id="[% button_name FILTER css_class_quote %]"
