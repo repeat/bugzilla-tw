@@ -214,7 +214,7 @@
 
   <h3>[% column_headers.$group_field %]：
     [%+ (request.$group_field || "無") FILTER email FILTER html %]</h3>
-  <table class="requests" cellspacing="0" cellpadding="4" border="1">
+  <table class="requests">
     <tr>
       [% FOREACH column = display_columns %]
         [% NEXT IF column == group_field || excluded_columns.contains(column) %]
