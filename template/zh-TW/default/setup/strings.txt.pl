@@ -87,6 +87,7 @@ END
     feature_jsonrpc_faster => '讓 JSON-RPC 較快',
     feature_new_charts => '新圖表',
     feature_old_charts => '舊圖表',
+    feature_memcached => '支援 Memcached',
     feature_mod_perl => 'mod_perl',
     feature_moving => '在不同機器間搬移 Bugs',
     feature_patch_viewer => 'Patch Viewer',
@@ -185,6 +186,23 @@ MySQL 才需要輸入的：輸入 unix socket for MySQL 的路徑。
 如不輸入，那麼會使用 MySQL 的預設值。大概會是你要的。
 END
     localconfig_db_user => "用來連接資料庫的使用者",
+    localconfig_db_mysql_ssl_ca_file => <<'END',
+PEM 檔案的路徑，此檔案包含可信任的 SSL CA 發行者清單。
+此檔案必須是網頁伺服器使用者可以讀取的。
+END
+    localconfig_db_mysql_ssl_ca_path => <<'END',
+資料夾的路徑，此資料夾包含以 PEM 格式儲存的，可信任的 SSL CA 發行者清單。
+資料夾及其底下的檔案必須是網頁伺服器使用者可以讀取的。
+Directory and files inside must be readable by the web server user.
+END
+    localconfig_db_mysql_ssl_client_cert => <<'END',
+會使用於資料庫伺服器的完整客戶端 SSL 檔案路徑（ PEM 格式）。
+此檔案必須是網頁伺服器使用者可以讀取的。
+END
+    localconfig_db_mysql_ssl_client_key => <<'END',
+相對於客戶端 SSL 憑證的私鑰完整路徑。
+此檔案必須是網頁伺服器使用者可以讀取的，且必須不被密碼保護。
+END
     localconfig_diffpath => <<'END',
 如果要讓「兩個 patch 之間的 diff 」功能有效，需要知道 "diff" bin
 在哪個目錄。（只有在使用 Patch Viewer 功能時才需要設定。）
@@ -316,8 +334,7 @@ END
       建議你※現在※停止 checksetup.pl 並執行 contrib/recode.pl 。
 END
     no_checksetup_from_cgi => <<END,
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-          "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html>
 <html>
   <head>
     <title>無法從網頁伺服器執行 checksetup.pl</title>
@@ -328,8 +345,8 @@ END
     <p>
       你<b>不能</b>從瀏覽器執行此程式。要安裝或升級
       Bugzilla ，從命令列（例如 Linux 上的
-      <tt>bash</tt> 、 <tt>ssh</tt> 或 Windows 上的
-      <tt>cmd.exe</tt> 執行此程式），並依照所給予的指示進行。
+      <kbd>bash</kbd> 、 <kbd>ssh</kbd> 或 Windows 上的
+      <kbd>cmd.exe</kbd> 執行此程式），並依照所給予的指示進行。
     </p>
 
     <p>
