@@ -26,7 +26,7 @@
 %]
 
 <p>
-  「訂閱」這項功能，是 [% terms.Bugzilla %] 在一個固定的期間執行一項已儲存的搜尋，並將搜尋結果所列出的 [% terms.bugs %] 以電子郵件傳送。
+  「訂閱」這項功能，是 Bugzilla 在一個固定的期間執行一項已儲存的搜尋，並將搜尋結果所列出的 [% terms.bugs %] 以電子郵件傳送。
 </p>
 
 <p>
@@ -43,7 +43,7 @@
 
 <p>
   搜尋來自已儲存的搜尋。<br>
-  已儲存的搜尋是在執行<a href="query.cgi">搜尋</a>頁面，並將該頁面結果以指定的名稱儲存於 [% terms.Bugzilla %] 中。<br>
+  已儲存的搜尋是在執行<a href="query.cgi">搜尋</a>頁面，並將該頁面結果以指定的名稱儲存於 Bugzilla 中。<br>
   點選「新增搜尋」，選擇已儲存的搜尋名稱，並於 [% terms.bug %] 表格中加入標題。<br>
   「排序」下的數字為選填。若有多筆搜尋排列，將會以該數字決定執行的順序（從最小到最大）。<br>
   如果勾選「每個 [% terms.bug %] 送出一封信」，那麼符合該搜尋的每個 [% terms.bug%] 都會寄出一封信。
@@ -56,29 +56,25 @@
 <form method="post" action="editwhines.cgi">
 [%# This hidden submit button must be here to set default behavior when
     the user presses return on a form input field #%]
-<input type="submit" value="更新／送出" name="commit"
-       style="display: none;" id="commit">
+<input type="submit" value="更新／送出" id="commit" name="commit"
+       class="bz_default_hidden">
 <input type="hidden" name="update" value="1">
 <input type="hidden" name="token" value="[% token FILTER html %]">
 
 [% FOREACH event = events %]
 
-<table cellspacing="2" cellpadding="2" style="border: 1px solid;">
+<table class="whining_list">
   <tr>
-    <th>
-      事件：
-    </th>
-    <td align="right" colspan="2">
+    <th class="subtitle">事件：</th>
+    <th colspan="2">
       <input type="submit" value="刪除事件"
              name="remove_event_[% event.key %]"
              id="remove_event_[% event.key %]">
-    </td>
+    </th>
   </tr>
 
   <tr>
-    <td valign="top" align="right">
-      電子郵件主旨：
-    </td>
+    <th>電子郵件主旨：</th>
     <td colspan="2">
       <input type="text" name="event_[% event.key %]_subject"
              size="60" maxlength="128" value="
@@ -87,9 +83,7 @@
   </tr>
 
   <tr>
-    <td valign="top" align="right">
-      在訂閱訊息中的描述文字：
-    </td>
+    <th>在訂閱訊息中的描述文字：</th>
     <td colspan="2">
       [% INCLUDE global/textarea.html.tmpl
          name           = "event_${event.key}_body"
@@ -103,9 +97,7 @@
   </tr>
 
   <tr>
-    <td valign="top" align="right">
-      即使搜尋結果沒有任何 [% terms.bugs %] ，仍然送出訊息：
-    </td>
+    <th>即使搜尋結果沒有任何 [% terms.bugs %] ，仍然送出訊息：</th>
     <td colspan="2">
       <input type="checkbox" name="event_[% event.key %]_mailifnobugs"
         [%- IF event.value.mailifnobugs == 1 %] checked [% END %]>
@@ -115,9 +107,7 @@
   [% IF event.value.schedule.size == 0 %]
 
     <tr>
-      <td valign="top" align="right">
-        排程：
-      </td>
+      <th>排程：</th>
       <td class="unset" colspan="2">
         無任何排程可執行<br>
         <input type="submit" value="新增排程"
@@ -129,28 +119,23 @@
   [% ELSE %]
 
     <tr>
-      <td valign="top" align="right">
-        排程：
-      </td>
+      <th>排程：</th>
       <td class="set" colspan="2">
 
-        <table>
+        <table class="schedule_list">
           <tr>
-            <th>
-              執行間隔
-            </th>
+            <th>執行間隔</th>
             <th>
               [% IF mail_others %]
                 寄電子郵件到
               [% END %]
             </th>
-            <th>
-            </th>
+            <th></th>
           </tr>
+
           [% FOREACH schedule = event.value.schedule %]
             <tr>
-              <td align="left">
-
+              <td>
                 [%# these hidden fields allow us to compare old values instead
                     of reading the database to tell if a field has changed %]
 
@@ -179,7 +164,7 @@
                          value="[% schedule.mailto FILTER html %]" size="30">
                 [% END %]
               </td>
-              <td align="left">
+              <td>
                 <input type="submit" value="刪除"
                        name="remove_schedule_[% schedule.id %]"
                        id="remove_schedule_[% schedule.id %]">
@@ -205,16 +190,14 @@
   [% IF event.value.queries.size == 0 %]
 
     <tr>
-      <td valign="top" align="right">
-        搜尋：
-      </td>
-      <td align="left">
+      <th>搜尋：</th>
+      <td>
         無搜尋<br>
         <input type="submit" value="新增搜尋"
                name="add_query_[% event.key %]"
                id="add_query_[% event.key %]">
       </td>
-      <td align="right" valign="bottom">
+      <td class="right" valign="bottom">
         <input type="submit" value="更新／送出" name="commit" id="update">
       </td>
     </tr>
@@ -222,42 +205,39 @@
   [% ELSE %]
 
     <tr>
-      <td valign="top" align="right">
-        搜尋：
-      </td>
-      <td align="left" colspan="2">
+      <th>搜尋：</th>
+      <td colspan="2">
 
-        <table>
+        <table class="search_list">
           <tr>
             <th>排序</th>
             <th>搜尋</th>
             <th>標題</th>
-            <th></th>
-            <th></th>
+            <th colspan="2"></th>
           </tr>
 
           [% FOREACH query = event.value.queries %]
 
             <tr>
-              <td align="left">
+              <td>
                 <input type="text" name="query_sort_[% query.id %]"
                        size="3" value="[% query.sort %]">
                 <input type="hidden" value="[% query.sort %]"
                        name="orig_query_sort_[% query.id %]">
               </td>
-              <td align="left">
+              <td>
                 <input type="hidden" value="[% query.name FILTER html %]"
                        name="orig_query_name_[% query.id %]">
                 [% PROCESS query_field thisquery=query.name %]
               </td>
-              <td align="left">
+              <td>
                 <input type="hidden" value="[% query.title FILTER html %]"
                        name="orig_query_title_[% query.id %]">
                 <input type="text" name="query_title_[% query.id %]"
                        size="50" value="[% query.title FILTER html %]"
                        maxlength="64">
               </td>
-              <td align="left">
+              <td>
                 <input type="hidden" value="[% query.onemailperbug FILTER html %]"
                        name="orig_query_onemailperbug_[% query.id %]">
                 <input type="checkbox" [% IF query.onemailperbug == 1 %] checked [% END %]
@@ -280,7 +260,7 @@
                      name="add_query_[% event.key %]"
                      id="add_query_[% event.key %]">
             </td>
-            <td align="right" colspan="2">
+            <td colspan="2" class="right">
               <input type="submit" value="更新／送出" name="commit" id="update">
             </td>
           </tr>
@@ -295,7 +275,7 @@
 
 [% END %]
 
-<p align="left">
+<p>
   <input type="submit" value="新增事件" name="add_event" id="add_event">
 </p>
 
