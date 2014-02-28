@@ -18,15 +18,13 @@
    newtext = "新的（在下方輸入）"
  %]
 
-<table cellpadding="2" cellspacing="2" border="0"
-       style="text-align: left; margin-left: 20px">
-  <tbody>
+<table id="edit_series">
     <tr>
-      <th>分類：</th>
+      <th>分類</th>
       <th></th>
-      <th>子分類：</th>
-      <th>名稱：</th>
-      <td></td>
+      <th>子分類</th>
+      <th>名稱</th>
+      <th></th>
     </tr>
     <tr>
       [% PROCESS series_select sel = { name => 'category',
@@ -43,36 +41,35 @@
                                        size => 5,
                                        onchange => "checkNewState()" } %]
 
-      <td valign="top" name="name">
+      <td>
         <input type="text" name="name" maxlength="64"
                value="[% default.name.0 FILTER html %]" size="25">
       </td>
 
-      <td valign="top">
-        <span style="font-weight: bold;">每</span> &nbsp;
-        <input type="text" size="2" name="frequency"
+      <td>
+        每
+        <input type="text" size="2" id="frequency" name="frequency"
                value="[% (default.frequency.0 OR 7) FILTER html %]">
-        <span style="font-weight: bold;">&nbsp;天執行</span><br>
+        天執行<br>
         [%# Change 'admin' here and in Series.pm, or remove the check
             completely, if you want to change who can make series public. %]
         [% IF user.in_group('admin') %]
           <input type="checkbox" name="public"
                  [%+ "checked='checked'" IF default.public.0 %]>
-          <span style="font-weight: bold;">(在群組限制中)<br>
-          全部可見</span>
+          (在群組限制中)<br>
+          全部可見
         [% END %]
       </td>
     </tr>
 
     <tr>
       <td>
-        <input type="text" style="width: 100%" name="newcategory"
-               maxlength="64" value="[% default.newcategory.0 FILTER html %]">
+        <input type="text" name="newcategory" maxlength="64"
+               value="[% default.newcategory.0 FILTER html %]">
       </td>
-        <td></td>
+      <td></td>
       <td>
-        <input type="text" style="width: 100%" name="newsubcategory"
-               maxlength="64"
+        <input type="text" name="newsubcategory" maxlength="64"
                value="[% default.newsubcategory.0 FILTER html %]">
       </td>
       <td></td>
@@ -81,5 +78,4 @@
                value="[% button_name FILTER html %]">
       </td>
     </tr>
-  </tbody>
 </table>
