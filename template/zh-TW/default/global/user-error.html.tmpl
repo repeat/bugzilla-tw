@@ -156,6 +156,8 @@
       分類
     [% ELSIF object == "components" %]
       子產品
+    [% ELSIF object == "comment_tags" %]
+      意見標籤
     [% ELSIF object == "custom_fields" %]
       自訂欄位
     [% ELSIF object == "field_values" %]
@@ -243,7 +245,7 @@
     [% ELSE %]
       [%+ field_descs.see_also FILTER html %] 的網址應該指到以下其中一個地方：
       <ul>
-        <li>已安裝的 [% terms.Bugzilla %] 中的 <code>show_bug.cgi</code> 。</li>
+        <li>已安裝的 Bugzilla 中的 <code>show_bug.cgi</code> 。</li>
         <li>在 launchpad.net 的 b[% %]ug 。</li>
         <li>在 code.google.com 的 issue 。</li>
         <li>在 b[% %]ugs.debian.org 的 b[% %]ug 。</li>
@@ -303,6 +305,24 @@
   [% ELSIF error == "comment_too_long" %]
     [% title = "意見過長" %]
     意見不能超過 [% constants.MAX_COMMENT_LENGTH FILTER html %] 字元。
+
+  [% ELSIF error == "comment_tag_disabled" %]
+    [% title = "意見標籤已停用" %]
+    意見標籤未啟用。
+
+  [% ELSIF error == "comment_tag_invalid" %]
+    [% title = "無效的意見標籤" %]
+    意見標籤 "[% tag FILTER html %]" 含有無效的字元或字。
+
+  [% ELSIF error == "comment_tag_too_long" %]
+    [% title = "意見標籤過長" %]
+    意見標籤不能比
+    [%+ constants.MAX_COMMENT_TAG_LENGTH FILTER html %] 個字元長。
+
+  [% ELSIF error == "comment_tag_too_short" %]
+    [% title = "意見標籤過短" %]
+    意見標籤至少要
+    [%+ constants.MIN_COMMENT_TAG_LENGTH FILTER html %] 個字元。
 
   [% ELSIF error == "auth_classification_not_enabled" %]
     [% title = "分類功能未啟用" %]
@@ -451,7 +471,7 @@
     [% END %]。
 
   [% ELSIF error == "feature_disabled" %]
-    這台機器上的 [% terms.Bugzilla %] 並不允許 [% install_string("feature_$feature") FILTER html %]
+    這台機器上的 Bugzilla 並不允許 [% install_string("feature_$feature") FILTER html %]
     這項功能。
     [% IF user.in_group('admin') %]
       如果你想要啟用此項功能，請執行
@@ -595,6 +615,7 @@
     [%# Hack to get the max value between both limits %]
     [%+ max_limit.nsort.last FILTER html %] KB 。<br>
     我們建議你將附件儲存在其他地方，然後在適當的文字欄位貼上網址做為附件。
+    你可以按下「貼上文字做為附件」的連結來瀏覽這個欄位。
     <br>如果你的附件是圖片的話，你可以先將它轉換為 JPG 或 PNG 格式，然後再試一次。
 
   [% ELSIF error == "flag_type_requestee_disabled" %]
@@ -678,6 +699,16 @@
     [% title = "無法編輯旗標類型" %]
     你無法編輯 '[% flagtype.name FILTER html %]'
     的旗標類型設定，因為你可以管理的產品並不適用此旗標類型。
+
+  [% ELSIF error == "flag_not_unique" %]
+    [% title = "旗標並非獨一無二" %]
+    旗標 '[% value FILTER html %]' 已設定許多次了。
+    你必須指定它的編號值來更新旗標。
+
+  [% ELSIF error == "flag_type_not_unique" %]
+    [% title = "旗標類型並非獨一無二" %]
+    有多個旗標類型符合 '[% value FILTER html %]' 。
+    你必須指定它的類型編號值來新增或更新旗標。
 
   [% ELSIF error == "flag_type_not_multiplicable" %]
     [% docslinks = {'flags-overview.html' => '旗標概述',
@@ -824,9 +855,9 @@
 
   [% ELSIF error == "illegal_date" %]
     [% title = "無效的日期" %]
-    '<tt>[% date FILTER html %]</tt>' 並非有效的日期。
+    '<kbd>[% date FILTER html %]</kbd>' 並非有效的日期。
     [% IF format %]
-      請使用此格式： '<tt>[% format FILTER html %]</tt>' 。
+      請使用此格式： '<code>[% format FILTER html %]</code>' 。
     [% END %]
 
   [% ELSIF error == "illegal_email_address" %]
@@ -992,12 +1023,12 @@
 
   [% ELSIF error == "invalid_username" %]
     [% title = "無效的使用者名稱" %]
-    <tt>[% name FILTER html %]</tt> 並非有效的使用者名稱。
+    <kbd>[% name FILTER html %]</kbd> 並非有效的使用者名稱。
     可能是你拼錯了，或者他還沒有註冊 [% terms.Bugzilla %] 帳號。
 
   [% ELSIF error == "invalid_username_or_password" %]
-    [% title = "無效的使用者名稱或密碼" %]
-    你輸入的使用者名稱或密碼不正確。
+    [% title = "無效的帳號或密碼" %]
+    你輸入的帳號或密碼不正確。
     [%# People get two login attempts before being warned about
       # being locked out.
       #%]
@@ -1064,7 +1095,7 @@
 
   [% ELSIF error == "migrate_from_invalid" %]
     '[% from FILTER html %]' 並非可以合併的 [% terms.bug %] 追蹤種類。
-    請參考 <kbd>B[% %]ugzilla/Migrate/</kbd> 目錄下的內容，該處列有
+    請參考 <kbd>Bugzilla/Migrate/</kbd> 目錄下的內容，該處列有
     [% terms.bug %] 的追蹤種類。
 
   [% ELSIF error == "milestone_already_exists" %]
@@ -1438,7 +1469,7 @@
 
   [% ELSIF error == "quicksearch_unbalanced_quotes" %]
     [% title = "搜尋格式不正確" %]
-    [% terms.Bugzilla %] 無法正確解析你所輸入的搜尋字串：
+    Bugzilla 無法正確解析你所輸入的搜尋字串：
     <em>[% string FILTER html %]</em><br>
     如果你用引號 (") 包覆字串，請確認引號開頭和結尾都有出現。
     如果你想要搜尋的字串中含有引號時，請在引號前加上反斜線 (\) 。
@@ -1535,7 +1566,7 @@
     「內容」欄位只能被用於「符合」搜尋，而「符合」搜尋也只能用於「內容」欄位。
 
   [% ELSIF error == "search_grouped_field_invalid" %]
-    在群組搜尋條件中， [% terms.Bugzilla %] 不支援使用
+    在群組搜尋條件中， Bugzilla 不支援使用
     "[%+ field_descs.$field FILTER html %]" ([% field FILTER html %])
     欄位。
 
@@ -1546,7 +1577,7 @@
     在群組搜尋中，所有條件必須使用同一欄位。
 
   [% ELSIF error == "search_field_operator_invalid" %]
-    [% terms.Bugzilla %] 不支援在
+    Bugzilla 不支援在
     "[%+ field_descs.$field FILTER html %]" ([% field FILTER html %])
     欄位使用
     "[% search_descs.$operator FILTER html %]" ([% operator FILTER html %])
@@ -1621,7 +1652,7 @@
 
   [% ELSIF error == "tag_name_too_long" %]
     [% title = "標籤名稱太長" %]
-    標籤名稱必須少於
+    標籤必須少於
     [% constants.MAX_LEN_QUERY_NAME FILTER html %]
     字元。
 
@@ -1702,11 +1733,11 @@
 
   [% ELSIF error == "user_match_failed" %]
     [% title = "找不到符合的資料" %]
-    <tt>[% name FILTER html %]</tt> 並不存在，或者你不被允許看見該使用者。
+    <kbd>[% name FILTER html %]</kbd> 並不存在，或者你不被允許看見該使用者。
 
   [% ELSIF error == "user_match_too_many" %]
     [% title = "無法做出結論" %]
-    [% terms.Bugzilla %] 無法對你在 [% fields.join(', ') FILTER html %]
+    Bugzilla 無法對你在 [% fields.join(', ') FILTER html %]
     欄位中所輸入的姓名或電子郵件，做出適合的結論。
 
   [% ELSIF error == "user_not_insider" %]
@@ -1785,15 +1816,11 @@
    admindocslinks = admindocslinks
 %]
 
-<table cellpadding="20">
-  <tr>
-    <td id="error_msg" class="throw_error">
-      [% error_message FILTER none %]
-    </td>
-  </tr>
-</table>
+<div id="error_msg" class="throw_error">
+  [% error_message FILTER none %]
+</div>
 
-<p>
+<p id="post_err_msg">
   請按<b>上一頁</b>再試一次。
 </p>
 
