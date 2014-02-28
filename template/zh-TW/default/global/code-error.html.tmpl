@@ -60,10 +60,10 @@
     圖表檔案 [% file FILTER html %] 已損毀。
 
   [% ELSIF error == "chart_dir_nonexistent" %]
-    不存在目錄 <tt>[% dir FILTER html %]</tt> 以及 <tt>[% graph_dir FILTER html %]</tt> 。
+    不存在目錄 <kbd>[% dir FILTER html %]</kbd> 以及 <kbd>[% graph_dir FILTER html %]</kbd> 。
 
   [% ELSIF error == "chart_file_open_fail" %]
-    無法開啟圖表檔案 <tt>[% filename FILTER html %]</tt> 。
+    無法開啟圖表檔案 <kbd>[% filename FILTER html %]</kbd> 。
 
   [% ELSIF error == "column_alter_nonexistent_fk" %]
     你嘗試修改
@@ -102,7 +102,7 @@
     名稱衝突：無法將 [% old FILTER html %] 更名為 [% new FILTER html %] ，因為 [% new FILTER html %] 已存在。
 
   [% ELSIF error == "env_no_email" %]
-    [% terms.Bugzilla %]並未從該環境中收到電子郵件地址。
+    Bugzilla 並未從該環境中收到電子郵件地址。
     [% IF Param("auth_env_email") %]
       這代表 '[% Param("auth_env_email") FILTER html %]' 環境變數是空白或不存在。
     [% ELSE %]
@@ -307,7 +307,7 @@
     "OP" 。
 
   [% ELSIF error == "search_field_operator_unsupported" %]
-    [% terms.Bugzilla %] 不支援搜尋參數
+    Bugzilla 不支援搜尋參數
     "[% operator FILTER html %]" 。
 
   [% ELSIF error == "search_invalid_joiner" %]
@@ -352,7 +352,7 @@
     [% error_message = Hook.process("errors") %]
     [% IF NOT error_message %]
       [% title = "內部發生錯誤" %]
-      內部發生錯誤，但是 [% terms.Bugzilla %] 並不知道
+      內部發生錯誤，但是 Bugzilla 並不知道
       <code>[% error FILTER html %]</code> 所代表的意義。<br>
       <br>
       如果你是一個 [% terms.Bugzilla %] 的使用者，但卻看到此一訊息時，請將它轉寄給 [% Param('maintainer') %] 。
@@ -388,7 +388,7 @@
   <a href="mailto:[% Param("maintainer") %]">[% Param("maintainer") %]</a> 。
 </p>
 
-<tt>
+<samp>
   <script type="text/javascript"> <!--
     document.write("<p>網址： " +
                     document.location.href.replace(/&/g,"&amp;")
@@ -396,17 +396,16 @@
                                           .replace(/>/g,"&gt;") + "</p>");
   // -->
   </script>
-</tt>
+</samp>
 
-<table cellpadding="20">
-  <tr>
-    <td id="error_msg" class="throw_error">
-      [% error_message FILTER none %]
-    </td>
-  </tr>
-</table>
+<div id="error_msg" class="throw_error">
+  [% error_message FILTER none %]
+</div>
 
-<p>Traceback:</p>
+<p id="post_err_msg">
+  Traceback:
+</p>
+
 <pre>[% traceback FILTER html %]</pre>
 
 [% IF variables %]
