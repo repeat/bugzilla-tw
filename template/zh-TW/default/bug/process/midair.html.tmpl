@@ -11,10 +11,6 @@
   #   used by bug/activity/table.html.tmpl to display recent changes that will
   #   be overwritten if the user submits these changes.  See that template
   #   for further documentation.
-  # start_at: number; the comment at which show/comments.tmpl should begin
-  #   displaying comments, either the index of the last comment (if the user
-  #   entered a comment along with their change) or a number less than that
-  #   (if they didn't), in which case no comments are displayed.
   # comments: array; all the comments on the bug.
   # bug: Bugzilla::Bug; the bug being changed.
   #%]
@@ -40,7 +36,7 @@
   [% PROCESS "bug/activity/table.html.tmpl" incomplete_data=0 %]
 </p>
 
-[% IF comments.size > start_at %]
+[% IF comments.size %]
 <p>
   已加入的意見：
   <blockquote>
@@ -70,7 +66,7 @@
       [% PROCESS "global/hidden-fields.html.tmpl"
           exclude="^Bugzilla_login|Bugzilla_password|delta_ts$" %]
       <input type="submit" id="process" value="仍舊送出我做的變更">
-        [% "除了已加入的意見之外，" IF comments.size > start_at %]這將會覆寫以上的變更。
+        [% "除了已加入的意見之外，" IF comments.size  %]這將會覆寫以上的變更。
     </form>
   </li>
       [% IF cgi.param("comment") %]
@@ -81,8 +77,7 @@
         <input type="hidden" name="comment" value="[% cgi.param("comment") FILTER html %]">
         <input type="hidden" name="comment_is_private"
                value="[% cgi.param("comment_is_private") FILTER html %]">
-        <input type="hidden" name="longdesclength" value="[% bug.comments.size %]">
-	<input type="hidden" name="token" value="[% cgi.param("token") FILTER html %]">
+        <input type="hidden" name="token" value="[% cgi.param("token") FILTER html %]">
         <input type="submit" id="process_comment" value="只送出我所留下的意見">
       </form>
     </li>
