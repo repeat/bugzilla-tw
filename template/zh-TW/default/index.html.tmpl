@@ -17,53 +17,15 @@
    style_urls = [ 'skins/standard/index.css' ]
 %]
 
-
-<script type="text/javascript">
-<!--
-function onLoadActions() {
-  quicksearchHelpText('quicksearch_main', 'show');
-  if( window.external.AddSearchProvider ){
-    YAHOO.util.Dom.removeClass('quicksearch_plugin', 'bz_default_hidden');
-  }
-  document.getElementById('quicksearch_top').focus();
-}
-var quicksearch_message = "輸入 [% terms.bug %] 的編號或字串進行搜尋";
-
-function checkQuicksearch( form ) {
-  if (form.quicksearch.value == '' || form.quicksearch.value == quicksearch_message ) {
-    alert('請至少先輸入一個以上的字串進行搜尋。');
-    return false;
-  }
-  return true;
-}
-
-function quicksearchHelpText(el_id, action){
-  var el = document.getElementById(el_id);
-  if ( action == "show") {
-    if( el.value == "" ) {
-      el.value = quicksearch_message
-      YAHOO.util.Dom.addClass(el, "quicksearch_help_text");
-    }
-  } else {
-    if( el.value == quicksearch_message ) {
-      el.value = "";
-      YAHOO.util.Dom.removeClass(el, "quicksearch_help_text");
-    }
-  }
-}
-    YAHOO.util.Event.onDOMReady(onLoadActions);
-//-->
-</script>
-
 [% IF release %]
   <div id="new_release">
     [% IF release.data %]
       [% IF release.deprecated %]
-        <p>已不再支援 [% terms.Bugzilla %] [%+ release.deprecated FILTER html %] 。
+        <p>已不再支援 Bugzilla [%+ release.deprecated FILTER html %] 。
         建議你升級，以確保系統安全。</p>
       [% END %]
 
-      <p>新的 [% terms.Bugzilla %] (版本 [% release.data.latest_ver FILTER html %]) 可在
+      <p>新的 Bugzilla (版本 [% release.data.latest_ver FILTER html %]) 可在
       <a href="[% release.data.url FILTER html %]">[% release.data.url FILTER html %]</a> 下載。<br>
       新版本釋出日期： [% release.data.date FILTER html %] 。</p>
 
@@ -94,72 +56,104 @@ function quicksearchHelpText(el_id, action){
 [% END %]
 
 <div id="page-index">
-  <table>
-    <tr>
-      <td>
-        <h1 id="welcome">歡迎來到 [% terms.Bugzilla %]</h1>
-        <div class="intro">[% Hook.process('intro') %]</div>
+  <h1 id="welcome">歡迎來到 [% terms.Bugzilla %]</h1>
+  <div class="intro">[% Hook.process('intro') %]</div>
 
-        <div class="bz_common_actions">
-          <ul>
-            <li>
-              <a id="enter_bug" href="enter_bug.cgi"><span>回報 [% terms.Bug %]</span></a>
-            </li>
-            <li>
-              <a id="query" href="query.cgi"><span>搜尋</span></a>
-            </li>
-            <li>
-              <a id="account"
-                 [% IF user.id %]
-                   href="userprefs.cgi"><span>使用者偏好設定</span></a>
-                 [% ELSIF Param('createemailregexp')
-                          && user.authorizer.user_can_create_account
-                 %]
-                   href="createaccount.cgi"><span>建立新帳號</span></a>
-                 [% ELSE %]
-                   href="?GoAheadAndLogIn=1"><span>登入</span></a>
-                 [% END %]
-            </li>
-          </ul>
-        </div>
+  <div class="bz_common_actions">
+    <ul>
+      <li>
+        <a id="enter_bug" href="enter_bug.cgi"><span>回報 [% terms.Bug %]</span></a>
+      </li>
+      <li>
+        <a id="query" href="query.cgi"><span>搜尋</span></a>
+      </li>
+      <li>
+        <a id="account"
+          [% IF user.id %]
+            href="userprefs.cgi"><span>使用者偏好設定</span></a>
+          [% ELSIF Param('createemailregexp') && user.authorizer.user_can_create_account %]
+            href="createaccount.cgi"><span>建立新帳號</span></a>
+          [% ELSE %]
+            href="?GoAheadAndLogIn=1"><span>登入</span></a>
+          [% END %]
+      </li>
+      [% IF Param("docs_urlbase") %]
+        <li>
+          <a id="help" href="[% docs_urlbase FILTER html %]using.html"><span>說明文件</span></a>
+        </li>
+      [% END %]
+    </ul>
+  </div>
 
-        <form id="quicksearchForm" name="quicksearchForm" action="buglist.cgi"
-              onsubmit="return checkQuicksearch(this);">
-          <div>
-            <input id="quicksearch_main" type="text" name="quicksearch"
-              title="快速搜尋"
-              onfocus="quicksearchHelpText(this.id, 'hide');"
-              onblur="quicksearchHelpText(this.id, 'show');"
-            >
-            <input id="find" type="submit" value="快速搜尋">
-            <ul class="additional_links" id="quicksearch_links">
-              <li>
-                <a href="page.cgi?id=quicksearch.html">快速搜尋說明</a>
-              </li>
-              <li class="bz_default_hidden" id="quicksearch_plugin">
-                |
-                <a href="javascript:window.external.AddSearchProvider('[% urlbase FILTER html %]search_plugin.cgi')">
-                 安裝快速搜尋插件
-                </a>
-              </li>
-            </ul>
-            <ul class="additional_links">
-              <li>
-                <a href="[% docs_urlbase FILTER html %]using.html">
-                  [%- terms.Bugzilla %] 使用者說明</a>
-              </li>
-              <li>
-                |
-                <a href="page.cgi?id=release-notes.html">版本資訊</a>
-              </li>
-              [% Hook.process('additional_links') %]
-            </ul>
-          </div>
-        </form>
-        <div class="outro">[% Hook.process('outro') %]</div>
-      </td>
-    </tr>
-  </table>
+  <div>
+    <form id="quicksearchForm" name="quicksearchForm" action="buglist.cgi">
+      <input id="quicksearch_main" name="quicksearch" title="快速搜尋"
+             placeholder="輸入 [% terms.bug %] 的編號或字串進行搜尋"
+             autofocus required>
+      <input id="find" type="submit" value="快速搜尋">
+      <a href="page.cgi?id=quicksearch.html" title="快速搜尋說明">[?]</a>
+    </form>
+
+    <ul class="additional_links">
+      [% Hook.process('additional_links') %]
+    </ul>
+  </div>
+
+  <div id="common_queries">
+    <h4>常用的查詢：</h4>
+    <ul>
+      [% IF user.id %]
+        <li>
+          [% title = BLOCK %]Open [% terms.bugs %] assigned to me[% END %]
+          <a href="buglist.cgi?f1=assigned_to&amp;o1=equals&amp;v1=%25user%25&amp;resolution=---">
+            [% title FILTER html %]</a> ([% assignee_count FILTER html %])
+          <a href="buglist.cgi?f1=assigned_to&amp;o1=equals&amp;v1=%25user%25&amp;resolution=---&amp;ctype=atom&amp;title=[% title FILTER uri %]"
+             class="rss">&nbsp;</a>
+        </li>
+        <li>
+          [% title = BLOCK %]Open [% terms.bugs %] reported by me[% END %]
+          <a href="buglist.cgi?f1=reporter&amp;o1=equals&amp;v1=%25user%25&amp;resolution=---">
+            [% title FILTER html %]</a> ([% reporter_count FILTER html %])
+          <a href="buglist.cgi?f1=reporter&amp;o1=equals&amp;v1=%25user%25&amp;resolution=---&amp;ctype=atom&amp;title=[% title FILTER uri %]"
+             class="rss">&nbsp;</a>
+        </li>
+        [% IF Bugzilla.has_flags %]
+          <li>
+            [% title = BLOCK %]Requests addressed to me[% END %]
+            <a href="request.cgi?action=queue&amp;requestee=[% user.login FILTER uri %]&amp;group=type&amp;do_union=0">
+              [% title FILTER html %]</a> ([% requestee_count FILTER html %])
+            <a href="buglist.cgi?f1=requestees.login_name&amp;o1=equals&amp;v1=%25user%25&amp;ctype=atom&amp;title=[% title FILTER uri %]"
+               class="rss">&nbsp;</a>
+          </li>
+        [% END %]
+      [% END %]
+
+      <li>
+        <a href="buglist.cgi?chfield=%5BBug%20creation%5D&amp;chfieldfrom=24h">最近 24 小時</a>
+        [% title = BLOCK %]最近 24 小時回報的 [% terms.bugs %][% END %]
+        <a href="buglist.cgi?chfield=%5BBug%20creation%5D&amp;chfieldfrom=24h&amp;ctype=atom&amp;title=[% title FILTER uri %]"
+           class="rss">&nbsp;</a>
+        | <a href="buglist.cgi?chfield=%5BBug%20creation%5D&amp;chfieldfrom=7d">最近 7 天</a>
+        [% title = BLOCK %]最近 7 天回報的 [% terms.bugs %][% END %]
+        <a href="buglist.cgi?chfield=%5BBug%20creation%5D&amp;chfieldfrom=7d&amp;ctype=atom&amp;title=[% title FILTER uri %]"
+           class="rss">&nbsp;</a>
+        回報的 [% terms.bugs %]
+      </li>
+      <li>
+        <a href="buglist.cgi?chfieldfrom=24h">最近 24 小時</a>
+        [% title = BLOCK %]最近 24 小時變更過的 [% terms.bugs %][% END %]
+        <a href="buglist.cgi?chfieldfrom=24h&amp;ctype=atom&amp;title=[% title FILTER uri %]"
+           class="rss">&nbsp;</a>
+        | <a href="buglist.cgi?chfieldfrom=7d">最近 7 天</a>
+        [% title = BLOCK %]最近 7 天變更過的 [% terms.bugs %][% END %]
+        <a href="buglist.cgi?chfieldfrom=7d&amp;ctype=atom&amp;title=[% title FILTER uri %]"
+           class="rss">&nbsp;</a>
+        變更過的 [% terms.bugs %]
+      </li>
+    </ul>
+  </div>
+
+  <div class="outro">[% Hook.process('outro') %]</div>
 </div>
 
 [% PROCESS global/footer.html.tmpl %]
