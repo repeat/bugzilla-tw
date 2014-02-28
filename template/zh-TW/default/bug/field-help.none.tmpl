@@ -22,7 +22,7 @@
 ##############
 
 alias =>
-  "在 $terms.Bugzilla 中其他地方可以協助找到並指向特定 $terms.bug 的"
+  "在 Bugzilla 中其他地方可以協助找到並指向特定 $terms.bug 的"
   _ "簡短、獨一無二的名字。",
 
 assigned_to =>
@@ -35,7 +35,7 @@ bug_file_loc =>
   "$terms.Bugs 可以和網址產生關連。例如說，連上一個網站就會看到這個問題。",
 
 bug_id =>
-  "$terms.Bug 的編號，在此 $terms.Bugzilla 中是獨一無二的。",
+  "$terms.Bug 的編號，在此 Bugzilla 中是獨一無二的。",
 
 bug_severity =>
   "$terms.bug 的嚴重等級如何，或者它其實只是功能建議。",
@@ -76,7 +76,7 @@ keywords =>
   "為了讓 $terms.bugs 容易辨識及分類，你可以在已定義的列表中對 $terms.bugs 加入關鍵字。",
 
 longdesc =>
-  "$terms.Bugzilla 使用者可以在 $terms.Bugs 加入描述或意見。"
+  "Bugzilla 使用者可以在 $terms.Bugs 加入描述或意見。"
   _ "你可以在這些意見裡搜尋。",
 
 op_sys =>
@@ -208,7 +208,7 @@ email1 =>
         [% field_types.$field_type FILTER html %]
       [%- END %]
       [% vars.help_html.${help_field} =
-      "在此 $terms.Bugzilla 中的自訂欄位 $field_type_desc 。" %]
+      "在此 Bugzilla 中的自訂欄位 $field_type_desc 。" %]
     [% END %]
   [% END %]
 
