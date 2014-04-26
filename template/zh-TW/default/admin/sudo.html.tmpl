@@ -55,9 +55,10 @@
   [% IF user.authorizer.can_login %]
     <p>
       最後，輸入<label for="Bugzilla_password">你的 [% terms.Bugzilla %] 密碼</label>：
-      <input type="hidden" name="Bugzilla_login" value="
-      [%- user.login FILTER html %]">
+      <input type="hidden" name="Bugzilla_login" value="[% user.login FILTER html %]">
       <input type="password" id="Bugzilla_password" name="Bugzilla_password" size="20">
+      <input type="hidden" name="Bugzilla_login_token"
+             value="[% login_request_token FILTER html %]">
       <br>
       這麼做有兩個原因。<br>
       第一，這可以減少其他人使用你已經登入的帳號做壞事的機會。<br>

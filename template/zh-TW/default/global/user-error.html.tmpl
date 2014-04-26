@@ -206,6 +206,15 @@
 
     [% Hook.process("auth_failure") %]
 
+  [% ELSIF error == "auth_untrusted_request" %]
+    [% title = "不受信任的認證要求" %]
+    你試圖用 
+    <em>[% login FILTER html %]</em>
+    帳號登入，但
+    [% terms.Bugzilla %] 無法信任你的要求。
+    確認你的瀏覽器支援 cookies 並且你並不是從外部網站被導到這裡。
+    如果你確定要登入，<a href="index.cgi?GoAheadAndLogIn=1">點此連結</a>。
+
   [% ELSIF error == "attachment_deletion_disabled" %]
     [% title = "禁止刪除附件" %]
     已禁止刪除附件。
@@ -783,10 +792,10 @@
     [% title = "不被允許" %]
     你試著將
     <strong>[% field_descs.$field FILTER html %]</strong> 欄位
-    [% IF oldvalue.defined %]
+    [% IF oldvalue.defined AND oldvalue != "" %]
       自 <em>[% oldvalue.join(', ') FILTER html %]</em>
     [% END %]
-    [% IF newvalue.defined %]
+    [% IF newvalue.defined AND newvalue != "" %]
       變更為 <em>[% newvalue.join(', ') FILTER html %]</em>
     [% END %]
     ，但是只有
