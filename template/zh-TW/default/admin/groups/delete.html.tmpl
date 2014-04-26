@@ -100,7 +100,8 @@
           [%- data.product.name FILTER html %]</a>
           ([% active.join(', ') FILTER html %])
           [% IF hidden %]
-            <strong>警告：此產品目前設定為隱藏。刪除此群組將導致此產品變為公開。
+            <strong>警告：此產品目前設定為隱藏。
+            刪除此群組後，若無其他合適的群組時，將導致此產品變為公開。
             </strong>
           [% END %]</li>
       [% END %]

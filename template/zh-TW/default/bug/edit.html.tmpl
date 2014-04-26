@@ -1054,6 +1054,11 @@
                      maxrows   = 25
                      cols      = constants.COMMENT_COLS
           %]
+          [% IF user.is_insider %]
+            <script>
+               updateCommentTagControl(document.getElementById('newcommentprivacy'), 'comment');
+            </script>
+          [% END %]
           [% Hook.process("after_comment_textarea", 'bug/edit.html.tmpl') %]
         [% ELSE %]
           你並未被允許在這個 [% terms.bug %] 新增留言。
