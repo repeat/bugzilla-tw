@@ -219,6 +219,15 @@
 
     [% Hook.process("auth_failure") %]
 
+  [% ELSIF error == "auth_untrusted_request" %]
+    [% title = "Untrusted Authentication Request" %]
+    You tried to log in using the <em>[% login FILTER html %]</em> account,
+    but [% terms.Bugzilla %] is unable to trust your request. Make sure
+    your web browser accepts cookies and that you haven't been redirected
+    here from an external web site.
+    <a href="index.cgi?GoAheadAndLogIn=1">Click here</a> if you really want
+    to log in.
+
   [% ELSIF error == "attachment_deletion_disabled" %]
     [% title = "Attachment Deletion Disabled" %]
     Attachment deletion is disabled on this installation.
@@ -872,13 +881,13 @@
     [% title = "Not allowed" %]
     You tried to change the
     <strong>[% field_descs.$field FILTER html %]</strong> field 
-    [% IF oldvalue.defined %]
+    [% IF oldvalue.defined AND oldvalue != "" %]
       from <em>[% oldvalue.join(', ') FILTER html %]</em>
     [% END %]
-    [% IF newvalue.defined %]
+    [% IF newvalue.defined AND newvalue != "" %]
       to <em>[% newvalue.join(', ') FILTER html %]</em>
-    [% END %]
-    , but only
+    [% END %],
+    but only
     [% IF privs < constants.PRIVILEGES_REQUIRED_EMPOWERED %]
       the assignee
       [% IF privs < constants.PRIVILEGES_REQUIRED_ASSIGNEE %] or reporter [% END %]
@@ -1365,6 +1374,12 @@
                          'groups.html'     => 'Groups security'} %]
     Either no products have been defined to enter [% terms.bugs %] against or you have not
     been given access to any.
+
+  [% ELSIF error == "number_not_integer" %]
+    [% title = "Integer Value Required" %]
+    The value '[% num FILTER html %]' in the
+    <em>[% field_descs.$field FILTER html %]</em> field
+    is not an integer value (i.e. a whole number).
 
   [% ELSIF error == "number_not_numeric" %]
     [% title = "Numeric Value Required" %]

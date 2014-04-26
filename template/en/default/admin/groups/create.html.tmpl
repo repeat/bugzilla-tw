@@ -14,18 +14,18 @@
   title = "Add group"
   subheader = "This page allows you to define a new user group."
   style_urls = ['skins/standard/admin.css']
-  doc_section = "groups.html#create-groups"
+  doc_section = "administration.html#creating-groups"
 %]
 
 <form method="post" action="editgroups.cgi">
   <table id="admin_table_edit">
     <tr>
       <th>Group Name:</th>
-      <td><input size="60" maxlength="255" name="name"></td>
+      <td><input size="60" maxlength="255" name="name" required></td>
     </tr>
     <tr>
       <th>Description:</th>
-      <td><input size="60" name="desc"></td>
+      <td><input size="60" name="desc" required></td>
     </tr>
     <tr>
       <th>User Regexp:</th>

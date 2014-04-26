@@ -10,6 +10,11 @@
 <input type="hidden" name="dontchange" value="[% dontchange FILTER html %]">
 <input type="hidden" name="token" value="[% token FILTER html %]">
 
+<input type="button" id="uncheck_all" value="Uncheck All"
+       class="bz_default_hidden" onclick="SetCheckboxes(false);">
+<input type="button" id="check_all" value="Check All"
+       class="bz_default_hidden" onclick="SetCheckboxes(true);">
+
 <script type="text/javascript">
   function SetCheckboxes(value) {
       var elements = document.forms.changeform.getElementsByTagName('input'),
@@ -22,8 +27,8 @@
           }
       }
   }
-  document.write(' <input type="button" name="uncheck_all" value="Uncheck All" onclick="SetCheckboxes(false);">');
-  document.write(' <input type="button" name="check_all" value="Check All" onclick="SetCheckboxes(true);">');
+  YAHOO.util.Dom.removeClass("check_all", "bz_default_hidden");
+  YAHOO.util.Dom.removeClass("uncheck_all", "bz_default_hidden");
 </script>
 
 <hr>
@@ -44,9 +49,11 @@
 
     <th><label for="product">Product:</label></th>
     <td>
-      [% PROCESS selectmenu menuname = "product"
-                            menuitems = products
-                            property = "name" %]
+      [% INCLUDE "global/product-select.html.tmpl"
+         id         => "product"
+         name       => "product"
+         dontchange => dontchange
+       %]
     </td>
 
     <th><label for="version">Version:</label></th>
@@ -289,7 +296,7 @@
 [% IF user.is_insider %]
   <input type="checkbox" name="comment_is_private" value="1"
          id="newcommentprivacy"
-         onClick="updateCommentTagControl(this, form)">
+         onClick="updateCommentTagControl(this, 'comment')">
    <label for="newcommentprivacy">
      Make comment private (visible only to members of the
      <strong>[% Param('insidergroup') FILTER html %]</strong> group)
@@ -303,6 +310,11 @@
   maxrows = 25
   cols    = constants.COMMENT_COLS
 %]<br>
+[% IF user.is_insider %]
+  <script>
+     updateCommentTagControl(document.getElementById('newcommentprivacy'), 'comment');
+  </script>
+[% END %]
 
 [% Hook.process('before_groups') %]
 
