@@ -82,7 +82,7 @@ X-Bugzilla-Type: request
 [%-# .defined is necessary to avoid a taint issue in Perl < 5.10.1, see bug 509794. %]
 [% IF Bugzilla.cgi.param("comment").defined && Bugzilla.cgi.param("comment").length > 0 %]
 ------- [% user.identity %] 的附加意見
-[%+ Bugzilla.cgi.param("comment") %]
+[%+ Bugzilla.cgi.param("comment") FILTER strip_control_chars %]
 [% END %]
 
 [%- END %]
