@@ -34,9 +34,9 @@
 [% PROCESS global/header.html.tmpl
    title = title
    message = message
-   style_urls = ['skins/standard/params.css']
+   style_urls = ['skins/standard/admin.css']
    javascript_urls = ['js/params.js', 'js/util.js']
-   doc_section = "parameters.html"
+   doc_section = "administration.html#bugzilla-configuration"
 %]
 
 <div class="table">
@@ -67,7 +67,8 @@
   </div>
   
   <div class="cell">
-    <div class="contribute"><strong>備註：</strong>
+    <div id="contribute">
+      <strong>備註：</strong>
       Bugzilla 完全由志願參加者進行開發。
       回饋給 Bugzilla 計畫的最好方式就是做點
       <a href="http://www.bugzilla.org/contribute/">貢獻</a>！
@@ -83,7 +84,7 @@
         </p>
 
         [%# CONTENT PANEL %]
-        <form method="post" action="editparams.cgi">
+        <form id="edit_params" method="post" action="editparams.cgi">
           [% PROCESS admin/params/common.html.tmpl panel = current_panel %]
           <input type="hidden" name="section" value="[% current_panel.name FILTER html %]">
           <input type="hidden" name="action" value="save">
