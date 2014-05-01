@@ -14,18 +14,18 @@
   title = "新增群組"
   subheader = "此頁面允許你新增一個使用者群組。"
   style_urls = ['skins/standard/admin.css']
-  doc_section = "groups.html#create-groups"
+  doc_section = "administration.html#creating-groups"
 %]
 
 <form method="post" action="editgroups.cgi">
   <table id="admin_table_edit">
     <tr>
       <th>群組名稱：</th>
-      <td><input size="60" maxlength="255" name="name"></td>
+      <td><input size="60" maxlength="255" name="name" required></td>
     </tr>
     <tr>
       <th>描述：</th>
-      <td><input size="60" name="desc"></td>
+      <td><input size="60" name="desc" required></td>
     </tr>
     <tr>
       <th>使用者正規表達式：</th>
