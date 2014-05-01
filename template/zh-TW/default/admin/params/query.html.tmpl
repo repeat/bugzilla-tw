@@ -25,11 +25,6 @@
                                 </li>
                               </ul>",
 
-  mostfreqthreshold => "一個 $terms.bug 最少要重複幾次才會出現在" _
-                       "<a href=\"duplicates.cgi\">最常回報的 $terms.bugs 頁面</a>中。" _
-                       "如果你的資料庫十分龐大，讓此頁面需以較長的時間載入，" _
-                       "試著增加此數值。",
-
   mybugstemplate => "這是讓使用者簡單列出「我所有的 $terms.bugs 」清單的網址。" _
                     " %userid% 會被取代為該使用者的帳號。" _
                     "特殊字元必須使用 URL 編碼。",
@@ -39,7 +34,7 @@
   search_allow_no_criteria =>
     "除非程式裡明確允許傳回所有的 $terms.bugs ，否則這個選項將可阻擋沒有條件 (criteria) 的搜尋。" _
     "當設為「關」，搜尋都必須指定一些條件，以限制傳給使用者的 $terms.bugs 數量。" _
-    "當設為「開」，使用者將可以不帶任何條件進行搜尋，並傳回他所能看到的所有 $terms.bugs 的清單。" _
+    "當設為「開」，使用者將可以不帶任何條件進行搜尋，並傳回該使用者所能看到的所有 $terms.bugs 的清單。" _
     "在資料庫較大的 $terms.Bugzilla 上不建議將此選項開啟。",
 
   default_search_limit =>
