@@ -20,15 +20,15 @@
   title = title
   header = header
   subheader = subheader
-  doc_section = "attachments.html"
+  doc_section = "using.html#attachments"
   javascript_urls = ['js/attachment.js', 'js/field.js']
-  style_urls = ['skins/standard/attachment.css']
+  style_urls = ['skins/standard/bug.css']
   yui = [ 'autocomplete' ]
   bodyclasses = "no_javascript"
 %]
 
 [%# No need to display the Diff button and iframe if the attachment is not a patch. %]
-[% use_patchviewer = (feature_enabled('patch_viewer') && attachment.ispatch) %]
+[% use_patchviewer = (feature_enabled('patch_viewer') && attachment.ispatch) ? 1 : 0 %]
 [% can_edit = attachment.validate_can_edit %]
 [% editable_or_hide = can_edit ? "" : " bz_hidden_option" %]
 
@@ -195,35 +195,38 @@
                  readonly = 'readonly'
               %]
             [% ELSE %]
-              <iframe id="viewFrame" src="attachment.cgi?id=[% attachment.id %]">
+              <iframe id="viewFrame" src="attachment.cgi?id=[% attachment.id %]" sandbox>
                 <b>你無法在瀏覽附件的詳細資料時同時瀏覽附件，因為你的瀏覽器並不支援 IFRAME 屬性。
                <a href="attachment.cgi?id=[% attachment.id %]">另開新視窗瀏覽</a>。</b>
               </iframe>
             [% END %]
+
+            [% IF use_patchviewer %]
+              <iframe id="viewDiffFrame" class="bz_default_hidden"></iframe>
+            [% END %]
+
+            [% IF user.id %]
+              <button type="button" id="editButton" class="bz_default_hidden"
+                      onclick="editAsComment([% use_patchviewer %]);">以編輯附件方式做為意見</button>
+              <button type="button" id="undoEditButton" class="bz_default_hidden"
+                      onclick="undoEditAsComment([% use_patchviewer %]);">回復</button>
+              <button type="button" id="redoEditButton" class="bz_default_hidden"
+                      onclick="redoEditAsComment([% use_patchviewer %]);">重做以編輯附件方式做為意見</button>
+            [% END %]
+
+            [% IF use_patchviewer %]
+              <button type="button" id="viewDiffButton" class="bz_default_hidden"
+                      onclick="viewDiff([% attachment.id %], [% use_patchviewer %]);">以比較差異方式 (Diff) 瀏覽附件</button>
+            [% END %]
+            <button type="button" id="viewRawButton" class="bz_default_hidden"
+                    onclick="viewRaw([% use_patchviewer %]);">以原始格式瀏覽附件</button>
+
             <script type="text/javascript">
-              <!--
-              var patchviewerinstalled = 0;
-              var attachment_id = [% attachment.id %];
-              if (typeof document.getElementById == "function") {
-                [% IF use_patchviewer %]
-                  var patchviewerinstalled = 1;
-                  document.write('<iframe id="viewDiffFrame" class="bz_default_hidden"><\/iframe>');
-                [% END %]
-                [% IF user.id %]
-                  document.write('<button type="button" id="editButton" onclick="editAsComment(patchviewerinstalled);">以編輯附件方式做為意見<\/button>');
-                  document.write('<button type="button" id="undoEditButton" onclick="undoEditAsComment(patchviewerinstalled);" class="bz_default_hidden">回復<\/button>');
-                  document.write('<button type="button" id="redoEditButton" onclick="redoEditAsComment(patchviewerinstalled);" class="bz_default_hidden">重做以編輯附件方式做為意見<\/button>');
-                  var editFrame = document.getElementById('editFrame');
-                  if (editFrame) {
-                    editFrame.disabled = false;
-                  }
-                [% END %]
-                [% IF use_patchviewer %]
-                  document.write('<button type="button" id="viewDiffButton" onclick="viewDiff(attachment_id, patchviewerinstalled);">以比較差異方式 (Diff) 瀏覽附件<\/button>');
-                [% END %]
-                document.write('<button type="button" id="viewRawButton" onclick="viewRaw(patchviewerinstalled);" class="bz_default_hidden">以原始格式瀏覽附件<\/button>');
-              }
-              //-->
+              [% IF user.id %]
+                document.getElementById('editFrame').disabled = false;
+                YAHOO.util.Dom.removeClass("editButton", "bz_default_hidden");
+              [% END %]
+              YAHOO.util.Dom.removeClass("viewDiffButton", "bz_default_hidden");
             </script>
           </div>
         [% ELSE %]
@@ -244,13 +247,12 @@
             <label for="comment">（對 [% terms.bug %] ）的意見：</label>
             [% classNames = 'block' %]
             [% classNames = "$classes bz_private" IF attachment.isprivate %]
-            [% INCLUDE global/textarea.html.tmpl
-              id      = 'comment'
-              name    = 'comment'
-              minrows = 10
-              cols    = 80
-              wrap    = 'soft'
-              classes = classNames
+            [% INCLUDE bug/comment.html.tmpl
+               bug     = attachment.bug
+               minrows = 10
+               cols    = 80
+               classes = classNames
+               wrap    = 'soft'
             %]
             [% IF NOT attachment.bug.cc.contains(user.login) %]
               <input type="checkbox" id="addselfcc" name="addselfcc"
