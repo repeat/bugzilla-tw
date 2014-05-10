@@ -7,15 +7,15 @@
   #%]
 
 [% title = BLOCK %]在 [% product.name FILTER html %] 產品下輸入 [% terms.Bug %][% END %]
+[% use_qa_contact = Param("useqacontact") %]
 
 [% PROCESS global/header.html.tmpl
   title = title
   yui = [ 'autocomplete', 'calendar', 'datatable', 'button' ]
-  style_urls = [ 'skins/standard/attachment.css',
-                 'skins/standard/enter_bug.css' ]
+  style_urls = ['skins/standard/bug.css']
   javascript_urls = [ "js/attachment.js", "js/util.js",
                       "js/field.js", "js/TUI.js", "js/bug.js" ]
-  onload = "set_assign_to(); hideElementById('attachment_true');
+  onload = "set_assign_to($use_qa_contact); hideElementById('attachment_true');
             showElementById('attachment_false'); showElementById('btn_no_attachment');"
 %]
 
@@ -60,77 +60,6 @@ var flags = new Array([% product.components.size %]);
 
     [% count = count + 1 %]
 [%- END %]
-
-function set_assign_to() {
-    // Based on the selected component, fill the "Assign To:" field
-    // with the default component owner, and the "QA Contact:" field
-    // with the default QA Contact. It also selectively enables flags.
-    var form = document.Create;
-    var assigned_to = form.assigned_to.value;
-
-[% IF Param("useqacontact") %]
-    var qa_contact = form.qa_contact.value;
-[% END %]
-
-    var index = -1;
-    if (form.component.type == 'select-one') {
-        index = form.component.selectedIndex;
-    } else if (form.component.type == 'hidden') {
-        // Assume there is only one component in the list
-        index = 0;
-    }
-    if (index != -1) {
-        var owner = initialowners[index];
-        var component = components[index];
-        if (assigned_to == last_initialowner
-            || assigned_to == owner
-            || assigned_to == '') {
-            form.assigned_to.value = owner;
-            last_initialowner = owner;
-        }
-
-        document.getElementById('initial_cc').innerHTML = initialccs[index];
-        document.getElementById('comp_desc').innerHTML = comp_desc[index];
-
-        [% IF Param("useqacontact") %]
-            var contact = initialqacontacts[index];
-            if (qa_contact == last_initialqacontact
-                || qa_contact == contact
-                || qa_contact == '') {
-                  form.qa_contact.value = contact;
-                  last_initialqacontact = contact;
-            }
-        [% END %]
-
-        // We show or hide the available flags depending on the selected component.
-        var flag_rows = YAHOO.util.Dom.getElementsByClassName('bz_flag_type', 'tbody');
-        for (var i = 0; i < flag_rows.length; i++) {
-            // Each flag table row should have one flag form select element
-            // We get the flag type id from the id attribute of the select.
-            var flag_select = YAHOO.util.Dom.getElementsByClassName('flag_select',
-                                                                    'select',
-                                                                    flag_rows[i])[0];
-            var type_id = flag_select.id.split('-')[1];
-            var can_set = flag_select.options.length > 1 ? 1 : 0;
-            var show = 0;
-            // Loop through the allowed flag ids for the selected component
-            // and if we match, then show the row, otherwise hide the row.
-            for (var j = 0; j < flags[index].length; j++) {
-                if (flags[index][j] == type_id) {
-                    show = 1;
-                    break;
-                }
-            }
-            if (show && can_set) {
-                flag_select.disabled = false;
-                YAHOO.util.Dom.removeClass(flag_rows[i], 'bz_default_hidden');
-            } else {
-                flag_select.disabled = true;
-                YAHOO.util.Dom.addClass(flag_rows[i], 'bz_default_hidden');
-            }
-        }
-    }
-}
 
 var status_comment_required = new Array();
 [% FOREACH status = bug_status %]
@@ -199,7 +128,7 @@ TUI_hide_default('attachment_text_field');
       desc_url = component_desc_url
     %]
     <td id="field_container_component">
-      <select name="component" id="component" onchange="set_assign_to();"
+      <select name="component" id="component" onchange="set_assign_to([% Param("useqacontact") %]);"
               size="7" aria-required="true" class="required">
         [%# Build the lists of assignees and QA contacts if "usemenuforusers" is enabled. %]
         [% IF Param("usemenuforusers") %]
@@ -254,9 +183,9 @@ TUI_hide_default('attachment_text_field');
 
   <tr>
     [% INCLUDE "bug/field-label.html.tmpl"
-      field = bug_fields.version editable = 1 rowspan = 3
+      field = bug_fields.version editable = 1 rowspan = 4
     %]
-    <td rowspan="3">
+    <td rowspan="4">
       <select name="version" id="version" size="5" aria-required="true"
               class="required">
         [%- FOREACH v = version %]
@@ -273,6 +202,16 @@ TUI_hide_default('attachment_text_field');
       value = default.bug_severity %]
   </tr>
 
+  <tr class="expert_fields">
+    [% IF Param('letsubmitterchoosepriority') %]
+      [% INCLUDE bug/field.html.tmpl
+        bug = default, field = bug_fields.priority, editable = 1, 
+        value = default.priority %]
+    [% ELSE %]
+      <td colspan="2">&nbsp;</td>
+    [% END %]
+  </tr>
+
   <tr>
     [% INCLUDE bug/field.html.tmpl
       bug = default, field = bug_fields.rep_platform, editable = 1,
@@ -284,9 +223,10 @@ TUI_hide_default('attachment_text_field');
        bug = default, field = bug_fields.op_sys, editable = 1,
        value = default.op_sys %]
   </tr>
-  [% IF !Param('defaultplatform') || !Param('defaultopsys') %]
+  [% IF (!Param('defaultplatform') || !Param('defaultopsys')) && !cloned_bug_id %]
     <tr>
-      <th colspan="3">&nbsp;</th>
+      <td colspan="2" class="expert_fields">&nbsp;</td>
+      <td>&nbsp;</td>
       <td id="os_guess_note" class="comment">
         <div>我們對於你的
         [% IF Param('defaultplatform') %]
@@ -310,13 +250,7 @@ TUI_hide_default('attachment_text_field');
       <td colspan="2">&nbsp;</td>
     [% END %]
 
-    [% IF Param('letsubmitterchoosepriority') %]
-      [% INCLUDE bug/field.html.tmpl
-        bug = default, field = bug_fields.priority, editable = 1,
-        value = default.priority %]
-    [% ELSE %]
-      <td colspan="2">&nbsp;</td>
-    [% END %]
+    <td colspan="2">&nbsp;</td>
   </tr>
 </tbody>
 
@@ -333,7 +267,7 @@ TUI_hide_default('attachment_text_field');
 
     <td>&nbsp;</td>
     [%# Calculate the number of rows we can use for flags %]
-    [% num_rows = 7 + (Param("useqacontact") ? 1 : 0) +
+    [% num_rows = 6 + (Param("useqacontact") ? 1 : 0) +
                       (user.is_timetracker ? 3 : 0)
     %]
 
@@ -457,7 +391,7 @@ TUI_hide_default('attachment_text_field');
     [% INCLUDE "bug/field-label.html.tmpl"
       field = bug_fields.bug_file_loc editable = 1
     %]
-    <td colspan="2" class="field_value">
+    <td colspan="3" class="field_value">
       <input name="bug_file_loc" id="bug_file_loc" class="text_input"
              size="40" value="[% bug_file_loc FILTER html %]">
     </td>
@@ -541,9 +475,7 @@ TUI_hide_default('attachment_text_field');
           # by global/textarea.html.tmpl. So we must not escape the comment here. %]
         [% comment FILTER none %]
       [%- END %]
-      [% INCLUDE global/textarea.html.tmpl
-         name           = 'comment'
-         id             = 'comment'
+      [% INCLUDE bug/comment.html.tmpl
          minrows        = 10
          maxrows        = 25
          cols           = constants.COMMENT_COLS
@@ -568,6 +500,9 @@ TUI_hide_default('attachment_text_field');
         </label>
       </td>
     </tr>
+    <script>
+      updateCommentTagControl(document.getElementById('comment_is_private'), 'comment');
+    </script>
   [% END %]
 
   [% IF Param("maxattachmentsize") || Param("maxlocalattachment") %]
@@ -602,7 +537,7 @@ TUI_hide_default('attachment_text_field');
       [% INCLUDE bug/field.html.tmpl
          bug = default, field = bug_fields.keywords, editable = 1,
          value = keywords, possible_values = all_keywords,
-         desc_url = "describekeywords.cgi", value_span = 2
+         desc_url = "describekeywords.cgi", value_span = 3
       %]
     </tr>
   [% END %]
@@ -624,6 +559,17 @@ TUI_hide_default('attachment_text_field');
       <td colspan="3">
         <input name="blocked" accesskey="b" value="[% blocked FILTER html %]">
       </td>
+    </tr>
+  [% END %]
+
+  [% IF Param('use_see_also') %]
+    <tr>
+      [% INCLUDE bug/field.html.tmpl
+         bug            = default
+         field          = bug_fields.see_also
+         editable       = 1
+         value          = see_also
+      %]
     </tr>
   [% END %]
 </tbody>
