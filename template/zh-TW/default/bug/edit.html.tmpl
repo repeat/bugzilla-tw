@@ -36,23 +36,7 @@
 <script type="text/javascript">
 <!--
 [% IF user.is_timetracker %]
-  var fRemainingTime = [% bug.remaining_time %]; // holds the original value
-  function adjustRemainingTime() {
-      // subtracts time spent from remaining time
-      var new_time;
-
-      // prevent negative values if work_time > fRemainingTime
-      new_time =
-          Math.max(fRemainingTime - document.changeform.work_time.value, 0.0);
-      // get upto 2 decimal places
-      document.changeform.remaining_time.value =
-          Math.round(new_time * 100)/100;
-  }
-
-  function updateRemainingTime() {
-      // if the remaining time is changed manually, update fRemainingTime
-      fRemainingTime = document.changeform.remaining_time.value;
-  }
+  var bz_remaining_time = [% bug.remaining_time %];
 [% END %]
 
 [% IF user.id %]
@@ -258,11 +242,20 @@
     [%#  PRODUCT  #%]
     [%#############%]
     <tr>
-       [% INCLUDE bug/field.html.tmpl
-            bug = bug, field = bug_fields.product,
-            override_legal_values = bug.choices.product
-            desc_url = 'describecomponents.cgi', value = bug.product
-            editable = bug.check_can_change_field('product', 0, 1) %]
+      [% PROCESS "bug/field-label.html.tmpl"
+         field = bug_fields.product
+         desc_url = 'describecomponents.cgi'
+         value = bug.product
+        %]
+      <td class="field_value" id="field_container_product">
+        [% INCLUDE "global/product-select.html.tmpl"
+           id    => "product"
+           name  => "product"
+           value => bug.product
+           products => bug.choices.product
+           isselect => bug.check_can_change_field('product', 0, 1)
+         %]
+       </td>
     </tr>
 
     [%# Classification is here so that it can be used in value controllers
@@ -1109,19 +1102,24 @@
       <!-- This table keeps the submit button aligned with the box. -->
       <table><tr><td>
         [% IF bug.check_can_change_field('longdesc', 0, 1) %]
-          [% INCLUDE global/textarea.html.tmpl
-                     name      = 'comment'
-                     id        = 'comment'
+          [% INCLUDE bug/comment.html.tmpl
                      minrows   = 10
                      maxrows   = 25
                      cols      = constants.COMMENT_COLS
           %]
+          [% IF user.is_insider %]
+            <script>
+               updateCommentTagControl(document.getElementById('newcommentprivacy'), 'comment');
+            </script>
+          [% END %]
           [% Hook.process("after_comment_textarea", 'bug/edit.html.tmpl') %]
         [% ELSE %]
           你並未被允許在這個 [% terms.bug %] 新增留言。
         [% END %]
         <br>
         [% PROCESS commit_button id=""%]
+
+        [% Hook.process("after_comment_commit_button", 'bug/edit.html.tmpl') %]
 
         <table id="bug_status_bottom" class="status">
           <tr>
