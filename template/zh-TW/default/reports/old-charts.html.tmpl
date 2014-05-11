@@ -7,7 +7,6 @@
   #%]
 
 [%# INTERFACE:
-  # products: an array of product names the user is allowed to view.
   # datasets: an array of hashes with available statuses and resolutions.
   # url_image: URL of the generated graph.
   #%]
@@ -15,8 +14,8 @@
 [% PROCESS global/header.html.tmpl
   title = "$terms.Bug 圖表"
   h1 = "歡迎使用 $terms.Bugzilla 圖表產生器"
-  style_urls = ['skins/standard/reports.css']
-  doc_section = "reporting.html#charts"
+  style_urls = ['skins/standard/buglist.css']
+  doc_section = "using.html#charts"
 %]
 
 [% IF url_image %]
@@ -29,11 +28,12 @@
         <tr>
           <th>產品：</th>
           <td>
-            <select id="product_id" name="product_id">
-              [% FOREACH product = products %]
-                <option value="[% product.id FILTER html %]">[% product.name || '-全部-' FILTER html %]</option>
-              [% END %]
-            </select>
+            [% INCLUDE "global/product-select.html.tmpl"
+              id   => "product_id"
+              name => "product_id"
+              valueattribute => "id"
+              add  => "-全部-"
+            %]
           </td>
         </tr>
         <tr>
