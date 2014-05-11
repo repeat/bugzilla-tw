@@ -16,7 +16,7 @@
 [% END %]
 
 [% PROCESS global/header.html.tmpl
-  style_urls = [ "skins/standard/reports.css" ]
+  style_urls = ['skins/standard/buglist.css']
   title = title
 %]
 
@@ -28,10 +28,10 @@
 
 <h1>[% product.name FILTER html %]</h1>
 
-<div class="product_desc">[% product.description FILTER html_light %]</div>
+<div id="product_desc">[% product.description FILTER html_light %]</div>
 <p>選擇一項子產品來檢視該子產品中尚未關閉的 [% terms.bugs %] 。</p>
 
-<table class="component_table">
+<table id="component_table">
   <tr>
     <th>子產品</th>
     <th>預設負責人</th>
