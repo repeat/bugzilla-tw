@@ -46,6 +46,7 @@
     "short_short_desc"  => { maxlength => 60 , ellipsis => "..." , wrap => 1 } ,
     "status_whiteboard" => { maxlength => 0, title => "狀態白板" , wrap => 1 } ,
     "keywords"          => { maxlength => 0, wrap => 1 } ,
+    "tags"              => { maxlength => 0, title => "標籤", wrap => 1},
     "dependson"         => { maxlength => 0, wrap => 1 } ,
     "blocked"           => { maxlength => 0, wrap => 1 } ,
     "flagtypes.name"    => { maxlength => 0, wrap => 1 } ,
@@ -181,9 +182,11 @@
     </td>
 
     [% FOREACH column = displaycolumns %]
-      [% col_abbrev = abbrev.$column %]
-    <td [% 'class="nowrap"' IF NOT col_abbrev.wrap %]
-        class="bz_[% column FILTER css_class_quote %]_column">
+    [% col_abbrev = abbrev.$column %]
+    <td class="bz_[% column FILTER css_class_quote %]_column
+      [%~ ' nowrap' UNLESS col_abbrev.wrap
+        OR bug_fields.$column.type == constants.FIELD_TYPE_FREETEXT
+        OR bug_fields.$column.type == constants.FIELD_TYPE_TEXTAREA %]">
       [% IF col_abbrev.maxlength %]
         <span title="[%- display_value(column, bug.$column) FILTER html %]">
       [% END %]
@@ -206,6 +209,8 @@
         <a href="show_bug.cgi?id=[% bug.$column FILTER html %]">
           [%- bug.$column.truncate(col_abbrev.maxlength, col_abbrev.ellipsis) FILTER html -%]
         </a>
+      [% ELSIF bug_fields.$column.type == constants.FIELD_TYPE_TEXTAREA %]
+        [%- bug.$column.truncate(256, '...') FILTER html -%]
       [% ELSIF column == 'bug_file_loc' && is_safe_url(bug.bug_file_loc) %]
         <a href="[% bug.bug_file_loc FILTER html %]" target="_blank"
            title="[% bug.bug_file_loc FILTER html %]">
