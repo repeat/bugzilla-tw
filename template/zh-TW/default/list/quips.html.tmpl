@@ -36,7 +36,7 @@
     <input type="hidden" name="action" value="add">
     <input type="hidden" name="token"
            value="[% issue_hash_token(['create-quips']) FILTER html %]">
-    <input size="80" name="quip" maxlength="512">
+    <input size="80" name="quip" maxlength="512" required>
     <p>
       <input type="submit" id="add" value="送出">
     </p>
@@ -104,7 +104,15 @@
         [% END %]
         </tbody>
       </table>
-      <script type="text/javascript"><!--
+
+      <input type="button" id="uncheck_all" value="取消全選"
+             class="bz_default_hidden" onclick="SetCheckboxes(false);">
+      <input type="button" id="check_all" value="全選"
+             class="bz_default_hidden" onclick="SetCheckboxes(true);">
+      <input type="submit" id="update" value="儲存設定">
+
+      <script type="text/javascript">
+        <!--
         var numelements = document.forms.editform.elements.length;
         function SetCheckboxes(value) {
           var item;
@@ -113,13 +121,10 @@
             item.checked = value;
           }
         }
-        document.write(' <input type="button" name="uncheck_all" '
-                      +'value="全不選" onclick="SetCheckboxes(false);">');
-        document.write(' <input type="button" name="check_all" '
-                      +'value="全選" onclick="SetCheckboxes(true);">');
-        //--></script>
-
-      <input type="submit" id="update" value="儲存設定">
+        YAHOO.util.Dom.removeClass("check_all", "bz_default_hidden");
+        YAHOO.util.Dom.removeClass("uncheck_all", "bz_default_hidden");
+        //-->
+      </script>
     </form>
     <br>
   [% END %]
