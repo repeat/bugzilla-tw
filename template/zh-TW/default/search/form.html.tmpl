@@ -52,11 +52,8 @@ TUI_hide_default('information_query');
          value = default.short_desc.0
          type_selected = default.short_desc_type.0
          accesskey = "s"
-         %]
-      <script type="text/javascript"> <!--
-          document.getElementById('short_desc').focus();
-      // -->
-      </script>
+         focus = 1
+      %]
 
       [% IF button_name %]
         <input type="submit" id="[% button_name FILTER css_class_quote %]_top"
@@ -172,7 +169,7 @@ TUI_hide_default('information_query');
       </select>
     </span>
     <span class="field_label"><label for="bug_id">[% terms.Bug %] 編號為：</label></span>
-    <div id="bug_id_container" >
+    <div id="bug_id_container">
       <input type="text" name="bug_id" id="bug_id"
            value="[% default.bug_id.0 FILTER html %]" size="20">
            <div class="field_help">[以逗號 (,) 分隔多個 [% terms.bug %] 編號</div>
