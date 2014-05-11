@@ -43,11 +43,13 @@
     [% new_param = cgi.canonicalise_query %]
   [% END %]
 
-  if (history && history.replaceState) {
-    history.replaceState(null, "[% unfiltered_title FILTER js %]",
-                         "buglist.cgi?[% new_param FILTER js %]");
-    document.title = "[% unfiltered_title FILTER js %]";
-  }
+  [% IF new_param.length + 12 < constants.CGI_URI_LIMIT %]
+    if (history && history.replaceState) {
+      history.replaceState(null, "[% unfiltered_title FILTER js %]",
+                           "buglist.cgi?[% new_param FILTER js %]");
+      document.title = "[% unfiltered_title FILTER js %]";
+    }
+  [% END %]
   [% javascript FILTER none %]
 [% END %]
 
@@ -61,7 +63,7 @@
   yui = [ 'autocomplete', 'calendar' ]
   javascript_urls = [ "js/util.js", "js/field.js", "js/TUI.js" ]
   style_urls = [ "skins/standard/buglist.css" ]
-  doc_section = "query.html#list"
+  doc_section = "using.html#bug-lists"
 %]
 
 <div class="bz_query_head">
@@ -73,7 +75,7 @@
     <div class="bz_query_debug">
       <p>總執行時間： [% query_time FILTER html %] 秒</p>
       [% FOREACH query = queries %]
-        <p>[% query.sql FILTER html %]</p>
+        <pre>[% query.sql FILTER html %]</pre>
         <p>執行時間： [% query.time FILTER html %] 秒</p>
         [% IF query.explain %]
           <pre>[% query.explain FILTER html %]</pre>
@@ -189,18 +191,10 @@
     <div class="buglist_menu">
       <div class="bz_query_buttons">
         <form method="post" action="show_bug.cgi">
-          [% id = buglist.join(",") %]
-          <input type="hidden" name="id" value="[% id FILTER html %]">
+          [% buglist_joined = buglist.join(",") %]
+          <input type="hidden" name="id" value="[% buglist_joined FILTER html %]">
           <input type="hidden" name="format" value="multiple">
           <input type="submit" id="long_format" value="長的格式">
-        </form>
-        <form method="post" action="show_bug.cgi">
-            <input type="hidden" name="ctype" value="xml">
-          [% FOREACH id = buglist %]
-            <input type="hidden" name="id" value="[% id FILTER html %]">
-          [% END %]
-            <input type="hidden" name="excludefield" value="attachmentdata">
-            <input type="submit" value="XML" id="xml">
         </form>
 
         [% IF user.is_timetracker %]
@@ -218,46 +212,56 @@
             </span>
           [% END %]
         [% END %]
+
+        <form method="post" action="show_bug.cgi">
+          <input type="hidden" name="ctype" value="xml">
+          [% FOREACH id = buglist %]
+            <input type="hidden" name="id" value="[% id FILTER html %]">
+          [% END %]
+          <input type="hidden" name="excludefield" value="attachmentdata">
+          <button type="submit" id="xml">
+            <img src="images/xml.png" width="24" height="24" alt="XML" title="XML 格式">
+          </button>
+        </form>
       </div>
 
       <div class="bz_query_links">
-        <a href="buglist.cgi?
-        [% urlquerypart FILTER html %]&amp;ctype=csv&amp;human=1">CSV</a> |
-        <a href="buglist.cgi?
-        [% urlquerypart FILTER html %]&amp;title=
-        [%- title FILTER html %]&amp;ctype=atom">ATOM</a> |
-        <a href="buglist.cgi?
-        [% urlquerypart FILTER html %]&amp;ctype=ics">iCalendar</a> |
-        <a href="colchange.cgi?
-        [% urlquerypart FILTER html %]&amp;query_based_on=
-          [% defaultsavename OR searchname FILTER uri %]">變更欄位</a> |
+        <a href="buglist.cgi?[% urlquerypart FILTER html %]&amp;ctype=csv&amp;human=1"
+        ><img title="CSV 格式" alt="CSV" src="images/csv.png" height="24" width="24"></a>
+        <a href="buglist.cgi?[% urlquerypart FILTER html %]&amp;title=
+           [%- title FILTER uri %]&amp;ctype=atom"
+        ><img title="Feed 格式" alt="Feed" src="images/rss.png" height="24" width="24"></a>
+        <a href="buglist.cgi?[% urlquerypart FILTER html %]&amp;ctype=ics"
+        ><img title="iCal 格式" alt="iCal" src="images/ical.png" height="24" width="24"></a>
+        <a href="colchange.cgi?[% urlquerypart FILTER html %]&amp;query_based_on=
+           [% defaultsavename OR searchname FILTER uri %]"
+        ><button>變更欄位</button></a>
 
         [% IF bugs.size > 1 && caneditbugs && !dotweak %]
           <a href="buglist.cgi?[% urlquerypart FILTER html %]
             [%- "&order=$qorder" FILTER html IF order %]&amp;tweak=1"
-            >一次變更多個 [% terms.Bugs %]</a>
-          |
+          ><button>一次變更多個 [% terms.Bugs %]</button></a>
         [% END %]
 
         [% IF bugowners && user.id %]
-          <a href="mailto:
-            [% bugowners FILTER html %]">寄信給 [% terms.Bug %] 負責人</a> |
+          <a href="mailto:[% bugowners FILTER html %]"
+          ><button>寄信給 [% terms.Bug %] 負責人</a></button></a>
         [% END %]
 
         [%# Links to more things users can do with this bug list. %]
         [% Hook.process("links") %]
       </div>
-
+      <br>
       <div class="bz_query_edit">
-        <a href="[% PROCESS edit_search_url %]">編輯搜尋條件</a>
+        <a href="[% PROCESS edit_search_url %]"><button>編輯搜尋條件</button></a>
       </div>
 
       [% IF searchtype == "saved" %]
         <div class="bz_query_forget">
-          | <a href="buglist.cgi?cmdtype=dorem&amp;remaction=forget&amp;namedcmd=
+          <a href="buglist.cgi?cmdtype=dorem&amp;remaction=forget&amp;namedcmd=
                 [% searchname FILTER uri %]&amp;token=
-                [% issue_hash_token([search_id, searchname]) FILTER uri %]">
-              刪除已儲存的搜尋 '[% searchname FILTER html %]'</a>
+                [% issue_hash_token([search_id, searchname]) FILTER uri %]"
+           ><button>刪除已儲存的搜尋 '[% searchname FILTER html %]'</button></a>
         </div>
       [% ELSE %]
         <div class="bz_query_remember">
