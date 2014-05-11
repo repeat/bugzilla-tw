@@ -85,6 +85,15 @@
     [% terms.Bug %]別名不能超過 20 字元。
     請選擇較短的別名。
 
+  [% ELSIF error == "auth_untrusted_request" %]
+    [% title = "不受信任的認證要求" %]
+    你試圖用 
+    <em>[% login FILTER html %]</em>
+    帳號登入，但
+    [% terms.Bugzilla %] 無法信任你的要求。
+    確認你的瀏覽器支援 cookies 並且你並不是從外部網站被導到這裡。
+    如果你確定要登入，<a href="index.cgi?GoAheadAndLogIn=1">點此連結</a>。
+
   [% ELSIF error == "attachment_bug_id_mismatch" %]
     [% title = "無效的附件" %]
     你嘗試對不同 [% terms.bugs %] 的附件執行一項動作。
@@ -825,10 +834,10 @@
     [% title = "不被允許" %]
     你試著將
     <strong>[% field_descs.$field FILTER html %]</strong> 欄位
-    [% IF oldvalue.defined %]
+    [% IF oldvalue.defined AND oldvalue != "" %]
       自 <em>[% oldvalue.join(', ') FILTER html %]</em>
     [% END %]
-    [% IF newvalue.defined %]
+    [% IF newvalue.defined AND newvalue != "" %]
       變更為 <em>[% newvalue.join(', ') FILTER html %]</em>
     [% END %]
     ，但是只有
@@ -1279,6 +1288,14 @@
   [% ELSIF error == "no_tag_to_edit" %]
     [% title = "未選擇標籤" %]
     你嘗試新增或移除沒有名稱的標籤。
+
+  [% ELSIF error == "number_not_integer" %]
+    [% title = "必須是整數" %]
+    欄位
+    <em>[% field_descs.$field FILTER html %]</em>
+    的數值
+    '[% num FILTER html %]'
+    並不是整數。
 
   [% ELSIF error == "number_not_numeric" %]
     [% title = "必須是數字" %]
