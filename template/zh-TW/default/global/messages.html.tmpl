@@ -55,16 +55,14 @@
         [% END %]
         [% IF groups_added_to.size %]
           <li>
-            已新增該帳號至
+            已新增該帳號至下列群組：
             [%+ groups_added_to.join(', ') FILTER html %]
-            群組。
           </li>
         [% END %]
         [% IF groups_removed_from.size %]
           <li>
-            已將該帳號自
+            已將該帳號自下列群組中刪除：
             [%+ groups_removed_from.join(', ') FILTER html %]
-            群組中刪除。
           </li>
         [% END %]
         [% IF groups_granted_rights_to_bless.size %]
@@ -898,7 +896,7 @@
 [% IF !message %]
   [% message = BLOCK %]
     你不正確的使用 Bugzilla 的訊息功能。你輸入了字串 '[% cancelaction %]' 。正確的用法是輸入一個標籤，並且在
-    messages.html.tmpl 檔案中定義該標籤。<br>
+    <kbd>messages.html.tmpl</kbd> 檔案中定義該標籤。<br>
     <br>
     如果你是一個 [% terms.Bugzilla %] 的使用者，但卻看到此一訊息時，請將它轉寄給 [% Param('maintainer') %] 。
   [% END %]
