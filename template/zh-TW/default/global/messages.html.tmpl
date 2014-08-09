@@ -24,13 +24,11 @@
     已取消建立使用者帳號 [% account FILTER html %] 。
 
   [% ELSIF message_tag == "account_updated" %]
-    [% IF changed_fields.size
-          + groups_added_to.size + groups_removed_from.size
-          + groups_granted_rights_to_bless.size + groups_denied_rights_to_bless.size %]
+    [% IF changes.size %]
       [% title = "已更新使用者 $loginold" %]
       已對使用者 [%+ loginold FILTER html %] 做出下列變更：
       <ul>
-        [% FOREACH field = changed_fields %]
+        [% FOREACH field = changes.keys %]
           <li>
             [% IF    field == 'login_name' %]
               帳號已變更為 [% otheruser.login FILTER html %] 。
@@ -50,33 +48,27 @@
               [% ELSE %]
                 [% terms.Bug %] 通知信已啟用。
               [% END %]
+            [% ELSIF field == 'groups' %]
+              [% IF changes.groups.1.size %]
+                已新增該帳號至下列群組：
+                [%+ changes.groups.1.join(', ') FILTER html %]
+              [% END %]
+              [% IF changes.groups.0.size %]
+                已將該帳號自下列群組中刪除：
+                [%+ changes.groups.0.join(', ') FILTER html %]
+              [% END %]
+            [% ELSIF field == 'bless_groups' %]
+              [% IF changes.bless_groups.1.size %]
+                該帳號已獲得對
+                [%+ changes.bless_groups.1.join(', ') FILTER html %]
+                群組 bless （在群組中新增成員）的權限。
+              [% END %]
+              [% IF changes.bless_groups.0.size %]
+                該帳號對
+                [%+ changes.bless_groups.0.join(', ') FILTER html %]
+                群組 bless （在群組中新增成員）的權限已被拒絕。
+              [% END %]
             [% END %]
-          </li>
-        [% END %]
-        [% IF groups_added_to.size %]
-          <li>
-            已新增該帳號至下列群組：
-            [%+ groups_added_to.join(', ') FILTER html %]
-          </li>
-        [% END %]
-        [% IF groups_removed_from.size %]
-          <li>
-            已將該帳號自下列群組中刪除：
-            [%+ groups_removed_from.join(', ') FILTER html %]
-          </li>
-        [% END %]
-        [% IF groups_granted_rights_to_bless.size %]
-          <li>
-            該帳號已獲得對
-            [%+ groups_granted_rights_to_bless.join(', ') FILTER html %]
-            群組 bless （在群組中新增成員）的權限。
-          </li>
-        [% END %]
-        [% IF groups_denied_rights_to_bless.size %]
-          <li>
-            該帳號對
-            [%+ groups_denied_rights_to_bless.join(', ') FILTER html %]
-            群組 bless （在群組中新增成員）的權限已被拒絕。
           </li>
         [% END %]
       </ul>
