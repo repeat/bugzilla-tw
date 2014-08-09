@@ -24,7 +24,7 @@
 [% terms.Bugzilla %] 需要一組有效的帳號及密碼才能繼續。
 </p>
 
-<form name="login" action="[% target FILTER html %]" method="POST"
+<form name="login" action="[% urlbase FILTER html %][% target FILTER html %]" method="POST"
 [%- IF Bugzilla.cgi.param("data") %] enctype="multipart/form-data"[% END %]>
   <table>
     <tr>
