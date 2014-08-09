@@ -773,6 +773,11 @@
              [%- gid FILTER uri %]">記錄</a>。
     在你能夠刪除此群組前，必須先刪除所有指向此群組的參照。
 
+  [% ELSIF error == "group_cannot_view" %]
+    [% title = "無法瀏覽群組" %]
+    如要瀏覽群組，你必須是 'editusers' 或 'creategroups' 群組的成員，
+    或是擁有對至少一個群組的 bless （在群組中新增成員）權限。
+
   [% ELSIF error == "group_exists" %]
     [% title = "群組已存在" %]
     群組[% name FILTER html %]已存在。
@@ -1760,6 +1765,11 @@
   [% ELSIF error == "user_not_insider" %]
     [% title = "使用者無適當的群組權限" %]
     很抱歉，但你並未被允許將意見或附件標記或取消隱藏。
+
+  [% ELSIF error == "user_not_involved" %]
+    [% title = "使用者未參與 $terms.Bug" %]
+    很抱歉，但你並未參與 [% terms.Bug %] [%+
+        bug_id FILTER bug_link(bug_id) FILTER none %] 。
 
   [% ELSIF error == "webdot_too_large" %]
     [% title = "相依性圖表過大" %]
