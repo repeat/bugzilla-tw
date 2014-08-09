@@ -42,6 +42,10 @@
   </ol>
 </div>
 
+[% IF excluded_values %]
+  <p class="extra_info">只有顯示以上 [% terms.bugs %] 所有產品可用的數值。</p>
+[% END %]
+
 <table id="form">
   <tr>
 
@@ -123,7 +127,7 @@
       <th><label for="target_milestone">目標里程碑：</label></th>
       <td>
         [% PROCESS selectmenu menuname = "target_milestone"
-                              menuitems = targetmilestones %]
+                              menuitems = milestones %]
       </td>
     [% END %]
   </tr>
