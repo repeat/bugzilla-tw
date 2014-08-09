@@ -9,6 +9,7 @@
 [%# Define strings that will serve as the title and header of this page %]
 [% title = BLOCK %]
   [% terms.Bug %] [%+ attachment.bug_id %] 附件 [% attachment.id %] 的詳細內容
+  &ndash; [% attachment.description FILTER html %]
 [% END %]
 [% header = BLOCK %]
   [%+ "$terms.Bug $attachment.bug_id" FILTER bug_link(attachment.bug_id) FILTER none %]
@@ -262,6 +263,7 @@
                            && user.settings.state_addselfcc.value == 'cc_unless_role') %]>
               <label for="addselfcc">將我加入寄件副本清單中</label>
             [% END %]
+            [% Hook.process('after_comment_textarea') %]
           </div>
         [% END %]
         <div id="attachment_flags">
