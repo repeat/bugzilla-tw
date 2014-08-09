@@ -27,6 +27,9 @@
 [% ELSE %]
   [% IF old_flag && old_flag.status == '?' %]
     [% to_identity = old_flag.setter.identity _ "所要求的" %]
+    [% IF old_flag.requestee.defined %]
+        [% requestee_identity = old_flag.requestee.identity _ "的" %]
+    [% END %]
   [% END %]
   [% subject_status = statuses.$action %]
 [% END %]
@@ -43,9 +46,10 @@ X-Bugzilla-Type: request
 [%- FILTER bullet = wrap(80) -%]
 
 [% IF on_behalf_of %]
-[% user.identity %] 已重新分配 [% flag.setter.identity %] 對  [% flagtype_name %] 的要求[% to_identity %]：
+[% user.identity %] 已重新分配 [% flag.setter.identity %] 對 [% IF requestee_identity %] [%+ requestee_identity %] [% END %] [% flagtype_name %] 的要求
+[% to_identity %]：
 [% ELSE %]
-[% user.identity %] 已[% statuses.$action %] [%+ to_identity %] [%+ flagtype_name %]：
+[% user.identity %] 已[% statuses.$action %] [%+ to_identity %] [% IF requestee_identity %] [%+ requestee_identity %] [% END %] [%+ flagtype_name %]：
 [% END %]
 
 [% terms.Bug %] [%+ bugidsummary %]
