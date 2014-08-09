@@ -35,7 +35,8 @@
                       "開啟此參數前，請確認你已經安裝了在 <kbd>checksetup.pl</kbd> 中列出的特定 Perl 模組，並且已執行 <code>jobqueue.pl</code> daemon ，否則 Bugzilla 並不會寄信。<br>" _
                       "此參數不是只會影響送出的 $terms.bug 通知信，而是會影響所有 Bugzilla 的信件。",
 
-  smtpserver => "若使用 SMTP 做為郵件傳遞方式時， SMTP 的伺服器地址。",
+  smtpserver => "若使用 SMTP 做為郵件傳遞方式時， SMTP 的伺服器地址。埠號選填。" _
+                "例如： example.com 或 example.com:1234",
 
   smtp_username => "使用於 SMTP 伺服器，供 SMTP 認證用的使用者名稱。" _
                    "如果你的 SMTP 伺服器無需認證，則此欄位留白。",
