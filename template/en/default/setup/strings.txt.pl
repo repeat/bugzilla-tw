@@ -88,7 +88,6 @@ END
     feature_inbound_email     => 'Inbound Email',
     feature_jobqueue          => 'Mail Queueing',
     feature_jsonrpc           => 'JSON-RPC Interface',
-    feature_jsonrpc_faster    => 'Make JSON-RPC Faster',
     feature_new_charts        => 'New Charts',
     feature_old_charts        => 'Old Charts',
     feature_memcached         => 'Memcached Support',
@@ -102,6 +101,7 @@ END
     feature_xmlrpc            => 'XML-RPC Interface',
     feature_detect_charset    => 'Automatic charset detection for text attachments',
     feature_typesniffer       => 'Sniff MIME type of attachments',
+    feature_markdown          => 'Markdown syntax support for comments',
 
     file_remove => 'Removing ##name##...',
     file_rename => 'Renaming ##from## to ##to##...',

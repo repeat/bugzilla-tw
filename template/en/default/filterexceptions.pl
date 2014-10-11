@@ -20,7 +20,7 @@
 #                                   [% foo.push() %]
 # TT loop variables               - [% loop.count %]
 # Already-filtered stuff          - [% wibble FILTER html %]
-#   where the filter is one of html|csv|js|quoteUrls|time|uri|xml|none
+#   where the filter is one of html|csv|js|quoteUrls|time|uri|xml|markdown|none
 
 %::safe = (
 
@@ -167,7 +167,6 @@
 ],
 
 'global/messages.html.tmpl' => [
-  'message_tag', 
   'series.frequency * 2',
 ],
 
@@ -188,10 +187,6 @@
 
 'global/confirm-user-match.html.tmpl' => [
   'script',
-],
-
-'global/site-navigation.html.tmpl' => [
-  'bug.bug_id', 
 ],
 
 'bug/comments.html.tmpl' => [
