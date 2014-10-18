@@ -37,7 +37,7 @@
     [% bugsummary FILTER html %]
   [% END %]
   [% PROCESS global/header.html.tmpl doc_section = "using.html#patch-viewer"
-                                     javascript_urls = "js/attachment.js"
+                                     javascript_urls = [ "js/attachment.js" ]
                                      style_urls = ['skins/standard/bug.css'] %]
 [% ELSE %]
   <!DOCTYPE html>
