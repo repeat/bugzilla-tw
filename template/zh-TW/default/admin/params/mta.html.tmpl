@@ -15,15 +15,17 @@
   mail_delivery_method => "定義電子郵件如何寄送。<br>
                            <ul>
                              <li>
-                               'Sendmail'、'SMTP' 以及 'Qmail' 都是 MTA 。如果你想在
-                               windows 上使用 sendmail 功能，你必須安裝第三方的 sendmail 軟體。
+                               'SMTP' ，使用 SMTP 協定和遠端信件伺服器溝通。
+                             </li>
+                               'Sendmail' ，使用安裝於 Bugzilla 機器上，相容於 sendmain 的 MTA 。
+                               如果你想在 Windows 上使用 sendmail 功能，你必須安裝第三方的 sendmail 軟體。
                              </li>
                              <li>
                                測試 (Test) 在 debug 時很有用，所有的電子郵件都儲存在
                                'data/mailer.testfile' 而不寄送。
                              </li>
                              <li>
-                               無 (none)：不寄送郵件。 Bugzilla
+                               無 (None)：不寄送郵件。 Bugzilla
                                仍會視為將相關動作視為寄送郵件，但實際上並未寄送或儲存任何郵件。
                              </li>
                            </ul>",
