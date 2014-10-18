@@ -84,7 +84,6 @@ END
     feature_inbound_email => 'Inbound Email',
     feature_jobqueue => '信件佇列',
     feature_jsonrpc => 'JSON-RPC 介面',
-    feature_jsonrpc_faster => '讓 JSON-RPC 較快',
     feature_new_charts => '新圖表',
     feature_old_charts => '舊圖表',
     feature_memcached => '支援 Memcached',
@@ -98,6 +97,7 @@ END
     feature_xmlrpc => 'XML-RPC 介面',
     feature_detect_charset    => '自動偵測文字附件的字元編碼',
     feature_typesniffer       => '對附件的 MIME 類別做探測(sniff)',
+    feature_markdown          => '意見欄位支援 markdown 語法',
 
     file_remove => '移除 ##name## 中...',
     file_rename => '將 ##from## 更名為 ##to## 中...',
