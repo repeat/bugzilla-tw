@@ -1,0 +1,88 @@
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  #
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
+  #%]
+
+[%# INTERFACE:
+  # api_keys: array. Array of api keys this user has.
+  # any_revoked: boolean. True is any keys have been revoked.
+  #%]
+
+<p>
+  API key 是用來認證 WebService API 用的。
+  如有需要，你可以建立多把 API key 。
+  每把 API key 都有選填的描述欄位，可以幫你記錄這把 key 是用來做什麼的。
+  關於如何登入的文件，請參考
+  <a href="[% docs_urlbase FILTER html %]api/Bugzilla/WebService.html#LOGGING_IN">這裡</a>
+  。
+</p>
+
+<h3>已建立的 API key</h3>
+
+<p>
+  你可以更新描述，以及撤銷 (revoke) 或復原 (unrevoke) 已建立的 API key 。
+</p>
+
+<table id="email_prefs">
+  <tr class="column_header">
+    <th>API key</th>
+    <th>描述　（選填）</th>
+    <th>最後使用於</th>
+    <th>已撤銷</th>
+  </tr>
+
+  [% FOREACH api_key IN api_keys %]
+    <tr[% IF api_key.revoked %] class="apikey_revoked"[% END %]>
+      <td>[% api_key.api_key FILTER html %]</td>
+      <td>
+        <input name="description_[% api_key.id FILTER html %]"
+          id="description_[% api_key.id FILTER html %]"
+          value="[% api_key.description FILTER html %]">
+      </td>
+      [% IF api_key.last_used %]
+        <td>[% api_key.last_used FILTER time %]</td>
+      [% ELSE %]
+        <td class="center"><i>從未使用</i></td>
+      [% END %]
+      <td class="center">
+        <input type="checkbox" value="1"
+          name="revoked_[% api_key.id FILTER html %]"
+          id="revoked_[% api_key.id FILTER html %]"
+          [% IF api_key.revoked %] checked="checked" [% END %]>
+      </td>
+    </tr>
+  [% END %]
+  [% UNLESS api_keys.size %]
+    <tr><td colspan="4">你沒有任何的 API key 。</td></tr>
+  [% END %]
+</table>
+
+[% IF any_revoked %]
+  <a id="apikey_revoked_controller" class="bz_default_hidden"
+     href="javascript:TUI_toggle_class('apikey_revoked')">隱藏已撤銷的 API key</a>
+  [%# Show the link if the browser supports JS %]
+  <script type="text/javascript">
+    TUI_hide_default('apikey_revoked');
+    TUI_alternates['apikey_revoked'] = '顯示已撤銷的 API key';
+    YAHOO.util.Dom.removeClass('apikey_revoked_controller',
+                               'bz_default_hidden');
+  </script>
+[% END %]
+
+<h3>新的 API key</h3>
+
+<p>
+  你可以勾選下方的勾選框產生新的 API key 。
+  你可以選擇是否要對這把 API key 提供描述。
+  API key 將會替你隨機產生。
+</p>
+
+<p>
+  <input type="checkbox" name="new_key" id="new_key">
+  產生一把新的 API key 。描述（選填）：
+  <input name="new_description" id="new_description">
+</p>
+
