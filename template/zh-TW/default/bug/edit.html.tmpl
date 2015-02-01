@@ -493,7 +493,7 @@
         <span id="bz_url_edit_container" class="bz_default_hidden">
         [% IF is_safe_url(bug.bug_file_loc) %]
            <a href="[% bug.bug_file_loc FILTER html %]" target="_blank"
-             title="[% bug.bug_file_loc FILTER html %]">
+              rel="noreferrer" title="[% bug.bug_file_loc FILTER html %]">
              [% bug.bug_file_loc FILTER truncate(40) FILTER html %]</a>
         [% ELSE %]
           [% bug.bug_file_loc FILTER html %]
@@ -504,7 +504,8 @@
         [% url_output =  PROCESS input no_td=1 inputname => "bug_file_loc" size => "40" colspan => 2 %]
         [% IF NOT bug.check_can_change_field("bug_file_loc", 0, 1)
               AND is_safe_url(bug.bug_file_loc) %]
-          <a href="[% bug.bug_file_loc FILTER html %]">[% url_output FILTER none %]</a>
+          <a href="[% bug.bug_file_loc FILTER html %]"
+             rel="noreferrer">[% url_output FILTER none %]</a>
         [% ELSE %]
           [% url_output FILTER none %]
         [% END %]
@@ -1193,7 +1194,6 @@
       <input type="hidden" id="[% selname %]_dirty">
       <select id="[% selname %]" name="[% selname %]">
         [% FOREACH x = bug.choices.${selname} %]
-          [% NEXT IF NOT x.is_active AND x.name != bug.${selname} %]
           <option value="[% x.name FILTER html %]"
             [% " selected" IF x.name == bug.${selname} %]>
             [%- x.name FILTER html %]
