@@ -203,7 +203,8 @@
     的 $webservergroup 設定。
 
   [% ELSIF error == "invalid_field_name" %]
-    不能把 [% field FILTER html %] 做為欄位名稱。
+    [% title = "無效的欄位名稱" %]
+    不能把 "[% field.truncate(30, "...") FILTER html %]" 做為欄位名稱。
 
   [% ELSIF error == "jobqueue_insert_failed" %]
    [% title = "Job 排程失敗" %]
@@ -307,8 +308,9 @@
     "OP" 。
 
   [% ELSIF error == "search_field_operator_unsupported" %]
+    [% title = "無效的搜尋種類" %]
     [% terms.Bugzilla %] 不支援搜尋參數
-    "[% operator FILTER html %]" 。
+    "[% operator.truncate(30, "...") FILTER html %]" 。
 
   [% ELSIF error == "search_invalid_joiner" %]
     '[% joiner FILTER html %]' 對搜尋而言不是有效的 joiner 。
