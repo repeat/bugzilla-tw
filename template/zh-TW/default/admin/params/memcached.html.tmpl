@@ -13,9 +13,9 @@
 [% param_descs = {
     memcached_servers =>
       "若設定此選項， Bugzilla 會使用 Memcached 。" _
-      "以 hostname:port 的方式，指定 Memcached 伺服器位址。" _
-      "若有多台，以半型空白隔開。" _
-      "（例如： 127.0.0.1:11211 ）",
+      "以 hostname:port 的方式，指定一台或多台 Memcached 伺服器位址。" _
+      "（例如： 127.0.0.1:11211 ）" _
+      "若有多台伺服器，以半型空白隔開。" ,
 
     memcached_namespace =>
       "指定每個使用於 Memcached 的設定鍵前置字串。",
