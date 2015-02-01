@@ -865,7 +865,6 @@
 
   [% ELSIF message_tag == "workflow_updated" %]
     工作流程已更新。
-
   [% END %]
 [% END %]
 
@@ -876,9 +875,10 @@
 [%# Give sensible error if the message function is used incorrectly. #%]
 [% IF !message %]
   [% message = BLOCK %]
-    你不正確的使用 [% terms.Bugzilla %] 的訊息功能。你輸入了字串 '[% cancelaction %]' 。正確的用法是輸入一個標籤，並且在
-    <kbd>messages.html.tmpl</kbd> 檔案中定義該標籤。<br>
+    你不正確的使用 [% terms.Bugzilla %] 的訊息功能。
+    你輸入了字串 '[% message_tag FILTER html %]' 。
+    正確的用法是輸入一個標籤，並且在 <kbd>messages.html.tmpl</kbd> 檔案中定義該標籤。<br>
     <br>
-    如果你是一個 [% terms.Bugzilla %] 的使用者，但卻看到此一訊息時，請將它轉寄給 [% Param('maintainer') %] 。
+    如果你是一個 [% terms.Bugzilla %] 的使用者，但卻看到此一訊息時，請將這頁儲存下來並寄給 [% Param('maintainer') %] 。
   [% END %]
 [% END %]
