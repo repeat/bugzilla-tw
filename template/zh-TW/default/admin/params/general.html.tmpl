@@ -14,12 +14,6 @@
 [% param_descs = {
   maintainer => "安裝 Bugzilla 機器的維護者的電子郵件地址。",
 
-  docs_urlbase =>
-    "所有 $terms.Bugzilla 說明文件的網址。"
-    _ "可以是絕對路徑，也可以是相對於 <var>urlbase</var> 參數的相對路徑。"
-    _ "若設為空白，則不允許連結說明文件。"
-    _ " '%lang%' 會被取代為使用者喜好的語言（如果有的話）。",
-
   utf8 =>
     "在 $terms.Bugzilla 裡所有的文字均使用 UTF-8 (Unicode) 編碼。"
     _ "新安裝的 $terms.Bugzilla 應該設為「開」，以避免字元編碼問題。<br>"
