@@ -27,5 +27,11 @@ Download is powered by github [releases](https://github.com/repeat/bugzilla-tw/r
 1. Take .tar.gz as an example. Untar it and there will be a folder named `bugzilla-tw-X.Y.Z/template/zh-TW/`. Simply copy this folder to where you install Bugzilla, under folder named `template`.
 2. The `pax_global_header` file is generated automatically by github, but is not used.
 
+### Maintainer
+Repeat Yang
+
+### License
+Version 4.2.x is released under [MPL 1.1](https://www.mozilla.org/MPL/1.1/).
+
 ### Remark
 If a bug is found, please visit [Google Code](http://code.google.com/p/bugzilla-tw/issues/list) and report it there.
