@@ -10,7 +10,7 @@
   title = "Full Text $terms.Bug Listing"
   h1 = ""
   style_urls = ['skins/standard/buglist.css']
-  doc_section = "using.html#anatomy-of-a-bug"
+  doc_section = "using/understanding.html"
 %]
 
 [% USE Bugzilla %]
@@ -48,7 +48,7 @@
   <h1>
     [% terms.Bug %] 
     <a href="show_bug.cgi?id=[% bug.bug_id FILTER html %]">[% bug.bug_id FILTER html %]</a>
-    [% IF bug.alias AND NOT bug.error %] (
+    [% IF bug.alias.size AND NOT bug.error %] (
       [%- FOREACH alias IN bug.alias %]<a href="show_bug.cgi?id=[% alias FILTER uri %]">
         [% alias FILTER html %]</a>[% UNLESS loop.last %], [% END %]
       [%- END %])
@@ -148,7 +148,7 @@
         <th>[% field_descs.bug_file_loc FILTER html %]:</th>
         <td colspan="3">
           [% IF is_safe_url(bug.bug_file_loc) %]
-            <a href="[% bug.bug_file_loc FILTER html %]">
+            <a href="[% bug.bug_file_loc FILTER html %]" rel="noreferrer">
                      [% bug.bug_file_loc FILTER html %]</a>
           [% ELSE %]
             [% bug.bug_file_loc FILTER html %]

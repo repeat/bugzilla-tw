@@ -20,7 +20,7 @@
 #                                   [% foo.push() %]
 # TT loop variables               - [% loop.count %]
 # Already-filtered stuff          - [% wibble FILTER html %]
-#   where the filter is one of html|csv|js|quoteUrls|time|uri|xml|markdown|none
+#   where the filter is one of html|csv|js|quoteUrls|time|uri|xml|none
 
 %::safe = (
 
@@ -322,10 +322,8 @@
 ],
 
 'attachment/diff-file.html.tmpl' => [
-  'lxr_prefix',
   'file.minus_lines',
   'file.plus_lines',
-  'bonsai_prefix',
   'section.old_start',
   'section_num',
   'current_line_old',
