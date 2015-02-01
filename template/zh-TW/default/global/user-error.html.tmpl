@@ -1617,10 +1617,11 @@
     請過 [% constants.ACCOUNT_CHANGE_INTERVAL FILTER html %] 分鐘後再試。
 
   [% ELSIF error == "unknown_action" %]
+    [% title = "未知的動作" %]
     [% IF action %]
-       未知的動作 [% action FILTER html %] ！
+      未知的動作 "[% action.truncate(20, "...") FILTER html %]" ！
     [% ELSE %]
-       無法理解你想要做什麼事。
+      無法理解你想要做什麼事。
     [% END %]
 
   [% ELSIF error == "unknown_tab" %]
