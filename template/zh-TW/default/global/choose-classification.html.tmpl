@@ -19,7 +19,9 @@
 [% DEFAULT title = "選擇分類" %]
 [% PROCESS global/header.html.tmpl %]
 
-[% previous_params = cgi.canonicalise_query('classification') %]
+[% USE Bugzilla %]
+[% previous_params = Bugzilla.cgi.canonicalise_query('classification') %]
+
 <h2>首先，你必須選擇一個分類來輸入 [% terms.bug %] ：</h2>
 <table id="choose_classification">
   <tr>
