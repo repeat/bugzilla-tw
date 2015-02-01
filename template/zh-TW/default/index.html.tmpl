@@ -76,11 +76,9 @@
             href="?GoAheadAndLogIn=1"><span>登入</span></a>
           [% END %]
       </li>
-      [% IF Param("docs_urlbase") %]
-        <li>
-          <a id="help" href="[% docs_urlbase FILTER html %]using.html"><span>說明文件</span></a>
-        </li>
-      [% END %]
+      <li>
+        <a id="help" href="[% docs_urlbase FILTER html %]using/index.html"><span>說明文件</span></a>
+      </li>
     </ul>
   </div>
 
