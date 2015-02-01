@@ -79,6 +79,7 @@ END
 END
     feature_auth_ldap => 'LDAP 認證',
     feature_auth_radius => 'RADIUS 認證',
+    feature_documentation => '說明文件',
     feature_graphical_reports => '圖表式報告',
     feature_html_desc => '在產品／群組描述中使用較多的 HTML',
     feature_inbound_email => 'Inbound Email',
@@ -97,7 +98,6 @@ END
     feature_xmlrpc => 'XML-RPC 介面',
     feature_detect_charset    => '自動偵測文字附件的字元編碼',
     feature_typesniffer       => '對附件的 MIME 類別做探測(sniff)',
-    feature_markdown          => '意見欄位支援 markdown 語法',
 
     file_remove => '移除 ##name## 中...',
     file_rename => '將 ##from## 更名為 ##to## 中...',
@@ -148,10 +148,6 @@ END
 若無，則會建立 .htaccess 檔案。
 
 設定為 0 時， checksetup.pl 將不會建立 .htaccess 檔案。
-END
-    localconfig_cvsbin => <<'END',
-如果你想要使用 Patch Viewer 的 CVS 整合介面，請輸入可執行
-"cvs" 的完整路徑。
 END
     localconfig_db_check => <<'END',
 checksetup.pl 是否應該嘗試檢查你的資料庫設定是否正確？
