@@ -275,7 +275,7 @@
         <li>已安裝 Trac 中的 ticket 。</li>
         <li>已安裝 MantisBT 中的 b[% %]ug 。</li>
         <li>在 sourceforge.net 的 b[% %]ug 。</li>
-        <li>在 github.com 中的 issue 。</li>
+        <li>在 github.com 中的 issue 或 pull request 。</li>
         [% Hook.process('bug_url_invalid_tracker') %]
       </ul>
     [% END %]
@@ -973,10 +973,6 @@
     有效的類別必須是類似 <em>foo/bar</em> 的格式，其中 <em>foo</em>
     必須是 <em>[% constants.LEGAL_CONTENT_TYPES.join(', ') FILTER html %]</em>
     的其中一種，而 <em>bar</em> 不能含有特殊符號［例如等號 (=) 、問號 (?) 等等］。
-
-  [% ELSIF error == "invalid_context" %]
-    [% title = "無效的內容" %]
-    內容 [% context FILTER html %] 無效〔必須是一個數字， 'file' （檔案）或者 'patch' 〕。
 
   [% ELSIF error == "invalid_cookies_or_token" %]
     [% title = "無效的 cookies 或 token" %]
@@ -1710,10 +1706,11 @@
     請過 [% constants.ACCOUNT_CHANGE_INTERVAL FILTER html %] 分鐘後再試。
 
   [% ELSIF error == "unknown_action" %]
+    [% title = "未知的動作" %]
     [% IF action %]
-       未知的動作 [% action FILTER html %] ！
+      未知的動作 "[% action.truncate(20, "...") FILTER html %]" ！
     [% ELSE %]
-       無法理解你想要做什麼事。
+      無法理解你想要做什麼事。
     [% END %]
 
   [% ELSIF error == "unknown_tab" %]
