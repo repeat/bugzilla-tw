@@ -45,6 +45,36 @@
 
 <h2 id="v44_point">Updates in this 4.4.x Release</h2>
 
+<h3>4.4.8</h3>
+
+<p>This releases contains the following [% terms.bug %] fix:</p>
+
+<ul>
+  <li>Fixing a regression caused by <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1090275">
+    [% terms.bug %] 10902750</a>, <kbd>JSON-RPC</kbd> API calls could crash in
+    certain cases instead of displaying the proper error message.
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1124716">[% terms.Bug %] 1124716</a>)</li>
+</ul>
+
+<h3>4.4.7</h3>
+
+<p>This release contains fixes for a couple of security issues.
+  See the <a href="https://www.bugzilla.org/security/4.0.15/">
+  Security Advisory</a> for details.</p>
+
+<p>In addition, the following important fixes have been made in the release:</p>
+
+<ul>
+  <li>The <kbd>B[%%]ug.add_comment</kbd> WebService method now returns the correct
+    ID for the newly created [% terms.bug %] comment.
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1111043">[% terms.Bug %] 1111043</a>)</li>
+  <li>Fixing a regression caused by CVE-2014-1571
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1064140">[% terms.bug %] 1064140</a>),
+    comments made while setting a flag from the attachment details page are again
+    included in the flag notification email.
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1082887">[% terms.Bug %] 1082887</a>)</li>
+</ul>
+
 <h3>4.4.6</h3>
 
 <p>This release fixes several security issues. See the
@@ -2317,7 +2347,7 @@
 
 [% BLOCK db_req %]
   [% SET m = DB_MODULE.$db %]
-  <h3 id="v40_req_[% db FILTER html %]">For [% m.name FILTER html %] Users</h3>
+  <h3 id="v44_req_[% db FILTER html %]">For [% m.name FILTER html %] Users</h3>
 
   <ul>
     <li>[% m.name FILTER html %]
