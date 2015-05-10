@@ -19,9 +19,11 @@
   編輯產品 '[% product.name FILTER html %]' 的子產品 '[% comp.name FILTER html %]'
 [% END %]
 [% PROCESS global/header.html.tmpl
+  title = title
+  generate_api_token = 1
+  style_urls = ['skins/standard/admin.css']
   yui = [ 'autocomplete' ]
   javascript_urls = [ "js/field.js" ]
-  title = title
 %]
 
 <form method="post" action="editcomponents.cgi">
