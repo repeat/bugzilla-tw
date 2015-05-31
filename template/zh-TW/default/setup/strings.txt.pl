@@ -269,11 +269,16 @@ EOT
 ***********************************************************************
 * APACHE 模組                                                         *
 ***********************************************************************
-* 一般來說，當 Bugzilla 升級時，所有 Bugzilla 使用者必須清除他們瀏    *
-* 覽器中的庫存，否則 Bugzilla 會故障。如果你在 Apache 設定中啟用特    *
-* 定的模組（通常叫 httpd.conf 或 apache2.conf ）的話，當你升級        *
-* Bugzilla 的時候， Bugzilla 的使用者就不需要清除瀏覽器中的庫存。     *
-* 你需要要啟用的模組有：                                              *
+* 有些 Apache 模組可以擴充 Bugzilla 的功能。                          *
+* 這些模組可以在 Apache 的設定檔（通常叫 httpd.conf 或 apache2.conf ）*
+* 中啟用。                                                            *
+* - mod_headers, mod_env, mod_expires:                                *
+*   當升級 Bugzilla 時，它們可以自動更新使用者的瀏覽器快取。          *
+* - mod_rewrite:                                                      *
+*   可以寫入由 REST API 使用的，較短的網址。                          *
+* - mod_version:                                                      *
+*   可以針對 Apache 2.2 或 2.4 寫入規則至 .htaccess 檔案中。          *
+* 你需要啟用的模組有：                                                *
 *                                                                     *
 END
     modules_message_db => <<EOT,
