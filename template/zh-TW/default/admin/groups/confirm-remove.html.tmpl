@@ -19,7 +19,7 @@
 
 [% PROCESS global/header.html.tmpl
   title = title
-  doc_section = "groups.html"
+  doc_section = "administering/groups.html"
 %]
 
 [% IF regexp %]
@@ -30,9 +30,10 @@
   <p>此選項將會自 '[% group.name FILTER html %]' 群組中移除所有指定的使用者。</p>
 [% END %]
 
-<p>一般而言，你只有在替以[% terms.Bugzilla %]
-   2.16 或更早版本建立的群組升級時，才會用到這個選項。<br>
-   請<b>小心使用</b>，並閱讀使用說明以獲得更多資訊。
+<p>
+  一般而言，你只有在替以 Bugzilla
+  2.16 或更早版本建立的群組升級時，才會用到這個選項。<br>
+  請<b>小心使用</b>，並閱讀使用說明以獲得更多資訊。
 </p>
 
 <form method="post" action="editgroups.cgi">

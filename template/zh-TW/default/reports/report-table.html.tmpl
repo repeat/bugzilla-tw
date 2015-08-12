@@ -116,7 +116,7 @@ YAHOO.util.Event.addListener(window, "load", function() {
       return parseFloat(res[1]);
   };
 
-  this.myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("tabular_report"));
+  this.myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("tabular_report_[% tbl FILTER html FILTER js %]"));
   this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
   this.myDataSource.responseSchema = {
     fields: [
@@ -138,17 +138,17 @@ YAHOO.util.Event.addListener(window, "load", function() {
   <h2>[% tbl_disp FILTER email FILTER html %]</h2>
 [% END %]
 
-<table>
+<table class="tabular_report_container">
   <tr>
     <td>
     </td>
-    <td align="center">
+    <td class="center">
       <strong>[% col_field_disp FILTER html %]</strong>
     </td>
   </tr>
 
   <tr>
-    <td valign="middle">
+    <td class="middle">
       <strong>[% row_field_disp FILTER html %]</strong>
     </td>
     <td>
@@ -157,17 +157,16 @@ YAHOO.util.Event.addListener(window, "load", function() {
 [% classes = [ [ "t1", "t2" ] , [ "t3", "t4" ] ] %]
 [% col_idx = 0 %]
 [% row_idx = 0 %]
-[% grand_total = 0 %]
+[% total_key = '-total-' %]
 
 <div id="tabular_report_container_[% tbl FILTER html %]">
-<table id="tabular_report" border="1">
+<table id="tabular_report_[% tbl FILTER html %]" class="tabular_report">
   [% IF col_field %]
     <thead>
     <tr>
       <th class="[% classes.$row_idx.$col_idx %]">
       </th>
       [% FOREACH col = col_names %]
-        [% col_totals.$col = 0 %]
         [% NEXT IF col == "" %]
 
         [% col_idx = 1 - col_idx %]
@@ -183,20 +182,16 @@ YAHOO.util.Event.addListener(window, "load", function() {
   [% END %]
   <tbody>
   [% FOREACH row = row_names %]
-    [% row_total = 0 %]
-
     [% row_idx = 1 - row_idx %]
     <tr>
-      <td class="[% classes.$row_idx.$col_idx %]" align="right">
+      <td class="[% classes.$row_idx.$col_idx %] right">
         [% PROCESS value_display value = row field = row_field %]
       </td>
       [% FOREACH col = col_names %]
-        [% row_total = row_total + data.$tbl.$col.$row %]
         [% NEXT IF col == "" %]
-        [% col_totals.$col = (col_totals.$col || 0) + data.$tbl.$col.$row %]
 
         [% col_idx = 1 - col_idx %]
-        <td class="[% classes.$row_idx.$col_idx %]" align="center">
+        <td class="[% classes.$row_idx.$col_idx %]">
           [% IF data.$tbl.$col.$row AND data.$tbl.$col.$row > 0 %]
             <a href="[% urlbase %]&amp;
               [% row_field FILTER uri %]=[% row FILTER uri %]&amp;
@@ -207,12 +202,11 @@ YAHOO.util.Event.addListener(window, "load", function() {
           [% END %]
         </td>
       [% END %]
-      <td class="ttotal" align="right">
+      <td class="ttotal right">
         <a href="[% urlbase %]&amp;
           [% row_field FILTER uri %]=[% row FILTER uri %]
           [% "&amp;$col_vals" IF col_vals %]">
-        [% row_total %]</a>
-        [% grand_total = grand_total + row_total %]
+        [% data.$tbl.$total_key.$row OR 0 FILTER html %]</a>
       </td>
     </tr>
   [% END %]
@@ -224,18 +218,18 @@ YAHOO.util.Event.addListener(window, "load", function() {
       [% FOREACH col = col_names %]
         [% NEXT IF col == "" %]
 
-        <td class="ttotal" align="center">
+        <td class="ttotal">
           <a href="[% urlbase %]&amp;
             [% col_field FILTER uri %]=[% col FILTER uri %]
             [% "&amp;$row_vals" IF row_vals %]">
           [% col_totals.$col %]</a>
         </td>
       [% END %]
-      <td class="ttotal" align="right">
+      <td class="ttotal right">
         <strong>
           <a href="[% urlbase %]
             [% "&amp;$row_vals" IF row_vals %]
-            [% "&amp;$col_vals" IF col_vals %]">[% grand_total %]</a>
+            [% "&amp;$col_vals" IF col_vals %]">[% data.$tbl.$total_key.$total_key OR 0 FILTER html %]</a>
         </strong>
       </td>
     </tr>
@@ -246,6 +240,12 @@ YAHOO.util.Event.addListener(window, "load", function() {
     </td>
   </tr>
 </table>
+
+[% IF note_multi_select %]
+  <p class="extra_info">
+    備註：座標軸含有多重數值的欄位，而一個 [% terms.bug %] 可以符合多行或多列，所以總數可能沒被加到。
+  </p>
+[% END %]
 
 [% BLOCK value_display %]
   [% SET disp_value = display_value(field, value) %]

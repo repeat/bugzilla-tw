@@ -27,10 +27,7 @@
   [% title = "最常回報的 $terms.Bugs" %]
 [% END%]
 
-[% PROCESS global/header.html.tmpl
-   title = title
-   style_urls = ['skins/standard/duplicates.css']
-%]
+[% PROCESS global/header.html.tmpl title = title %]
 
 <p>
   <a href="#explanation">這份資料是什麼？</a>
@@ -52,6 +49,18 @@
   <input type="hidden" name="bug_id" value="[% bug_ids_string FILTER html %]">
   <table>
     <tr>
+      <td>限制於下列產品：</td>
+      <td>
+        [% INCLUDE "global/product-select.html.tmpl"
+          id       => "product"
+          name     => "product"
+          multiple => 5
+          value    => product
+        %]
+      </td>
+    </tr>
+
+    <tr>
       <td>在排序或限制時，對...有效：</td>
       <td>
         <input type="radio" name="sortvisible" id="entirelist" value="0"
@@ -66,23 +75,13 @@
           目前可見的清單
         </label>
       </td>
-      <td rowspan="4" valign="top">限制於下列產品：</td>
-      <td rowspan="4" valign="top">
-        <select name="product" size="5" multiple="multiple">
-          [% FOREACH p = user.get_selectable_products %]
-            <option name="[% p.name FILTER html %]"
-            [% ' selected="selected"' IF product.contains(p.name) %]
-            >[% p.name FILTER html %]</option>
-          [% END %]
-        </select>
-      </td>
      </tr>
 
     <tr>
       <td><label for="maxrows">最大列數：</label></td>
       <td>
         <input size="4" name="maxrows" id="maxrows"
-	       value="[% maxrows FILTER html %]">
+           value="[% maxrows FILTER html %]">
       </td>
     </tr>
 
@@ -92,7 +91,7 @@
       </td>
       <td>
         <input size="4" name="changedsince" id="changedsince"
-	       value="[% changedsince FILTER html %]"> 天
+           value="[% changedsince FILTER html %]"> 天
       </td>
     </tr>
 

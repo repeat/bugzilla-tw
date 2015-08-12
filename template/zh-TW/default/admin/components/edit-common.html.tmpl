@@ -15,12 +15,12 @@
 [% DEFAULT desc_name = "description" %]
 
 <tr>
-  <th class="field_label"><label for="component">子產品：</th>
+  <th><label for="component">子產品：</th>
   <td><input size="64" maxlength="64" name="component" id="component"
-             value="[%- comp.name FILTER html %]"></td>
+             value="[%- comp.name FILTER html %]" required></td>
 </tr>
 <tr>
-  <th class="field_label"><label for="[% desc_name FILTER html %]">描述：</th>
+  <th><label for="[% desc_name FILTER html %]">描述：</th>
   <td>
     [% INCLUDE global/textarea.html.tmpl
       name           = desc_name
@@ -29,23 +29,25 @@
       cols           = 64
       wrap           = 'virtual'
       defaultcontent = comp.description
+      mandatory      = 1
     %]
   </td>
 </tr>
 <tr>
-  <th class="field_label"><label for="initialowner">預設負責人：</label></th>
+  <th><label for="initialowner">預設負責人：</label></th>
   <td>
     [% INCLUDE global/userselect.html.tmpl
        name => "initialowner"
        id => "initialowner"
        value => comp.default_assignee.login
        size => 64
+       mandatory => 1
      %]
   </td>
 </tr>
 [% IF Param('useqacontact') %]
   <tr>
-    <th class="field_label"><label for="initialqacontact">預設 QA 連絡人：</label></th>
+    <th><label for="initialqacontact">預設 QA 連絡人：</label></th>
     <td>
       [% INCLUDE global/userselect.html.tmpl
          name => "initialqacontact"
@@ -58,7 +60,7 @@
   </tr>
 [% END %]
 <tr>
-  <th class="field_label"><label for="initialcc">預設寄件副本清單：</label></th>
+  <th><label for="initialcc">預設寄件副本清單：</label></th>
   <td>
     [% INCLUDE global/userselect.html.tmpl
        name     => "initialcc"
@@ -69,7 +71,7 @@
     %]
     <br>
     [% IF !Param("usemenuforusers") %]
-      <em>輸入寄件副本清單時，多位連絡者可用半形逗號 (,) 分隔。</em>
+      <span class="bz_info"輸入寄件副本清單時，多位連絡者可用半形逗號 (,) 分隔。</span>
     [% END %]
   </td>
 </tr>

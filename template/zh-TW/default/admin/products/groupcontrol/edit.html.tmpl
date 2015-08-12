@@ -10,7 +10,8 @@
     編輯 [% product.name FILTER html %] 的群組控管
 [% END %]
 [% PROCESS global/header.html.tmpl
-   title = title
+  title = title
+  style_urls = ['skins/standard/admin.css']
 %]
 
 [% display_headers = 1 %]
@@ -23,8 +24,8 @@
       <input type="hidden" name="product" value="[% product.name FILTER html %]">
       <input type="hidden" name="token" value="[% token FILTER html %]">
 
-      <table id="form" cellspacing="0" cellpadding="4" border="1">
-        <tr bgcolor="#6666ff">
+      <table id="admin_table">
+        <tr class="column_header">
           <th>群組</th>
           <th>Entry</th>
           <th>成員控管</th>
@@ -38,9 +39,9 @@
 
   [% END %]
   [% IF !group.group.isactive %]
-    <tr bgcolor="#bbbbbb">
+    <tr class="disabled">
       <td>[% group.group.name FILTER html %]</td>
-      <td align="center" colspan="7">停用</td>
+      <td class="center" colspan="7">停用</td>
       <td>[% group.bug_count FILTER html %]</td>
     </tr>
   [% ELSE %]
@@ -129,12 +130,29 @@
 </p>
 <p>
   <b>ENTRY</b><br>
-  只要任何群組勾選 'ENTRY' 選項，此項產品將會限制屬於已勾選 'ENTRY' 選項的群組成員才能回報 [% terms.bug %] 。
+  只要任何群組勾選 "ENTRY" 選項，此項產品將會限制符合以下條件的使用者才能回報 [% terms.bugs %] ：<br>
+  [% IF Param('or_groups') %]
+    該使用者屬於勾選 "ENTRY" 群組中的任何一個群組。
+  [% ELSE %]
+    該使用者屬於所有已勾選 "ENTRY" 的群組。
+  [% END %]
 </p>
 <p>
   <b>CANEDIT</b><br>
-  只要任何群組勾選 'CANEDIT' 選項，此項產品將會對所有不屬於已勾選 'CANEDIT' 群組的成員顯示為唯讀。<br>
-  <em>只有</em>屬於已勾選 'CANEDIT' 群組的成員才能夠編輯。這是對使用者是否可以編輯 [% terms.bug %] 的進一步限制。
+  只要任何群組勾選 "CANEDIT" 選項，此項產品將會對符合以下條件的使用者顯示唯讀：<br>
+  [% IF Param('or_groups') %]
+    該使用者不屬於勾選 "CANEDIT" 群組中的任何一個群組。
+  [% ELSE %]
+    該使用者不屬於所有已勾選 "CANEDIT" 群組。
+  [% END %]
+  <em>只有</em>符合勾選 "CANEDIT" 群組中的
+  [% IF Param('or_groups') %]
+    任何一個
+  [% ELSE %]
+    所有
+  [% END %]
+  canedit 群組的使用者，才可以編輯。
+  這是對使用者是否可以編輯 [% terms.bug %] 的進一步限制。
 </p>
 <p>
   下列設定讓你<b>以產品為單位</b>選擇權限。<br>
@@ -156,7 +174,7 @@
   <b>成員控管</b>和<b>其他控管</b>的欄位，將會依下列定義，指定哪些 [% terms.bugs %] 屬於此項產品。
 </p>
 
-<table border=1>
+<table id="group_settings_desc">
   <tr>
     <th>
       成員控管

@@ -12,7 +12,7 @@
 %]
 
 [% param_descs = {
-  useclassification => "若設為「開」， $terms.Bugzilla 將把每項產品歸到一個分類中。" _
+  useclassification => "若設為「開」， Bugzilla 將把每項產品歸到一個分類中。" _
                        "但是你必須將 editclassification 參數設為「開」，才能夠編輯分類。",
 
   usetargetmilestone => "你是否希望使用目標里程碑欄位？",
@@ -22,7 +22,7 @@
   usestatuswhiteboard => "你是否希望使用狀態白板欄位？",
 
   use_see_also => "你是否希望使用「也請參考」欄位？" _
-    "它可以讓你參照到其他 $terms.Bugzilla 上的 $terms.bugs 。" _
+    "它可以讓你參照到其他 Bugzilla 上的 $terms.bugs 。" _
     "即使你停用此欄位， 在 $terms.bug 中已設定為有關連的其他 $terms.bugs 的網址仍會出現，亦可被刪除。",
 
   defaultpriority => "這是新輸入的 $terms.bugs 的預設優先程度。",
@@ -30,9 +30,11 @@
   defaultseverity => "這是新輸入的 $terms.bugs 的預設嚴重等級。",
 
   defaultplatform => "這是在輸入 $terms.bug 時，預先選擇的硬體平台。<br>" _
-                     "若留白，則 $terms.Bugzilla 會使用瀏覽器回報的值做為平台預先選擇的值。",
+                     "若留白，則 Bugzilla 會使用瀏覽器回報的值做為平台預先選擇的值。",
 
   defaultopsys => "這是在輸入 $terms.bug 時，預先選擇的作業系統。<br>" _
-                  "若留白，則 $terms.Bugzilla 會使用瀏覽器回報的值做為作業系統預先選擇的值。"
+                  "若留白，則 Bugzilla 會使用瀏覽器回報的值做為作業系統預先選擇的值。",
+  collapsed_comment_tags => "以半形逗號 (,) 分隔的標籤清單。" _
+                            "此清單將套用於意見欄位中，當意見內容符合標籤時，該意見會預設為折疊",
 }
 %]

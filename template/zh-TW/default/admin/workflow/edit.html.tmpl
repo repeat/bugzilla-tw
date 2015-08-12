@@ -15,25 +15,25 @@
 <!--
   function toggle_cell(cell) {
     if (cell.checked)
-      cell.parentNode.className = "checkbox-cell checked";
+      cell.parentNode.className = "checked";
     else
-      cell.parentNode.className = "checkbox-cell";
+      cell.parentNode.className = "";
   }
 //-->
 </script>
 
 <p>
   此頁面允許你定義在流程中哪些狀態的變更是有效的。<br>
-  為了向下相容較舊版本的 [% terms.Bugzilla %] ，因此當你重新開啟了一個 [% terms.bug %]
+  為了向下相容較舊版本的 Bugzilla ，因此當你重新開啟了一個 [% terms.bug %]
   時，將只會以[% display_value("bug_status", "UNCONFIRMED") FILTER html %] 或
   [%+ display_value("bug_status", "REOPENED") FILTER html %]
   （如果在流程中允許此狀態），而非同時顯示。<br>
   顯示的方式決定於這個 [% terms.bug %] 是否被確認過。<br>
-  因此建議你允許此兩種變更，讓 [% terms.Bugzilla %] 自動正確選擇。
+  因此建議你允許此兩種變更，讓 Bugzilla 自動正確選擇。
 </p>
 
 <form id="workflow_form" method="POST" action="editworkflow.cgi">
-<table>
+<table id="workflow">
   <tr>
     <th colspan="2">&nbsp;</th>
     <th colspan="[% statuses.size FILTER html %]" class="title">到</th>
@@ -43,7 +43,7 @@
     <th rowspan="[% statuses.size + 2 FILTER html %]" class="title">從</th>
     <th>&nbsp;</th>
     [% FOREACH status = statuses %]
-      <th class="col-header[% status.is_open ? " open-status" : " closed-status" %]">
+      <th class="[% status.is_open ? "open-status" : "closed-status" %] center">
         [% display_value("bug_status", status.name) FILTER html %]
       </th>
     [% END %]
@@ -53,7 +53,7 @@
   [% p = [{id => 0, name => "{開始}", is_open => 1}] %]
   [% FOREACH status = p.merge(statuses) %]
     <tr class="highlight">
-      <th align="right" class="[% status.is_open ? "open-status" : "closed-status" %]">
+      <th class="[% status.is_open ? "open-status" : "closed-status" %]">
         [% display_value("bug_status", status.name) FILTER html %]
       </th>
 
@@ -61,7 +61,7 @@
         [% IF status.id != new_status.id %]
           [% checked = workflow.${status.id}.${new_status.id}.defined ? 1 : 0 %]
           [% mandatory = (status.id && new_status.name == Param("duplicate_or_move_bug_status")) ? 1 : 0 %]
-          <td align="center" class="checkbox-cell[% " checked" IF checked || mandatory %]"
+          <td class="[% "checked" IF checked || mandatory %]"
               title="從 [% status.name FILTER html %] 到 [% new_status.name FILTER html %]">
             <input type="checkbox" name="w_[% status.id %]_[% new_status.id %]"
                    id="w_[% status.id %]_[% new_status.id %]" onclick="toggle_cell(this)"
@@ -69,7 +69,7 @@
                    [%+ "disabled='disabled'" IF mandatory %]>
           </td>
         [% ELSE %]
-          <td class="checkbox-cell forbidden">&nbsp;</td>
+          <td class="forbidden">&nbsp;</td>
         [% END %]
       [% END %]
     </tr>
@@ -85,7 +85,7 @@
   <i>duplicate_or_move_bug_status</i> 參數來變更此設定。
 </p>
 
-<p align="center">
+<p class="center">
   <input type="hidden" name="action" value="update">
   <input type="hidden" name="token" value="[% token FILTER html %]">
   <input type="submit" id="update_workflow" value="確定變更"> -

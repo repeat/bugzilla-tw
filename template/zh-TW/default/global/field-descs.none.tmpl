@@ -34,16 +34,20 @@
   "changedto"      => "變更為...",
   "changedby"      => "被...變更",
   "matches"        => "符合",
-  "notmatches"      => "不符合"
+  "notmatches"     => "不符合",
+  "isempty"        => "是空的",
+  "isnotempty"     => "不是空的",
 } %]
 
 [% field_types = {
   ${constants.FIELD_TYPE_UNKNOWN}       => "未知的類別",
   ${constants.FIELD_TYPE_FREETEXT}      => "任意文字",
+  ${constants.FIELD_TYPE_INTEGER}       => "整數",
   ${constants.FIELD_TYPE_SINGLE_SELECT} => "下拉式選單",
   ${constants.FIELD_TYPE_MULTI_SELECT}  => "多選式選單",
   ${constants.FIELD_TYPE_TEXTAREA}      => "文字輸入框",
   ${constants.FIELD_TYPE_DATETIME}      => "日期／時間",
+  ${constants.FIELD_TYPE_DATE}          => "日期",
   ${constants.FIELD_TYPE_BUG_ID}        => "$terms.Bug 編號"
 } %]
 
@@ -93,6 +97,7 @@
     "everconfirmed"           => "是否確認",
     "flagtypes.name"          => "旗標",
     "keywords"                => "關鍵字",
+    "last_visit_ts"           => "最後拜訪",
     "longdesc"                => "意見",
     "longdescs.count"         => "意見數量",
     "longdescs.isprivate"     => "意見不公開",
@@ -120,7 +125,7 @@
     "short_desc"              => "摘要",
     "short_short_desc"        => "摘要",
     "status_whiteboard"       => "狀態白板",
-    "tag"                     => "標籤",
+    "tag"                     => "個人標籤",
     "target_milestone"        => "目標里程碑",
     "version"                 => "版本",
     "work_time"               => "已工作時數"

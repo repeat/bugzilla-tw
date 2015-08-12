@@ -15,27 +15,30 @@
   mail_delivery_method => "定義電子郵件如何寄送。<br>
                            <ul>
                              <li>
-                               'Sendmail'、'SMTP' 以及 'Qmail' 都是 MTA 。如果你想在
-                               windows 上使用 sendmail 功能，你必須安裝第三方的 sendmail 軟體。
+                               'SMTP' ，使用 SMTP 協定和遠端信件伺服器溝通。
+                             </li>
+                               'Sendmail' ，使用安裝於 Bugzilla 機器上，相容於 sendmain 的 MTA 。
+                               如果你想在 Windows 上使用 sendmail 功能，你必須安裝第三方的 sendmail 軟體。
                              </li>
                              <li>
                                測試 (Test) 在 debug 時很有用，所有的電子郵件都儲存在
                                'data/mailer.testfile' 而不寄送。
                              </li>
                              <li>
-                               無 (none)：不寄送郵件。 $terms.Bugzilla
+                               無 (None)：不寄送郵件。 Bugzilla
                                仍會視為將相關動作視為寄送郵件，但實際上並未寄送或儲存任何郵件。
                              </li>
                            </ul>",
 
   mailfrom => "$terms.Bugzilla mail daemon 的電子郵件地址。有些電子郵件系統要求這必須是有效的電子郵件地址。",
 
-  use_mailer_queue => "在一個大型的 $terms.Bugzilla 專案上，由於 $terms.Bugzilla 會一次寄送所有信件的緣故，導致更新 $terms.bugs 可能會很慢。<br>" _
-                      "如果你開啟此參數， $terms.Bugzilla 會把所有的信件排程後，於背景執行寄送程序。<br>" _
-                      "開啟此參數前，請確認你已經安裝了在 <kbd>checksetup.pl</kbd> 中列出的特定 Perl 模組，並且已執行 <code>jobqueue.pl</code> daemon ，否則 $terms.Bugzilla 並不會寄信。<br>" _
-                      "此參數不是只會影響送出的 $terms.bug 通知信，而是會影響所有 $terms.Bugzilla 的信件。",
+  use_mailer_queue => "在一個大型的 Bugzilla 專案上，由於 $terms.Bugzilla 會一次寄送所有信件的緣故，導致更新 $terms.bugs 可能會很慢。<br>" _
+                      "如果你開啟此參數， Bugzilla 會把所有的信件排程後，於背景執行寄送程序。<br>" _
+                      "開啟此參數前，請確認你已經安裝了在 <kbd>checksetup.pl</kbd> 中列出的特定 Perl 模組，並且已執行 <code>jobqueue.pl</code> daemon ，否則 Bugzilla 並不會寄信。<br>" _
+                      "此參數不是只會影響送出的 $terms.bug 通知信，而是會影響所有 Bugzilla 的信件。",
 
-  smtpserver => "若使用 SMTP 做為郵件傳遞方式時， SMTP 的伺服器地址。",
+  smtpserver => "若使用 SMTP 做為郵件傳遞方式時， SMTP 的伺服器地址。埠號選填。" _
+                "例如： example.com 或 example.com:1234",
 
   smtp_username => "使用於 SMTP 伺服器，供 SMTP 認證用的使用者名稱。" _
                    "如果你的 SMTP 伺服器無需認證，則此欄位留白。",
@@ -45,7 +48,7 @@
 
   smtp_ssl => "啟用 SMTP 的 SSL 支援。",
 
-  smtp_debug => "若設為「開」，則將會在 $terms.Bugzilla 和 SMTP 伺服器連線發生錯誤時，" _
+  smtp_debug => "若設為「開」，則將會在 Bugzilla 和 SMTP 伺服器連線發生錯誤時，" _
                 "會將詳細資訊記錄在網頁伺服器的 log 檔。你可以用此功能來對電子郵件的問題進行故障排除。",
 
   whinedays => "在系統的 cronjob 提醒擁有 $terms.bug 的人之前，系統允許一個 $terms.bug 處於確認的 (CONFIRMED)狀態且仍未被處理的天數。<br>" _

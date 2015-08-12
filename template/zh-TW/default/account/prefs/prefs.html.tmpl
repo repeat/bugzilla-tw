@@ -23,25 +23,25 @@
   #%]
 
 [% filtered_login = user.login FILTER html %]
-[% PROCESS global/header.html.tmpl
-   title = "使用者偏好設定"
-   subheader = filtered_login
-   style_urls = ['skins/standard/admin.css']
-   javascript_urls = ['js/util.js', 'js/field.js']
-   doc_section = "userpreferences.html"
-   yui = ['autocomplete']
- %]
 
 [% tabs = [{ name => "settings", label => "一般設定",
-              link => "userprefs.cgi?tab=settings", saveable => "1" },
+              link => "userprefs.cgi?tab=settings", saveable => "1",
+              doc_section => "using/preferences.html#general-preferences" },
             { name => "email", label => "電子郵件設定",
-              link => "userprefs.cgi?tab=email", saveable => "1" },
+              link => "userprefs.cgi?tab=email", saveable => "1",
+              doc_section => "using/preferences.html#email-preferences" },
             { name => "saved-searches", label => "已儲存的搜尋",
-              link => "userprefs.cgi?tab=saved-searches", saveable => "1" },
+              link => "userprefs.cgi?tab=saved-searches", saveable => "1",
+              doc_section => "using/preferences.html#saved-searches" },
             { name => "account", label => "帳號資訊",
-              link => "userprefs.cgi?tab=account", saveable => "1" },
+              link => "userprefs.cgi?tab=account", saveable => "1",
+              doc_section => "using/preferences.html#account-information" },
+            { name => "apikey", label => "API key",
+              link => "userprefs.cgi?tab=apikey", saveable => "1",
+              doc_section => "using/preferences.html#api-keys" },
             { name => "permissions", label => "權限",
-              link => "userprefs.cgi?tab=permissions", saveable => "0" } ] %]
+              link => "userprefs.cgi?tab=permissions", saveable => "0",
+              doc_section => "using/preferences.html#permissions" } ] %]
 
 [% Hook.process('tabs') %]
 
@@ -51,6 +51,16 @@
     [% LAST %]
   [% END %]
 [% END %]
+
+[% PROCESS global/header.html.tmpl
+   title = current_tab.label
+   subheader = filtered_login
+   generate_api_token = 1
+   style_urls = ['skins/standard/admin.css']
+   javascript_urls = ['js/util.js', 'js/field.js', 'js/TUI.js']
+   doc_section = current_tab.doc_section
+   yui = ['autocomplete']
+ %]
 
 [% WRAPPER global/tabs.html.tmpl
    tabs        = tabs
@@ -63,7 +73,7 @@
 
     [% IF email_changes_saved %]
       <p>
-        已分別寄發變更電子郵件的確認信至原本的以及新的電子郵件地址。
+        為了確認你的請求，我們已寄發一封電子郵件至你新的電子郵件地址。做為預防措施，我們也寄發了一封電子郵件至你原本的電子郵件地址，讓你有需要時可以取消這個請求。
       </p>
     [% END %]
   </div>
@@ -82,16 +92,10 @@
 
 [% IF current_tab.saveable %]
     <input type="hidden" name="dosave" value="1">
-
     [% UNLESS dont_show_button %]
-      <table>
-        <tr>
-          <td width="150">&nbsp;</td>
-          <td>
-            <input type="submit" id="update" value="儲存設定">
-          </td>
-        </tr>
-      </table>
+      <p>
+        <input type="submit" id="update" value="儲存設定">
+      </p>
     [% END %]
   </form>
 [% END %]

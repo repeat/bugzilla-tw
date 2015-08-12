@@ -15,36 +15,13 @@
   #%]
 
 [% PROCESS global/header.html.tmpl
-           title = "${terms.Bugzilla} 智語系統"
+           title = "Bugzilla 智語系統"
            header = "新增自己的大標題"
+           style_urls = ['skins/standard/buglist.css']
  %]
 
-[% IF added_quip %]
-  <p>
-    <font color="red">
-      已新增智語 '<tt>[% added_quip FILTER html %]</tt>'。
-      [% IF Param("quip_list_entry_control") == "moderated" AND !user.in_group('bz_quip_moderators') %]
-        在通過審核之後就會立即使用它。
-      [% END %]
-    </font>
-  </p>
-[% END %]
-
-[% IF deleted_quip %]
-  <p>
-    <font color="red">
-      已刪除智語 '<tt>[% deleted_quip FILTER html %]</tt>'。
-    </font>
-  </p>
-[% END %]
-
-[% IF approved or unapproved %]
-  <p>[% approved.size %] 條智語已通過審核， [% unapproved.size %] 條智語尚未審核。</p>
-[% END %]
-
-
 <p>
-  [% terms.Bugzilla %] 會隨機選擇一條智語做為每個 [% terms.bug %] 清單的大標題。
+  Bugzilla 會隨機選擇一條智語做為每個 [% terms.bug %] 清單的大標題。
 </p>
 
 [% IF Param("quip_list_entry_control") != "closed" %]
@@ -59,7 +36,7 @@
     <input type="hidden" name="action" value="add">
     <input type="hidden" name="token"
            value="[% issue_hash_token(['create-quips']) FILTER html %]">
-    <input size="80" name="quip" maxlength="512">
+    <input size="80" name="quip" maxlength="512" required>
     <p>
       <input type="submit" id="add" value="送出">
     </p>
@@ -90,13 +67,17 @@
       <input type="hidden" name="action" value="approve">
       <input type="hidden" name="token"
              value="[% issue_hash_token(['approve-quips']) FILTER html %]">
-      <table border="1">
-        <thead><tr>
+      <table id="quips">
+        <thead>
+        <tr class="column_header">
           <th>智語</th>
           <th>作者</th>
           <th>動作</th>
           <th>審核通過</th>
-        </tr></thead><tbody>
+        </tr>
+        </thead>
+
+        <tbody>
         [% FOREACH quipid = quipids %]
           <tr>
             <td>[% quips.$quipid.quip FILTER html %]</td>
@@ -111,7 +92,7 @@
                 刪除
               </a>
             </td>
-            <td>
+            <td class="center">
               <input type="hidden" name="defined_quipid_[% quipid FILTER html %]"
                      id="defined_quipid_[% quipid FILTER html %]"
                      value="1">
@@ -123,7 +104,15 @@
         [% END %]
         </tbody>
       </table>
-      <script type="text/javascript"><!--
+
+      <input type="button" id="uncheck_all" value="取消全選"
+             class="bz_default_hidden" onclick="SetCheckboxes(false);">
+      <input type="button" id="check_all" value="全選"
+             class="bz_default_hidden" onclick="SetCheckboxes(true);">
+      <input type="submit" id="update" value="儲存設定">
+
+      <script type="text/javascript">
+        <!--
         var numelements = document.forms.editform.elements.length;
         function SetCheckboxes(value) {
           var item;
@@ -132,13 +121,10 @@
             item.checked = value;
           }
         }
-        document.write(' <input type="button" name="uncheck_all" '
-                      +'value="全不選" onclick="SetCheckboxes(false);">');
-        document.write(' <input type="button" name="check_all" '
-                      +'value="全選" onclick="SetCheckboxes(true);">');
-        //--></script>
-
-      <input type="submit" id="update" value="儲存設定">
+        YAHOO.util.Dom.removeClass("check_all", "bz_default_hidden");
+        YAHOO.util.Dom.removeClass("uncheck_all", "bz_default_hidden");
+        //-->
+      </script>
     </form>
     <br>
   [% END %]

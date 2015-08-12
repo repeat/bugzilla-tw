@@ -79,17 +79,19 @@ END
 END
     feature_auth_ldap => 'LDAP 認證',
     feature_auth_radius => 'RADIUS 認證',
+    feature_documentation => '說明文件',
     feature_graphical_reports => '圖表式報告',
     feature_html_desc => '在產品／群組描述中使用較多的 HTML',
     feature_inbound_email => 'Inbound Email',
     feature_jobqueue => '信件佇列',
     feature_jsonrpc => 'JSON-RPC 介面',
-    feature_jsonrpc_faster => '讓 JSON-RPC 較快',
     feature_new_charts => '新圖表',
     feature_old_charts => '舊圖表',
+    feature_memcached => '支援 Memcached',
     feature_mod_perl => 'mod_perl',
     feature_moving => '在不同機器間搬移 Bugs',
     feature_patch_viewer => 'Patch Viewer',
+    feature_rest => 'REST 介面',
     feature_smtp_auth => 'SMTP 認證',
     feature_smtp_ssl => 'SMTP 的 SSL 支援',
     feature_updates => '自動更新通知',
@@ -147,10 +149,6 @@ END
 
 設定為 0 時， checksetup.pl 將不會建立 .htaccess 檔案。
 END
-    localconfig_cvsbin => <<'END',
-如果你想要使用 Patch Viewer 的 CVS 整合介面，請輸入可執行
-"cvs" 的完整路徑。
-END
     localconfig_db_check => <<'END',
 checksetup.pl 是否應該嘗試檢查你的資料庫設定是否正確？
 有些資料庫伺服器/Perl 模組/moonphase 的組合會讓此功能無法運作，
@@ -184,6 +182,23 @@ MySQL 才需要輸入的：輸入 unix socket for MySQL 的路徑。
 如不輸入，那麼會使用 MySQL 的預設值。大概會是你要的。
 END
     localconfig_db_user => "用來連接資料庫的使用者",
+    localconfig_db_mysql_ssl_ca_file => <<'END',
+PEM 檔案的路徑，此檔案包含可信任的 SSL CA 發行者清單。
+此檔案必須是網頁伺服器使用者可以讀取的。
+END
+    localconfig_db_mysql_ssl_ca_path => <<'END',
+資料夾的路徑，此資料夾包含以 PEM 格式儲存的，可信任的 SSL CA 發行者清單。
+資料夾及其底下的檔案必須是網頁伺服器使用者可以讀取的。
+Directory and files inside must be readable by the web server user.
+END
+    localconfig_db_mysql_ssl_client_cert => <<'END',
+會使用於資料庫伺服器的完整客戶端 SSL 檔案路徑（ PEM 格式）。
+此檔案必須是網頁伺服器使用者可以讀取的。
+END
+    localconfig_db_mysql_ssl_client_key => <<'END',
+相對於客戶端 SSL 憑證的私鑰完整路徑。
+此檔案必須是網頁伺服器使用者可以讀取的，且必須不被密碼保護。
+END
     localconfig_diffpath => <<'END',
 如果要讓「兩個 patch 之間的 diff 」功能有效，需要知道 "diff" bin
 在哪個目錄。（只有在使用 Patch Viewer 功能時才需要設定。）
@@ -254,11 +269,16 @@ EOT
 ***********************************************************************
 * APACHE 模組                                                         *
 ***********************************************************************
-* 一般來說，當 Bugzilla 升級時，所有 Bugzilla 使用者必須清除他們瀏    *
-* 覽器中的庫存，否則 Bugzilla 會故障。如果你在 Apache 設定中啟用特    *
-* 定的模組（通常叫 httpd.conf 或 apache2.conf ）的話，當你升級        *
-* Bugzilla 的時候， Bugzilla 的使用者就不需要清除瀏覽器中的庫存。     *
-* 你需要要啟用的模組有：                                              *
+* 有些 Apache 模組可以擴充 Bugzilla 的功能。                          *
+* 這些模組可以在 Apache 的設定檔（通常叫 httpd.conf 或 apache2.conf ）*
+* 中啟用。                                                            *
+* - mod_headers, mod_env, mod_expires:                                *
+*   當升級 Bugzilla 時，它們可以自動更新使用者的瀏覽器快取。          *
+* - mod_rewrite:                                                      *
+*   可以寫入由 REST API 使用的，較短的網址。                          *
+* - mod_version:                                                      *
+*   可以針對 Apache 2.2 或 2.4 寫入規則至 .htaccess 檔案中。          *
+* 你需要啟用的模組有：                                                *
 *                                                                     *
 END
     modules_message_db => <<EOT,
@@ -315,8 +335,7 @@ END
       建議你※現在※停止 checksetup.pl 並執行 contrib/recode.pl 。
 END
     no_checksetup_from_cgi => <<END,
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-          "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html>
 <html>
   <head>
     <title>無法從網頁伺服器執行 checksetup.pl</title>
@@ -327,8 +346,8 @@ END
     <p>
       你<b>不能</b>從瀏覽器執行此程式。要安裝或升級
       Bugzilla ，從命令列（例如 Linux 上的
-      <tt>bash</tt> 、 <tt>ssh</tt> 或 Windows 上的
-      <tt>cmd.exe</tt> 執行此程式），並依照所給予的指示進行。
+      <kbd>bash</kbd> 、 <kbd>ssh</kbd> 或 Windows 上的
+      <kbd>cmd.exe</kbd> 執行此程式），並依照所給予的指示進行。
     </p>
 
     <p>
@@ -344,7 +363,7 @@ END
 （它需要 PatchReader 這個 Perl 模組），你應該從以下網址安裝 patchutils
 ：
 
-    http://cyberelk.net/tim/patchutils/
+    http://cyberelk.net/tim/software/patchutils/
 END
     no_such_module => "在 CPAN 上找不到叫 ##module## 的 Perl 模組。",
     template_precompile   => "預先編譯模版中...",

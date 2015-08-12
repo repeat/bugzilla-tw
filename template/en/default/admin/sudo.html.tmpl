@@ -8,14 +8,15 @@
 
 [% PROCESS global/header.html.tmpl
    title = "Begin sudo session"
+   generate_api_token = 1
    style_urls = ['skins/standard/admin.css']
-   doc_section = "useradmin.html#impersonatingusers"
+   doc_section = "administering/users.html#impersonating-users"
  %]
  
 [% DEFAULT target_login = "" %]
 
 <p>
-  The <b>sudo</b> feature of [% terms.Bugzilla %] allows you to impersonate a 
+  The <b>sudo</b> feature of Bugzilla allows you to impersonate a
   user for a short time  While an sudo session is in progress, every action you 
   perform will be taking place as if you had logged in as the user whom will be 
   impersonating.
@@ -41,6 +42,7 @@
        value => target_login_default
        accesskey => "u"
        size => 30
+       mandatory => 1
     %]
   </p>
   
@@ -68,7 +70,7 @@
       Finally, enter <label for="Bugzilla_password">your [% terms.Bugzilla %]
       password</label>:
       <input type="hidden" name="Bugzilla_login" value="[% user.login FILTER html %]">
-      <input type="password" id="Bugzilla_password" name="Bugzilla_password" size="20">
+      <input type="password" id="Bugzilla_password" name="Bugzilla_password" size="20" required>
       <input type="hidden" name="Bugzilla_login_token"
              value="[% login_request_token FILTER html %]">
       <br>

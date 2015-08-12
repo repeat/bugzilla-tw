@@ -7,7 +7,7 @@
   #%]
 
 [% hidden_products = 0 %]
-<table id="user_responsibilities" border="0">
+<table id="user_responsibilities">
   [% FOREACH item = otheruser.product_responsibilities %]
     [% IF !user.can_see_product(item.product.name) %]
       [% hidden_products = 1 %]
@@ -15,7 +15,7 @@
     [% END %]
     <tbody>
     <tr>
-      <th colspan="3" class="product">Product: [% item.product.name FILTER html %]</th>
+      <th colspan="4" class="product">Product: [% item.product.name FILTER html %]</th>
     </tr>
     <tr>
       <th>Component</th>

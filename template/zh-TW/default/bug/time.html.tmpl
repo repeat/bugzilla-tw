@@ -13,11 +13,7 @@
     #             1 decimal place
     #%]
   [% time_unit = time_unit FILTER format('%.2f') %]
-  [% IF time_unit.match('0\Z') %]
-    [% time_unit FILTER format('%.1f') %]
-  [% ELSE %]
-    [% time_unit FILTER format('%.2f') %]
-  [% END %]
+  [% time_unit.replace('0\Z', '') %]
 [% END %]
 
 [% BLOCK calculatepercentage %]

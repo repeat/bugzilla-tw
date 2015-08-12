@@ -52,11 +52,8 @@ TUI_hide_default('information_query');
          value = default.short_desc.0
          type_selected = default.short_desc_type.0
          accesskey = "s"
-         %]
-      <script type="text/javascript"> <!--
-          document.getElementById('short_desc').focus();
-      // -->
-      </script>
+         focus = 1
+      %]
 
       [% IF button_name %]
         <input type="submit" id="[% button_name FILTER css_class_quote %]_top"
@@ -114,7 +111,7 @@ TUI_hide_default('information_query');
     [%+ field_descs.longdesc FILTER html %] 、 [%+ field_descs.bug_file_loc FILTER html %] 、
     [% IF Param('usestatuswhiteboard') %] [%+ field_descs.status_whiteboard FILTER html %] 、 [%+ END %]
     [% IF use_keywords %] [%+ field_descs.keywords FILTER html %] 、 [%+ END %]
-    [% IF user.is_timetracker %] [%+ field_descs.deadline FILTER html %] 、 [%+ END %]
+    [% IF Param('timetrackinggroup') %] [%+ field_descs.deadline FILTER html %] 、 [%+ END %]
     [% terms.Bug %] 編號、 [%+ field_descs.version FILTER html %] 、
     [% IF Param('usetargetmilestone') %] [%+ field_descs.target_milestone FILTER html %] 、 [%+ END %]
     [% field_descs.bug_severity FILTER html %] 、 [%+ field_descs.priority FILTER html %] 、 [%+ field_descs.rep_platform FILTER html %] 、
@@ -153,8 +150,7 @@ TUI_hide_default('information_query');
     </div>
   [% END %]
 
-  [%# Deadline %]
-  [% IF user.is_timetracker %]
+  [% IF Param('timetrackinggroup') %]
     <div class="search_field_row">
         [% INCLUDE "search/field.html.tmpl"
                     field = bug_fields.deadline
@@ -165,13 +161,15 @@ TUI_hide_default('information_query');
   [% END %]
 
   <div class="search_field_row">
-    搜尋結果中應該
-    <select name="bug_id_type" id="bug_id_type">
-      <option value="anyexact"[% " selected" IF default.bug_id_type.0 == "anyexact" %]>只包括</option>
-      <option value="nowords"[% " selected" IF default.bug_id_type.0 == "nowords" %]>不包括</option>
-    </select>
+    <span class="field_label field_label_sup">
+      搜尋結果中應該
+      <select name="bug_id_type" id="bug_id_type">
+        <option value="anyexact"[% " selected" IF default.bug_id_type.0 == "anyexact" %]>只包括</option>
+        <option value="nowords"[% " selected" IF default.bug_id_type.0 == "nowords" %]>不包括</option>
+      </select>
+    </span>
     <span class="field_label"><label for="bug_id">[% terms.Bug %] 編號為：</label></span>
-    <div id="bug_id_container" >
+    <div id="bug_id_container">
       <input type="text" name="bug_id" id="bug_id"
            value="[% default.bug_id.0 FILTER html %]" size="20">
            <div class="field_help">[以逗號 (,) 分隔多個 [% terms.bug %] 編號</div>

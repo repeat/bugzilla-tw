@@ -21,31 +21,34 @@
   style_urls = ['skins/standard/admin.css']
 %]
 
-<table border="1" cellpadding="4" cellspacing="0">
-<tr bgcolor="#6666FF">
-  <th valign="top" align="left">欄位</th>
-  <th valign="top" align="left">值</th>
-</tr>
-<tr>
-  <td valign="top">版本：</td>
-  <td valign="top">[% version.name FILTER html %]</td>
-</tr>
-<tr>
-  <td valign="top">產品：</td>
-  <td valign="top">[% product.name FILTER html %]</td>
-</tr>
-<tr>
-  <td valign="top">[% terms.Bugs %] ：</td>
-  <td valign="top">
-[% IF version.bug_count %]
-  <a title="列出指向版本 '[%- version.name FILTER html %]' 的 [% terms.bugs %]"
-     href="buglist.cgi?version=[% version.name FILTER uri %]&amp;product=
-          [%- product.name FILTER uri %]">[%- version.bug_count FILTER none %]</a>
-[% ELSE %]
-  無
-[% END %]
-  </td>
-</tr>
+<table id="admin_table">
+  <tr class="column_header">
+    <th>欄位</th>
+    <th>值</th>
+  </tr>
+  <tr>
+    <td>版本</td>
+    <td>[% version.name FILTER html %]</td>
+  </tr>
+  <tr>
+    <td>產品的版本</td>
+    <td>[% product.name FILTER html %]</td>
+  </tr>
+  <tr>
+    <td>[% terms.Bugs %]</td>
+    <td>
+      [% IF version.bug_count %]
+        <a title="列出指向版本 '
+                  [%- version.name FILTER html %]'
+                  的 [% terms.bugs %]"
+           href="buglist.cgi?version=[% version.name FILTER uri %]&amp;product=
+                 [%- product.name FILTER uri %]">
+                 [%- version.bug_count FILTER none %]</a>
+      [% ELSE %]
+        無
+      [% END %]
+    </td>
+  </tr>
 </table>
 
 <h2>確認</h2>

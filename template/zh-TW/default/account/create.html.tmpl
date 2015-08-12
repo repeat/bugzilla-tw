@@ -14,12 +14,12 @@
   #%]
 
 [% title = BLOCK %]
-  建立一個新的 [% terms.Bugzilla %] 帳號
+  
 [% END %]
 
 [% PROCESS global/header.html.tmpl
-           title = title
-           onload = "document.forms['account_creation_form'].login.focus();" %]
+           title = "建立一個新的 $terms.Bugzilla 帳號"
+%]
 
 <p>
   要建立一個[% terms.Bugzilla %]帳號，你只要輸入：<br>
@@ -30,15 +30,27 @@
 [% END %]
   會寄一封用來建立帳號的認證信到此一電子郵件地址。
   <br><b>在你收到電子郵件之前，你將無法登入。</b>
-  <br>如果沒有在合理的時間範圍內收到，你可以用電子郵件連絡此一 [% terms.Bugzilla %] 的管理者： <a
+  <br>如果沒有在合理的時間範圍內收到，你可以用電子郵件連絡此一  Bugzilla 的管理者： <a
   href="mailto:[% Param("maintainer") %]">[% Param("maintainer") %]</a> 。
 </p>
+
+[% IF Param('allowemailchange') %]
+<p>
+  如果你已經有帳號了，並且想要改變你的
+  [% IF Param('emailsuffix') == '' %]
+    電子郵件地址，
+  [% ELSE %]
+    帳號，
+  [% END %]
+  可以在登入後在「偏好設定」頁面變更。
+</p>
+[% END %]
 
 <p>
   當需要回報一個新的 [% terms.bug %] ，或者對現有的 [% terms.bug %] 留下意見時，需要一個帳號。
   當後續有需要更多資訊時，可以聯絡上你。
   這也讓其他使用者可以清楚了解是誰對 [%terms.bug %] 做了改變或留下意見。
-  <b>注意：你的電子郵件地址將<u>不會</u>顯示給訪客。只有註冊使用者才能看見它。</b>
+  <b>注意：你的電子郵件地址將<em>不會</em>顯示給訪客。只有註冊使用者才能看見它。</b>
 </p>
 
 [% IF Param('createemailregexp') == '.*' && Param('emailsuffix') == '' %]
@@ -51,18 +63,16 @@
 [% END %]
 
 <form id="account_creation_form" method="get" action="createaccount.cgi">
-  <table>
-    <tr>
-      <td align="right">
-        <b>電子郵件：</b>
-      </td>
-      <td>
-        <input size="35" id="login" name="login">
-        [% Param('emailsuffix') FILTER html %]
-      </td>
-    </tr>
-  </table>
-  <br>
+  <span class="label">
+    [% IF Param('emailsuffix') %]
+      帳號：
+    [% ELSE %]
+      電子郵件地址：
+    [% END %]
+  </span>
+  <input size="35" id="login" name="login" autofocus
+         [%- ' type="email"' UNLESS Param('emailsuffix') %] required>
+  [% Param('emailsuffix') FILTER html %]
   <input type="hidden" id="token" name="token" value="[% issue_hash_token(['create_account']) FILTER html %]">
   <input type="submit" id="send" value="送出">
 </form>

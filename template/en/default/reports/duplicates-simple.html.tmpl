@@ -10,8 +10,7 @@
   # You need to fulfill the interface to duplicates-table.html.tmpl.
   #%]
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-                      "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
   [% IF product.size %]
     [% title = BLOCK %]
@@ -24,8 +23,6 @@
   <head>
     <title>[% title FILTER html %]</title>
     <link href="[% 'skins/standard/global.css' FILTER mtime %]"
-          rel="stylesheet" type="text/css">
-    <link href="[% 'skins/standard/duplicates.css' FILTER mtime %]"
           rel="stylesheet" type="text/css">
   </head>
 

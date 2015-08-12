@@ -16,21 +16,8 @@
 [% PROCESS global/header.html.tmpl
    title = "輸入 $terms.Bug"
    onload = "PutDescription()"
-   style = "#somebugs { width: 100%; height: 500px }"
+   style_urls = ['skins/standard/bug.css']
  %]
-
-[% style = "" %]
-
-<p>
-  <font color="red">
-    這是使用於 mozilla.org 的模版。此模版以及 comment-guided.txt.tmpl
-    模版以及所有透過此模版傳送的資料及格式，在此僅做為示範如何使用自訂模版，特別是自訂
-    [% terms.bug %] 輸入模版的部份。由於大部份文字均不適用，若你要在此台安裝
-    [% terms.Bugzilla %] 的機器上使用此表格，你需要做出適當的調整。
-  </font>
-</p>
-
-[% tablecolour = "#FFFFCC" %]
 
 [%# This script displays the descriptions for selected components. %]
 <script type="text/javascript">
@@ -42,47 +29,37 @@ var descriptions = [
 ];
 
 function PutDescription() {
-    if ((document.getElementById) && (document.body.innerHTML)) {
-        var componentIndex = document.getElementById('component').selectedIndex;
-        if (componentIndex != -1) {
-            var description = document.getElementById('description');
-            description.innerHTML = descriptions[componentIndex];
-        }
-    }
+  var description = document.getElementById('description');
+  var componentIndex = document.getElementById('component').selectedIndex;
+  YAHOO.util.Dom.removeClass("description", "bz_default_hidden");
+  if (componentIndex != -1) {
+    description.innerHTML = descriptions[componentIndex];
+  }
 }
 </script>
 
 <h3 id="step1">步驟 3 之 1 － 你的[% terms.bug %]是否已被回報了？</h3>
 
-<p>
-  <font color="red">請勿跳過此步驟－－半數以上的 [% terms.bugs %] 都已回報過了。
-  </font>
-    檢查一下最常回報的兩份 [% terms.bugs %] 清單：
+<p class="warning">
+  請勿跳過此步驟－－半數以上的 [% terms.bugs %] 都已回報過了。
 </p>
-
-[%# Include other products if sensible %]
-[% IF product.name == "Firefox" %]
-  [% productstring = "product=Mozilla%20Application%20Suite&amp;product=Firefox" %]
-[% ELSIF product.name == "Thunderbird" %]
-  [% productstring = "product=Mozilla%20Application%20Suite&amp;product=Thunderbird" %]
-[% ELSE %]
-  [% productstring = BLOCK %]product=[% product.name FILTER uri %][% END %]
-[% END %]
-
+<p>檢查兩份最常被回報的 [% terms.bug %] 清單：</p>
 <p>
-    <a href="duplicates.cgi?[% productstring %]&amp;format=simple" target="somebugs">所有時間點的前 100 個 [% terms.bugs %]</a>（預設載入） |
-    <a href="duplicates.cgi?[% productstring %]&amp;format=simple&amp;sortby=delta&amp;reverse=1&amp;maxrows=100&amp;changedsince=14" target="somebugs">最近兩週的熱門 [% terms.bugs %]</a>
+  <a href="duplicates.cgi?product=[% product.name FILTER uri %]&amp;format=simple"
+     target="somebugs">所有時間點的前 100 名 [% terms.bugs %]</a> （預設載入） |
+  <a href="duplicates.cgi?product=[% product.name FILTER uri %]&amp;format=simple&amp;sortby=delta&amp;reverse=1&amp;maxrows=100&amp;changedsince=14"
+     target="somebugs">最近兩週的熱門 [% terms.bugs %]</a>
 </p>
 
 <iframe name="somebugs" id="somebugs"
   style="border: 2px black solid"
-  src="duplicates.cgi?[% productstring %]&amp;format=simple">
+  src="duplicates.cgi?product=[% product.name FILTER uri %]&amp;format=simple">
 </iframe>
 
 <p>
     如果 [% terms.bug %] 不在上面，那麼試著輸入一些有關的關鍵字來搜尋 [% terms.Bugzilla %] 。例如：
-    <tt><b>pop3 信件</b></tt>或<tt><b>複製 貼上</b></tt>。結果將會顯示在上面。
-  </p>
+    <kbd><b>pop3 信件</b></kbd>或<kbd><b>複製 貼上</b></kbd>。結果將會顯示在上面。
+</p>
 
 [%# All bugs opened inside the past six months %]
   <form action="buglist.cgi" method="get" target="somebugs">
@@ -90,16 +67,6 @@ function PutDescription() {
     <input type="hidden" name="order" value="relevance desc">
     <input type="hidden" name="bug_status" value="__all__">
     <input type="hidden" name="product" value="[% product.name FILTER html %]">
-    [% IF product.name == "Firefox" OR
-          product.name == "Thunderbird" OR
-          product.name == "Mozilla Application Suite" OR
-          product.name == "Camino" %]
-      <input type="hidden" name="product" value="Core">
-      <input type="hidden" name="product" value="Toolkit">
-      <input type="hidden" name="product" value="PSM">
-      <input type="hidden" name="product" value="NSPR">
-      <input type="hidden" name="product" value="NSS">
-    [% END %]
     <input type="hidden" name="chfieldfrom" value="-6m">
     <input type="hidden" name="chfieldto" value="Now">
     <input type="hidden" name="chfield" value="[Bug creation]">
@@ -108,7 +75,7 @@ function PutDescription() {
   </form>
 
 <p>
-  檢視搜尋結果。如果顯示<tt><b>[% terms.zeroSearchResults %]</b></tt>的訊息，代表 [% terms.Bugzilla %] 沒找到符合的 [% terms.bugs %] 。看有沒有打錯字，或試試其他關鍵字。如果你找到的 [% terms.bug %] 看起來有點像你遇到的，請在後頭加上一些資訊，而不是新增一個 [% terms.bug %] 。
+  檢視搜尋結果。如果顯示<kbd><b>[% terms.zeroSearchResults %]</b></kbd>的訊息，代表 [% terms.Bugzilla %] 沒找到符合的 [% terms.bugs %] 。看有沒有打錯字，或試試其他關鍵字。如果你找到的 [% terms.bug %] 看起來有點像你遇到的，請在後頭加上一些資訊，而不是新增一個 [% terms.bug %] 。
 </p>
 
 
@@ -118,7 +85,7 @@ function PutDescription() {
   如果你試了幾次搜尋但都找不到，那麼請回報這個 [% terms.bug %] 。
 </p>
 
-<form method="post" action="post_bug.cgi">
+<form id="guided_form" method="post" action="post_bug.cgi">
   <input type="hidden" name="format" value="guided">
   <input type="hidden" name="assigned_to" value="">
   <input type="hidden" name="priority"
@@ -127,104 +94,72 @@ function PutDescription() {
          value="[% default.version FILTER html %]">
   <input type="hidden" name="token" value="[% token FILTER html %]">
 
-<table valign="top" cellpadding="5" cellspacing="5" border="0">
-
-  <tr bgcolor="[% tablecolour %]">
-    <td align="right" valign="top">
-      <b>產品</b>
-    </td>
-    <td valign="top">
+<table>
+  <tr class="guided_form_field">
+    <th>產品</th>
+    <td>
       <input type="hidden" name="product" value="[% product.name FILTER html %]">
       [% product.name FILTER html %]
     </td>
   </tr>
 
   <tr>
-    <td align="right" valign="top">
-      <b>子產品</b>
-    </td>
-    <td valign="top">
-      <table border="0" cellpadding="0" cellspacing="0">
-        <tr>
-          <td valign="top">
-            <select name="component" id="component"
-                    size="5" onchange="PutDescription()">
-              [% IF NOT default.component_ %]
-                [%# Various b.m.o. products have a "General" component,
-                    which is a useful default. %]
-                [% default.component_ = "通用" %]
-              [% END %]
-              [% FOREACH c = product.components %]
-                [% NEXT IF NOT c.is_active %]
-                <option value="[% c.name FILTER html %]"
-                  [% " selected=\"selected\"" IF c.name == default.component_ %]>
-                  [% c.name FILTER html %]
-                </option>
-              [% END %]
-            </select>
-          </td>
-          <td valign="top" width="100%">
-              <div id="description" style="color: green; margin-left: 10px;
-                                           height: 5em; overflow: auto;">
-                <script type="text/javascript">
-                  if ((document.getElementById) && (document.body.innerHTML)) {
-                    document.write("\
-                    選擇一項子產品來看它的描述。");
-                  }
-                </script>
-              </div>
-          </td>
-        </tr>
-      </table>
+    <th>子產品</th>
+    <td>
+      <select name="component" id="component" size="5" onchange="PutDescription()">
+        [% IF NOT default.component_ %]
+          [% default.component_ = "通用" %]
+        [% END %]
+        [% FOREACH c = product.components %]
+          [% NEXT IF NOT c.is_active %]
+          <option value="[% c.name FILTER html %]"
+                  [%+ 'selected="selected"' IF c.name == default.component_ %]>
+            [% c.name FILTER html %]
+          </option>
+        [% END %]
+      </select>
+
+      <div id="description" class="comment bz_default_hidden">
+        選擇一項子產品來看它的描述。
+      </div>
 
       <p>
-        問題發生的區域。你可以藉由使用搜尋結果中類似的 [% terms.bugs %] 來選擇正確的子產品，或是瀏覽<a
-        target="_blank" href="describecomponents.cgi?product=
-            [% product.name FILTER uri %]">子產品描述</a>的完整清單（在新視窗開啟）以獲得更多資訊。
+        問題發生的區域。你可以藉由使用搜尋結果中類似的 [% terms.bugs %] 來選擇正確的子產品，或是瀏覽
+        <a href="describecomponents.cgi?product=[% product.name FILTER uri %]"
+           target="_blank" >子產品描述</a>的完整清單（在新視窗開啟）
+        以獲得更多資訊。
       </p>
     </td>
   </tr>
 
-  [%# We override rep_platform and op_sys for simplicity. The values chosen
-      are based on which are most common in the b.m.o database %]
+  [%# We override rep_platform and op_sys for simplicity. %]
   [% rep_platform = [ "PC", "Macintosh", "All", "Other" ] %]
 
-  <tr bgcolor="[% tablecolour %]">
-    <td align="right" valign="top">
-      <b>[% field_descs.rep_platform FILTER html %]</b>
-    </td>
-    <td valign="top">
+  <tr class="guided_form_field">
+    <th>[% field_descs.rep_platform FILTER html %]</th>
+    <td>
       [% PROCESS select sel = 'rep_platform' %]
     </td>
   </tr>
 
-  [% op_sys = [ "Windows 2000", "Windows XP", "Windows Vista", "Windows 7",
-                "Mac OS X", "Linux", "All", "Other" ] %]
+  [% op_sys = [ "Windows XP", "Windows Vista", "Windows 7", "Windows 8",
+                  "Mac OS X", "Linux", "All", "Other" ] %]
 
   <tr>
-    <td align="right" valign="top">
-      <b>作業系統</b>
-    </td>
-    <td valign="top">
+    <th>作業系統</th>
+    <td>
       [% PROCESS select sel = 'op_sys' %]
     </td>
   </tr>
-
-  [% IF product.name.match("Firefox|Camino|Mozilla Application Suite") %]
-    [% matches = cgi.user_agent('Gecko/(\d+)') %]
-    [% buildid = cgi.user_agent() IF matches %]
-  [% END %]
 
   [%# Accept URL parameter build ID for non-browser products %]
   [% IF cgi.param("buildid") %]
     [% buildid = cgi.param("buildid") %]
   [% END %]
 
-  <tr bgcolor="[% tablecolour %]">
-    <td align="right" valign="top">
-      <b>Build 辨識</b>
-    </td>
-    <td valign="top">
+  <tr class="guided_form_field">
+    <th>Build 辨識</th>
+    <td>
       <input type="text" size="80" name="buildid" value="[% buildid FILTER html %]">
       <p>
         這裡請描述你所使用產品的正確版本。如果上述欄位呈現空白，或者你認為它是錯的，請從產品的「幫助 &gt; 關於」查看。如果產品無法啟動，請直接貼上你下載此產品的網址。
@@ -233,72 +168,64 @@ function PutDescription() {
   </tr>
 
   <tr>
-    <td align="right" valign="top">
-      <b>網址</b>
-    </td>
-    <td valign="top">
+    <th>網址</th>
+    <td>
       <input type="text" size="80" name="bug_file_loc" value="http://">
       <p>
         可以展示你所遇到問題的網址（選填）。<br>
-        <b>注意</b>：若問題是一個壞掉的網頁，你必須以<a
-        href="https://bugzilla.mozilla.org/page.cgi?id=broken-website.html">另一種方式</a>回報。
       </p>
    </td>
   </tr>
 
-  <tr bgcolor="[% tablecolour %]">
-    <td align="right" valign="top">
-      <b>摘要</b>
-    </td>
-    <td valign="top">
+  <tr class="guided_form_field">
+    <th>摘要</th>
+    <td>
       <input type="text" size="80" name="short_desc" id="short_desc"
              maxlength="255" spellcheck="true">
       <p>
         一個可以將問題簡單說明的句子。請使用大量關鍵字。
       </p>
       <p>
-        <tt>
-          <font color="#990000">不好的例子</font>：信件當掉
-        </tt>
+        <kbd>
+          <span class="bad">不好的例子</span>：信件當掉
+        </kbd>
         <br>
-        <tt>
-          <font color="#009900">好的例子</font>：當檢查是否有新的 POP 信件時，關掉信件視窗會當掉
-        </tt>
+        <kbd>
+          <span class="good">好的例子</span>：當檢查是否有新的 POP 信件時，關掉信件視窗會當掉
+        </kbd>
       </p>
     </td>
   </tr>
 
   <tr>
-    <td align="right" valign="top">
-      <b>細節</b>
-    </td>
-    <td valign="top">
+    <th>細節</th>
+    <td>
       [% INCLUDE global/textarea.html.tmpl
-        name    = 'comment'
-        minrows = 6
-        cols    = constants.COMMENT_COLS
+        name      = 'comment'
+        minrows   = 6
+        cols      = constants.COMMENT_COLS
+        mandatory = 1
       %]
       <p>
         請詳細描述發生了什麼事。
       </p>
       <p>
-        <tt>
-          <font color="#990000">不好的例子</font>： Mozilla 又當了，爛！
-        </tt>
+        <kbd>
+          <span class="bad">不好的例子</span>： Mozilla 又當了，爛！
+        </kbd>
         <br>
-        <tt>
-          <font color="#009900">好的例子</font>：我在書籤管理員中排序時當掉。<br>
+        <kbd>
+          <span class="good">好的例子</span>：
+          我在書籤管理員中排序時當掉。<br>
           在那之後，我最上層的書籤 Q 到 Z 開頭的都蒸發了。
-        </tt>
+        </kbd>
       </p>
     </td>
   </tr>
 
   <tr bgcolor="[% tablecolour %]">
-    <td align="right" valign="top">
-      <b>可重製性</b>
-    </td>
-    <td valign="top">
+    <th>可重製性</th>
+    <td>
       <select name="reproducible">
         <option name="AlwaysReproducible" value="總是可以">
           每次都會發生。
@@ -317,10 +244,8 @@ function PutDescription() {
   </tr>
 
   <tr>
-    <td align="right" valign="top">
-      <b>重製的步驟</b>
-    </td>
-    <td valign="top">
+    <th>重製的步驟</th>
+    <td>
       [% INCLUDE global/textarea.html.tmpl
         name           = 'reproduce_steps'
         minrows        = 4
@@ -333,11 +258,9 @@ function PutDescription() {
     </td>
   </tr>
 
-  <tr bgcolor="[% tablecolour %]">
-    <td valign="top" align="right">
-      <b>實際結果</b>
-    </td>
-    <td valign="top">
+  <tr class="guided_form_field">
+    <th>實際結果</th>
+    <td>
       [% INCLUDE global/textarea.html.tmpl
         name    = 'actual_results'
         minrows = 4
@@ -350,10 +273,8 @@ function PutDescription() {
   </tr>
 
   <tr>
-    <td valign="top" align="right">
-      <b>預期結果</b>
-    </td>
-    <td valign="top">
+    <th>預期結果</th>
+    <td>
       [% INCLUDE global/textarea.html.tmpl
         name    = 'expected_results'
         minrows = 4
@@ -377,21 +298,18 @@ function PutDescription() {
       %]
       <p>
         加上任何可能相關的資訊，例如你在使用的<b>佈景</b>（這個 [% terms.bug %]
-        在預設佈景下還會發生嗎？），一個
-        <b><a href="http://kb.mozillazine.org/Quality_Feedback_Agent">Talkback crash ID</a></b>
-        ，或任何關於<b>你的電腦組態</b>的資訊。較長的資訊，例如 <b>stack trace</b> 或
+        在預設佈景下還會發生嗎？），
+        或任何關於<b>你的電腦組態</b>的資訊。較長的資訊，例如 <b>stack trace</b> 或
         <b>HTML testcase</b> ，應該使用「新增附件」連結。如果你覺得 build 設定也有關聯，請在網址列輸入
-        <tt>about:buildconfig</tt> ，並一併輸入該資訊。<br><br>
-        如果你回報的是當掉的情況，請註明在哪個模組裡軟體當掉（例如：<tt>在 gkhtml.dll 發生應用程式錯誤</tt>。）
+        <kbd>about:buildconfig</kbd> ，並一併輸入該資訊。<br><br>
+        如果你回報的是當掉的情況，請註明在哪個模組裡軟體當掉（例如：<kbd>在 gkhtml.dll 發生應用程式錯誤</kbd>。）
       </p>
     </td>
   </tr>
 
   <tr>
-    <td valign="top" align="right">
-      <b>[% field_descs.bug_severity FILTER html %]</b>
-    </td>
-    <td valign="top">
+    <th>[% field_descs.bug_severity FILTER html %]</th>
+    <td>
       <select name="bug_severity">
         <option name="critical" value="critical">
           Critical ：會導致當機，或者資料損毀。
@@ -425,16 +343,12 @@ function PutDescription() {
 <h3 id="step3">步驟 3 之 3 － 送出 [% terms.bug %] 回報</h3>
 
 <p>
-  <input type="submit" id="report" value="送出 [% terms.bug %] 回報"
-   onclick="if (this.form.comment.value == '')
-   { alert('請對這個 [% terms.bug %] 輸入一些細節。');
-     this.form.comment.focus();
-     return false; } return true;">
+  <input type="submit" id="report" value="送出 [% terms.bug %] 回報">
 </p>
 
 <p>
   就這樣！非常感謝。如果有任何進度，將會以電子郵件通知。
-
+</p>
 <p>
   請瞭解到我們收到一堆 [% terms.bug %] 回報－－可能要一段時間才會看到你的回報。你可以藉由清楚描述
   [%+ terms.bug %] 來幫助我們更快瞭解問題所在，並回覆電子郵件中任何可能詢問的問題。

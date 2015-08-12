@@ -10,8 +10,6 @@
   # field: Bugzila::Field; the current field being edited
   #%]
 
-[% PROCESS "global/field-descs.none.tmpl" %]
-
 [% title = BLOCK %]
   編輯自訂欄位 '[% field.name FILTER html %]' ([% field.description FILTER html %])
 [% END %]
@@ -24,7 +22,7 @@
            title = title
            onload = "toggleCheckbox(document.getElementById('enter_bug'), 'new_bugmail');"
            javascript_urls = [ 'js/util.js' ]
-           doc_section = "custom-fields.html#edit-custom-fields"
+           doc_section = "administering/custom-fields.html#editing-custom-fields"
            style_urls = ['skins/standard/admin.css']
 %]
 
@@ -33,140 +31,8 @@
 </p>
 
 <form id="edit_field" action="editfields.cgi" method="GET">
-  <table border="0" cellspacing="0" cellpadding="5" id="edit_custom_field">
-    <tr>
-      <th class="narrow_label">名稱：</th>
-      <td>[% field.name FILTER html %]</td>
+  [% PROCESS "admin/custom_fields/edit-common.html.tmpl" field = field %]
 
-      <th>
-        <label for="enter_bug">可以在建立 [% terms.bug %] 時設定：</label>
-      </th>
-      <td><input type="checkbox" id="enter_bug" name="enter_bug" value="1"
-                 [%- " checked" IF field.enter_bug %]
-                 onchange="toggleCheckbox(this, 'new_bugmail');"></td>
-    </tr>
-    <tr>
-      <th class="narrow_label"><label for="desc">描述：</label></th>
-      <td><input type="text" id="desc" name="desc" size="40"
-                 value="[% field.description FILTER html %]"></td>
-
-      <th>
-        <label for="new_bugmail">將新的 [% terms.bug %] 顯示於 [% terms.bug %] 通知信中：</label>
-      </th>
-      <td><input type="checkbox" id="new_bugmail" name="new_bugmail" value="1"
-                 [%- " checked" IF field.mailhead %]></td>
-    </tr>
-    <tr>
-      <th class="narrow_label">種類：</th>
-      <td>[% field_types.${field.type} FILTER html %]</td>
-
-      <th><label for="obsolete">已廢棄：</label></th>
-      <td><input type="checkbox" id="obsolete" name="obsolete" value="1"
-                 [%- " checked" IF field.obsolete %]></td>
-    </tr>
-    <tr>
-      <th class="narrow_label"><label for="sortkey">排序鍵：</label></th>
-      <td>
-        <input type="text" id="sortkey" name="sortkey" size="6" maxlength="6"
-               value="[% field.sortkey FILTER html %]">
-      </td>
-      <th align="right"><label for="is_mandatory">是否強制：</label></th>
-      <td><input type="checkbox" id="is_mandatory" name="is_mandatory" value="1"
-                 [%- ' checked="checked"' IF field.is_mandatory %]></td>
-    </tr>
-    <tr>
-      <th class="narrow_label">較長的描述：</th>
-      <td>
-        [% INCLUDE global/textarea.html.tmpl
-         name           = 'long_desc'
-         id             = 'long_desc'
-         minrows        = 3
-         maxrows        = 5
-         cols           = 46
-         defaultcontent = field.long_desc
-       %]
-      </td>
-      <th>
-        <label for="visibility_field_id">當符合下列條件時，欄位才會出現：</label>
-      </th>
-      <td>
-        <select name="visibility_field_id" id="visibility_field_id"
-                onchange="onChangeVisibilityField()">
-          <option></option>
-          [% FOREACH sel_field = Bugzilla.fields({ is_select => 1 }) %]
-            [% NEXT IF sel_field.id == field.id %]
-            <option value="[% sel_field.id FILTER html %]"
-             [% ' selected="selected"'
-                IF sel_field.id == field.visibility_field.id %]>
-              [% sel_field.description FILTER html %]
-              ([% sel_field.name FILTER html %])
-            </option>
-          [% END %]
-        </select>
-        <label for="visibility_values">
-          <strong>設定為以下其中任何一個：</strong>
-        </label>
-        <select multiple="multiple" size="5" name="visibility_values"
-                id="visibility_values" class="field_value">
-          [% FOREACH value = field.visibility_field.legal_values %]
-            <option value="[% value.id FILTER html %]"
-              [% " selected" IF field.visibility_values.contains(value) %]>
-              [% IF field.visibility_field.name == 'component' %]
-                [% display_value('product', value.product.name) FILTER html %]:
-              [% END %]
-              [%+ display_value(field.visibility_field.name, value.name) FILTER html %]
-            </option>
-          [% END %]
-        </select>
-      </td>
-    </tr>
-    [% IF field.type == constants.FIELD_TYPE_BUG_ID %]
-      <th class="narrow_label">
-        <label for="reverse_desc">反向關係描述：</label>
-      </th>
-      <td>
-        <input type="text" id="reverse_desc" name="reverse_desc" size="40"
-               value="[% field.reverse_desc FILTER html %]">
-        <br/>
-        使用此標籤可列出因
-        [%+ field_types.${constants.FIELD_TYPE_BUG_ID} FILTER html %]
-        此欄位，而連至一個 [% terms.bug %] 的 [% terms.bugs %] 清單。
-        例如，描述是「此 [% terms.bug %] 和 ... 重複」時，
-        反向關係就會是「和此 [% terms.bug %] 重複的 [% terms.bugs %] 」。
-        如果要停用此欄位的清單，請留白。
-      </td>
-    [% END %]
-    [% IF field.is_select %]
-      <tr>
-        <th>&nbsp;</th>
-        <td>
-          <a href="editvalues.cgi?field=[% field.name FILTER uri %]">編輯此自訂欄位的有效數值</a>。
-        </td>
-
-        <th>
-          <label for="value_field_id">
-            控制欄位值是否在此欄位中出現的欄位：
-          </label>
-        </th>
-
-        <td>
-          <select name="value_field_id" id="value_field_id">
-            <option></option>
-            [% FOREACH sel_field = Bugzilla.fields({ is_select => 1 }) %]
-              [% NEXT IF sel_field.id == field.id %]
-              <option value="[% sel_field.id FILTER html %]"
-               [% ' selected="selected"'
-                  IF sel_field.id == field.value_field.id %]>
-                [% sel_field.description FILTER html %]
-                ([% sel_field.name FILTER html %])
-              </option>
-            [% END %]
-          </select>
-        </td>
-      </tr>
-    [% END %]
-  </table>
-  <br>
   <input type="hidden" name="action" value="update">
   <input type="hidden" name="name" value="[% field.name FILTER html %]">
   <input type="hidden" name="token" value="[% token FILTER html %]">

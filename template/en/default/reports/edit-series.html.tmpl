@@ -13,15 +13,9 @@
   [%+ default.name FILTER html %]
 [% END %]
 
-[% PROCESS global/header.html.tmpl %]
-
-[% IF changes_saved %]
-  <p>
-    <font color="red">
-      Series updated.
-    </font>
-  </p>
-[% END %]
+[% PROCESS global/header.html.tmpl
+  style_urls = ['skins/standard/buglist.css']
+%]
 
 <form method="get" action="chart.cgi" name="chartform">
   
@@ -42,7 +36,7 @@
     <a href="mailto:[% default.creator.email FILTER html %]">
     [% default.creator.email FILTER html %]</a>
   [% ELSE %]
-    (automatically created by [% terms.Bugzilla %])
+    (automatically created by Bugzilla)
   [% END %]
 </p>
 

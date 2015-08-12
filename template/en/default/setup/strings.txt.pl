@@ -83,17 +83,19 @@ the documentation of Bugzilla::Extension for details.
 END
     feature_auth_ldap         => 'LDAP Authentication',
     feature_auth_radius       => 'RADIUS Authentication',
+    feature_documentation     => 'Documentation',
     feature_graphical_reports => 'Graphical Reports',
     feature_html_desc         => 'More HTML in Product/Group Descriptions',
     feature_inbound_email     => 'Inbound Email',
     feature_jobqueue          => 'Mail Queueing',
     feature_jsonrpc           => 'JSON-RPC Interface',
-    feature_jsonrpc_faster    => 'Make JSON-RPC Faster',
     feature_new_charts        => 'New Charts',
     feature_old_charts        => 'Old Charts',
+    feature_memcached         => 'Memcached Support',
     feature_mod_perl          => 'mod_perl',
     feature_moving            => 'Move Bugs Between Installations',
     feature_patch_viewer      => 'Patch Viewer',
+    feature_rest              => 'REST Interface',
     feature_smtp_auth         => 'SMTP Authentication',
     feature_smtp_ssl          => 'SSL Support for SMTP',
     feature_updates           => 'Automatic Update Notifications',
@@ -153,10 +155,6 @@ they don't exist.
 
 If this is set to 0, checksetup.pl will not create .htaccess files.
 END
-    localconfig_cvsbin => <<'END',
-If you want to use the CVS integration of the Patch Viewer, please specify
-the full path to the "cvs" executable here.
-END
     localconfig_db_check => <<'END',
 Should checksetup.pl try to verify that your database setup is correct?
 With some combinations of database servers/Perl modules/moonphase this
@@ -195,6 +193,22 @@ blank, then MySQL's compiled-in default will be used. You probably
 want that.
 END
     localconfig_db_user => "Who we connect to the database as.",
+    localconfig_db_mysql_ssl_ca_file => <<'END',
+Path to a PEM file with a list of trusted SSL CA certificates.
+The file must be readable by web server user.
+END
+    localconfig_db_mysql_ssl_ca_path => <<'END',
+Path to a directory containing trusted SSL CA certificates in PEM format.
+Directory and files inside must be readable by the web server user.
+END
+    localconfig_db_mysql_ssl_client_cert => <<'END',
+Full path to the client SSL certificate in PEM format we will present to the DB server.
+The file must be readable by web server user.
+END
+    localconfig_db_mysql_ssl_client_key => <<'END',
+Full path to the private key corresponding to the client SSL certificate.
+The file must not be password-protected and must be readable by web server user.
+END
     localconfig_diffpath => <<'END',
 For the "Difference Between Two Patches" feature to work, we need to know
 what directory the "diff" bin is in. (You only need to set this if you
@@ -272,12 +286,15 @@ EOT
 ***********************************************************************
 * APACHE MODULES                                                      *
 ***********************************************************************
-* Normally, when Bugzilla is upgraded, all Bugzilla users have to     *
-* clear their browser cache or Bugzilla will break. If you enable     *
-* certain modules in your Apache configuration (usually called        *
-* httpd.conf or apache2.conf) then your users will not have to clear  *
-* their caches when you upgrade Bugzilla. The modules you need to     *
-* enable are:                                                         *
+* Some Apache modules allow to extend Bugzilla functionalities.       *
+* These modules can be enabled in the Apache configuration file       *
+* (usually called httpd.conf or apache2.conf).                        *
+* - mod_headers, mod_env and mod_expires permit to automatically      *
+*   refresh the browser cache of your users when upgrading Bugzilla.  *
+* - mod_rewrite permits to write shorter URLs used by the REST API.   *
+* - mod_version permits to write rules in .htaccess specific to       *
+*   Apache 2.2 or 2.4.                                                *
+* The modules you need to enable are:                                 *
 *                                                                     *
 END
     modules_message_db => <<EOT,
@@ -342,8 +359,7 @@ WARNING: We are about to convert your table storage format to UTF-8. This
          recommend that you stop checksetup.pl NOW and run contrib/recode.pl.
 END
     no_checksetup_from_cgi => <<END,
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-          "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html>
 <html>
   <head>
     <title>checksetup.pl cannot run from a web browser</title>
@@ -354,8 +370,8 @@ END
     <p>
       You <b>must not</b> execute this script from your web browser.
       To install or upgrade Bugzilla, run this script from
-      the command-line (e.g. <tt>bash</tt> or <tt>ssh</tt> on Linux
-      or <tt>cmd.exe</tt> on Windows), and follow instructions given there.
+      the command-line (e.g. <kbd>bash</kbd> or <kbd>ssh</kbd> on Linux
+      or <kbd>cmd.exe</kbd> on Windows), and follow instructions given there.
     </p>
 
     <p>
@@ -371,7 +387,7 @@ OPTIONAL NOTE: If you want to be able to use the 'difference between two
 patches' feature of Bugzilla (which requires the PatchReader Perl module
 as well), you should install patchutils from:
 
-    http://cyberelk.net/tim/patchutils/
+    http://cyberelk.net/tim/software/patchutils/
 END
     template_precompile   => "Precompiling templates...",
     template_removal_failed => <<END,

@@ -8,39 +8,49 @@
 
 [% PROCESS global/header.html.tmpl
   title = "選擇分類"
+  style_urls = ['skins/standard/admin.css']
 %]
 
-<table border=1 cellpadding=4 cellspacing=0>
-  <tr bgcolor="#6666ff">
-    <th align="left">編輯分類…</th>
-    <th align="left">描述</th>
-    <th align="left">排序鍵</th>
-    <th align="left">產品</th>
-    <th align="left">動作</th>
+<table id="admin_table">
+  <tr class="column_header">
+    <th>編輯分類…</th>
+    <th>描述</th>
+    <th>排序鍵</th>
+    <th>產品</th>
+    <th>動作</th>
   </tr>
 
   [% FOREACH cl = classifications %]
     <tr>
-      <td valign="top"><a href="editclassifications.cgi?action=edit&amp;classification=[% cl.name FILTER uri %]"><b>[% cl.name FILTER html %]</b></a></td>
-      <td valign="top">
+      <td>
+        <a href="editclassifications.cgi?action=edit&amp;classification=[% cl.name FILTER uri %]">
+          <b>[% cl.name FILTER html %]</b>
+        </a>
+      </td>
+      <td>
       [% IF cl.description %]
         [% cl.description FILTER html_light %]
       [% ELSE %]
-        <font color="red">無</font>
+        <span class="warning">無</span>
       [% END %]
       </td>
-      <td valign="top">[% cl.sortkey FILTER html %]</td>
+      <td>[% cl.sortkey FILTER html %]</td>
       [% IF (cl.id == 1) %]
-        <td valign="top">[% cl.product_count FILTER html %]</td>
+        <td>[% cl.product_count FILTER html %]</td>
       [% ELSE %]
-        <td valign="top"><a href="editclassifications.cgi?action=reclassify&amp;classification=[% cl.name FILTER uri %]">重新分類 ([% cl.product_count FILTER html %])</a></td>
+        <td>
+          <a href="editclassifications.cgi?action=reclassify&amp;classification=[% cl.name FILTER uri %]">
+            重新分類&nbsp;([% cl.product_count FILTER html %])</a>
+        </td>
       [% END %]
 
       [%# don't allow user to delete the default id. %]
       [% IF (cl.id == 1) %]
-        <td valign="top">&nbsp;</td>
+        <td></td>
       [% ELSE %]
-        <td valign="top"><a href="editclassifications.cgi?action=del&amp;classification=[% cl.name FILTER uri %]">刪除</a></td>
+        <td>
+          <a href="editclassifications.cgi?action=del&amp;classification=[% cl.name FILTER uri %]">刪除</a>
+        </td>
       [% END %]
     </tr>
   [% END %]

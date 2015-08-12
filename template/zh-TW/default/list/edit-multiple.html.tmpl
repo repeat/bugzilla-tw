@@ -10,6 +10,11 @@
 <input type="hidden" name="dontchange" value="[% dontchange FILTER html %]">
 <input type="hidden" name="token" value="[% token FILTER html %]">
 
+<input type="button" id="uncheck_all" value="Uncheck All"
+       class="bz_default_hidden" onclick="SetCheckboxes(false);">
+<input type="button" id="check_all" value="Check All"
+       class="bz_default_hidden" onclick="SetCheckboxes(true);">
+
 <script type="text/javascript">
   function SetCheckboxes(value) {
       var elements = document.forms.changeform.getElementsByTagName('input'),
@@ -22,28 +27,35 @@
           }
       }
   }
-  document.write(' <input type="button" name="uncheck_all" value="全不選" onclick="SetCheckboxes(false);">');
-  document.write(' <input type="button" name="check_all" value=" 全選" onclick="SetCheckboxes(true);">');
+  YAHOO.util.Dom.removeClass("check_all", "bz_default_hidden");
+  YAHOO.util.Dom.removeClass("uncheck_all", "bz_default_hidden");
 </script>
 
 <hr>
 
-<p style="font-size:smaller">
- 一次變更多個 [% terms.bugs %] ：</p>
-<ol style="font-size:smaller">
-  <li>在上方勾選你想變更的 [% terms.bugs %] 。</li>
-  <li>在下方的欄位做出適當的變更。如果你需要解釋的話，請在意見欄留下解釋。</li>
-  <li>點選<em>送出</em>鈕。</li>
-</ol>
+<div class="bz_info">
+  一次變更多個 [% terms.bugs %] ：
+  <ol>
+    <li>在上方勾選你想變更的 [% terms.bugs %] 。</li>
+    <li>在下方的欄位做出適當的變更。如果你需要解釋的話，請在意見欄留下解釋。</li>
+    <li>點選<em>送出</em>鈕。</li>
+  </ol>
+</div>
+
+[% IF excluded_values %]
+  <p class="extra_info">只有顯示以上 [% terms.bugs %] 所有產品可用的數值。</p>
+[% END %]
 
 <table id="form">
   <tr>
 
     <th><label for="product">產品：</label></th>
     <td>
-      [% PROCESS selectmenu menuname = "product"
-                            menuitems = products
-                            property = "name" %]
+      [% INCLUDE "global/product-select.html.tmpl"
+         id         => "product"
+         name       => "product"
+         dontchange => dontchange
+       %]
     </td>
 
     <th><label for="version">版本：</label></th>
@@ -115,7 +127,7 @@
       <th><label for="target_milestone">目標里程碑：</label></th>
       <td>
         [% PROCESS selectmenu menuname = "target_milestone"
-                              menuitems = targetmilestones %]
+                              menuitems = milestones %]
       </td>
     [% END %]
   </tr>
@@ -258,11 +270,11 @@
 
   [% IF Param('usestatuswhiteboard') %]
     <tr>
-      <td align="right">
-        <b>狀態白板：</b>
-      </td>
+      <th>
+        <label for="status_whiteboard">狀態白板：</label>
+      </th>
       <td colspan="7">
-        <input name="status_whiteboard"
+        <input name="status_whiteboard" id="status_whiteboard"
                value="[% dontchange FILTER html %]" size="60">
       </td>
     </tr>
@@ -287,7 +299,7 @@
 [% IF user.is_insider %]
   <input type="checkbox" name="comment_is_private" value="1"
          id="newcommentprivacy"
-         onClick="updateCommentTagControl(this, 'comment')"/>
+         onClick="updateCommentTagControl(this, 'comment')">
    <label for="newcommentprivacy">
      將意見設定為不公開（僅
      <strong>[% Param('insidergroup') FILTER html %]</strong>
@@ -308,6 +320,13 @@
   </script>
 [% END %]
 
+[% IF flag_types %]
+<b><label for="flags">Flags:</label></b><br>
+[% PROCESS "flag/list.html.tmpl"
+           edit_multiple_bugs = 1
+           flag_no_header = 1 %]
+[% END %]
+
 [% Hook.process('before_groups') %]
 
 [% IF groups.size > 0 %]
@@ -322,16 +341,16 @@
   </script>
 
   <b>群組：</b><br>
-  <table border="1">
+  <table id="groups_edit_multiple">
     <tr>
-      <th>將<br>[% terms.bugs %]自<br>此群組<br>刪除</th>
-      <th>新增<br>[% terms.bugs %]<br>到<br>此群組</th>
-      <th>群組名稱：</th>
+      <th class="narrow_column"將 [% terms.bugs %]自此群組刪除</th>
+      <th class="narrow_column"新增 [% terms.bugs %] 到此群組</th>
+      <th>群組名稱</th>
     </tr>
 
     [% FOREACH group = groups %]
     <tr>
-      <td align="center">
+      <td class="center">
         <input type="checkbox" name="defined_groups"
                id="defined_group_[% group.id %]"
                value="[% group.name FILTER html %]"
@@ -360,7 +379,7 @@
   </table>
 
   [% IF foundinactive %]
-    <p style="font-size:smaller">（注意：不允許將 [% terms.Bugs %]
+    <p class="bz_info">（注意：不允許將 [% terms.Bugs %]
     新增到[% FILTER inactive %]已不活動的群組[% END %]中，僅能刪除。）</p>
   [% END %]
 

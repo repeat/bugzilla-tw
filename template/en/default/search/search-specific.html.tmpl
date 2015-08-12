@@ -8,14 +8,15 @@
 
 [% PROCESS global/header.html.tmpl 
   title = "Simple Search"
-  style_urls = [ "skins/standard/search_form.css" ]
+  style_urls = ['skins/standard/buglist.css']
+  doc_section = "using/finding.html"
 %]
 
 [% WRAPPER search/tabs.html.tmpl %]
 
 <p>
 Find a specific [% terms.bug %] by entering words that describe it.  
-[% terms.Bugzilla %] will search [% terms.bug %] descriptions and comments
+Bugzilla will search [% terms.bug %] descriptions and comments
 for those words and return a list of matching [% terms.bugs %] sorted
 by relevance.
 </p>
@@ -36,7 +37,7 @@ for "crash secure SSL flash".
   }
 </script>
 
-<table summary="Search fields" class="bz_simple_search_form">
+<table class="bz_simple_search_form">
   <tr>
     <th>
       <label for="bug_status">[% field_descs.bug_status FILTER html %]:</label>
@@ -60,30 +61,11 @@ for "crash secure SSL flash".
       <label for="product">[% field_descs.product FILTER html %]:</label>
     </th>
     <td>
-      <select name="product" id="product">
-        <option value="">All</option>
-        [% IF Param('useclassification') %]
-          [% FOREACH c = classification %]
-            <optgroup label="[% c.name FILTER html %]">
-            [% FOREACH p = user.get_selectable_products(c.id) %]
-              [% IF p.components.size %]
-                <option value="[% p.name FILTER html %]"
-                  [% " selected" IF default.product.contains(p.name) %]>
-                  [% p.name FILTER html %]
-                </option>
-              [% END %]
-            [% END %]
-            </optgroup>
-          [% END %]
-        [% ELSE %]
-          [% FOREACH p = product %]
-            <option value="[% p.name FILTER html %]"
-              [% " selected" IF default.product.contains(p.name) %]>
-              [% p.name FILTER html %]
-            </option>
-          [% END %]
-        [% END %]
-      </select>
+      [% INCLUDE "global/product-select.html.tmpl"
+         id   => "product"
+         name => "product"
+         add  => "All"
+      %]
     </td>
   </tr>
   <tr>
@@ -91,28 +73,14 @@ for "crash secure SSL flash".
       <label for="content">Words:</label>
     </th>
     <td>
-      <input name="content" size="40" id="content"
-             value="[% default.content.0 FILTER html %]">
-      <script type="text/javascript"> <!--
-          document.forms['queryform'].content.focus(); 
-      // -->
-      </script>
+      <input name="content" size="40" id="content" autofocus
+             value="[% default.content.0 FILTER html %]"
+             [%- " required" UNLESS Param('search_allow_no_criteria') %]>
     </td>
   </tr>
   <tr>
     <td></td>
-    <td>
-    
-      [% IF Param('search_allow_no_criteria') %]
-        <input type="submit" id="search" value="Search">
-      [% ELSE %]
-        <input type="submit" id="search" value="Search"
-             onclick="if (this.form.content.value == '')
-                      {alert('The Words field cannot be empty. You have to ' +
-                             'enter at least one word in your search criteria.');
-                       return false;} return true;">
-      [% END %]
-    </td>
+    <td><input type="submit" id="search" value="Search"></td>
   </tr>
 </table>
 </form>

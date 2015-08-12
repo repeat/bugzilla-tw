@@ -12,13 +12,7 @@
 %]
 
 [% param_descs = {
-  maintainer => "安裝 $terms.Bugzilla 機器的維護者的電子郵件地址。",
-
-  docs_urlbase =>
-    "所有 $terms.Bugzilla 說明文件的網址。"
-    _ "可以是絕對路徑，也可以是相對於 <tt>urlbase</tt> 參數的相對路徑。"
-    _ "若設為空白，則不允許連結說明文件。"
-    _ " '%lang%' 會被取代為使用者喜好的語言（如果有的話）。",
+  maintainer => "安裝 Bugzilla 機器的維護者的電子郵件地址。",
 
   utf8 =>
     "在 $terms.Bugzilla 裡所有的文字均使用 UTF-8 (Unicode) 編碼。"
@@ -29,21 +23,21 @@
     _ "<p>注意：若你將此參數從「關」設為「開」，則設定完後必須立刻執行 <kbd>checksetup.pl</kbd> 。</p>",
 
   shutdownhtml =>
-    "如果此欄位並非空白，那麼將會完全停用 $terms.Bugzilla ，"
+    "如果此欄位並非空白，那麼將會完全停用 Bugzilla ，"
     _ "並在每一個 $terms.Bugzilla 頁面顯示以下的訊息。",
 
   announcehtml =>
-    "如果此欄位並非空白，那麼 $terms.Bugzilla 將在每個 HTML"
+    "如果此欄位並非空白，那麼 Bugzilla 將在每個 HTML"
     _ " 頁面上方顯示此欄位內容。在此欄位中的 HTML 將不會自動斷行，"
-    _ "因此如需斷行，可以將需斷行的文字放在 <tt>&lt;div&gt;</tt> 中。"
+    _ "因此如需斷行，可以將需斷行的文字放在 <code>&lt;div&gt;</code> 中。"
     _ "使用 <em>id=message</em> 可以得到紅框包圍的綠色文字，"
     _ "而 <em>class=bz_private</em> 則是紅色背景的暗紅色字。"
-    _ "所有在 <tt>skins/standard/global.css</tt> 或"
-    _ " <tt>skins/custom/global.css</tt> 中定義的樣式將會生效。"
-    _ "若要將文字置中，請使用 <em>style=\"text-align: center;\"</em> 。",
+    _ "所有在 <code>skins/standard/global.css</code> 或"
+    _ " <code>skins/custom/global.css</code> 中定義的樣式將會生效。"
+    _ "若要將文字置中，請使用 <em>class=\"center\"</em> 。",
 
   upgrade_notification =>
-    "<p>$terms.Bugzilla 可以通知你是否有新釋出的版本可用。"
+    "<p>Bugzilla 可以通知你是否有新釋出的版本可用。"
     _ "此通知將會顯示於 $terms.Bugzilla 的首頁，僅供管理者參考。</p>"
     _ "<ul><li>development_snapshot ：在 trunk 有最新釋出時通知，也就是"
     _ " development snapshot 。</li>"
@@ -52,6 +46,6 @@
     _ "<li>stable_branch_release ：根據你目前安裝的 branch 版本通知相關更新。"
     _ "如果你安裝的是 release candidate (RC) 版本，在有新的 RC 時也會通知你。</li>"
     _ "<li>停用 (disabled) ：不會通知有新版本，也不會連線到遠端伺服器。</li></ul>"
-    _ "<p>注意：如果你的 $terms.Bugzilla 伺服器需要代理伺服器才能連線至網路，"
-    _ "你也需要在「進階」選項裡設定 <tt>proxy_url</tt> 此參數。</p>",
+    _ "<p>注意：如果你的 Bugzilla 伺服器需要代理伺服器才能連線至網路，"
+    _ "你也需要在「進階」選項裡設定 <var>proxy_url</var> 此參數。</p>",
 } %]

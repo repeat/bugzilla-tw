@@ -8,13 +8,14 @@
 
 [% PROCESS global/header.html.tmpl
   title = "簡單搜尋"
-  style_urls = [ "skins/standard/search_form.css" ]
+  style_urls = ['skins/standard/buglist.css']
+  doc_section = "using/finding.html"
 %]
 
 [% WRAPPER search/tabs.html.tmpl %]
 
 <p>
-輸入字串來尋找一個特定的 [% terms.bug %] 。 [% terms.Bugzilla %] 將會以那些字串來搜尋 [% terms.bug %]
+輸入字串來尋找一個特定的 [% terms.bug %] 。 Bugzilla  將會以那些字串來搜尋 [% terms.bug %]
 的描述和意見，並以相關度的高低列出符合的 [% terms.bugs %] 。
 </p>
 
@@ -33,7 +34,7 @@
   }
 </script>
 
-<table summary="Search fields" class="bz_simple_search_form">
+<table class="bz_simple_search_form">
   <tr>
     <th>
       <label for="bug_status">[% field_descs.bug_status FILTER html %]：</label>
@@ -57,30 +58,11 @@
       <label for="product">[% field_descs.product FILTER html %]：</label>
     </th>
     <td>
-      <select name="product" id="product">
-        <option value="">全部</option>
-        [% IF Param('useclassification') %]
-          [% FOREACH c = classification %]
-            <optgroup label="[% c.name FILTER html %]">
-            [% FOREACH p = user.get_selectable_products(c.id) %]
-              [% IF p.components.size %]
-                <option value="[% p.name FILTER html %]"
-                  [% " selected" IF default.product.contains(p.name) %]>
-                  [% p.name FILTER html %]
-                </option>
-              [% END %]
-            [% END %]
-            </optgroup>
-          [% END %]
-        [% ELSE %]
-          [% FOREACH p = product %]
-            <option value="[% p.name FILTER html %]"
-              [% " selected" IF default.product.contains(p.name) %]>
-              [% p.name FILTER html %]
-            </option>
-          [% END %]
-        [% END %]
-      </select>
+      [% INCLUDE "global/product-select.html.tmpl"
+         id   => "product"
+         name => "product"
+         add  => "全部"
+      %]
     </td>
   </tr>
   <tr>
@@ -88,27 +70,14 @@
       <label for="content">字串：</label>
     </th>
     <td>
-      <input name="content" size="40" id="content"
-             value="[% default.content.0 FILTER html %]">
-      <script type="text/javascript"> <!--
-          document.forms['queryform'].content.focus();
-      // -->
-      </script>
+      <input name="content" size="40" id="content" autofocus
+             value="[% default.content.0 FILTER html %]"
+             [%- " required" UNLESS Param('search_allow_no_criteria') %]>
     </td>
   </tr>
   <tr>
     <td></td>
-    <td>
-
-      [% IF Param('search_allow_no_criteria') %]
-        <input type="submit" id="search" value="搜尋">
-      [% ELSE %]
-        <input type="submit" id="search" value="搜尋"
-             onclick="if (this.form.content.value == '')
-                      {alert('「字串」欄位不得為空白。你必須至少在搜尋欄內輸入一個字。');
-                       return false;} return true;">
-      [% END %]
-    </td>
+    <td><input type="submit" id="search" value="搜尋"></td>
   </tr>
 </table>
 </form>

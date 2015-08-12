@@ -8,7 +8,7 @@
 
 [%
    title = "核心參數"
-   desc = "安裝 $terms.Bugzilla 所必須設定的核心參數"
+   desc = "安裝 Bugzilla 所必須設定的核心參數"
 %]
 
 [% param_descs = {
@@ -17,15 +17,15 @@
   sslbase => "使用 HTTPS (SSL) 連線時 $terms.Bugzilla 網址的網域名稱。",
 
   ssl_redirect =>
-    "當此參數啟用時， $terms.Bugzilla 會根據 <tt>sslbase</tt> 參數的設定，將所有的"
+    "當此參數啟用時， Bugzilla 會根據 <var>sslbase</var> 參數的設定，將所有的"
     _ " HTTP 頁面導到 HTTPS 的頁面，以確保每一頁均透過 SSL 存取。另外，"
-    _ " $terms.Bugzilla 也會在把電子郵件中的連結 <tt>sslbase</tt> 參數的設定顯示，"
-    _ "而非原本的 <tt>urlbase</tt> 參數。",
+    _ " $terms.Bugzilla 也會在把電子郵件中的連結 <var>sslbase</var> 參數的設定顯示，"
+    _ "而非原本的 <var>urlbase</var> 參數。",
 
   cookiepath =>
-    "$terms.Bugzilla 的 cookie 路徑。通常設定為網址的基準。"
-    _ "以斜線 (/) 開頭。例如， $terms.Bugzilla 架在"
+    "Bugzilla 的 cookie 路徑。通常設定為網址的基準。"
+    _ "以斜線 (/) 開頭。例如， Bugzilla 架在"
     _ " 'http://www.somedomain.com/bugzilla/' 時，則將此值設定為"
     _ " '/bugzilla/' 。設定為 / 時，將允許此網頁伺服器的所有站台存取"
-    _ " $terms.Bugzilla 的 cookie 。",
+    _ " Bugzilla 的 cookie 。",
 } %]

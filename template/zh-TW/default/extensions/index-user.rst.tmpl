@@ -1,0 +1,22 @@
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  #
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
+  #%]
+
+[%# INTERFACE:
+  # name: string; the name of the extension.
+  #%]
+
+[% USE String('#') %]
+[% name %]
+[%+ String.repeat(name.length) %]
+
+這是名為 [% name %] 的延伸套件的範例使用者說明文件。
+就像所有 Bugzilla 文件一樣，它是以 reST 格式 
+`reStructured Text (reST) format <http://sphinx-doc.org/latest/rest.html>`_
+撰寫的，並且由 `Sphinx <http://sphinx-doc.org/>`_ 編譯。
+
+如果你自己使用 :file:`makedocs.pl` 建立文件的話，此檔案將會合併進使用者指引 (User Guide) 的 Installed Extensions 此章節中。

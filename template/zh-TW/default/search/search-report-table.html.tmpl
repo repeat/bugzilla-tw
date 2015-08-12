@@ -21,8 +21,8 @@ var queryform = "reportform"
   yui = [ 'autocomplete', 'calendar' ]
   javascript = js_data
   javascript_urls = [ "js/util.js", "js/TUI.js", "js/field.js" ]
-  style_urls = [ "skins/standard/search_form.css" ]
-  doc_section = "reporting.html#reports"
+  style_urls = ['skins/standard/buglist.css']
+  doc_section = "using/reports-and-charts.html#reports"
 %]
 
 [% PROCESS "search/search-report-select.html.tmpl" %]
@@ -34,36 +34,28 @@ var queryform = "reportform"
 [% button_name = "產生報告" %]
 
 <form method="get" action="report.cgi" name="reportform" id="reportform">
+  <table id="tabular_reports_menu">
+    <tr>
+      <th></th>
+      <th id="reports_menu_horizontal_axis">
+        X 軸：<br>
+        [% PROCESS select name = 'x_axis_field' %]
+      </th>
+    </tr>
 
-<table align="center">
-  <tr>
-    <td>
-    </td>
-    <td align="center">
-      <b>X軸：</b>
-      [% PROCESS select name = 'x_axis_field' %]
-    </td>
-  </tr>
+    <tr>
+      <th id="reports_menu_vertical_axis">
+        Y 軸：<br>
+        [% PROCESS select name = 'y_axis_field' %]
+      </th>
+      <th id="reports_menu_multiple_tables">
+        顯示多個表格：<br>
+        [% PROCESS select name = 'z_axis_field' %]
+      </th>
+    </tr>
+  </table>
 
-  <tr>
-    <td valign="middle" align="center">
-      <b>Y軸：</b><br>
-      [% PROCESS select name = 'y_axis_field' %]
-    </td>
-    <td width="150" height="150">
-      <table border="1" width="100%">
-        <tr>
-          <td align="center" valign="middle" height="150">
-            <b>顯示多個表格：</b><br>
-            [% PROCESS select name = 'z_axis_field' %]
-          </td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-</table>
-
-<hr>
+  <hr>
 
   [% PROCESS search/form.html.tmpl %]
 

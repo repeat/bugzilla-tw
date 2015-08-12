@@ -15,22 +15,17 @@
     [% END %]
     新增 [% type.target_type == "bug" ? terms.Bugs : "附件" %] 的旗標類型
   [% END %]
-  [% doc_section = "flags-overview.html#flags-create" %]
 [% ELSE %]
   [% title = BLOCK %]編輯旗標類型 [% type.name FILTER html %][% END %]
-  [% doc_section = "flags-overview.html#flags-edit" %]
 [% END %]
 
 [% PROCESS global/header.html.tmpl
   title = title
-  style = "
-    table#form th { text-align: right; vertical-align: baseline; white-space: nowrap; }
-    table#form td { text-align: left; vertical-align: baseline; }
-  "
+  style_urls = ['skins/standard/admin.css']
   onload="var f = document.forms['flagtype_properties'];
           selectProduct(f.product, f.component, null, null, '__任何__');"
   javascript_urls=["js/productform.js"]
-  doc_section = doc_section
+  doc_section = "administering/flags.html"
 %]
 
 <form id="flagtype_properties" method="post" action="editflagtypes.cgi">
@@ -49,15 +44,15 @@
 
   [%# Add a hidden button at the top of the form so that the user pressing "return"
     # really submit the form, as expected. %]
-  <input type="submit" id="commit" value="送出" style="display: none;">
+  <input type="submit" id="commit" value="送出" class="bz_default_hidden">
 
-  <table id="form" cellspacing="0" cellpadding="4" border="0">
+  <table id="admin_table_edit">
     <tr>
       <th>名稱：</th>
       <td>
         能辨識此旗標類型的簡短名稱。<br>
         <input type="text" name="name" value="[% type.name FILTER html %]" size="50"
-               maxlength="50" [%- ' disabled="disabled"' UNLESS can_fully_edit %]>
+               maxlength="50" [%- ' disabled="disabled"' UNLESS can_fully_edit %] required>
       </td>
     </tr>
 
@@ -71,6 +66,7 @@
           cols           = 80
           defaultcontent = type.description
           disabled       = !can_fully_edit
+          mandatory      = 1
         %]
       </td>
     </tr>
@@ -90,14 +86,15 @@
         [% END %]
         <table>
           <tr>
-            <td style="vertical-align: top;">
-              <b>產品／子產品：</b><br>
-              <select name="product" onchange="selectProduct(this, this.form.component, null, null, '__任何__');">
-                <option value="">__任何__</option>
-                [% FOREACH prod = products %]
-                  <option value="[% prod.name FILTER html %]">[% prod.name FILTER html %]</option>
-                [% END %]
-              </select><br>
+            <th class="top left">
+              產品／子產品：<br>
+              [% INCLUDE "global/product-select.html.tmpl"
+                id       => "product"
+                name     => "product"
+                add      => "__任何__"
+                onchange => "selectProduct(this, this.form.component, null, null, '__任何__');"
+                products => products
+              %]<br>
               <select name="component">
                 <option value="">__任何__</option>
                 [% FOREACH comp = components %]
@@ -108,18 +105,18 @@
                                    name="categoryAction-include" value="包括">
               <input type="submit" id="categoryAction-exclude"
                                    name="categoryAction-exclude" value="不包括">
-            </td>
-            <td style="vertical-align: top;">
-              <b>包括：</b><br>
+            </th>
+            <th class="top left">
+              包括：<br>
               [% PROCESS category_select name="inclusion_to_remove" categories = inclusions %]<br>
               <input type="submit" id="categoryAction-removeInclusion"
                      name="categoryAction-removeInclusion" value="刪除該項「包括」設定">
-            </td>
-            <td style="vertical-align: top;">
-              <b>不包括：</b><br>
+            </th>
+            <th class="top left">
+              不包括：<br>
               [% PROCESS category_select name="exclusion_to_remove" categories = exclusions %]<br>
                      name="categoryAction-removeExclusion" value="刪除該項「不包括」設定">
-            </td>
+            </th>
           </tr>
         </table>
       </td>
@@ -128,10 +125,10 @@
     <tr>
       <th>排序鍵：</th>
       <td>
-        輸入介於 1 和 [% constants.MAX_SMALLINT FILTER none %] 之間的數字。
+        輸入介於 0 和 [% constants.MAX_SMALLINT FILTER none %] 之間的數字。
         當以清單顯示給使用者時，將會以該方法排序。如果你想要以字母做排序，或不在乎排序，則無須填入。<br>
-        <input type="text" name="sortkey" value="[% type.sortkey || 1 FILTER html %]" size="5"
-               maxlength="5" [% ' disabled="disabled"' UNLESS can_fully_edit %]>
+        <input type="text" name="sortkey" value="[% type.sortkey || 0 FILTER html %]" size="5"
+               maxlength="5" [% ' disabled="disabled"' UNLESS can_fully_edit %] required>
       </td>
     </tr>
 

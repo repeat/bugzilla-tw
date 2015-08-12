@@ -8,38 +8,39 @@
 
 [% PROCESS global/header.html.tmpl
   title = "重新分類產品"
+  style_urls = ['skins/standard/admin.css']
 %]
 
 <form method=post action="editclassifications.cgi">
-  <table border=0 cellpadding=4 cellspacing=0>
+  <table id="admin_table_edit">
     <tr>
-      <th align="right">分類：</th>
-      <td valign="top" colspan=3>[% classification.name FILTER html %]</td>
-
-    </tr><tr>
-      <th align="right">描述：</th>
-      <td valign="top" colspan=3>
+      <th>分類：</th>
+      <td colspan=3>[% classification.name FILTER html %]</td>
+    </tr>
+    <tr>
+      <th>描述：</th>
+      <td colspan=3>
         [% IF classification.description %]
           [% classification.description FILTER html_light %]
         [% ELSE %]
-          <font color="red">沒有描述</font>
+          <span class="warning">沒有描述</span>
         [% END %]
       </td>
-
-    </tr><tr>
-      <th align="right">排序鍵：</th>
-      <td valign="top" colspan=3>[% classification.sortkey FILTER html %]</td>
-
-    </tr><tr>
-      <th align="right">產品：</th>
-      <td valign="top">其他分類</td>
+    </tr>
+    <tr>
+      <th>排序鍵：</th>
+      <td colspan=3>[% classification.sortkey FILTER html %]</td>
+    </tr>
+    <tr>
+      <th>產品：</th>
+      <td>其他分類</td>
       <td></td>
-      <td valign="top">此分類</td>
-
-    </tr><tr>
+      <td>此分類</td>
+    </tr>
+    <tr>
       <td></td>
-      <td valign="top">
-      <select name="prodlist" id="prodlist" multiple="multiple" size="20">
+      <td>
+        <select name="prodlist" id="prodlist" multiple="multiple" size="20">
         [% FOREACH class = classifications %]
           [% IF class.id != classification.id %]
             [% FOREACH product = class.products %]
@@ -49,21 +50,23 @@
             [% END %]
           [% END %]
         [% END %]
-      </select></td>
+        </select>
+      </td>
 
-      <td align="center">
+      <td>
         <input type=submit value="新增 &gt;&gt;" name="add_products"><br><br>
         <input type=submit value="&lt;&lt; 刪除" name="remove_products">
       </td>
 
-      <td valign="middle" rowspan=2>
+      <td rowspan=2 class="max-width">
         <select name="myprodlist" id="myprodlist" multiple="multiple" size="20">
           [% FOREACH product = classification.products %]
             <option value="[% product.name FILTER html %]">
               [% product.name FILTER html %]
             </option>
           [% END %]
-      </select></td>
+        </select>
+      </td>
     </tr>
   </table>
 

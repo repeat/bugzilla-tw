@@ -39,18 +39,18 @@
                         <dl>
                           <dt>DB</dt>
                           <dd>
-                            $terms.Bugzilla 內建的認證。這是最常選的選項。
+                            Bugzilla 內建的認證。這是最常選的選項。
                           </dd>
                           <dt>RADIUS</dt>
                           <dd>
                             使用 RADIUS 伺服器進行 RADIUS 認證。請參考
-                            $terms.Bugzilla 說明以瞭解更多資訊。使用此方法必須先設定<a
+                            Bugzilla 說明以瞭解更多資訊。使用此方法必須先設定<a
                             href=\"?section=radius\">額外的參數</a>。
                           </dd>
                           <dt>LDAP</dt>
                           <dd>
                             使用 LDAP 伺服器進行 LDAP 認證。請參考
-                            $terms.Bugzilla 說明以瞭解更多資訊。使用此方法必須先設定<a
+                            Bugzilla 說明以瞭解更多資訊。使用此方法必須先設定<a
                             href=\"?section=ldap\">額外的參數</a>。
                           </dd>
                         </dl>",
@@ -66,25 +66,30 @@
                       <li>
                         預設開 (defaulton)／預設關 (defaultoff) -
                         選定如上所述的預設值，但使用者可自行選擇是否讓
-                        $terms.Bugzilla 記住他的登入資訊。
+                        Bugzilla 記住登入資訊。
                       </li>
                     </ul>",
 
   requirelogin => "若設定此選項，則所有瀏覽系統任何頁面均需要登入。不允許匿名使用者使用。",
 
+  webservice_email_filter =>
+    "根據使用者是否登入，決定是否需要過濾 WebService API 傳回的電子郵件地址。" _
+    "此參數的運作方法和網頁 UI 目前過濾電子郵件地址的方法相同。" _
+    "如果 <var>requirelogin</var> 選項啟用，此參數將無任何效果，使用者必須登入才能使用 Bugzilla 。",
+
   emailregexp =>
     "定義有效的電子郵件地址的正規表達式。" _
     "預設值為包括所有有效的電子郵件地址。" _
-    "使用 <tt>.*</tt> 的話，將會接受所有遵守 " _
+    "使用 <kbd>.*</kbd> 的話，將會接受所有遵守 " _
     "<a href=\"http://tools.ietf.org/html/rfc2822#section-3.4.1\">RFC 2822</a> " _
     "規範的電子郵件地址。" _
-    "另一個常用的值是 <tt>^[^@]+$</tt> ，代表" _
+    "另一個常用的值是 <kbd>^[^@]+$</kbd> ，代表" _
     "「本地的使用者名稱，不允許 @ 字元。」",
 
-  emailregexpdesc => "以<u>英文</u>表示 <tt>emailregexp</tt> 參數所允許的電子郵件地址。",
+  emailregexpdesc => "此描述解釋 <var>emailregexp</var> 參數所允許的電子郵件地址。",
 
   emailsuffix => "這是用來加在使用者帳號後面，形成電子郵件地址的字串。" _
-                 "如果你將 <tt>emailregexp</tt> 參數設定為僅允許本地的使用者名稱，" _
+                 "如果你將 <var>emailregexp</var> 參數設定為僅允許本地的使用者名稱，" _
                  "但希望將郵件寄送到 username@my.local.hostname 時，這參數將十分有用。",
 
   createemailregexp => "此處定義使用者自行使用「新增帳號」功能所允許的電子郵件地址" _
@@ -103,8 +108,13 @@
       "<li>letters_numbers - " _
         "密碼必須包含至少一個大寫字母、一個小寫字母以及一個數字。</li>" _
       "<li>letters_numbers_specialchars - " _
-        "密碼必須包含至少一個字母、一個數字以及一個特殊字元。</li>" _
-    "</ul>"
+        "密碼必須包含至少一個英文字母、一個數字，和一個特殊符號。</li>" _
+    "</ul>",
 
+  password_check_on_login =>
+    "若設定此選項， $terms.Bugzilla 將會在使用者登入 $terms.Bugzilla " _
+    "網頁介面時，檢查使用者的密碼是否符合目前所要求的密碼複雜程度。" _
+    "如果使用者的密碼不符合所要求的密碼複雜程度時，使用者將無法登入，" _
+    "並且會收到必須重新設定密碼的訊息。"
   }
 %]

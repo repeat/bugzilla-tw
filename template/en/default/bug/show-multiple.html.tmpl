@@ -9,10 +9,12 @@
 [% PROCESS global/header.html.tmpl
   title = "Full Text $terms.Bug Listing"
   h1 = ""
-  style_urls = ["skins/standard/show_multiple.css",
-                "skins/standard/buglist.css"]
-  doc_section = "bug_page.html"
+  style_urls = ['skins/standard/buglist.css']
+  doc_section = "using/understanding.html"
 %]
+
+[% USE Bugzilla %]
+
 [% PROCESS bug/time.html.tmpl %]
 [% IF bugs.first %]
   [% ids = [] %]
@@ -46,16 +48,17 @@
   <h1>
     [% terms.Bug %] 
     <a href="show_bug.cgi?id=[% bug.bug_id FILTER html %]">[% bug.bug_id FILTER html %]</a>
-    [% IF bug.alias AND NOT bug.error %]
-      (<a href="show_bug.cgi?id=[% bug.alias FILTER uri %]">
-        [% bug.alias FILTER html %]</a>)
+    [% IF bug.alias.size AND NOT bug.error %] (
+      [%- FOREACH alias IN bug.alias %]<a href="show_bug.cgi?id=[% alias FILTER uri %]">
+        [% alias FILTER html %]</a>[% UNLESS loop.last %], [% END %]
+      [%- END %])
     [% END %]
   </h1>
 
   <table class="bugfields">
   [% IF bug.error %]
     <tr>
-      <td class="error">
+      <td class="warning">
         [% IF bug.error == "InvalidBugId" %]
           '[%+ bug.bug_id FILTER html %]' is not a valid [% terms.bug %] number
           nor a known [% terms.bug %] alias.
@@ -145,7 +148,7 @@
         <th>[% field_descs.bug_file_loc FILTER html %]:</th>
         <td colspan="3">
           [% IF is_safe_url(bug.bug_file_loc) %]
-            <a href="[% bug.bug_file_loc FILTER html %]">
+            <a href="[% bug.bug_file_loc FILTER html %]" rel="noreferrer">
                      [% bug.bug_file_loc FILTER html %]</a>
           [% ELSE %]
             [% bug.bug_file_loc FILTER html %]
@@ -170,7 +173,6 @@
       [% PROCESS row cell = "status_whiteboard" fullrow = 1 %]
     [% END %]
 
-    [% USE Bugzilla %]
     [% field_counter = 0 %]
     [% FOREACH field = Bugzilla.active_custom_fields %]
         [% field_counter = field_counter + 1 %]
@@ -233,6 +235,8 @@
           </table>
         </td>
       </tr>
+    [% END %]
+    [% IF Param("timetrackinggroup") && bug.deadline %]
       [% PROCESS row cell="deadline" %]
     [% END %]
 
@@ -259,7 +263,7 @@
                     [% ELSE %]
                       [% FOREACH flag = attachment.flags %]
                         [% flag.setter.nick FILTER html %]:
-                        [%+ flag.type.name FILTER html FILTER no_break %][% flag.status %]
+                        <span class="nowrap">[%+ flag.type.name FILTER html %][% flag.status %]</span>
                         [% IF flag.status == "?" && flag.requestee %]
                           ([% flag.requestee.nick FILTER html %])
                         [% END %][% ", " IF not loop.last() %]
@@ -348,7 +352,7 @@
           [% FOREACH type = bug.flag_types %]
             [% FOREACH flag = type.flags %]
                 [% flag.setter.nick FILTER html %]:
-                [%+ flag.type.name FILTER html FILTER no_break %][% flag.status %]
+                <span class="nowrap">[%+ flag.type.name FILTER html %][% flag.status %]</span>
                 [%+ IF flag.status == "?" && flag.requestee %]
                   ([% flag.requestee.nick FILTER html %])
                 [% END %]<br>

@@ -22,12 +22,13 @@
   #%]
 
 [% title = BLOCK %]
-  '[% otheruser.login FILTER html %]' 的帳號歷史
+  '[% otheruser.identity FILTER html %]' 的帳號歷史
 [% END %]
 
 
 [% PROCESS global/header.html.tmpl
   title = title
+  style_urls = ['skins/standard/admin.css']
 %]
 
 [% PROCESS admin/users/listselectvars.html.tmpl

@@ -17,12 +17,11 @@
   #           other people.
   #%]
 
-<table align="center">
-  <tr>
-    <td>
+    <div id="permissions">
       [% IF has_bits.size %]
-        你的帳號擁有以下的權限：
-        <table align="center">
+        <p>你的帳號擁有以下的權限：</p>
+
+        <table>
           [% FOREACH bit_description = has_bits %]
             <tr>
               <td>[% bit_description.name FILTER html %]</td>
@@ -34,42 +33,43 @@
         [% FOREACH privs = ["editcomponents", "canconfirm", "editbugs"] %]
           [% SET products = ${"local_$privs"} %]
           [% IF products && products.size %]
-            <br>
             <p>
               你也擁有下列產品的區域 '[% privs FILTER html %]' 權限：
             </p>
-            <p>
+            <ul>
               [% FOREACH product = products %]
-                [% product.name FILTER html %]<br>
+                <li>[% product.name FILTER html %]</li>
               [% END %]
-            </p>
+            </ul>
           [% END %]
         [% END %]
 
       [% ELSE %]
-        你的帳號沒有被設定任何權限。
+        <p>你的帳號沒有被設定任何權限。</p>
       [% END %]
 
       [% IF user.in_group('editusers') %]
-        <br>
-        你擁有 editusers 的權限。你可以開啟或關閉所有使用者的所有權限。
+        <p>
+          你擁有 editusers 的權限。你可以開啟或關閉所有使用者的所有權限。
+        </p>
       [% ELSIF set_bits.size %]
-        <br>
-        你可以開啟或關閉<a href="editusers.cgi">其他使用者</a>的下列權限：
-          <table align="center">
+        <p>
+          你可以開啟或關閉<a href="editusers.cgi">其他使用者</a>的下列權限：
+        </p>
+        
+        <table>
           [% FOREACH bit_description = set_bits %]
             <tr>
               <td>[% bit_description.name FILTER html %]</td>
               <td>[% bit_description.desc FILTER html_light %]</td>
             </tr>
           [% END %]
-          </table>
+        </table>
       [% END %]
 
       [% IF user.in_group('bz_sudoers') %]
-        <br>
-        你是 <b>bz_sudoers</b> 群組的成員，因此你可以<a href="relogin.cgi?action=prepare-sudo">以其他使用者身份進行操作</a>。
+        <p>
+          你是 <b>bz_sudoers</b> 群組的成員，因此你可以<a href="relogin.cgi?action=prepare-sudo">以其他使用者身份進行操作</a>。
+        </p>
       [% END %]
-    </td>
-  </tr>
-</table>
+    </div>

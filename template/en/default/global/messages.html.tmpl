@@ -26,14 +26,12 @@
     canceled.
 
   [% ELSIF message_tag == "account_updated" %]
-    [% IF changed_fields.size
-          + groups_added_to.size + groups_removed_from.size
-          + groups_granted_rights_to_bless.size + groups_denied_rights_to_bless.size %]
+    [% IF changes.size %]
       [% title = "User $loginold updated" %]
       The following changes have been made to the user account
       [%+ loginold FILTER html %]:
       <ul>
-        [% FOREACH field = changed_fields %]
+        [% FOREACH field = changes.keys %]
           <li>
             [% IF    field == 'login_name' %]
               The login is now [% otheruser.login FILTER html %].
@@ -53,33 +51,29 @@
               [% ELSE %]
                 [% terms.Bug %]mail has been enabled.
               [% END %]
+            [% ELSIF field == 'groups' %]
+              [% IF changes.groups.1.size %]
+                The account has been added to the
+                [%+ changes.groups.1.join(', ') FILTER html %]
+                group[% 's' IF changes.groups.1.size > 1 %].
+              [% END %]
+              [% IF changes.groups.0.size %]
+                The account has been removed from the
+                [%+ changes.groups.0.join(', ') FILTER html %]
+                group[% 's' IF changes.groups.0.size > 1 %].
+              [% END %]
+            [% ELSIF field == 'bless_groups' %]
+              [% IF changes.bless_groups.1.size %]
+                The account has been granted rights to bless the
+                [%+ changes.bless_groups.1.join(', ') FILTER html %]
+                group[% 's' IF changes.bless_groups.1.size > 1 %].
+              [% END %]
+              [% IF changes.bless_groups.0.size %]
+                The account has been denied rights to bless the
+                [%+ changes.bless_groups.0.join(', ') FILTER html %]
+                group[% 's' IF changes.bless_groups.0.size > 1 %].
+              [% END %]
             [% END %]
-          </li>
-        [% END %]
-        [% IF groups_added_to.size %]
-          <li>
-            The account has been added to the following group[% 's' IF groups_added_to.size > 1 %]:
-            [%+ groups_added_to.join(', ') FILTER html %]
-          </li>
-        [% END %]
-        [% IF groups_removed_from.size %]
-          <li>
-            The account has been removed from the following group[% 's' IF groups_removed_from.size > 1 %]:
-            [%+ groups_removed_from.join(', ') FILTER html %]
-          </li>
-        [% END %]
-        [% IF groups_granted_rights_to_bless.size %]
-          <li>
-            The account has been granted rights to bless the
-            [%+ groups_granted_rights_to_bless.join(', ') FILTER html %]
-            group[% 's' IF groups_granted_rights_to_bless.size > 1 %].
-          </li>
-        [% END %]
-        [% IF groups_denied_rights_to_bless.size %]
-          <li>
-            The account has been denied rights to bless the
-            [%+ groups_denied_rights_to_bless.join(', ') FILTER html %]
-            group[% 's' IF groups_denied_rights_to_bless.size > 1 %].
           </li>
         [% END %]
       </ul>
@@ -569,7 +563,8 @@
 
   [% ELSIF message_tag == "password_change_request" %]
     [% title = "Request to Change Password" %]
-    A token for changing your password has been emailed to you.
+    A token for changing your password has been emailed to
+    <em>[% login_name FILTER html %]</em>.
     Follow the instructions in that email to change your password.
 
   [% ELSIF message_tag == "password_changed" %]
@@ -733,7 +728,7 @@
     Renaming the '[% old FILTER html %]' table to '[% new FILTER html %]'...
 
   [% ELSIF message_tag == "install_urlbase_default" %]
-    Now that you have installed [% terms.Bugzilla %], you should visit the
+    Now that you have installed Bugzilla, you should visit the
     'Parameters' page (linked in the footer of the Administrator
     account) to ensure it is set up as you wish - this includes
     setting the 'urlbase' option to the correct URL.
@@ -752,7 +747,7 @@
     other files (including the localconfig file which stores your database
     password) must be world readable. This means that _anyone_ who can obtain
     local access to this machine can do whatever they want to your 
-    [%+ terms.Bugzilla %] installation, and is probably also able to run 
+    Bugzilla installation, and is probably also able to run
     arbitrary Perl code as the user that the web server runs as.
 
     You really, really, really need to change this setting.
@@ -762,7 +757,7 @@
     Warning: you have entered a value for the "webservergroup" parameter in
     localconfig, but you are not either a) running this script as [% constants.ROOT_USER FILTER html %]; 
     or b) a member of this group. This can cause permissions problems and 
-    decreased security.  If you experience problems running [% terms.Bugzilla %]
+    decreased security.  If you experience problems running Bugzilla
     scripts, log in as [% constants.ROOT_USER FILTER html %] and re-run this script, become a 
     member of the group, or remove the value of the "webservergroup" parameter.
 
@@ -770,7 +765,7 @@
     Warning: You have set webservergroup in [% constants.bz_locations.localconfig FILTER html %]
     Please understand that this does not bring you any security when
     running under Windows.
-    Verify that the file permissions in your [% terms.Bugzilla %] directory are
+    Verify that the file permissions in your Bugzilla directory are
     suitable for your system. Avoid unnecessary write access.
 
   [% ELSIF message_tag == "install_workflow_init" %]
@@ -794,6 +789,30 @@
     The product <em>[% product FILTER html %]</em> does not exist
     or you don't have access to it. The following is a list of the
     products you can choose from.
+
+  [% ELSIF message_tag == "quips_added" %]
+    Your quip <em>[% added_quip FILTER html %]</em> has been added.
+    [% IF Param("quip_list_entry_control") == "moderated" AND
+          !user.in_group('bz_quip_moderators') %]
+      It will be used as soon as it gets approved.
+    [% END %]
+
+  [% ELSIF message_tag == "quips_deleted" %]
+    The quip <em>[% deleted_quip FILTER html %]</em> has been deleted.
+
+  [% ELSIF message_tag == "quips_approved_unapproved" %]
+    [% IF approved.size == 1 %]
+      One quip
+    [% ELSE %]
+      [% approved.size %] quips
+    [% END %]
+    approved and
+    [% IF unapproved.size == 1 %]
+      one quip
+    [% ELSE %]
+      [%+ unapproved.size %] quips
+    [% END %]
+    unapproved.
 
   [% ELSIF message_tag == "report_created" %]
     OK, you have a new saved report named <em>[% reportname FILTER html %]</em>.
@@ -849,6 +868,12 @@
       [%+ series.subcategory FILTER html %] /
       [%+ series.name FILTER html %]</em>
       has been deleted.
+
+  [% ELSIF message_tag == "series_updated" %]
+    [% title = "Series Updated" %]
+    The series <em>[% default.category FILTER html %] /
+    [%+ default.subcategory FILTER html %] /
+    [%+ default.name FILTER html %]</em> has been updated.
 
   [% ELSIF message_tag == "shutdown" %]
     [% title = "$terms.Bugzilla is Down" %]
@@ -917,7 +942,7 @@
 [%# Give sensible error if the message function is used incorrectly. #%]
 [% IF !message %]
   [% message = BLOCK %]
-    You are using [% terms.Bugzilla %]'s messaging functions incorrectly. You
+    You are using Bugzilla's messaging functions incorrectly. You
     passed in the string '[% message_tag FILTER html %]'. The correct use is to pass
     in a tag, and define that tag in the file <kbd>messages.html.tmpl</kbd>.<br>
     <br>

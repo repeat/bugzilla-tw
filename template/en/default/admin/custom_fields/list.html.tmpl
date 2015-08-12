@@ -14,7 +14,8 @@
 
 [% PROCESS global/header.html.tmpl
   title = "Custom Fields"
-  doc_section = "custom-fields.html"
+  style_urls = ['skins/standard/admin.css']
+  doc_section = "administering/custom-fields.html"
 %]
 
 [% delete_contentlink = BLOCK %]editfields.cgi?action=del&amp;name=%%name%%[% END %]

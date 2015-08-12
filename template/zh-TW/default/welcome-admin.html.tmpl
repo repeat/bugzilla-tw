@@ -10,12 +10,11 @@
   # none
   #%]
 
-[% title = BLOCK %]歡迎來到 [% terms.Bugzilla %][% END %]
+[% title = BLOCK %]歡迎來到 Bugzilla [% END %]
 
 [% PROCESS global/header.html.tmpl
    title = title
    header_addl_info = "版本 $constants.BUGZILLA_VERSION"
-   style_urls = [ 'skins/standard/index.css' ]
 %]
 
 <div id="welcome-admin">
@@ -72,7 +71,7 @@
   </ul>
 
   <p>
-    在設定完成之後，我們也建議你有空時不妨看看其他的 [% terms.Bugzilla %] 參數設定。<br>
+    在設定完成之後，我們也建議你有空時不妨看看其他的 Bugzilla 參數設定。<br>
     這樣你才能明白他們的功用，以及在需要時修改這些設定。
   </p>
 </div>

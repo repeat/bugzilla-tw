@@ -11,7 +11,7 @@ To: [% emailaddress %]
 Subject: [% PROCESS subject %]
 X-Bugzilla-Type: admin
 
-請求已被 [% remoteaddress %] 取消。
+[% remoteaddress %] [% PROCESS subject %]。
 
 如果你沒有做出此項請求，可能是單純的操作錯誤，或是有人正嘗試破解你的 [% terms.Bugzilla %] 帳號。
 
@@ -73,7 +73,7 @@ X-Bugzilla-Type: admin
   [% ELSE %]
     [%# Give sensible error if the cancel-token function is used incorrectly.
       #%]
-    你不正確的使用 [% terms.Bugzilla %] 功能。
+    你不正確地使用 Bugzilla 的取消 token 功能。
     你輸入了字串 '[% cancelaction %]' 。
     正確的用法是輸入一個標籤，並且在 <kbd>cancel-token.txt.tmpl</kbd> 檔案中定義該標籤。
 

@@ -16,34 +16,34 @@
     "設定為「開」時，若使用者的瀏覽器支援附件的 MIME 類型時，將可直接從瀏覽器瀏覽附件。<br>" _
     "設定為「關」時，則不論使用者的瀏覽器是否支援該 MIME 類型，都必須下載附件後才能瀏覽。" _
     "<p>這是一個安全性限制的考量。如果直接支援自瀏覽器瀏覽附件時，可能會有惡意使用者上傳有害的附件。</p>" _
-    "<p>若你將此參數設定為「開」，強烈建議你也設定 <tt>attachment_base</tt> 參數。",
+    "<p>若你將此參數設定為「開」，強烈建議你也設定 <var>attachment_base</var> 參數。",
 
   attachment_base =>
-    "當 <tt>allow_attachment_display</tt> 參數設定為「開」時，可能會有有害的附件存取你的 cookies ，" _
-    "或是使用你的帳號攻擊 $terms.Bugzilla 。" _
-    "<p>如果你要避免前述狀況而想增加附件的安全性，將此參數設定為不同於 <tt>urlbase</tt> " _
-    "或 <tt>sslbase</tt> 參數的網址。也就是說，" _
-    "設定一組不相同的域名，但透過 DNS 解析後仍可連到同一台安裝 $terms.Bugzilla 的機器。</p>" _
+    "當 <var>allow_attachment_display</var> 參數設定為「開」時，可能會有有害的附件存取你的 cookies ，" _
+    "或是使用你的帳號攻擊 Bugzilla 。" _
+    "<p>如果你要避免前述狀況而想增加附件的安全性，將此參數設定為不同於 <var>urlbase</var> " _
+    "或 <var>sslbase</var> 參數的網址。也就是說，" _
+    "設定一組不相同的域名，但透過 DNS 解析後仍可連到同一台安裝 Bugzilla 的機器。</p>" _
     "<p>要注意的是，如果你已經設定了" _
-    " <a href=\"editparams.cgi?section=advanced#cookiedomain\"><tt>cookiedomain</tt> " _
-    "這個參數時，你應該要把 <tt>attachment_base</tt> 設定為" _
-    "<em>不</em>符合 <tt>cookiedomain</tt> 的域名。</p>" _
-    "<p>當你瀏覽附件時，為了增強安全性，你可以在網址中插入 <tt>%bugid%</tt> ，" _
+    " <a href=\"editparams.cgi?section=advanced#cookiedomain\"><var>cookiedomain</var> " _
+    "這個參數時，你應該要把 <var>attachment_base</var> 設定為" _
+    "<em>不</em>符合 <var>cookiedomain</var> 的域名。</p>" _
+    "<p>當你瀏覽附件時，為了增強安全性，你可以在網址中插入 <var>%bugid%</var> ，" _
     "將會被系統自動替換為該附件所在的 $terms.bug 的編號中。這將會限制瀏覽附件的同時，" _
     "只能瀏覽其他同屬於同一個 $terms.bug 的附件。記得，這些可能出現的域名" _
-    "（例如 <tt>1234.your.domain.com</tt> ）都必須指向同一台安裝 $terms.Bugzilla 的機器。",
+    "（例如 <kbd>1234.your.domain.com</kbd> ）都必須指向同一台安裝 Bugzilla 的機器。",
 
   allow_attachment_deletion => "設定為「開」時，管理者可以刪除附件內容。",
 
   maxattachmentsize => "允許儲存於資料庫的附件檔案大小的最大值 (KB) 。<br>"  _
-                       "如果所附加的檔案大小比指定的值大， $terms.Bugzilla 會看" _
-                       "<a href=\"#maxlocalattachment\"><tt>maxlocalattachment</tt>" _
+                       "如果所附加的檔案大小比指定的值大， Bugzilla 會看" _
+                       "<a href=\"#maxlocalattachment\"><var>maxlocalattachment</var>" _
                        "的設定值，決定檔案是否可以儲存於本地伺服器中。" _
                        "如果檔案大小超過這兩個設定值時，該附件會被拒絕。" _
                        "若將兩個設定值均設定為 0 ，則不允許附加附件。",
 
   maxlocalattachment => "允許儲存於本地伺服器的附件檔案大小的最大值 (MB) 。<br>" _
                         "如果設定的比" _
-                        "<a href=\"#maxattachmentsize\"><tt>maxattachmentsize</tt> 還小，" _
+                        "<a href=\"#maxattachmentsize\"><var>maxattachmentsize</var> 還小，" _
                         "那麼附件將永遠不會被儲存在本地檔案系統中。" }
 %]

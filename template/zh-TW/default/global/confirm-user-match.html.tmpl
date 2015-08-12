@@ -54,7 +54,7 @@
 
   <p>
     [% IF matchmultiple %]
-      你在前一頁所輸入的名稱或電子郵件地址，在 [% terms.Bugzilla %] 中符合多筆資料。
+      你在前一頁所輸入的名稱或電子郵件地址，在 Bugzilla 中符合多筆資料。
       <br>請檢視下列可能符合的清單，並選擇你想要的使用者，
     [% ELSE %]
       [% terms.Bugzilla %] 設定為無論在什麼時候你輸入了名稱或是一部份的電子郵件，都必須要確認。
@@ -66,7 +66,7 @@
 [% ELSE %]
   [% PROCESS global/header.html.tmpl title="找不到符合的資料" %]
   <p>
-    你在前一頁所輸入的名稱或電子郵件地址，在 [% terms.Bugzilla %] 中找不到符合的資料。
+    你在前一頁所輸入的名稱或電子郵件地址，在 Bugzilla 中找不到符合的資料。
     [% IF !user.id %]
       <b>注意：你現在是登出狀態。只會顯示完全符合的電子郵件地址。</b>
     [% END %]
@@ -74,30 +74,22 @@
   <p>請回到前一頁，並試試其他的名稱或電子郵件地址。</p>
 [% END %]
 
-  <table border="0">
-    <tr>
-      <td colspan="2">
-        <hr width="100%" size="1">
-      </td>
-    </tr>
-
-  [%# this is messy to allow later expansion %]
-
+<table id="user_match_table">
   [% FOREACH field = matches %]
     <tr>
-      <td align="left" valign="top">
+      <td>
         [% PROCESS field_names field_name=field.key %]:
       </td>
-      <td align="left" valign="top">
+      <td>
           [% FOREACH query = field.value %]
             <div class="user_match">
               <b>[% query.key FILTER html %]</b>
             [% IF query.value.users.size %]
                 [% IF query.value.users.size > 1 %]
                   [% IF query.value.status == 'fail' %]
-                    <font color="#FF0000">
+                    <span class="warning">
                       符合多名使用者。
-                    </font>
+                    </span>
                     請按上一頁，並以更明確的名稱或地址再次嘗試。
                   [% ELSE %]
                     [% IF query.value.status == 'trunc' %]
@@ -128,31 +120,27 @@
                   <b>[% query.value.users.0.identity FILTER html %]</b>
                 [% END %]
             [% ELSE %]
+              <span class="warning">
                 [% IF query.key.length < 3 %]
-                  <font color="#FF0000">要搜尋的子字串太短
-                  (至少 3 個字元)</font>
+                  要搜尋的子字串太短
+                  (至少 3 個字元)
                 [% ELSE %]
-                  <font color="#FF0000">找不到符合的資料</font>
+                  找不到符合的資料
                 [% END %]
+              </span>
             [% END %]
             </div>
         [% END %]
       </td>
     </tr>
-    <tr>
-      <td colspan="2">
-        <hr width="100%" size="1">
-      </td>
-    </tr>
   [% END %]
-
-  </table>
+</table>
 
 [% IF matchsuccess == 1 %]
 
   [% SET exclude_these = ['Bugzilla_login', 'Bugzilla_password'] %]
   [% FOREACH key IN matches.keys %]
-    [% exclude_these.push(key) IF cgi.param(key) == '' %]
+    [% exclude_these.push(key) IF Bugzilla.cgi.param(key) == '' %]
   [% END %]
   [% SET exclude = '^' _ exclude_these.join('|') _ '$' %]
   [% PROCESS "global/hidden-fields.html.tmpl" exclude = exclude %]

@@ -15,8 +15,7 @@
 [% END %]
 
 [% PROCESS global/header.html.tmpl
-  title = "登入 $terms.Bugzilla",
-  onload = "document.forms['login'].Bugzilla_login.focus()"
+  title = "登入 $terms.Bugzilla"
 %]
 
 [% USE Bugzilla %]
@@ -25,20 +24,29 @@
 [% terms.Bugzilla %] 需要一組有效的帳號及密碼才能繼續。
 </p>
 
-<form name="login" action="[% target FILTER html %]" method="POST"
+<form name="login" action="[% urlbase FILTER html %][% target FILTER html %]" method="POST"
 [%- IF Bugzilla.cgi.param("data") %] enctype="multipart/form-data"[% END %]>
   <table>
     <tr>
-      <th align="right"><label for="Bugzilla_login">帳號：</label></th>
+      <th>
+         <label for="Bugzilla_login">
+           [% IF Param('emailsuffix') %]
+             帳號：
+           [% ELSE %]
+             你的電子郵件地址：
+           [% END %]
+         </label>
+       </th>
       <td>
-        <input size="35" id="Bugzilla_login" name="Bugzilla_login">
+        <input size="35" id="Bugzilla_login" name="Bugzilla_login"
+               [%- ' type="email"' UNLESS Param('emailsuffix') %] autofocus required>
         [% Param('emailsuffix') FILTER html %]
       </td>
     </tr>
     <tr>
-      <th align="right"><label for="Bugzilla_password">密碼：</label></th>
+      <th><label for="Bugzilla_password">密碼：</label></th>
       <td>
-        <input type="password" size="35" id="Bugzilla_password" name="Bugzilla_password">
+        <input type="password" size="35" id="Bugzilla_password" name="Bugzilla_password" required>
       </td>
     </tr>
 
@@ -89,7 +97,7 @@
     <p>
       如果你沒有 [% terms.Bugzilla %] 帳號，你可以<a href="createaccount.cgi">建立新帳號</a>。
       [% IF Param("requirelogin") %]
-        此一 [% terms.Bugzilla %] 僅允許獲得授權的使用者登入瀏覽，因此需要有帳號。
+        此一 Bugzilla 僅允許獲得授權的使用者登入瀏覽，因此需要有帳號。
       [% ELSIF target.match("_bug\.cgi$") %]
         當需要回報一個新的 [% terms.bug %] ，或者對現有的 [% terms.bug %] 留下意見時，需要一個帳號。
         當後續有需要更多資訊時，可以聯絡上你。
@@ -103,7 +111,7 @@
     <form id="forgot" method="get" action="token.cgi">
       <input type="hidden" name="a" value="reqpw">
       如果你有帳號，但是忘記密碼的話，在下方輸入你的帳號並按「重設密碼」鍵來變更密碼。<br>
-      <input size="35" name="loginname">
+      <input size="35" name="loginname" required>
       <input type="hidden" id="token" name="token" value="[% issue_hash_token(['reqpw']) FILTER html %]">
       <input type="submit" id="request" value="重設密碼">
     </form>

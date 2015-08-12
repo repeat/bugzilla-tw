@@ -23,7 +23,7 @@
 
 alias =>
   "A short, unique name assigned to $terms.abug in order to assist with
-   looking it up and referring to it in other places in ${terms.Bugzilla}.",
+   looking it up and referring to it in other places in Bugzilla.",
 
 assigned_to =>
   "The person in charge of resolving the ${terms.bug}.",
@@ -38,7 +38,7 @@ bug_file_loc =>
 
 bug_id =>
   "The numeric id of $terms.abug, unique within this entire installation"
-  _ " of ${terms.Bugzilla}.",
+  _ " of Bugzilla.",
 
 bug_severity =>
   "How severe the $terms.bug is, or whether it's an enhancement.",
@@ -85,7 +85,7 @@ keywords =>
    _ " to easily identify and group them.",
 
 longdesc =>
-  "$terms.Bugs have comments added to them by $terms.Bugzilla users."
+  "$terms.Bugs have comments added to them by Bugzilla users."
   _ " You can search for some text in those comments.",
 
 op_sys =>
@@ -126,7 +126,7 @@ see_also =>
   "This allows you to refer to $terms.bugs in other installations.
    You can enter a URL to $terms.abug in the 'Add $terms.Bug URLs'
    field to note that that $terms.bug is related to this one. You can
-   enter multiple URLs at once by separating them with a comma.
+   enter multiple URLs at once by separating them with whitespace.
 
    <p>You should normally use this field to refer to $terms.bugs in
      <em>other</em> installations. For $terms.bugs in this
@@ -227,7 +227,7 @@ email1 =>
       [%- END %]
       [% vars.help_html.${help_field} = 
         "A custom $field_type_desc field in this installation"
-        _ " of ${terms.Bugzilla}." %]
+        _ " of Bugzilla." %]
     [% END %]
   [% END %]
 

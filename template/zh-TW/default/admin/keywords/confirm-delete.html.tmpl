@@ -12,20 +12,24 @@
 
 [% PROCESS global/header.html.tmpl
   title = "刪除關鍵字"
+  style_urls = ['skins/standard/admin.css']
 %]
 
-<p>
-  在此組關鍵字中還有 [% keyword.bug_count FILTER html %] 個 [% terms.bugs %] 。
+<h2>確認</h2>
 
-  你<b>確定</b>要刪除 <code>[% keyword.name FILTER html %]</code> 此關鍵字嗎？
+<p class="confirmation">
+  有 [% keyword.bug_count FILTER html %] 個 [% terms.bugs %] 設定了關鍵字 <em>[% keyword.name FILTER html %]</em> 。
+</p>
+
+<p>
+  你確定要刪除此關鍵字嗎？
 </p>
 
 <form method="post" action="editkeywords.cgi">
   <input type="hidden" name="id" value="[% keyword.id FILTER html %]">
   <input type="hidden" name="action" value="delete">
   <input type="hidden" name="token" value="[% token FILTER html %]">
-  <input type="submit" id="delete"
-         value="是的，確認刪除該關鍵字">
+  <input type="submit" id="delete" value="是的，刪除">
 </form>
 
 <p><a href="editkeywords.cgi">編輯其他關鍵字</a>。</p>

@@ -13,32 +13,36 @@
 [% PROCESS global/header.html.tmpl
   title = "新增關鍵字"
   subheader = "此頁面允許你新增關鍵字。"
+  style_urls = ['skins/standard/admin.css']
 %]
 
 <form method="post" action="editkeywords.cgi">
-  <table border="0" cellpadding="4" cellspacing="0">
+  <table id="admin_table_edit">
     <tr>
-      <th align="right">名稱：</th>
-      <td><input size="64" maxlength="64" name="name" value=""></td>
+      <th>名稱：</th>
+      <td><input size="64" maxlength="64" name="name" value="" required></td>
     </tr>
     <tr>
-      <th align="right">描述：</th>
+      <th>描述：</th>
       <td>
         [% INCLUDE global/textarea.html.tmpl
           name    = 'description'
           minrows = 4
           cols    = 64
           wrap    = 'virtual'
+          mandatory = 1
         %]
       </td>
     </tr>
   </table>
-  <hr>
+
   <input type="hidden" name="id" value="-1">
   <input type="submit" id="create" value="新增">
   <input type="hidden" name="action" value="new">
   <input type="hidden" name="token" value="[% token FILTER html %]">
 </form>
+
+<hr>
 
 <p><a href="editkeywords.cgi">編輯其他關鍵字</a>。</p>
 

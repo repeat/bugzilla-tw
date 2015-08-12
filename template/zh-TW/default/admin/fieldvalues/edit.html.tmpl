@@ -16,15 +16,13 @@
 [% END %]
 [% PROCESS global/header.html.tmpl
   title = title
+  style_urls = ['skins/standard/admin.css']
 %]
 
 <form method="post" action="editvalues.cgi">
-  <table border="0" cellpadding="4" cellspacing="0">
-
+  <table id="admin_table_edit">
     <tr>
-      <th valign="top" align="right">
-        <label for="value_new">欄位數值：</label>
-      </th>
+      <th><label for="value_new">欄位數值：</label></th>
       <td>
         [% IF value.is_static %]
           <input type="hidden" name="value_new" id="value_new"
@@ -33,24 +31,24 @@
         [% ELSE %]
           <input id="value_new" name="value_new" size="20"
                  maxlength="[% constants.MAX_FIELD_VALUE_SIZE FILTER none %]"
-                 value="[% value.name FILTER html %]">
+                 value="[% value.name FILTER html %] required">
         [% END %]
       </td>
     </tr>
     <tr>
-      <th align="right"><label for="sortkey">排序鍵：</label></th>
+      <th><label for="sortkey">排序鍵：</label></th>
       <td><input id="sortkey" size="6" maxlength="6" name="sortkey"
                  value="[%- value.sortkey FILTER html %]"></td>
     </tr>
     [% IF field.name == "bug_status" %]
       <tr>
-        <th align="right"><label for="is_open">狀態種類：</label></th>
+        <th><label for="is_open">狀態種類：</label></th>
         <td>[% IF value.is_open %]開啟[% ELSE %]關閉[% END %]</td>
       </tr>
     [% END %]
     [% IF field.value_field %]
       <tr>
-        <th align="right">
+        <th>
           <label for="visibility_value_id">只在
            [%+ field.value_field.description FILTER html %] 設定為以下數值時出現：
           </label>
@@ -70,12 +68,12 @@
               </option>
             [% END %]
           </select>
-          <small>（若不設定，則此數值將永遠顯示。）</small>
+          <span class="bz_info">（若不設定，則此數值將永遠顯示。）</span>
         </td>
       </tr>
     [% END %]
     <tr>
-      <th align="right"><label for="is_active">開啟回報 [% terms.bugs %] 功能：</label></th>
+      <th><label for="is_active">開啟回報 [% terms.bugs %] 功能：</label></th>
       <td><input id="is_active" name="is_active" type="checkbox" value="1"
            [%+ 'checked="checked"' IF value.is_active %]
            [%+ 'disabled="disabled"' IF value.is_default OR value.is_static %]>

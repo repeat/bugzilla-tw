@@ -6,15 +6,15 @@
   # defined by the Mozilla Public License, v. 2.0.
   #%]
 [% USE Bugzilla %]
-<!ELEMENT [% "bugzilla" %] (bug+)>
-<!ATTLIST [% "bugzilla" %] 
+<!ELEMENT bugzilla (bug+)>
+<!ATTLIST bugzilla
           version CDATA #REQUIRED
           urlbase CDATA #REQUIRED
           maintainer CDATA #REQUIRED
           exporter CDATA #IMPLIED
 >
 <!ELEMENT [% "bug" %] (bug_id, 
-               (alias?, 
+               (alias*,
                 creation_ts, 
                 short_desc, 
                 delta_ts, 

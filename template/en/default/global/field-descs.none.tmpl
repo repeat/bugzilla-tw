@@ -34,15 +34,19 @@
   "changedto"      => "changed to",
   "changedby"      => "changed by",
   "matches"        => "matches",
-  "notmatches"      => "does not match",
+  "notmatches"     => "does not match",
+  "isempty"        => "is empty",
+  "isnotempty"     => "is not empty",
 } %]
 
 [% field_types = { ${constants.FIELD_TYPE_UNKNOWN}       => "Unknown Type",
                    ${constants.FIELD_TYPE_FREETEXT}      => "Free Text",
+                   ${constants.FIELD_TYPE_INTEGER}       => "Integer",
                    ${constants.FIELD_TYPE_SINGLE_SELECT} => "Drop Down",
                    ${constants.FIELD_TYPE_MULTI_SELECT}  => "Multiple-Selection Box",
                    ${constants.FIELD_TYPE_TEXTAREA}      => "Large Text Box",
                    ${constants.FIELD_TYPE_DATETIME}      => "Date/Time",
+                   ${constants.FIELD_TYPE_DATE}          => "Date",
                    ${constants.FIELD_TYPE_BUG_ID}        => "$terms.Bug ID",
                 } %]
 
@@ -92,6 +96,7 @@
      "everconfirmed"           => "Ever confirmed",
      "flagtypes.name"          => "Flags",
      "keywords"                => "Keywords",
+     "last_visit_ts"           => "Last Visit",
      "longdesc"                => "Comment",
      "longdescs.count"         => "Number of Comments",
      "longdescs.isprivate"     => "Comment is private",
@@ -119,7 +124,7 @@
      "short_desc"              => "Summary",
      "short_short_desc"        => "Summary",
      "status_whiteboard"       => "Whiteboard",
-     "tag"                     => "Tags",
+     "tag"                     => "Personal Tags",
      "target_milestone"        => "Target Milestone",
      "version"                 => "Version",
      "work_time"               => "Hours Worked",

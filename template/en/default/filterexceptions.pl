@@ -78,9 +78,6 @@
   'classes.$row_idx.$col_idx', 
   'urlbase', 
   'data.$tbl.$col.$row', 
-  'row_total',
-  'col_totals.$col',
-  'grand_total', 
 ],
 
 'reports/report.html.tmpl' => [
@@ -192,10 +189,6 @@
   'script',
 ],
 
-'global/site-navigation.html.tmpl' => [
-  'bug.bug_id', 
-],
-
 'bug/comments.html.tmpl' => [
   'comment.id',
   'comment.count',
@@ -261,16 +254,13 @@
 
 
 'bug/time.html.tmpl' => [
-  'time_unit FILTER format(\'%.1f\')', 
-  'time_unit FILTER format(\'%.2f\')', 
+  "time_unit.replace('0\\Z', '')",
   '(act / (act + rem)) * 100 
        FILTER format("%d")', 
 ],
 
 'bug/process/results.html.tmpl' => [
-  'title.$type', 
-  '"$terms.Bug $id" FILTER bug_link(id)',
-  '"$terms.bug $id" FILTER bug_link(id)',
+  'title.$type.ucfirst',
 ],
 
 'bug/create/create.html.tmpl' => [
@@ -278,9 +268,7 @@
 ],
 
 'bug/create/create-guided.html.tmpl' => [
-  'tablecolour',
   'sel',
-  'productstring', 
 ],
 
 'bug/activity/table.html.tmpl' => [
@@ -301,6 +289,7 @@
   'attachment.id', 
   'attachment.bug_id', 
   'editable_or_hide',
+  'use_patchviewer',
 ],
 
 'attachment/list.html.tmpl' => [
@@ -333,10 +322,8 @@
 ],
 
 'attachment/diff-file.html.tmpl' => [
-  'lxr_prefix',
   'file.minus_lines',
   'file.plus_lines',
-  'bonsai_prefix',
   'section.old_start',
   'section_num',
   'current_line_old',

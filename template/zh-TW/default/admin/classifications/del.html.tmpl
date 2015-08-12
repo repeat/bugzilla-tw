@@ -8,32 +8,32 @@
 
 [% PROCESS global/header.html.tmpl
   title = "刪除分類"
+  style_urls = ['skins/standard/admin.css']
 %]
 
-<table border=1 cellpadding=4 cellspacing=0>
-<tr bgcolor="#6666ff">
-  <th valign="top" align="left">部份</th>
-  <th valign="top" align="left">值</th>
-
-</tr><tr>
-  <td valign="top">分類：</td>
-  <td valign="top">[% classification.name FILTER html %]</td>
-
-</tr><tr>
-  <td valign="top">描述：</td>
-  <td valign="top">
-    [% IF classification.description %]
-      [% classification.description FILTER html_light %]
-    [% ELSE %]
-      <font color="red">沒有描述</font>
-    [% END %]
-  </td>
-
-</tr><tr>
-  <td valign="top">排序鍵：</td>
-  <td valign="top">[% classification.sortkey FILTER html %]</td>
-
-</tr>
+<table id="admin_table">
+  <tr class="column_header">
+    <th>欄位</th>
+    <th>值</th>
+  </tr>
+  <tr>
+    <td>分類</td>
+    <td>[% classification.name FILTER html %]</td>
+  </tr>
+  <tr>
+    <td>描述</td>
+    <td>
+      [% IF classification.description %]
+        [% classification.description FILTER html_light %]
+      [% ELSE %]
+        <span class="warning">沒有描述</span>
+      [% END %]
+    </td>
+  </tr>
+  <tr>
+    <td>排序鍵</td>
+    <td>[% classification.sortkey FILTER html %]</td>
+  </tr>
 </table>
 
 <h2>確認</h2>

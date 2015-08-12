@@ -8,6 +8,8 @@
 
 [%# INTERFACE:
   #   bug: a Bugzilla::Bug object
+  #   user: the Bugzilla::User object to which this template is addressed.
+  #         If not set, the currently logged in user object is used.
   #   link_text: the text that we're highlighting.
   #   use_alias: boolean; If true, we display the bug's alias as the link
   #              text instead of link_text.
@@ -32,8 +34,8 @@
 [% IF user.can_see_bug(bug) %]
   [% link_title = link_title _ ' - ' _ bug.short_desc %]
 
-  [% IF use_alias && bug.alias %]
-    [% link_text = bug.alias %]
+  [% IF use_alias && bug.alias.size %]
+    [% link_text = bug.alias.join(', ') %]
   [% END %]
 [% END %]
 

@@ -33,8 +33,7 @@
 
 [% IF user.authorizer.can_change_email && Param('allowemailchange') %]
   <p>
-    如果你想要變更 [% terms.Bugzilla %] 發送通知信的電子郵件
-    <b>[% user.email FILTER html %]</b> ，點擊上方的「帳號資訊」頁籤。
+    如果想要變更 [% terms.Bugzilla %] 發送通知信的電子郵件 <b>[% user.email FILTER html %]</b> ，點擊上方的「帳號資訊」頁籤。
   </p>
 [% END %]
 
@@ -43,7 +42,10 @@
 function SetCheckboxes(setting) {
   for (var count = 0; count < document.userprefsform.elements.length; count++) {
     var theinput = document.userprefsform.elements[count];
-    if (theinput.type == "checkbox" && !theinput.disabled) {
+    if (theinput.type == "checkbox"
+        && !theinput.disabled
+        && !theinput.name.match("remove_ignored_bug"))
+    {
       if (theinput.name.match("neg")) {
         theinput.checked = !setting;
       }
@@ -54,58 +56,35 @@ function SetCheckboxes(setting) {
   }
 }
 
-document.write('<input type="button" value="全選" onclick="SetCheckboxes(true); return false;">\n');
-document.write('<input type="button" value="全不選" onclick="SetCheckboxes(false); return false;">\n');
 // -->
 </script>
 
+<input type="button" value="全選" onclick="SetCheckboxes(true); return false;">
+<input type="button" value="全不選" onclick="SetCheckboxes(false); return false;">
+
 <hr>
 
-<table>
-  <tr>
-    <td colspan="2">
-      <b>整體設定選項：</b>
-    </td>
-  </tr>
+<h3>整體設定選項</h3>
 
-  <tr>
-    <td width="150"></td>
-    <td>
-      [% prefname = "email-$constants.REL_ANY-$constants.EVT_FLAG_REQUESTED" %]
-      <input type="checkbox" name="[% prefname %]" id="[% prefname %]"
-        value="1"
-        [% " checked"
-           IF user.mail_settings.${constants.REL_ANY}.${constants.EVT_FLAG_REQUESTED} %]>
-      <label for="[% prefname %]">當有人要求我設定一項旗標時，寄發電子郵件給我</label>
-      <br>
-    </td>
-  </tr>
-  <tr>
-    <td width="150"></td>
-    <td>
-      [% prefname = "email-$constants.REL_ANY-$constants.EVT_REQUESTED_FLAG" %]
-      <input type="checkbox" name="[% prefname %]" id="[% prefname %]"
-        value="1"
-        [% " checked"
-           IF user.mail_settings.${constants.REL_ANY}.${constants.EVT_REQUESTED_FLAG} %]>
-      <label for="[% prefname %]">當有人應允我的要求，設定一項旗標時，寄發電子郵件給我</label>
-      <br>
-    </td>
-  </tr>
+[% prefname = "email-$constants.REL_ANY-$constants.EVT_FLAG_REQUESTED" %]
+<input type="checkbox" name="[% prefname %]" id="[% prefname %]" value="1"
+       [%+ 'checked="checked"' IF user.mail_settings.${constants.REL_ANY}.${constants.EVT_FLAG_REQUESTED} %]>
+<label for="[% prefname %]">當有人要求我設定一項旗標時，寄發電子郵件給我</label>
+<br>
+[% prefname = "email-$constants.REL_ANY-$constants.EVT_REQUESTED_FLAG" %]
+<input type="checkbox" name="[% prefname %]" id="[% prefname %]" value="1"
+       [%+ 'checked="checked"' IF user.mail_settings.${constants.REL_ANY}.${constants.EVT_REQUESTED_FLAG} %]>
+<label for="[% prefname %]">當有人應允我的要求，設定一項旗標時，寄發電子郵件給我</label>
+
 [% IF user.is_global_watcher %]
-  <tr>
-    <td width="150"></td>
-    <td>
-      你在監控所有的 [% terms.bugs %] 。若要刪除此一設定，請洽 <a href="mailto:[% Param("maintainer") %]">[% Param("maintainer") %]</a> 。
-    </td>
-  </tr>
+  <p>
+    你在監控所有的 [% terms.bugs %] 。若要刪除此一設定，請洽
+    <a href="mailto:[% Param("maintainer") %]">[% Param("maintainer") %]</a> 。
+  </p>
 [% END %]
-</table>
 
 <hr>
-<b>欄位及收信人個別設定選項：</b>
-<br>
-<br>
+<h3>欄位及收信人個別設定選項：</h3>
 
 [% events = [
     { id = constants.EVT_ADDED_REMOVED,
@@ -123,7 +102,7 @@ document.write('<input type="button" value="全不選" onclick="SetCheckboxes(fa
     { id = constants.EVT_ATTACHMENT,
       description = "新增附件" },
     { id = constants.EVT_ATTACHMENT_DATA,
-      description = "部份附件內容變更" },
+      description = "附件細節變更" },
     { id = constants.EVT_KEYWORD,
       description = "關鍵字欄位變更" },
     { id = constants.EVT_CC,
@@ -163,21 +142,17 @@ document.write('<input type="button" value="全不選" onclick="SetCheckboxes(fa
 
 [% num_columns = relationships.size %]
 
-<table class="bz_emailprefs" border="1">
-  <tr>
-    <td colspan="[% num_columns FILTER html %]" align="center" width="50%">
-      <b>當我和這個 [% terms.bug %] 的關係是：</b>
-    </td>
-    <td rowspan="2" width="40%">
-      <b>當…的時候，我想要收到信：</b>
-    </td>
+<table id="email_prefs">
+  <tr class="column_header">
+    <th colspan="[% num_columns FILTER html %]">
+      當我和這個 [% terms.bug %] 的關係是：
+    </th>
+    <th>當…的時候，我想要收到信：</th>
   </tr>
 
   <tr>
     [% FOREACH relationship = relationships %]
-      <th align="center" width="9%">
-        [% relationship.description FILTER html %]
-      </th>
+      <th class="role_header">[% relationship.description FILTER html %]</th>
     [% END %]
   </tr>
 
@@ -185,18 +160,16 @@ document.write('<input type="button" value="全不選" onclick="SetCheckboxes(fa
     [% count = loop.count() %]
     <tr class="bz_row_[% count % 2 == 1 ? "odd" : "even" %]">
       [% FOREACH relationship = relationships %]
-        <td align="center">
-          <input type="checkbox"
-            name="email-[% relationship.id %]-[% event.id %]"
-            value="1"
-            [%# The combinations do not always make sense; disable a couple %]
-            [% IF event.id == constants.EVT_ADDED_REMOVED AND
-                  no_added_removed.contains(relationship.id)
-            %]
-               disabled
-            [% ELSIF user.mail_settings.${relationship.id}.${event.id} %]
-               checked
-            [% END %]>
+        <td class="center">
+          <input type="checkbox" value="1"
+                 name="email-[% relationship.id %]-[% event.id %]"
+                 [%# The combinations don't always make sense; disable a couple %]
+                 [% IF event.id == constants.EVT_ADDED_REMOVED
+                       AND no_added_removed.contains(relationship.id) %]
+                   disabled="disabled"
+                 [% ELSIF user.mail_settings.${relationship.id}.${event.id} %]
+                   checked="checked"
+                 [% END %]>
         </td>
       [% END %]
       <td>
@@ -205,58 +178,52 @@ document.write('<input type="button" value="全不選" onclick="SetCheckboxes(fa
     </tr>
   [% END %]
 
-  <tr>
-    <td colspan="[% num_columns FILTER html %]"
-        align="center" width="50%">
-      &nbsp;
-    </td>
-    <td width="40%">
-      <b>但當…的時候，我不想要收到信（覆寫以上設定值）：</b>
-    </td>
+  <tr class="column_header">
+    <th colspan="[% num_columns FILTER html %]">&nbsp;</th>
+    <th>但當…的時候，我不想要收到信（覆寫以上設定值）：</th>
   </tr>
 
   [% FOREACH event = neg_events %]
     [% count = loop.count() %]
     <tr class="bz_row_[% count % 2 == 1 ? "odd" : "even" %]">
       [% FOREACH relationship = relationships %]
-        <td align="center">
-          <input type="checkbox"
-            name="neg-email-[% relationship.id %]-[% event.id %]"
-            value="1"
-            [% " checked" IF NOT user.mail_settings.${relationship.id}.${event.id} %]>
+        <td class="center">
+          <input type="checkbox" value="1"
+                 name="neg-email-[% relationship.id %]-[% event.id %]"
+                 [%+ 'checked="checked"' IF NOT user.mail_settings.${relationship.id}.${event.id} %]>
         </td>
       [% END %]
-      <td>
-        [% event.description FILTER html %]
-      </td>
+      <td>[% event.description FILTER html %]</td>
     </tr>
   [% END %]
 
 </table>
 
 <hr>
-<b>監控使用者</b>
+
+<h3>監控使用者</h3>
 
 <p>
-如果你監控一位使用者，那麼就會根據<u>你的</u>偏好設定以及<u>他和 [% terms.bug %] </u>的關係（例如：負責人）來決定是否收到電子郵件。
+如果你監控一位使用者，那麼就會根據<em>你的</em>偏好設定以及<em>他和 [% terms.bug %] </em>的關係（例如：負責人）來決定是否收到電子郵件。
 </p>
 
-<p>
+
 [% IF watchedusers.size %]
-你正在監控以下使用者：
-  </p>
+  <p>你正在監控以下使用者：</p>
   <p>
     <select id="watched_by_you" name="watched_by_you" multiple="multiple" size="5">
         [% FOREACH w = watchedusers %]
            <option value="[% w FILTER html %]">[% w FILTER html %]</option>
         [% END %]
-    </select> <br />
+    </select>
+    <br>
     <input type="checkbox" id="remove_watched_users" name="remove_watched_users">
     <label for="remove_watched_users">將選擇的使用者自監控清單中刪除</label>
+  </p>
 [% ELSE %]
-你現在並未監控任何使用者。
+  <p>你現在並未監控任何使用者。</p>
 [% END %]
-</p>
+
 
 <p id="new_watched_by_you">將使用者加入監控清單〔以半形逗號 (,) 分隔多個使用者〕：
   [% INCLUDE global/userselect.html.tmpl
@@ -280,4 +247,41 @@ document.write('<input type="button" value="全不選" onclick="SetCheckboxes(fa
 
 <hr>
 
-<br>
+<h3>忽略 [% terms.Bugs %]</h3>
+
+<p>
+  你可以指定忽略的 [% terms.bug %] 清單。在這個清單中的 [% terms.bug %] 不會以任何電子郵件通知你。
+  指定清單的方式為輸入一個以逗號 (,) 分隔的 [% terms.bug %] 編號。
+  移除的方式是在目前的忽略清單中選擇它。移除之後就會重新啟用通知。
+</p>
+[% IF user.bugs_ignored.size %]
+  <p>
+    你現在忽略的有：
+    <table>
+    [% FOREACH bug = user.bugs_ignored %]
+      <tr>
+        <td>
+          <input type="checkbox" name="remove_ignored_bug_[% bug.id FILTER html %]" value="1">
+        </td>
+        <td><a href="[% urlbase FILTER html %]show_bug.cgi?id=[% bug.id FILTER uri %]">
+          [% bug.id FILTER html %]</a>
+        </td>
+        <td>[% bug.status FILTER html %]</td>
+        <td>
+          [% IF user.can_see_bug(bug.id) %]
+            - [% bug.summary FILTER html %]
+          [% ELSE %]
+            （不公開）
+          [% END %]
+        </td>
+      </tr>
+    [% END %]
+    </table>
+  </p>
+[% END %]
+
+<p>
+  新增 [% terms.bug %] ：<br>
+  <input type="text" id="add_ignored_bugs"
+         name="add_ignored_bugs" size="60">
+</p>

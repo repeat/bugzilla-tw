@@ -11,6 +11,7 @@
   # query: string. The SQL query which makes the buglist.
   #%]
 
+<!DOCTYPE html>
 <html>
   <head>
     <title>[% terms.Bugzilla %] 正在執行你的搜尋</title>
@@ -18,7 +19,11 @@
           rel="stylesheet" type="text/css">
   </head>
   <body>
-    <h1 style="margin-top: 20%; text-align: center; font-size: xx-large;">請稍候...</h1>
+    <h1 id="serverpush_msg">請稍候...</h1>
+
+    <p class="center">
+      <progress>正在接收資料...</progress>
+    </p>
 
     [% IF debug %]
       <p>[% query FILTER html %]</p>

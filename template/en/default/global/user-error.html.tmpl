@@ -97,6 +97,15 @@
     [% terms.Bug %] aliases cannot be longer than 20 characters.
     Please choose a shorter alias.
 
+  [% ELSIF error == "api_key_not_valid" %]
+    [% title = "Invalid API key" %]
+    The API key you specified is invalid. Please check that you typed it
+    correctly.
+
+  [% ELSIF error == "api_key_revoked" %]
+    [% title = "Invalid API key" %]
+    The API key you specified has been revoked by the user that created it.
+
   [% ELSIF error == "attachment_bug_id_mismatch" %]
     [% title = "Invalid Attachments" %]
     You tried to perform an action on attachments from different [% terms.bugs %].
@@ -170,6 +179,8 @@
       classifications
     [% ELSIF object == "components" %]
       components
+    [% ELSIF object == "comment_tags" %]
+      comment tags
     [% ELSIF object == "custom_fields" %]
       custom fields
     [% ELSIF object == "field_values" %]
@@ -217,6 +228,11 @@
 
     [% Hook.process("auth_failure") %]
 
+  [% ELSIF error == "auth_invalid_token" %]
+    [% title = 'A token error occurred' %]
+    The token '[% token FILTER html %]' is not valid. It could be because
+    you loaded this page more than 3 days ago.
+
   [% ELSIF error == "auth_untrusted_request" %]
     [% title = "Untrusted Authentication Request" %]
     You tried to log in using the <em>[% login FILTER html %]</em> account,
@@ -240,12 +256,12 @@
     valid page identifier.
 
   [% ELSIF error == "bug_access_denied" %]
-    [% title = "Access Denied" %]
+    [% title = "$terms.Bug Access Denied" %]
     [% admindocslinks = {'groups.html' => 'Group Security'} %]
     You are not authorized to access [% terms.bug %] #[% bug_id FILTER html %].
 
   [% ELSIF error == "bug_access_query" %]
-    [% title = "Access Denied" %]
+    [% title = "$terms.Bug Access Denied" %]
     [% docslinks = {'myaccount.html' => 'Creating an account'} %]
     You are not authorized to access [% terms.bug %] #[% bug_id FILTER html %].
     To see this [% terms.bug %], you must
@@ -265,7 +281,7 @@
     [% ELSE %]
       [%+ field_descs.see_also FILTER html %] URLs should point to one of:
       <ul>
-        <li><code>show_bug.cgi</code> in a [% terms.Bugzilla %]
+        <li><code>show_bug.cgi</code> in a Bugzilla
           installation.</li>
         <li>A b[% %]ug on launchpad.net</li>
         <li>An issue on code.google.com.</li>
@@ -274,7 +290,7 @@
         <li>A ticket in a Trac installation.</li>
         <li>A b[% %]ug in a MantisBT installation.</li>
         <li>A b[% %]ug on sourceforge.net.</li>
-        <li>An issue on github.com.</li>
+        <li>An issue/pull request on github.com.</li>
         [% Hook.process('bug_url_invalid_tracker') %]
       </ul>
     [% END %]
@@ -326,6 +342,25 @@
     [% title = "Comment Too Long" %]
     Comments cannot be longer than 
     [%+ constants.MAX_COMMENT_LENGTH FILTER html %] characters.
+
+  [% ELSIF error == "comment_tag_disabled" %]
+    [% title = "Comment Tagging Disabled" %]
+    The comment tagging is not enabled.
+
+  [% ELSIF error == "comment_tag_invalid" %]
+    [% title = "Invalid Comment Tag" %]
+    The comment tag "[% tag FILTER html %]" contains invalid characters or
+    words.
+
+  [% ELSIF error == "comment_tag_too_long" %]
+    [% title = "Comment Tag Too Long" %]
+    Comment tags cannot be longer than
+    [%+ constants.MAX_COMMENT_TAG_LENGTH FILTER html %] characters.
+
+  [% ELSIF error == "comment_tag_too_short" %]
+    [% title = "Comment Tag Too Short" %]
+    Comment tags must be at least
+    [%+ constants.MIN_COMMENT_TAG_LENGTH FILTER html %] characters.
 
   [% ELSIF error == "auth_classification_not_enabled" %]
     [% title = "Classification Not Enabled" %]
@@ -481,7 +516,7 @@
 
   [% ELSIF error == "feature_disabled" %]
     The [% install_string("feature_$feature") FILTER html %] feature is not
-    available in this [% terms.Bugzilla %].
+    available in this Bugzilla.
     [% IF user.in_group('admin') %]
       If you would like to enable this feature, please run
       <kbd>checksetup.pl</kbd> to see how to install the necessary
@@ -643,9 +678,14 @@
     <br>Alternately, if your attachment is an image, you could convert
     it to a compressible format like JPG or PNG and try again.
 
-  [% ELSIF error == "flag_requestee_disabled" %]
+  [% ELSIF error == "flag_type_requestee_disabled" %]
     [% title = "Flag not Requestable from Specific Person" %]
     You can't ask a specific person for <em>[% type.name FILTER html %]</em>.
+
+  [% ELSIF error == "flag_requestee_disabled" %]
+    [% title = "Flag Requestee Disabled" %]
+    You can't ask <em>[% requestee.identity FILTER html %]</em> because that
+    account is disabled.
 
   [% ELSIF error == "flag_requestee_needs_privs" %]
     [% title = "Flag Requestee Needs Privileges" %]
@@ -728,6 +768,16 @@
     You are not allowed to edit properties of the '[% flagtype.name FILTER html %]'
     flag type, because this flag type is not available for the products you can administer.
 
+  [% ELSIF error == "flag_not_unique" %]
+    [% title = "Flag not Unique" %]
+    The flag '[% value FILTER html %]' has been set multiple times.
+    You must specify the id value to update the flag.
+
+  [% ELSIF error == "flag_type_not_unique" %]
+    [% title = "Flag Type not Unique" %]
+    The flag type '[% value FILTER html %]' matches several flag types.
+    You must specify the type id value to update or add a flag.
+
   [% ELSIF error == "flag_type_not_multiplicable" %]
     [% docslinks = {'flags-overview.html' => 'An overview on Flags',
                     'flags.html' => 'Using Flags'} %]
@@ -775,6 +825,11 @@
              [%- group.id FILTER uri %]">records</a>
     in the database which refer to it. All references to this group must
     be removed before you can remove it.
+
+  [% ELSIF error == "group_cannot_view" %]
+    [% title = "Cannot View Groups" %]
+    In order to view groups, you need to be a member of the 'editusers' or
+    'creategroups' group, or have bless privileges to at least one group.
 
   [% ELSIF error == "group_exists" %]
     [% title = "The group already exists" %]
@@ -868,9 +923,9 @@
 
   [% ELSIF error == "illegal_date" %]
     [% title = "Illegal Date" %]
-    '<tt>[% date FILTER html %]</tt>' is not a legal date.
+    '<kbd>[% date FILTER html %]</kbd>' is not a legal date.
     [% IF format %]
-      Please use the format '<tt>[% format FILTER html %]</tt>'.
+      Please use the format '<code>[% format FILTER html %]</code>'.
     [% END %]
     
   [% ELSIF error == "illegal_email_address" %]
@@ -896,6 +951,13 @@
     Your group control combination for group &quot;
     [% groupname FILTER html %]&quot; is illegal.
 
+  [% ELSIF error == "illegal_pronoun" %]
+    [% title = "Illegal Pronoun" %]
+    The pronoun you used ([% pronoun FILTER html %]) is illegal. You must use
+    one of the approved pronouns. Please see
+    <a href="[% docs_urlbase FILTER html %]query.html#pronouns">Pronoun Substitution</a>
+    for a complete list.
+
   [% ELSIF error == "illegal_query_name" %]
     [% title = "Illegal Search Name" %]
     The name of your search cannot contain any of the following characters: 
@@ -914,9 +976,9 @@
 
   [% ELSIF error == "illegal_time" %]
     [% title = "Illegal Time" %]
-    '<tt>[% time FILTER html %]</tt>' is not a legal time.
+    '<kbd>[% time FILTER html %]</kbd>' is not a legal time.
     [% IF format %]
-      Please use the format '<tt>[% format FILTER html %]</tt>'.
+      Please use the format '<code>[% format FILTER html %]</code>'.
     [% END %]
 
   [% ELSIF error == "illegal_regexp" %]
@@ -963,11 +1025,6 @@
     is one of <em>[% constants.LEGAL_CONTENT_TYPES.join(', ') FILTER html %]</em>
     and <em>bar</em> must not contain any special characters (such as "=", "?", ...).
 
-  [% ELSIF error == "invalid_context" %]
-    [% title = "Invalid Context" %]
-    The context [% context FILTER html %] is invalid (must be a number,
-    "file" or "patch").
-
   [% ELSIF error == "invalid_datasets" %]
     [% title = "Invalid Datasets" %]
     Invalid datasets <em>[% datasets.join(":") FILTER html %]</em>. Only digits,
@@ -1005,10 +1062,6 @@
     [% title = "Invalid Parameter" %]
     The new value for [% name FILTER html %] is invalid: [% err FILTER html %].
 
-  [% ELSIF error == "invalid_product_name" %]
-    [% title = "Invalid Product Name" %]
-    The product name '[% product FILTER html %]' is invalid or does not exist.
-
   [% ELSIF error == "invalid_regexp" %]
     [% title = "Invalid regular expression" %]
     The regular expression you entered is invalid.
@@ -1044,13 +1097,13 @@
 
   [% ELSIF error == "invalid_username" %]
     [% title = "Invalid Username" %]
-    The name <tt>[% name FILTER html %]</tt> is not a valid username.  
+    The name <kbd>[% name FILTER html %]</kbd> is not a valid username.
     Either you misspelled it, or the person has not
     registered for a [% terms.Bugzilla %] account.
 
-  [% ELSIF error == "invalid_username_or_password" %]
-    [% title = "Invalid Username Or Password" %]
-    The username or password you entered is not valid.
+  [% ELSIF error == "invalid_login_or_password" %]
+    [% title = "Invalid Login Or Password" %]
+    The login or password you entered is not valid.
     [%# People get two login attempts before being warned about
       # being locked out.
       #%]
@@ -1062,6 +1115,11 @@
       To avoid being locked out, you can reset your password using
       the "Forgot Password" link.
     [% END %]
+
+  [% ELSIF error == "invalid_cookies_or_token" %]
+    [% title = "Invalid Cookies or Token" %]
+    The cookies or token provide were not valid or have expired.
+    You may login again to get new cookies or a new token.
 
   [% ELSIF error == "json_rpc_get_method_required" %]
     When using JSON-RPC over GET, you must specify a 'method'
@@ -1086,6 +1144,13 @@
   [% ELSIF error == "json_rpc_post_only" %]
     For security reasons, you must use HTTP POST to call the
     '[% method FILTER html %]' method.
+
+  [% ELSIF error == "rest_invalid_resource" %]
+    A REST API resource was not found for '[% method FILTER html +%] [%+ path FILTER html %]'.
+
+  [% ELSIF error == "get_products_invalid_type" %]
+    The product type '[% type FILTER html %]' is invalid. Valid choices
+    are 'accessible', 'selectable', and 'enterable'.
 
   [% ELSIF error == "keyword_already_exists" %]
     [% title = "Keyword Already Exists" %]
@@ -1122,7 +1187,7 @@
 
   [% ELSIF error == "migrate_from_invalid" %]
     '[% from FILTER html %]' is not a valid type of [% terms.bug %]-tracker
-    to migrate from. See the contents of the <kbd>B[% %]ugzilla/Migrate/</kbd>
+    to migrate from. See the contents of the <kbd>Bugzilla/Migrate/</kbd>
     directory for a list of valid [% terms.bug %]-trackers.
 
   [% ELSIF error == "milestone_already_exists" %]
@@ -1289,6 +1354,8 @@
       to modify.
     [% ELSIF action == "view" %]
       to view.
+    [% ELSIF action == 'summarize' %]
+      for viewing time summaries.
     [% END %]
 
   [% ELSIF error == "no_tag_to_edit" %]
@@ -1299,6 +1366,11 @@
     [% title = "No Initial $terms.Bug Status" %]
     No [% terms.bug %] status is available on [% terms.bug %] creation.
     Please report the problem to [% Param("maintainer") %].
+    
+  [% ELSIF error == "no_keywords" %]
+    [% title = "No Keywords" %]
+    [% admindocslinks = {'keywords.html' => 'Setting up a keyword'} %]
+    No keywords have been defined for this installation.
 
   [% ELSIF error == "no_new_quips" %]
     [% title = "No New Quips" %]
@@ -1316,6 +1388,12 @@
                          'groups.html'     => 'Groups security'} %]
     Either no products have been defined to enter [% terms.bugs %] against or you have not
     been given access to any.
+
+  [% ELSIF error == "number_not_integer" %]
+    [% title = "Integer Value Required" %]
+    The value '[% num FILTER html %]' in the
+    <em>[% field_descs.$field FILTER html %]</em> field
+    is not an integer value (i.e. a whole number).
 
   [% ELSIF error == "number_not_numeric" %]
     [% title = "Numeric Value Required" %]
@@ -1357,8 +1435,7 @@
       Either you mis-typed the name or that user has not yet registered
       for a [% terms.Bugzilla %] account.
     [% ELSIF class == "Bugzilla::Keyword" %]
-      The legal keyword names are <a href="describekeywords.cgi">listed
-      here</a>.
+      See the list of available <a href="describekeywords.cgi">keywords</a>.
     [% END %]
 
   [% ELSIF error == "old_password_incorrect" %]
@@ -1377,18 +1454,14 @@
     [% title = "Passwords Don't Match" %]
     The two passwords you entered did not match.
 
-  [% ELSIF error == "password_current_too_short" %]
-    [% title = "New Password Required" %]
-    Your password is currently less than
-    [%+ constants.USER_PASSWORD_MIN_LENGTH FILTER html %] characters long,
-    which is the new minimum length required for passwords.
-    You must <a href="token.cgi?a=reqpw&amp;loginname=[% locked_user.email FILTER uri %]">
-    request a new password</a> in order to log in again.
-
   [% ELSIF error == "password_too_short" %]
     [% title = "Password Too Short" %]
     The password must be at least
     [%+ constants.USER_PASSWORD_MIN_LENGTH FILTER html %] characters long.
+    [% IF locked_user %]
+      You must <a href="token.cgi?a=reqpw&amp;loginname=[% locked_user.email FILTER uri %]&amp;token=[% issue_hash_token(['reqpw']) FILTER uri %]">
+      request a new password</a> in order to log in again.
+    [% END %]
 
   [% ELSIF error == "password_not_complex" %]
     [% title = "Password Fails Requirements" %]
@@ -1406,6 +1479,10 @@
         <li>digit</li>
       [% END %]
     </ul>
+    [% IF locked_user %]
+      You must <a href="token.cgi?a=reqpw&amp;loginname=[% locked_user.email FILTER uri %]&amp;token=[% issue_hash_token(['reqpw']) FILTER uri %]">
+      request a new password</a> in order to log in again.
+    [% END %]
 
   [% ELSIF error == "product_access_denied" %]
     [% title = "Product Access Denied" %]
@@ -1519,7 +1596,7 @@
 
   [% ELSIF error == "quicksearch_unbalanced_quotes" %]
     [% title = "Badly Formatted Query" %]
-    [% terms.Bugzilla %] is unable to parse your query correctly:
+    Bugzilla is unable to parse your query correctly:
     <em>[% string FILTER html %]</em>.<br>
     If you use quotes to enclose strings, make sure both quotes are present.
     If you really want to look for a quote in a string, type \" instead of ".
@@ -1618,7 +1695,7 @@
     field.
 
   [% ELSIF error == "search_grouped_field_invalid" %]
-    [% terms.Bugzilla %] does not support using the 
+    Bugzilla does not support using the
     "[%+ field_descs.$field FILTER html %]" ([% field FILTER html %])
     field with grouped search conditions.
 
@@ -1629,7 +1706,7 @@
     All conditions under a groups search must use the same field.
 
   [% ELSIF error == "search_field_operator_invalid" %]
-    [% terms.Bugzilla %] does not support using the 
+    Bugzilla does not support using the
     "[%+ field_descs.$field FILTER html %]" ([% field FILTER html %])
     field with the "[% search_descs.$operator FILTER html %]" 
     ([% operator FILTER html %]) search type.
@@ -1704,7 +1781,7 @@
 
   [% ELSIF error == "tag_name_too_long" %]
     [% title = "Tag Name Too Long" %]
-    The tag name must be less than [% constants.MAX_LEN_QUERY_NAME FILTER html %]
+    The tag must be less than [% constants.MAX_LEN_QUERY_NAME FILTER html %]
     characters long.
 
   [% ELSIF error == "token_does_not_exist" %]
@@ -1734,7 +1811,7 @@
 
   [% ELSIF error == "unknown_tab" %]
     [% title = "Unknown Tab" %]
-    <code>[% current_tab_name FILTER html %]</code> is not a legal tab name.
+    There is no tab named <code>[% current_tab_name FILTER html %]</code>.
 
   [% ELSIF error == "value_inactive" %]
     [% title = "Value is Not Active" %]
@@ -1795,12 +1872,12 @@
 
   [% ELSIF error == "user_match_failed" %]
     [% title = "Match Failed" %]
-    <tt>[% name FILTER html %]</tt> does not exist or you are not allowed 
+    <kbd>[% name FILTER html %]</kbd> does not exist or you are not allowed
     to see that user.
 
   [% ELSIF error == "user_match_too_many" %]
     [% title = "No Conclusive Match" %]
-    [% terms.Bugzilla %] cannot make a conclusive match for one or more
+    Bugzilla cannot make a conclusive match for one or more
     of the names and/or email addresses you entered for
     the [% fields.join(', ') FILTER html %] field(s).
 
@@ -1808,6 +1885,16 @@
     [% title = "User Not In Insidergroup" %]
     Sorry, but you are not allowed to (un)mark comments or attachments
     as private.
+
+  [% ELSIF error == "user_not_involved" %]
+    [% title = "User Not Involved with $terms.Bug" %]
+    Sorry, but you are not involved with [% terms.Bug %] [%+
+        bug_id FILTER bug_link(bug_id) FILTER none %].
+
+  [% ELSIF error == "webdot_too_large" %]
+    [% title = "Dependency Graph Too Large" %]
+    The dependency graph contains too many [% terms.bugs %] to display (more
+    than [% constants.MAX_WEBDOT_BUGS FILTER html %] [%+ terms.bugs %]).
 
   [% ELSIF error == "wrong_token_for_cancelling_email_change" %]
     [% title = "Wrong Token" %]
@@ -1888,15 +1975,11 @@
    admindocslinks = admindocslinks
 %]
 
-<table cellpadding="20">
-  <tr>
-    <td id="error_msg" class="throw_error">
-      [% error_message FILTER none %]
-    </td>
-  </tr>
-</table>
+<div id="error_msg" class="throw_error">
+  [% error_message FILTER none %]
+</div>
 
-<p>
+<p id="post_err_msg">
   Please press <b>Back</b> and try again.
 </p>
 

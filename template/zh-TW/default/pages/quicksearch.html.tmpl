@@ -7,20 +7,16 @@
   #%]
 
 [% INCLUDE global/header.html.tmpl
-   title  = "$terms.Bugzilla 快速搜尋",
-   style_urls = ['skins/standard/page.css']
-   onload = 'document.forms[\'f\'].quicksearch.focus()'
+  title  = "$terms.Bugzilla 快速搜尋"
+  bodyclasses = ['narrow_page']
  %]
 
 [% USE Bugzilla %]
 
 <p><label for="quicksearch">輸入一個以上的字（或字串）進行搜尋：</label></p>
 
-<form name="f" action="buglist.cgi" method="get"
-      onsubmit="if (this.quicksearch.value == '')
-                { alert('請至少輸入一個字串來搜尋。');
-                  return false; } return true;">
-  <input type="text" size="40" name="quicksearch" id="quicksearch">
+<form name="f" action="buglist.cgi" method="get">
+  <input size="40" name="quicksearch" id="quicksearch" autofocus required>
   <input type="submit" value="搜尋" id="find">
 </form>
 
@@ -37,7 +33,7 @@
 
 <ul class="qs_help">
   <li>如果你在搜尋框裡輸入了一個或多個字，
-    [%+ terms.Bugzilla %] 會在
+    Bugzilla 會在
     [%+ field_descs.product FILTER html %]、
     [%+ field_descs.component FILTER html %]、
     [%+ IF use_keywords %][%+ field_descs.keywords FILTER html %]、[% END %]
@@ -57,7 +53,7 @@
   <li>搜尋是<strong>不分大小寫</strong>的。
     所以 <kbd>table</kbd> 、 <kbd>Table</kbd> 和 <kbd>TABLE</kbd> 會被當成相同的字串。</li>
 
-  <li>[% terms.Bugzilla %] 不只是搜尋完全符合的字，也會搜尋<strong>包含</strong>該字串的其他字。
+  <li>Bugzilla  不只是搜尋完全符合的字，也會搜尋<strong>包含</strong>該字串的其他字。
     例如：搜尋 "cat" 的時候，也會找到其他字裡有 "cat" 的 [% terms.bugs %]&mdash;比方說，
     提到 "<strong>cat</strong>ch" 或 "certifi<strong>cat</strong>e" 的 [% terms.bug %] 。
     [% field_descs.longdesc FILTER html %]或[% field_descs.keywords FILTER html %]欄位例外&mdash;
@@ -112,7 +108,7 @@
     也可以用位於 <kbd>cf_</kbd> <em>之後</em>的名稱來做為縮寫。
     例如： <kbd>[% first_field.name FILTER html %]</kbd> 可以輸入成
     <kbd>[% first_field.name.replace('^cf_') FILTER html %]</kbd> 。
-    然而當自訂欄位 <kbd>cf_</kbd> 之後的名稱和標準的 [%+ terms.Bugzilla %]
+    然而當自訂欄位 <kbd>cf_</kbd> 之後的名稱和標準的 Bugzilla 
     欄位名稱衝突的時候，標準的欄位名稱擁有優先權。</p>
 [% END %]
 
@@ -123,7 +119,7 @@
 [% END %]
 
 
-<table cellspacing="0" cellpadding="0" border="0" class="qs_fields">
+<table class="qs_fields">
   <thead>
     <tr>
       <th class="field_name">欄位</th>
@@ -195,6 +191,48 @@
       (<kbd>url</kbd> OR <kbd>location</kbd>) AND (<kbd>bar</kbd> OR
       <kbd>field</kbd>) AND (NOT <kbd>focus</kbd>)</p>
   </li>
+
+  <li>
+    預設的運算子，冒號 (:) ，執行的是符合值的<strong>子字串</strong>搜尋。
+    支援以下運算子：
+    <ul>
+      <li>
+        <strong>:</strong> (子字串):<br>
+        <kbd><em>summary:foo</em></kbd>
+        會搜尋<kbd>摘要</kbd>含有 <kbd>foo</kbd> 的 [% terms.bugs %]。
+      </li>
+      <li>
+        <strong>=</strong> (等於):<br>
+        <kbd><em>summary=foo</em></kbd>
+        會搜尋<kbd>摘要</kbd>是 <kbd>foo</kbd> 的 [% terms.bugs %] 。
+      </li>
+      <li>
+        <strong>!=</strong> (不等於):<br>
+        <kbd><em>summary!=foo</em></kbd>
+        會搜尋<kbd>摘要</kbd>不是 <kbd>foo</kbd> 的 [% terms.bugs %] 。
+      </li>
+      <li>
+        <strong>&gt;</strong> (大於):<br>
+        <kbd><em>creation_ts&gt;-2w</em></kbd>
+        會搜尋從兩星期前（不含）到現在所建立的 [% terms.bugs %] 。
+      </li>
+      <li>
+        <strong>&gt;=</strong> (大於等於):<br>
+        <kbd><em>creation_ts&gt;=-2w</em></kbd>
+        會搜尋從兩星期前（含）到現在所建立的 [% terms.bugs %] 。
+      </li>
+      <li>
+        <strong>&lt;</strong> (小於):<br>
+        <kbd><em>creation_ts&lt;-2w</em></kbd>
+        會搜尋從兩星期前（不含）所建立的 [% terms.bugs %] 。
+      </li>
+      <li>
+        <strong>&lt;=</strong> (小於等於):<br>
+        <kbd><em>creation_ts&lt;=-2w</em></kbd>
+        會搜尋從兩星期前（含）所建立的 [% terms.bugs %] 。
+      </li>
+    </ul>
+  </li>
 </ul>
 
 <h2 id="shortcuts">進階快速鍵</h2>
@@ -202,7 +240,7 @@
 <p>除了用<a href="#fields">欄位名稱</a>搜尋特定欄位之外，
   還有一些特定的字或字元可以當成「快速鍵」，對特定欄位做搜尋：</p>
 
-<table cellspacing="0" cellpadding="0" border="0" class="qs_fields">
+<table class="qs_fields">
   <thead>
     <tr>
       <th class="field_name">欄位</th>
@@ -281,7 +319,7 @@
   <a href="query.cgi?format=advanced">進階搜尋</a>。</p>
 
 <ul class="qs_help">
-  <li>所有由 userA@company.com 回報的 [% terms.bugs %] ，或者由他負責的
+  <li>所有由 userA@company.com 回報的 [% terms.bugs %] ，或者由該使用者負責的
     [% terms.bugs %] （關於 @
     的用法，參見上方<a href="#shortcuts">進階快速鍵</a>一段）：<br>
     <kbd>ALL @userA@company.com OR reporter:userA@company.com</kbd></li>

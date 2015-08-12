@@ -20,6 +20,7 @@
   # style_urls: list. List of URLs to CSS style sheets.
   # message: string. A message to display to the user. May contain HTML.
   # atomlink: Atom link URL, May contain HTML
+  # generate_api_token: generate a token which can be used to make authenticated webservice calls
   #%]
 
 [% IF message %]
@@ -32,6 +33,7 @@
   onload = ""
   style_urls = []
   yui = []
+  generate_api_token = 0
 %]
 
 [% SET yui_css = {
@@ -75,8 +77,7 @@
   # set header's default value here only if it is undefined. %]
 [% IF !header.defined %][% header = title %][% END %]
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-                      "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html lang="en">
   <head>
     [% Hook.process("start") %]
@@ -86,42 +87,34 @@
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     [% END %]
 
-[%# Migration note: contents of the old Param 'headerhtml' would go here %]
-
-    [% PROCESS "global/site-navigation.html.tmpl" %]
-
-    [% PROCESS 'global/setting-descs.none.tmpl' %]
-
     [% SET yui = yui_resolve_deps(yui, yui_deps) %]
+
     [% SET css_sets = css_files(style_urls, yui, yui_css) %]
-
-    [%# CSS cascade, parts 1 & 2: YUI & Standard Bugzilla stylesheet set (persistent).
-      # Always present. %]
-    <link href="[% 'skins/standard/global.css' FILTER mtime FILTER html %]"
-          rel="alternate stylesheet" 
-          title="[% setting_descs.standard FILTER html %]">
-    [% FOREACH style_url = css_sets.standard %]
-      [% PROCESS format_css_link css_set_name = 'standard' %]
+    [% IF constants.CONCATENATE_ASSETS %]
+      [% PROCESS format_css_link asset_url = css_sets.unified_standard_skin %]
+    [% ELSE %]
+      [% FOREACH asset_url = css_sets.standard %]
+        [% PROCESS format_css_link %]
+      [% END %]
+      [% FOREACH asset_url = css_sets.skin %]
+        [% PROCESS format_css_link %]
+      [% END %]
     [% END %]
 
-    [%# CSS cascade, part 3: Third-party stylesheet set, per user prefs. %]
-    [% FOREACH style_url = css_sets.skin %]
-      [% PROCESS format_css_link css_set_name = user.settings.skin.value %]
-    [% END %]
-
-    [%# CSS cascade, part 4: page-specific styles. %]
     [% IF style %]
       <style type="text/css">
         [% style %]
       </style>
     [% END %]
 
-    [%# CSS cascade, part 5: Custom Bugzilla stylesheet set (persistent).
-      # Always present. Site administrators may override all other style
-      # definitions, including skins, using custom stylesheets.
-      #%]
-    [% FOREACH style_url = css_sets.custom %]
-      [% PROCESS format_css_link css_set_name = 'standard' %]
+    [% IF css_sets.unified_custom %]
+      [% IF constants.CONCATENATE_ASSETS %]
+        [% PROCESS format_css_link asset_url = css_sets.unified_custom %]
+      [% ELSE %]
+        [% FOREACH asset_url = css_sets.custom %]
+          [% PROCESS format_css_link %]
+        [% END %]
+      [% END %]
     [% END %]
 
     [%# YUI Scripts %]
@@ -130,7 +123,7 @@
     [% END %]
     [% starting_js_urls.push('js/global.js') %]
 
-    [% FOREACH javascript_url = starting_js_urls %]
+    [% FOREACH asset_url = concatenate_js(starting_js_urls) %]
       [% PROCESS format_js_link %]
     [% END %]
 
@@ -174,16 +167,19 @@
                 [%# Please keep these in alphabetical order. %]
 
                 attach_desc_required:
-                    'You must enter a Description for this attachment.',
+                    "You must enter a Description for this attachment.",
                 component_required:
-                    'You must select a Component for this [% terms.bug %].',
+                    "You must select a Component for this [% terms.bug %].",
                 description_required:
-                    'You must enter a Description for this [% terms.bug %].',
+                    "You must enter a Description for this [% terms.bug %].",
                 short_desc_required:
-                    'You must enter a Summary for this [% terms.bug %].',
+                    "You must enter a Summary for this [% terms.bug %].",
                 version_required:
-                    'You must select a Version for this [% terms.bug %].'
+                    "You must select a Version for this [% terms.bug %]."
             }
+            [% IF generate_api_token %]
+              , api_token: '[% get_api_token FILTER js FILTER html %]'
+            [% END %]
         };
 
         [% FOREACH yui_name = yui %]
@@ -197,7 +193,7 @@
     // -->
     </script>
 
-    [% FOREACH javascript_url = javascript_urls %]
+    [% FOREACH asset_url = concatenate_js(javascript_urls) %]
       [% PROCESS format_js_link %]
     [% END %]
 
@@ -215,99 +211,64 @@
     [% Hook.process("additional_header") %]
   </head>
 
-[%# Migration note: contents of the old Param 'bodyhtml' go in the body tag,
-  # but set the onload attribute in the DEFAULT directive above.
-  #%]
-
-  <body onload="[% onload %]"
+  <body [% IF onload %] onload="[% onload %]"[% END %]
         class="[% urlbase.replace('^https?://','').replace('/$','').replace('[-~@:/.]+','-') FILTER css_class_quote %]
                [% FOREACH class = bodyclasses %]
-                 [% ' ' %][% class FILTER css_class_quote %]
+                 [%+ class FILTER css_class_quote %]
                [% END %] yui-skin-sam">
 
-[%# Migration note: the following file corresponds to the old Param
-  # 'bannerhtml'
-  #%]
+  <div id="header">
+    [% INCLUDE global/banner.html.tmpl %]
 
-<div id="header">
+    <div id="titles">
+      <span id="title">[% terms.Bugzilla %][% " &ndash; $header" IF header %]</span>
 
-[% INCLUDE global/banner.html.tmpl %]
+      [% IF subheader %]
+        <span id="subtitle" class="subheader">[% subheader %]</span>
+      [% END %]
 
-<table border="0" cellspacing="0" cellpadding="0" id="titles">
-<tr>
-    <td id="title">
-      <p>[% terms.Bugzilla %]
-      [% " &ndash; $header" IF header %]</p>
-    </td>
+      [% IF header_addl_info %]
+        <span id="information" class="header_addl_info">[% header_addl_info %]</span>
+      [% END %]
+    </div>
 
-  [% IF subheader %]
-    <td id="subtitle">
-      <p class="subheader">[% subheader %]</p>
-    </td>
-  [% END %]
-
-  [% IF header_addl_info %]
-    <td id="information">
-      <p class="header_addl_info">[% header_addl_info %]</p>
-    </td>
-  [% END %]
-</tr>
-</table>
-
-<table id="lang_links_container" cellpadding="0" cellspacing="0"
-       class="bz_default_hidden"><tr><td>
-[% IF Bugzilla.languages.size > 1 %]
-  <ul class="links">
-  [% FOREACH lang = Bugzilla.languages.sort %]
-    <li>[% IF NOT loop.first %]<span class="separator"> | </span>[% END %]
-    [% IF lang == current_language %]
-      <span class="lang_current">[% lang FILTER html FILTER upper %]</span>
-    [% ELSE %]
-      <a href="#" onclick="set_language('[% lang FILTER none %]');">
-       [%- lang FILTER html FILTER upper %]</a>
+    [% USE Bugzilla %]
+    [% IF Bugzilla.languages.size > 1 %]
+      <div id="lang_links_container" class="bz_default_hidden">
+        <ul class="links">
+          [% FOREACH lang = Bugzilla.languages.sort %]
+            <li>
+              [% IF NOT loop.first %]<span class="separator"> | </span>[% END %]
+              [% IF lang == current_language %]
+                <span class="lang_current">[% lang FILTER html FILTER upper %]</span>
+              [% ELSE %]
+                <a href="#" onclick="set_language('[% lang FILTER none %]');">
+                  [%- lang FILTER html FILTER upper %]</a>
+              [% END %]
+            </li>
+          [% END %]
+        </ul>
+      </div>
     [% END %]
-    </li>
-  [% END %]
-  </ul>
-[% END %]
-</td></tr></table>
 
-[% PROCESS "global/common-links.html.tmpl" qs_suffix = "_top" %]
-</div> [%# header %]
+    <div id="common_links">
+      [% PROCESS "global/common-links.html.tmpl" qs_suffix = "_top" %]
+    </div>
+  </div>
 
-<div id="bugzilla-body">
+  <div id="bugzilla-body">
+    [% IF Param('announcehtml') %]
+      [% Param('announcehtml') FILTER none %]
+    [% END %]
 
-[% IF Param('announcehtml') %]
-[% Param('announcehtml') FILTER none %]
-[% END %]
-
-[% IF message %]
-  <div id="message">[% message %]</div>
-[% END %]
+    [% IF message %]
+      <div id="message">[% message %]</div>
+    [% END %]
 
 [% BLOCK format_css_link %]
-  [% IF style_url.match('/IE-fixes\.css') %]
-    <!--[if lte IE 7]>
-      [%# Internet Explorer treats [if IE] HTML comments as uncommented.
-        # We use it to import CSS fixes so that Bugzilla looks decent on IE 7
-        # and below.
-        #%]
-  [% END %]
-
-  [% IF css_set_name == 'standard' %]
-    [% SET css_title_link = '' %]
-  [% ELSE %]
-    [% css_title_link = BLOCK ~%]
-      title="[% setting_descs.${user.settings.skin.value} || user.settings.skin.value FILTER html %]"
-    [% END %]
-  [% END %]
-
-  <link href="[% style_url FILTER html %]" rel="stylesheet"
-        type="text/css" [% css_title_link FILTER none %]>
-
-  [% '<![endif]-->' IF style_url.match('/IE-fixes\.css') %]
+  <link href="[% asset_url FILTER html %]" rel="stylesheet" type="text/css">
 [% END %]
 
 [% BLOCK format_js_link %]
-  <script type="text/javascript" src="[% javascript_url FILTER mtime FILTER html %]"></script>
+  <script type="text/javascript" src="[% asset_url FILTER mtime FILTER html %]"></script>
 [% END %]

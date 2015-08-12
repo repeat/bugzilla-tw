@@ -10,6 +10,11 @@
 <input type="hidden" name="dontchange" value="[% dontchange FILTER html %]">
 <input type="hidden" name="token" value="[% token FILTER html %]">
 
+<input type="button" id="uncheck_all" value="Uncheck All"
+       class="bz_default_hidden" onclick="SetCheckboxes(false);">
+<input type="button" id="check_all" value="Check All"
+       class="bz_default_hidden" onclick="SetCheckboxes(true);">
+
 <script type="text/javascript">
   function SetCheckboxes(value) {
       var elements = document.forms.changeform.getElementsByTagName('input'),
@@ -22,30 +27,38 @@
           }
       }
   }
-  document.write(' <input type="button" name="uncheck_all" value="Uncheck All" onclick="SetCheckboxes(false);">');
-  document.write(' <input type="button" name="check_all" value="Check All" onclick="SetCheckboxes(true);">');
+  YAHOO.util.Dom.removeClass("check_all", "bz_default_hidden");
+  YAHOO.util.Dom.removeClass("uncheck_all", "bz_default_hidden");
 </script>
 
 <hr>
 
-<p style="font-size:smaller">
- To change multiple [% terms.bugs %]:</p>
-<ol style="font-size:smaller">
-  <li>Check the [% terms.bugs %] you want to change above.</li>
-  <li>Make your changes in the form fields below.  If the change
-   you are making requires an explanation, include it in
-   the comments box.</li>
-  <li>Click the <em>Commit</em> button.</li>
-</ol>
+<div class="bz_info">
+  To change multiple [% terms.bugs %]:
+  <ol>
+    <li>Check the [% terms.bugs %] you want to change above.</li>
+    <li>Make your changes in the form fields below.  If the change
+        you are making requires an explanation, include it in
+        the comments box.</li>
+    <li>Click the <em>Commit</em> button.</li>
+  </ol>
+</div>
+
+[% IF excluded_values %]
+  <p class="extra_info">Only values that are available for all products of the above
+  [%+ terms.bugs %] are shown.</p>
+[% END %]
 
 <table id="form">
   <tr>
 
     <th><label for="product">Product:</label></th>
     <td>
-      [% PROCESS selectmenu menuname = "product"
-                            menuitems = products
-                            property = "name" %]
+      [% INCLUDE "global/product-select.html.tmpl"
+         id         => "product"
+         name       => "product"
+         dontchange => dontchange
+       %]
     </td>
 
     <th><label for="version">Version:</label></th>
@@ -116,7 +129,7 @@
       <th><label for="target_milestone">Target Milestone:</label></th>
       <td>
         [% PROCESS selectmenu menuname = "target_milestone"
-                              menuitems = targetmilestones %]
+                              menuitems = milestones %]
       </td>
     [% END %]
   </tr>
@@ -259,11 +272,11 @@
 
   [% IF Param('usestatuswhiteboard') %]
     <tr>
-      <td align="right">
-        <b>Status Whiteboard:</b>
-      </td>
+      <th>
+        <label for="status_whiteboard">Status Whiteboard:</label>
+      </th>
       <td colspan="7">
-        <input name="status_whiteboard" 
+        <input name="status_whiteboard" id="status_whiteboard"
                value="[% dontchange FILTER html %]" size="60">
       </td>
     </tr>
@@ -288,7 +301,7 @@
 [% IF user.is_insider %]
   <input type="checkbox" name="comment_is_private" value="1"
          id="newcommentprivacy"
-         onClick="updateCommentTagControl(this, 'comment')"/>
+         onClick="updateCommentTagControl(this, 'comment')">
    <label for="newcommentprivacy">
      Make comment private (visible only to members of the
      <strong>[% Param('insidergroup') FILTER html %]</strong> group)
@@ -308,6 +321,13 @@
   </script>
 [% END %]
 
+[% IF flag_types %]
+<b><label for="flags">Flags:</label></b><br>
+[% PROCESS "flag/list.html.tmpl"
+           edit_multiple_bugs = 1
+           flag_no_header = 1 %]
+[% END %]
+
 [% Hook.process('before_groups') %]
 
 [% IF groups.size > 0 %]
@@ -322,23 +342,23 @@
   </script>
 
   <b>Groups:</b><br>
-  <table border="1">
+  <table id="groups_edit_multiple">
     <tr>
-      <th>Remove<br>[% terms.bugs %]<br>from this<br>group</th>
-      <th>Add<br>[% terms.bugs %]<br>to this<br>group</th>
-      <th>Group Name:</th>
+      <th class="narrow_column">Remove [% terms.bugs %] from this group</th>
+      <th class="narrow_column">Add [% terms.bugs %] to this group</th>
+      <th>Group Name</th>
     </tr>
 
     [% FOREACH group = groups %]
     <tr>
-      <td align="center">
+      <td class="center">
         <input type="checkbox" name="defined_groups" 
                id="defined_group_[% group.id %]"
                value="[% group.name FILTER html %]"
                onchange="turn_off(this, 'group_[% group.id %]')">
       </td>
       [% IF group.is_active %]
-        <td align="center">
+        <td class="center">
           <input type="checkbox" name="groups" 
                  id="group_[% group.id FILTER html %]"
                  value="[% group.name FILTER html %]"
@@ -360,7 +380,7 @@
   </table>
 
   [% IF foundinactive %]
-    <p style="font-size:smaller">(Note: [% terms.Bugs %] may not be added to [% FILTER inactive %]inactive
+    <p class="bz_info">(Note: [% terms.Bugs %] may not be added to [% FILTER inactive %]inactive
     groups[% END %], only removed.)</p>
   [% END %]
 
