@@ -34,7 +34,7 @@
         id="mini_login[% qs_suffix FILTER html %]">
     <input id="Bugzilla_login[% qs_suffix FILTER html %]" required
            name="Bugzilla_login" class="bz_login"
-      [% IF Param('emailsuffix') %]
+      [% IF login_not_email %]
         placeholder="帳號"
       [% ELSE %]
         type="email" placeholder="電子郵件地址"
@@ -64,7 +64,7 @@
         class="mini_forgot bz_default_hidden">
     <label for="login[% qs_suffix FILTER html %]">帳號：</label>
     <input name="loginname" size="20" id="login[% qs_suffix FILTER html %]" required
-      [% IF Param('emailsuffix') %]
+      [% IF login_not_email %]
         placeholder="你的帳號"
       [% ELSE %]
         type="email" placeholder="你的電子郵件地址"
