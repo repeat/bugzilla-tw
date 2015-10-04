@@ -236,7 +236,7 @@
         ><img title="iCal 格式" alt="iCal" src="images/ical.png" height="24" width="24"></a>
         <button type="button" id="change_columns"
                 onclick="document.location='colchange.cgi?[% urlquerypart FILTER html %]&amp;query_based_on=
-                         [%~ defaultsavename OR searchname FILTER uri %]'">
+                         [%~ defaultsavename OR searchname FILTER uri FILTER js %]'">
             變更欄位</button>
 
         [% IF bugs.size > 1 && caneditbugs && !dotweak %]
