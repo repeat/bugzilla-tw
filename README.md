@@ -30,4 +30,4 @@ Download is powered by github [releases](https://github.com/repeat/bugzilla-tw/r
 Repeat Yang
 
 ### License
-Version 5.0 is released under [Mozilla Public License 2.0](https://www.mozilla.org/MPL/2.0/).
+Version 5.0.x is released under [Mozilla Public License 2.0](https://www.mozilla.org/MPL/2.0/).

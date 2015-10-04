@@ -7,11 +7,11 @@
   #%]
 
 From: [% Param('mailfrom') %]
-To: [% emailaddress %]
+To: [% newemailaddress %]
 Subject: [% terms.Bugzilla %] 要求變更電子郵件地址
 X-Bugzilla-Type: admin
 
-[%+ terms.Bugzilla %] 收到將使用 [% oldemailaddress %] 註冊的帳號變更為使用此一電子郵件地址註冊的要求。
+[%+ terms.Bugzilla %] 收到將使用 [% user.email %] 註冊的帳號變更為使用此一電子郵件地址註冊的要求。
 
 如要確認變更，請點選以下網址：
 

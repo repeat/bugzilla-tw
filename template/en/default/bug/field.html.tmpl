@@ -42,14 +42,21 @@
                name="[% field.name FILTER html %]"
                value="[% value FILTER html %]" size="40"
                maxlength="[% constants.MAX_FREETEXT_LENGTH FILTER none %]"
-               [% IF field.type == constants.FIELD_TYPE_INTEGER %] pattern="\d+[% IF dontchange %]|[% dontchange FILTER html %][% END %]" [% END %]
-               [% ' aria-required="true" required' IF field.is_mandatory %]>
+               [% IF field.type == constants.FIELD_TYPE_INTEGER %]
+                 pattern="-?\d+[% IF dontchange %]|[% dontchange FILTER html %][% END %]"
+                 title="The value must be a valid positive or negative integer"
+               [% END %]
+               [% IF field.is_mandatory %]
+                 data-required="true" [% 'aria-required="true" required' UNLESS field_hidden %]
+               [% END %]>
     [% CASE [constants.FIELD_TYPE_DATETIME, constants.FIELD_TYPE_DATE] %]
       [% size = (field.type == constants.FIELD_TYPE_DATE) ? 10 : 20 %]
       <input name="[% field.name FILTER html %]" size="[% size FILTER none %]"
              id="[% field.name FILTER html %]"
              value="[% value FILTER html %]"
-             [% ' aria-required="true" required' IF field.is_mandatory %]
+             [% IF field.is_mandatory %]
+               data-required="true" [% 'aria-required="true" required' UNLESS field_hidden %]
+             [% END %]
              onchange="updateCalendarFromField(this)">
       <button type="button" class="calendar_button"
               id="button_calendar_[% field.name FILTER html %]"
@@ -67,8 +74,9 @@
         <span id="[% field.name FILTER html %]_input_area">
           <input name="[% field.name FILTER html %]" id="[% field.name FILTER html %]"
                  value="[% value FILTER html %]" size="7"
-                 [% ' aria-required="true" required' IF field.is_mandatory %]>
-
+                 [% IF field.is_mandatory %]
+                   data-required="true" [% 'aria-required="true" required' UNLESS field_hidden %]
+                 [% END %]>
         </span>
 
         [% IF value %]  
@@ -86,18 +94,25 @@
         </script>
     [% CASE [ constants.FIELD_TYPE_SINGLE_SELECT 
               constants.FIELD_TYPE_MULTI_SELECT ] %]
+      [%# The 'product' field needs its own template if classifications are enabled. %]
+      [% IF field.name == "product" AND Param('useclassification') %]
+        [% INCLUDE "global/product-select.html.tmpl"
+                   id = "product", name = "product", value = value
+                   products = override_legal_values %]
+      [% ELSE %]
         <input type="hidden" id="[% field.name FILTER html %]_dirty">
         <select id="[% field.name FILTER html %]" 
                 name="[% field.name FILTER html %]" 
                 [% IF field.type == constants.FIELD_TYPE_MULTI_SELECT %]
-                    [% SET field_size = 5 %]
-                    [% IF field.legal_values.size < 5 %]
-                        [% SET field_size = field.legal_values.size %]
-                    [% END %]
-                    size="[% field_size FILTER html %]" multiple="multiple"
-                    [% ' aria-required="true" required' IF field.is_mandatory %]
-                [% END %]
-                >
+                  [% SET field_size = 5 %]
+                  [% IF field.legal_values.size < 5 %]
+                    [% SET field_size = field.legal_values.size %]
+                  [% END %]
+                  size="[% field_size FILTER html %]" multiple="multiple"
+                  [% IF field.is_mandatory %]
+                    data-required="true" [% 'aria-required="true" required' UNLESS field_hidden %]
+                  [% END %]
+                [% END %]>
           [% IF allow_dont_change %]
             <option value="[% dontchange FILTER html %]"
                    [% ' selected="selected"' IF value == dontchange %]>
@@ -135,22 +150,24 @@
         [% IF field.type == constants.FIELD_TYPE_MULTI_SELECT %]
           <input type="hidden" name="defined_[% field.name FILTER html %]">
         [% END %]
+      [% END %]
 
-        <script type="text/javascript">
+      <script type="text/javascript">
         <!--
           initHidingOptionsForIE('[% field.name FILTER js %]');
           [%+ INCLUDE "bug/field-events.js.tmpl"
                       field = field, product = bug.product_obj %]
         //-->
-        </script>
+      </script>
 
-     [% CASE constants.FIELD_TYPE_TEXTAREA %]
+    [% CASE constants.FIELD_TYPE_TEXTAREA %]
        <div id="[% field.name FILTER html %]_edit_container" class="bz_default_hidden">
          <div>
              (<a href="#" id="[% field.name FILTER html %]_edit_action">edit</a>)
          </div>
          [% IF value %]
-           <pre class="field_textarea_readonly">[% value FILTER html %]</pre>
+           <pre id="[% field.name FILTER html %]_readonly"
+                class="field_textarea_readonly">[% value FILTER html %]</pre>
          [% END %]
        </div>
        <div id="[% field.name FILTER html %]_input">
@@ -167,7 +184,7 @@
                            '',
                            true);
        </script>
-     [% CASE constants.FIELD_TYPE_BUG_URLS %]
+    [% CASE constants.FIELD_TYPE_BUG_URLS %]
        [% IF bug.id && value.size %]
          <ul class="bug_urls">
          [% FOREACH bug_url = value %]
