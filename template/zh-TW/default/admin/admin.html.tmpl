@@ -102,12 +102,6 @@
         <dd class="[% class %]">設定在特定日期及時間執行的查詢，並將結果以電子郵件寄發。
         <br>這是種建立提醒，以及追蹤活動的好方式。</dd>
 
-        [% IF Param('use_mailer_queue') %]
-          [% class = user.in_group('admin') ? "" : "forbidden" %]
-          <dt id="view_job_queue" class="[% class %]"><a href="view_job_queue.cgi">工作排程</a></dt>
-          <dd class="[% class %]">檢視未送出的／已延遲的工作／電子郵件的排程。</dd>
-        [% END %]
-
         <dt id="release_notes">
           <a href="page.cgi?id=release-notes.html">版本資訊</a></dt>
         <dd>關於此版本 Bugzilla 的更多詳細資訊。（英文）</dd>

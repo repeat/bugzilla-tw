@@ -8,10 +8,6 @@
 
 [%# INTERFACE:
   # subject: subject line of message
-  # alternatives: array of hashes containing:
-  #     type: MIME type
-  #     content: verbatim content
-  # boundary: a string that has been generated to be a unique boundary
   # recipient: user object for the intended recipient of the message
   # from: Bugzilla system email address
   #%]
@@ -19,21 +15,5 @@
 From: [% from %]
 To: [% recipient.email %]
 Subject: [[% terms.Bugzilla %]] [% subject %]
-MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="[% boundary %]"
 X-Bugzilla-Type: whine
 
-
-這是一個 MIME 類別的電子郵件。
-很可能你的郵件程式無法做適當的處理。
-信件的部份或全部內容可能無法正確顯示。
-
-
-[% FOREACH part=alternatives %]
-
---[% boundary %]
-Content-type: [% part.type +%]
-
-[%+ part.content %]
-[%+ END %]
---[% boundary %]--
