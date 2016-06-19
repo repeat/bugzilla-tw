@@ -49,7 +49,7 @@
     the error [% bug.error FILTER html %].
     
   [% ELSIF error == "chart_data_not_generated" %]
-    [% admindocslinks = {'extraconfig.html' => 'Setting up Charting'} %]
+    [% docslinks = {'using/reports-and-charts.html' => 'Setting up Charting'} %]
     [% IF product.id %]
       Charts for the <em>[% product.name FILTER html %]</em> product are not
       available yet because no charting data has been collected for it since it
@@ -289,6 +289,14 @@
     The function <code>[% function FILTER html %]</code> requires
     a <code>[% param FILTER html %]</code> argument, and that
     argument was not set.
+
+  [% ELSIF error == "param_integer_required" %]
+    The function <code>[% function FILTER html %]</code> requires
+    that <code>[% param FILTER html %]</code> be an integer.
+
+  [% ELSIF error == "param_scalar_array_required" %]
+    The <code>[% param FILTER html %]</code> parameter must be an array of scalars
+    (integers and/or strings).
 
   [% ELSIF error == "params_required" %]
     [% title = "Missing Parameter" %]
