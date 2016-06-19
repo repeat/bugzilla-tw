@@ -11,7 +11,7 @@
 [% PROCESS global/header.html.tmpl
   title = '管理旗標類型'
   style_urls = ['skins/standard/admin.css']
-  onload="var f = document.flagtype_form; selectProduct(f.product, f.component, null, null, '__全部__');"
+  onload="var f = document.flagtype_form; selectProduct(f.product, f.component, '__全部__');"
   javascript_urls=["js/productform.js"]
   doc_section = "administering/flags.html"
 %]
@@ -38,7 +38,7 @@
       id       => "product"
       name     => "product"
       add      => "___任何__"
-      onchange => "selectProduct(this, this.form.component, null, null, '__任何__');"
+      onchange => "selectProduct(this, this.form.component, '__任何__');"
       products => products
     %]
   </div>

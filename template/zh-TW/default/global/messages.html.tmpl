@@ -825,8 +825,16 @@
     [% title = "$terms.Bugzilla 已關閉" %]
     [% Param("shutdownhtml") %]
     [% IF userid %]
-      <p>為了安全起見，你已被自動登出。記錄你登入的 cookie 已刪除。
+      <p>
+        為了安全起見，你已被自動登出。記錄你登入的 cookie 已刪除。
+      </p>
     [% END %]
+    <p>
+      如果你是管理者，你可以透過清除
+      <kbd>shutdownhtml</kbd>
+      參數來
+      <a href="editparams.cgi?section=general">重新啟用 [% terms.Bugzilla %]</a> 。
+    </p>
 
   [% ELSIF message_tag == "term" %]
     [% terms.$term FILTER html %]
