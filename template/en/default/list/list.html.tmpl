@@ -33,11 +33,11 @@
   [% IF quicksearch %]
     [% new_param = BLOCK ~%]
       quicksearch=[% quicksearch FILTER uri %]
-      [%~ IF cgi.param('list_id') ~%]
-        &list_id=[% cgi.param('list_id') FILTER uri %]
+      [%~ IF cgi_param('list_id') ~%]
+        &list_id=[% cgi_param('list_id') FILTER uri %]
       [%~ END %]
     [% END %]
-  [% ELSIF cgi.param('token') != '' %]
+  [% ELSIF cgi_param('token') != '' %]
     [% new_param = cgi.canonicalise_query('token', 'cmdtype', 'remtype') %]
   [% ELSE %]
     [% new_param = cgi.canonicalise_query %]
@@ -61,7 +61,6 @@
   title = title
   generate_api_token = dotweak
   atomlink = "buglist.cgi?$urlquerypart&title=$title&ctype=atom" 
-  yui = [ 'autocomplete', 'calendar' ]
   javascript_urls = [ "js/util.js", "js/field.js", "js/TUI.js" ]
   style_urls = [ "skins/standard/buglist.css" ]
   doc_section = "using/finding.html"

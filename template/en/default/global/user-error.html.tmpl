@@ -55,10 +55,12 @@
   [% ELSIF error == "account_exists" %]
     [% title = "Account Already Exists" %]
     There is already an account with
-    [% IF email %]
-      the login name [% email FILTER html %].
+    [% IF login %]
+      the login name [% login FILTER html %].
+    [% ELSIF email %]
+      the email address [% email FILTER html %].
     [% ELSE %]
-      that login name.
+      that login name or email address.
     [% END %]
 
   [% ELSIF error == "account_locked" %]
@@ -116,6 +118,43 @@
     This site is using an authentication scheme which does not permit
     account creation. Please contact an administrator to get a new account
     created.
+
+  [% ELSIF error == "auth_delegation_disabled" %]
+    [% title = "Can't use auth delegation" %]
+    This site does not have auth delegation enabled.
+    Please contact an administrator if you require this functionality.
+
+  [% ELSIF error == "auth_delegation_illegal_protocol" %]
+    [% title = "Invalid Protocol" %]
+    The callback URI uses an illegal protocol: <em>[% protocol FILTER html %]</em>.
+    Only <em>http</em> and <em>https</em> are allowed.
+
+  [% ELSIF error == "auth_delegation_missing_callback" %]
+    [% title = "Auth delegation impossible without callback URI" %]
+    It looks like auth delegation was attempted, but no callback URI was passed.
+    You were sent here by some other site; please contact them for support.
+
+  [% ELSIF error == "auth_delegation_missing_description" %]
+    [% title = "Auth delegation impossible without description" %]
+    It looks like auth delegation was attempted, but no description was passed.
+    You were sent here by some other site; please contact them for support.
+
+  [% ELSIF error == "auth_delegation_missing_token" %]
+    [% title = "Auth delegation can't be confirmed" %]
+    Auth delegation cannot be confirmed due to missing or invalid token.
+
+  [% ELSIF error == "auth_delegation_invalid_token" %]
+    [% title = "Auth delegation can't be confirmed" %]
+    Auth delegation cannot be confirmed due to missing or invalid token.
+
+  [% ELSIF error == "auth_delegation_json_error" %]
+    [% title = "Auth delegation received invalid JSON" %]
+    Auth delegation received an invalid JSON response from auth consumer:
+    <pre>[% json_text FILTER html %]</pre>
+
+  [% ELSIF error == "auth_delegation_post_error" %]
+    [% title = "Auth delegation received invalid status code" %]
+    Auth delegation received an HTTP response other than 200 OK from auth consumer. Code: [% code FILTER html %]
 
   [% ELSIF error == "auth_failure" %]
     [% title = "Authorization Required" %]
@@ -191,6 +230,8 @@
       group access
     [% ELSIF object == "groups" %]
       groups
+    [% ELSIF object == "job_queue" %]
+      the job queue
     [% ELSIF object == "keywords" %]
       keywords
     [% ELSIF object == "milestones" %]
@@ -283,13 +324,13 @@
       <ul>
         <li><code>show_bug.cgi</code> in a Bugzilla
           installation.</li>
-        <li>A b[% %]ug on launchpad.net</li>
+        <li>A b[% %]ug on launchpad.net.</li>
         <li>An issue on code.google.com.</li>
-        <li>A b[% %]ug on b[% %]ugs.debian.org.</li>
+        <li>A b[% %]ug on b[% %]ugs.debian.org or deb[% %]ugs.gnu.org.</li>
         <li>An issue in a JIRA installation.</li>
         <li>A ticket in a Trac installation.</li>
         <li>A b[% %]ug in a MantisBT installation.</li>
-        <li>A b[% %]ug on sourceforge.net.</li>
+        <li>A b[% %]ug or ticket on sourceforge.net.</li>
         <li>An issue/pull request on github.com.</li>
         [% Hook.process('bug_url_invalid_tracker') %]
       </ul>
@@ -484,8 +525,17 @@
     [% title = "Email Change Already In Progress" %]
     Email change already in progress; please check your email.
 
+  [% ELSIF error == "email_needed_for_password_change" %]
+    [% title = "Email Address Required" %]
+    You must enter an email address when requesting to change your password.
+
   [% ELSIF error == "email_no_body" %]
     Your message did not contain any text, as far as we could tell.
+
+  [% ELSIF error == "email_required" %]
+    [% title = "Email Address Required" %]
+    [% admindocslinks = {'useradmin.html' => 'User administration'} %]
+    You must enter an email address for the new user.
 
   [% ELSIF error == "empty_group_description" %]
     [% title = "The group description cannot be empty" %]
@@ -515,12 +565,10 @@
     (You specified '[% name FILTER html %]'.)
 
   [% ELSIF error == "feature_disabled" %]
-    The [% install_string("feature_$feature") FILTER html %] feature is not
-    available in this Bugzilla.
+    The [% feature_description(feature) FILTER html %] feature is not available in this Bugzilla.
     [% IF user.in_group('admin') %]
       If you would like to enable this feature, please run
-      <kbd>checksetup.pl</kbd> to see how to install the necessary
-      requirements for this feature.
+      <kbd>cpanm -l local --installdeps --with-feature [% feature FILTER html %] "."</kbd>
     [% END %]
 
   [% ELSIF error == "field_already_exists" %]
@@ -894,8 +942,15 @@
 
   [% ELSIF error == "illegal_change" %]
     [% title = "Not allowed" %]
-    You tried to change the
-    <strong>[% field_descs.$field FILTER html %]</strong> field 
+    You tried to
+    [% IF action == "set" %]
+      set
+    [% ELSIF action == "unset" %]
+      unset
+    [% ELSE %]
+      change
+    [% END %]
+    the <strong>[% field_descs.$field FILTER html %]</strong> field
     [% IF oldvalue.defined AND oldvalue != "" %]
       from <em>[% oldvalue.join(', ') FILTER html %]</em>
     [% END %]
@@ -923,10 +978,10 @@
     [% IF format %]
       Please use the format '<code>[% format FILTER html %]</code>'.
     [% END %]
-    
+
   [% ELSIF error == "illegal_email_address" %]
     [% title = "Invalid Email Address" %]
-    The e-mail address you entered (<b>[% addr FILTER html %]</b>) 
+    The e-mail address you entered (<b>[% email FILTER html %]</b>)
     didn't pass our syntax checking for a legal email address.
     [% IF default %]
       A legal address must contain exactly one '@',
@@ -1029,6 +1084,12 @@
   [% ELSIF error == "invalid_dimensions" %]
     [% title = "Invalid Dimensions" %]
     The width or height specified is not a positive integer.
+
+  [% ELSIF error == "invalid_email" %]
+    [% title = "Invalid Email Address" %]
+    The address <tt>[% email FILTER html %]</tt> is not a valid email address.
+    Either you misspelled it, or the person has not
+    registered for a [% terms.Bugzilla %] account.
 
   [% ELSIF error == "invalid_format" %]
     [% title = "Invalid Format" %]
@@ -1144,6 +1205,13 @@
   [% ELSIF error == "rest_invalid_resource" %]
     A REST API resource was not found for '[% method FILTER html +%] [%+ path FILTER html %]'.
 
+  [% ELSIF error == "unknown_api_version" %]
+    A REST API version was not found for '[% api_version FILTER html +%]'
+    [%- IF api_namespace %] in namespace '[% api_namespace FILTER html %]'[% END %].
+
+  [% ELSIF error == "unknown_api_namespace" %]
+    A REST API namespace was not found for '[% api_namespace FILTER html +%]'.
+
   [% ELSIF error == "get_products_invalid_type" %]
     The product type '[% type FILTER html %]' is invalid. Valid choices
     are 'accessible', 'selectable', and 'enterable'.
@@ -1155,18 +1223,28 @@
   [% ELSIF error == "keyword_blank_description" %]
     [% title = "Blank Keyword Description Not Allowed" %]
     You must enter a non-blank description for the keyword.
-     
+
   [% ELSIF error == "keyword_blank_name" %]
     [% title = "Blank Keyword Name Not Allowed" %]
     You must enter a non-blank name for the keyword.
-     
+
   [% ELSIF error == "keyword_invalid_name" %]
     [% title = "Invalid Keyword Name" %]
     You may not use commas or whitespace in a keyword name.
-     
-  [% ELSIF error == "login_needed_for_password_change" %]
-    [% title = "Login Name Required" %]
-    You must enter a login name when requesting to change your password.
+
+  [% ELSIF error == "login_at_sign_disallowed" %]
+    [% title = "Illegal Character in Login" %]
+    Login names may not contain the "@" sign unless you are setting your
+    login name to be identical to your email address.
+
+  [% ELSIF error == "login_change_during_email_change" %]
+    [% title = "Login Change Not Permitted" %]
+    You may not change your login name while you are in the middle of the
+    process of changing your email address.
+
+  [% ELSIF error == "login_illegal_character" %]
+    [% title = "Illegal Character In Login" %]
+    Login names are not allowed to contain space characters.
 
   [% ELSIF error == "login_required_for_pronoun" %]
     [% title = "Login Name Required" %]
@@ -1176,6 +1254,13 @@
   [% ELSIF error == "login_required" %]
     [%# Used for non-web-based LOGIN_REQUIRED situations. %]
     You must log in before using this part of [% terms.Bugzilla %].
+
+  [% ELSIF error == "login_too_long" %]
+    [% title = "Login Too Long" %]
+    Your login name is too long. It cannot exceed 127 characters.
+
+  [% ELSIF error == "markdown_disabled" %]
+    Markdown feature is not enabled.
 
   [% ELSIF error == "migrate_config_created" %]
     The file <kbd>[% file FILTER html %]</kbd> contains configuration
@@ -1209,13 +1294,6 @@
     [% title = "Milestone Name Is Too Long" %]
     The name of a milestone is limited to [% constants.MAX_MILESTONE_SIZE FILTER html %]
     characters. '[% name FILTER html %]' is too long ([% name.length %] characters).
-
-  [% ELSIF error == "milestone_required" %]
-    [% title = "Milestone Required" %]
-    You must select a target milestone for [% terms.bug %]
-    [%+ bug.id FILTER html %]
-    if you are going to accept it.  Part of accepting 
-    [%+ terms.abug %] is giving an estimate of when it will be fixed.
 
   [% ELSIF error == "milestone_sortkey_invalid" %]
     [% title = "Invalid Milestone Sortkey" %]
@@ -1329,6 +1407,11 @@
     You cannot set aliases when modifying multiple [% terms.bugs %]
     at once.
 
+  [% ELSIF error == "multiple_components_update_not_allowed" %]
+    [% title = "Multiple Components Update Not allowed" %]
+    You can not update the name for multiple components of the
+    same product.
+
   [% ELSIF error == "need_quip" %]
     [% title = "Quip Required" %]
     [% docslinks = {'administering/quips.html' => 'About quips'} %]
@@ -1433,16 +1516,16 @@
       Either you mis-typed the name or that user has not yet registered
       for a [% terms.Bugzilla %] account.
     [% ELSIF class == "Bugzilla::Keyword" %]
-      See the list of available <a href="describekeywords.cgi">keywords</a>.
+      See the list of available <a href="describekeywords.cgi?show_inactive_keywords=1">keywords</a>.
     [% END %]
 
-  [% ELSIF error == "old_password_incorrect" %]
+  [% ELSIF error == "current_password_incorrect" %]
     [% title = "Incorrect Password" %]
     You did not enter your current password correctly.
 
-  [% ELSIF error == "old_password_required" %]
-    [% title = "Old Password Required" %]
-    You must enter your old password to change your email address.
+  [% ELSIF error == "current_password_required" %]
+    [% title = "Current Password Required" %]
+    You must enter your current password to edit your account.
 
   [% ELSIF error == "password_change_requests_not_allowed" %]
     [% title = "Password Change Requests Not Allowed" %]
@@ -1457,7 +1540,7 @@
     The password must be at least
     [%+ constants.USER_PASSWORD_MIN_LENGTH FILTER html %] characters long.
     [% IF locked_user %]
-      You must <a href="token.cgi?a=reqpw&amp;loginname=[% locked_user.email FILTER uri %]&amp;token=[% issue_hash_token(['reqpw']) FILTER uri %]">
+      You must <a href="token.cgi?a=reqpw&amp;email=[% locked_user.email FILTER uri %]&amp;token=[% issue_hash_token(['reqpw']) FILTER uri %]">
       request a new password</a> in order to log in again.
     [% END %]
 
@@ -1478,7 +1561,7 @@
       [% END %]
     </ul>
     [% IF locked_user %]
-      You must <a href="token.cgi?a=reqpw&amp;loginname=[% locked_user.email FILTER uri %]&amp;token=[% issue_hash_token(['reqpw']) FILTER uri %]">
+      You must <a href="token.cgi?a=reqpw&amp;email=[% locked_user.email FILTER uri %]&amp;token=[% issue_hash_token(['reqpw']) FILTER uri %]">
       request a new password</a> in order to log in again.
     [% END %]
 
@@ -1736,7 +1819,8 @@
     [% END %].
     They must either be resolved or removed from the
     "[% field_descs.dependson FILTER html %]" field before you can resolve
-    this [% terms.bug %] as [% display_value("resolution", "FIXED") FILTER html %].
+    this [% terms.bug %] as [% display_value("resolution",
+              Param('resolution_forbidden_with_open_blockers')) FILTER html %].
 
   [% ELSIF error == "sudo_invalid_cookie" %]
     [% title = "Invalid Sudo Cookie" %]
@@ -1981,29 +2065,28 @@
   Please press <b>Back</b> and try again.
 </p>
 
-[%# If a saved search fails, people want the ability to edit or delete it. 
+[%# If a saved search fails, people want the ability to edit or delete it.
   # This is the best way of getting information about that possible saved
   # search from any error call location. %]
 
-[% namedcmd = Bugzilla.cgi.param("namedcmd") %]
-[% sharer_id = Bugzilla.cgi.param("sharer_id") %]
+[% namedcmd = cgi_param("namedcmd") %]
 [% IF namedcmd AND error != "missing_query" 
                AND error != "saved_search_used_by_whines"
-               AND !sharer_id %]
-  <p>  
-    Alternatively, you can    
+               AND !cgi_param("sharer_id") %]
+  <p>
+    Alternatively, you can
     <a href="buglist.cgi?cmdtype=dorem&amp;remaction=forget&amp;namedcmd=
                   [% namedcmd FILTER uri %]">forget</a>
-                  
+
     [% FOREACH q = Bugzilla.user.queries %]
       [% IF q.name == namedcmd %]
         or <a href="query.cgi?[% q.url FILTER html %]">edit</a>
       [% END %]
     [% END %]
-    
+
     the saved search '[% namedcmd FILTER html %]'.
   </p>
-[% END %]            
+[% END %]
 
 [% PROCESS global/footer.html.tmpl %]
 

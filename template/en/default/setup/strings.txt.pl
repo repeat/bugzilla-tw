@@ -16,6 +16,7 @@
 # Please keep the strings in alphabetical order by their name.
 
 %strings = (
+    all_optional_features_require => 'All optional features above require the following modules to be found:',
     any  => 'any',
     apachectl_failed => <<END,
 WARNING: We could not check the configuration of Apache. This sometimes
@@ -23,6 +24,13 @@ happens when you are not running checksetup.pl as ##root##. To see the
 problem we ran into, run: ##command##
 END
     bad_executable => 'not a valid executable: ##bin##',
+    bad_font_file => <<'END',
+The file ##file## cannot be found. Make sure you typed the full path to the file
+END
+    bad_font_file_name => <<'END',
+The file ##file## must point to a TrueType or OpenType font file
+(its extension must be .ttf or .otf).
+END
     blacklisted => '(blacklisted)',
     bz_schema_exists_before_220 => <<'END',
 You are upgrading from a version before 2.20, but the bz_schema table
@@ -37,9 +45,6 @@ can connect to your MySQL database and drop the bz_schema table, as a last
 resort.
 END
     checking_for => 'Checking for',
-    checking_dbd      => 'Checking available perl DBD modules...',
-    checking_optional => 'The following Perl modules are optional:',
-    checking_modules  => 'Checking perl modules...',
     chmod_failed      => '##path##: Failed to change permissions: ##error##',
     chown_failed      => '##path##: Failed to change ownership: ##error##',
     commands_dbd      => <<EOT,
@@ -55,6 +60,7 @@ EOT
 Re-run checksetup.pl in interactive mode (without an 'answers' file)
 to continue.
 END
+    cpanfile_created => "##file## created",
     cpan_bugzilla_home => 
         "WARNING: Using the Bugzilla directory as the CPAN home.",
     db_enum_setup  => "Setting up choices for standard drop-down fields:",
@@ -81,40 +87,11 @@ END
 Extensions must return their name, not <code>1</code> or a number. See
 the documentation of Bugzilla::Extension for details.
 END
-    feature_auth_ldap         => 'LDAP Authentication',
-    feature_auth_radius       => 'RADIUS Authentication',
-    feature_documentation     => 'Documentation',
-    feature_graphical_reports => 'Graphical Reports',
-    feature_html_desc         => 'More HTML in Product/Group Descriptions',
-    feature_inbound_email     => 'Inbound Email',
-    feature_jobqueue          => 'Mail Queueing',
-    feature_jsonrpc           => 'JSON-RPC Interface',
-    feature_new_charts        => 'New Charts',
-    feature_old_charts        => 'Old Charts',
-    feature_memcached         => 'Memcached Support',
-    feature_mod_perl          => 'mod_perl',
-    feature_moving            => 'Move Bugs Between Installations',
-    feature_patch_viewer      => 'Patch Viewer',
-    feature_rest              => 'REST Interface',
-    feature_smtp_auth         => 'SMTP Authentication',
-    feature_smtp_ssl          => 'SSL Support for SMTP',
-    feature_updates           => 'Automatic Update Notifications',
-    feature_xmlrpc            => 'XML-RPC Interface',
-    feature_detect_charset    => 'Automatic charset detection for text attachments',
-    feature_typesniffer       => 'Sniff MIME type of attachments',
-
     file_remove => 'Removing ##name##...',
     file_rename => 'Renaming ##from## to ##to##...',
     header => "* This is Bugzilla ##bz_ver## on perl ##perl_ver##\n"
             . "* Running on ##os_name## ##os_ver##",
-    install_all => <<EOT,
-
-To attempt an automatic install of every required and optional module
-with one command, do:
-
-  ##perl## install-module.pl --all
-
-EOT
+    installation_failed => '*** Installation aborted. Read the messages above. ***',
     install_data_too_long => <<EOT,
 WARNING: Some of the data in the ##table##.##column## column is longer than
 its new length limit of ##max_length## characters. The data that needs to be
@@ -122,15 +99,6 @@ fixed is printed below with the value of the ##id_column## column first and
 then the value of the ##column## column that needs to be fixed:
 
 EOT
-    install_module => 'Installing ##module## version ##version##...',
-    installation_failed => '*** Installation aborted. Read the messages above. ***',
-    install_no_compiler => <<END,
-ERROR: Using install-module.pl requires that you install a compiler, such as
-gcc.
-END
-    install_no_make => <<END,
-ERROR: Using install-module.pl requires that you install "make".
-END
     lc_new_vars => <<'END',
 This version of Bugzilla contains some variables that you may want to
 change and adapt to your local settings. The following variables are
@@ -214,6 +182,15 @@ For the "Difference Between Two Patches" feature to work, we need to know
 what directory the "diff" bin is in. (You only need to set this if you
 are using that feature of the Patch Viewer.)
 END
+    localconfig_font_file => <<'END',
+You can specify the full path to a TrueType or OpenType font file, which will
+be used to display text (labels, legends, ...) in charts and graphical reports.
+To support as many languages as possible, we recommend to specify a font such as
+Unifont (http://unifoundry.com/unifont.html), which supports all printable
+characters in the Basic Multilingual Plane. If you leave this parameter empty,
+a default font will be used, but its support is limited to English characters
+only and so other characters will be displayed incorrectly.
+END
     localconfig_index_html => <<'END',
 Most web servers will allow you to use index.cgi as a directory
 index, and many come preconfigured that way, but if yours doesn't
@@ -251,6 +228,21 @@ a normal webserver environment.
 If set to 1, checksetup.pl will set file permissions so that Bugzilla
 works in a SuexecUserGroup environment. 
 END
+    localconfig_webdotbase => <<'END',
+It is possible to show graphs of dependent bugs. You may set this parameter to
+any of the following:
+
+- A complete file path to 'dot' (part of GraphViz (http://www.graphviz.org/))
+  will generate the graphs locally.
+- A URL prefix pointing to an installation of the webdot package will generate
+  the graphs remotely. (append "/%urlbase%" to the URL prefix)
+- A blank value will disable dependency graphing.
+
+If you use a webdot URL prefix, make certain that the webdot server can read
+files from your webdot directory. On Apache you do this by editing the
+.htaccess file, for other systems the needed measures may vary. You can run
+checksetup.pl to recreate the .htaccess file if it has been lost.
+END
     localconfig_webservergroup => <<'END',
 The name of the group that your web server runs as. On Red Hat
 distributions, this is usually "apache". On Debian/Ubuntu, it is 
@@ -271,6 +263,10 @@ and you cannot set this up any other way. YOU HAVE BEEN WARNED!
 If you set this to anything other than "", you will need to run checksetup.pl
 as ##root## or as a user who is a member of the specified group.
 END
+    localconfig_apache_size_limit => <<EOT,
+This is the max amount of unshared memory the apache process is allowed to use
+before Apache::SizeLimit kills it. This is only applicable when run under mod_perl.
+EOT
     max_allowed_packet => <<EOT,
 WARNING: You need to set the max_allowed_packet parameter in your MySQL
 configuration to at least ##needed##. Currently it is set to ##current##.

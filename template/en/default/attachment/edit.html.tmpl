@@ -23,9 +23,9 @@
   subheader = subheader
   generate_api_token = 1
   doc_section = "using/editing.html#attachments"
+  yui = ['json', 'connection']
   javascript_urls = ['js/attachment.js', 'js/field.js']
   style_urls = ['skins/standard/bug.css']
-  yui = [ 'autocomplete' ]
   bodyclasses = "no_javascript"
 %]
 
@@ -47,9 +47,9 @@
     <div id="attachment_attributes">
       <div id="attachment_information_read_only" class="[% "bz_private" IF attachment.isprivate %]">
         <div class="title">
-          [% "[patch]" IF attachment.ispatch%] 
-          <span class="[% "bz_obsolete" IF attachment.isobsolete %]" title="[% "obsolete" IF attachment.isobsolete %]">              
-            [% attachment.description FILTER html %]
+          [% IF attachment.ispatch %][patch][% END %]
+          <span [% IF attachment.isobsolete %]class="bz_obsolete" title="obsolete"[% END %]>
+            [%~ attachment.description FILTER html ~%]
           </span>
           [% IF can_edit %]
             <span class="bz_edit">(<a href="javascript:toggle_attachment_details_visibility()">edit details</a>)</span>
@@ -95,9 +95,12 @@
             <label for="contenttypeentry">MIME Type:</label>
             <input type="text" size="20" class="text block[% editable_or_hide %]"
                    id="contenttypeentry" name="contenttypeentry"
-                   value="[% attachment.contenttype FILTER html %]">                   
+                   pattern="([% constants.LEGAL_CONTENT_TYPES.join('|') FILTER html %])/.+"
+                   title="The content type must be of the form 'type/subtype', where 'type'
+                          is one of: [% constants.LEGAL_CONTENT_TYPES.join(', ') FILTER html %]"
+                   value="[% attachment.contenttype FILTER html %]">
           </div>
-          
+
           <div id="attachment_creator">
             <span class="label">Creator:</span>
             [%+ INCLUDE global/user.html.tmpl who = attachment.attacher %]
@@ -188,9 +191,12 @@
                   [% END %]
                 </a>
               </p>
-            [% ELSIF attachment.contenttype == "text/html" %]
+            [% ELSIF attachment.contenttype.match('^text/') %]
               [%# For security reasons (clickjacking, embedded scripts), we never
-                # render HTML pages from here. The source code is displayed instead. %]
+                # render HTML, XML or SVG pages directly. The source code for all
+                # text/* MIME types is displayed instead. If someone tries to abuse
+                # Bugzilla by manually editing the MIME type, it will be caught
+                # by the iframe below, thanks to its 'sandbox' attribute. %]
               [% INCLUDE global/textarea.html.tmpl
                  id      = 'viewFrame'
                  minrows = 10
@@ -199,6 +205,8 @@
                  readonly = 'readonly'
               %]
             [% ELSE %]
+              [%# The 'sandbox' attribute causes all scripts and form submissions
+                # embedded in the attachment to be disabled, for security reasons. %]
               <iframe id="viewFrame" src="attachment.cgi?id=[% attachment.id %]" sandbox>
                 <b>You cannot view the attachment while viewing its details because your browser does not support IFRAMEs.
                 <a href="attachment.cgi?id=[% attachment.id %]">View the attachment on a separate page</a>.</b>
@@ -283,27 +291,35 @@
 
         [% IF user.id %]       
           <div id="update_container">
+            [% IF Param('minor_update_group') && user.in_group(Param('minor_update_group')) %]
+              <input type="checkbox" name="minor_update" value="1">
+              <label class="" for="minor_update">
+                This is a minor update (do not send email)
+              </label><br>
+            [% END %]
             <input type="submit" value="Submit" id="update">
           </div>
-        [% END %]        
-      </div>        
+        [% END %]
+      </div>
     </div>
   </div>
 </form>
 
-<div id="attachment_actions">
-  <span class="label">Actions:</span>
-  <a href="attachment.cgi?id=[% attachment.id %]">View</a>
-  [% IF use_patchviewer %]
-    | <a href="attachment.cgi?id=[% attachment.id %]&amp;action=diff">Diff</a>
-  [% END %]
-  [% IF Param("allow_attachment_deletion")
-        && user.in_group('admin')
-        && attachment.datasize > 0 %]
-    | <a href="attachment.cgi?id=[% attachment.id %]&amp;action=delete">Delete</a>
-  [% END %]
-  [% Hook.process('action') %]
-</div>
+[% IF attachment.datasize %]
+  <div id="attachment_actions">
+    <span class="label">Actions:</span>
+    <a href="attachment.cgi?id=[% attachment.id %]">
+      [% IF attachment.is_viewable %]View[% ELSE %]Download[% END %]
+    </a>
+    [% IF use_patchviewer %]
+      | <a href="attachment.cgi?id=[% attachment.id %]&amp;action=diff">Diff</a>
+    [% END %]
+    [% IF Param("allow_attachment_deletion") && user.in_group('admin') %]
+      | <a href="attachment.cgi?id=[% attachment.id %]&amp;action=delete">Delete</a>
+    [% END %]
+    [% Hook.process('action') %]
+  </div>
+[% END %]
 
 <div id="attachment_list">
   Attachments on [% "$terms.bug ${attachment.bug_id}" FILTER bug_link(attachment.bug_id) FILTER none %]:

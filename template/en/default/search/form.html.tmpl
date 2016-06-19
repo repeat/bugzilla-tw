@@ -127,6 +127,10 @@ TUI_hide_default('information_query');
     { field => bug_fields.keywords, accesskey => 'k', 
       qtypes => ['allwords', 'anywords', 'nowords', 'regexp', 'notregexp'] }   
   ] %]
+  [% FOREACH field = custom_fields %]
+    [% freetext_fields.push({ field => field }) IF field.type == constants.FIELD_TYPE_FREETEXT or field.type == constants.FIELD_TYPE_TEXTAREA %]
+  [% END %]
+
   [% Hook.process('before_freetext_fields') %]
   
   [%# loop through a bunch of free text fields and print out their text stuff %]
@@ -215,6 +219,15 @@ TUI_hide_default('information_query');
         accesskey =>"o"
         value => default.op_sys
     %]               
+    [% FOREACH field = custom_fields %]
+      [% IF field.type == constants.FIELD_TYPE_SINGLE_SELECT or
+         field.type == constants.FIELD_TYPE_MULTI_SELECT %]
+        [% INCLUDE "search/field.html.tmpl"
+           field => field
+           value => default.${field.name}
+        %]
+      [% END %]
+    [% END %]
     [% Hook.process('after_selects_bottom') %]
   </div>
 </div>
@@ -255,19 +268,11 @@ TUI_hide_default('information_query');
           [% " selected" IF default.emailtype.$n == qv.name %]>[% qv.description %]</option>
       [% END %]
       </select>
-      [% IF feature_enabled('jsonrpc') && Param('ajax_user_autocompletion') %]
-        <div id="email[% n %]_autocomplete">
-      [% END %]
-      <input name="email[% n %]" class="email" id="email[% n %]" 
-             value="[% default.email.$n FILTER html %]">
-      [% IF feature_enabled('jsonrpc') && Param('ajax_user_autocompletion') %]
-        <div id="email[% n %]_autocomplete_container"></div>
-        </div>
-        <script type="text/javascript">
-          YAHOO.bugzilla.userAutocomplete.init( "email[% n %]", 
-                    "email[% n %]_autocomplete_container");
-        </script>
-      [% END %]
+      <input
+        name="email[% n %]"
+        class="email [% "bz_autocomplete_user" IF feature_enabled('jsonrpc') && Param('ajax_user_autocompletion') %]"
+        id="email[% n %]"
+        value="[% default.email.$n FILTER html %]">
     </div>
   [% END %]
    [% Hook.process('email_numbering_end') %]
@@ -302,26 +307,18 @@ TUI_hide_default('information_query');
   <li>
     <label for="chfieldfrom">between:</label>
     <input name="chfieldfrom" id="chfieldfrom" size="10" 
-           value="[% default.chfieldfrom.0 FILTER html %]" onchange="updateCalendarFromField(this)"> 
-           <button type="button" class="calendar_button"
-                          id="button_calendar_chfieldfrom"
-                          onclick="showCalendar('chfieldfrom')"><span>Calendar</span></button>
-           and 
-           <div id="con_calendar_chfieldfrom"></div>
-          <input name="chfieldto" size="10" id="chfieldto" 
-                 value="[% default.chfieldto.0 || "Now" FILTER html %]" 
-                 onchange="updateCalendarFromField(this)">
-          <button type="button" class="calendar_button"
-                         id="button_calendar_chfieldto"
-                         onclick="showCalendar('chfieldto')"><span>Calendar</span></button>
-          <div id="con_calendar_chfieldto"></div>
+           value="[% default.chfieldfrom.0 FILTER html %]">
+    and
+    <input name="chfieldto" size="10" id="chfieldto"
+           value="[% default.chfieldto.0 || "Now" FILTER html %]">
     (YYYY-MM-DD or relative dates)
     <script type="text/javascript">
-      <!--
-        [%+ PROCESS "global/calendar.js.tmpl" id = 'chfieldfrom' %]
-        [% PROCESS "global/calendar.js.tmpl" id = 'chfieldto' %]
-      //--></script>
-  </li>    
+      $(function() {
+        $("#chfieldfrom").datepicker();
+        $("#chfieldto").datepicker();
+      });
+    </script>
+  </li>
 </ul>
 
 [%############################################################################%]

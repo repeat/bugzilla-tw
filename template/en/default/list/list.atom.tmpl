@@ -8,7 +8,7 @@
 
 [% DEFAULT title = "$terms.Bugzilla $terms.Bugs" %]
 
-<?xml version="1.0"[% IF Param('utf8') %] encoding="UTF-8"[% END %]?>
+<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>[% title FILTER xml %]</title>
   <link rel="alternate" type="text/html"
@@ -69,10 +69,10 @@
       [% END %]
       </tr><tr class="bz_feed_creation_date">
         <td>[% columns.opendate.title FILTER html %]</td>
-        <td>[% bug.opendate FILTER html %]</td>
+        <td>[% bug.opentime FILTER time("%Y-%m-%dT%H:%M:%SZ", "UTC") %]</td>
       </tr><tr class="bz_feed_changed_date">
         <td>[% columns.changeddate.title FILTER html %]</td>
-        <td>[% bug.changeddate FILTER html -%]</td>
+        <td>[% bug.changedtime FILTER time("%Y-%m-%dT%H:%M:%SZ", "UTC") -%]</td>
       </tr>
       </table>
       [% END %]

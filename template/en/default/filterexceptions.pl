@@ -20,7 +20,7 @@
 #                                   [% foo.push() %]
 # TT loop variables               - [% loop.count %]
 # Already-filtered stuff          - [% wibble FILTER html %]
-#   where the filter is one of html|csv|js|quoteUrls|time|uri|xml|none
+#   where the filter is one of html|csv|js|quoteUrls|time|uri|xml|markdown|none
 
 %::safe = (
 
@@ -75,7 +75,6 @@
 'reports/report-table.html.tmpl' => [
   '"&amp;$col_vals" IF col_vals', 
   '"&amp;$row_vals" IF row_vals', 
-  'classes.$row_idx.$col_idx', 
   'urlbase', 
   'data.$tbl.$col.$row', 
 ],
@@ -449,6 +448,8 @@
 
 'config.rdf.tmpl' => [
   'escaped_urlbase',
+  'uri_product_name',
+  'flag_type.id'
 ],
 
 );

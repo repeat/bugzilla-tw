@@ -8,44 +8,17 @@
 
 [% PROCESS bug/time.html.tmpl %]
 
-<script src="[% 'js/comments.js' FILTER mtime %]" type="text/javascript">
-</script>
-
 <script type="text/javascript">
-<!--
-  /* Adds the reply text to the 'comment' textarea */
-  function replyToComment(id, real_id, name) {
-      var prefix = "(In reply to " + name + " from comment #" + id + ")\n";
-      var replytext = "";
-      [% IF user.settings.quote_replies.value == 'quoted_reply' %]
-        /* pre id="comment_name_N" */
-        var text_elem = document.getElementById('comment_text_'+id);
-        var text = getText(text_elem);
-        replytext = prefix + wrapReplyText(text);
-      [% ELSIF user.settings.quote_replies.value == 'simple_reply' %]
-        replytext = prefix;
-      [% END %]
-
-      [% IF user.is_insider %]
-        if (document.getElementById('isprivate_' + real_id).checked) {
-            document.getElementById('newcommentprivacy').checked = 'checked';
-            updateCommentTagControl(document.getElementById('newcommentprivacy'), 'comment'); 
-        }
-      [% END %]
-
-      /* <textarea id="comment"> */
-      var textarea = document.getElementById('comment');
-      if (textarea.value != replytext) {
-          textarea.value += replytext;
-      }
-
-      textarea.focus();
-  } 
-//-->
+  var replyCommentConfig = {
+      quote_replies : "[% user.settings.quote_replies.value FILTER js %]",
+      is_insider : [% user.is_insider ? 1 : 0 %],
+      markdown_fetching_comment : "Fetching comment..."
+  };
 </script>
 
 [% DEFAULT mode = "show" %]
 [% user_cache = template_cache.users %]
+[% markdown_enabled = feature_enabled('jsonrpc') AND user.settings.use_markdown.value == "on" %]
 [% can_edit_comments = bug.check_can_change_field('longdesc', 0, 1) %]
 [% can_tag_comments = feature_enabled('jsonrpc') AND user.can_tag_comments %]
 
@@ -125,9 +98,16 @@
                 [<a href="#"
                     onclick="YAHOO.bugzilla.commentTagging.toggle([% comment.id %], [% comment.count %]);return false">tag</a>]
               [% END %]
+              [% replyto_author = comment.author.name || comment.author.nick FILTER html %]
+              [% replyto_header = "(In reply to $replyto_author from comment #$comment.count)" %]
               [<a class="bz_reply_link" href="#add_comment"
                 [% IF user.settings.quote_replies.value != 'off' %]
-                  onclick="replyToComment('[% comment.count %]', '[% comment.id %]', '[% comment.author.name || comment.author.nick FILTER html FILTER js %]'); return false;"
+                  onclick="
+                  [% IF markdown_enabled AND comment.is_markdown %]
+                    replyToMarkdownComment('[% comment.count %]', '[% comment.id %]', '[% replyto_header FILTER js %]'); return false;"
+                  [% ELSE %]
+                    replyToComment('[% comment.count %]', '[% comment.id %]', '[% replyto_header FILTER js %]', null); return false;"
+                  [% END %]
                 [% END %]
               >reply</a>]
             [% END %]
@@ -166,6 +146,7 @@
         </span>
 
         <span class="bz_comment_user">
+          [% Hook.process('user-start', 'bug/comments.html.tmpl') %]
           [%# No need to recreate the exact same template if we already have it. %]
           [% commenter_id = comment.author.id %]
           [% UNLESS user_cache.$commenter_id %]
@@ -226,12 +207,12 @@
 [%# Don't indent the <pre> block, since then the spaces are displayed in the
   # generated HTML
   #%]
-<pre class="bz_comment_text[% " collapsed" IF comment.collapsed %]"
+<[% user.use_markdown(comment) ? "div" : "pre" %] class="bz_comment_text[% " collapsed" IF comment.collapsed %]"
   [% IF mode == "edit" || comment.collapsed %]
     id="comment_text_[% comment.count FILTER none %]"
   [% END %]>
-  [%- comment_text FILTER quoteUrls(bug, comment) -%]
-</pre>
+  [%- comment_text FILTER markdown(bug, comment) -%]
+</[% user.use_markdown(comment) ? "div" : "pre" %]>
     [% Hook.process('a_comment-end', 'bug/comments.html.tmpl') %]
     </div>
   [% END %]
