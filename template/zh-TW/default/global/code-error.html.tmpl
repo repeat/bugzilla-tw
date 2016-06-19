@@ -47,7 +47,7 @@
     要取消的 token 不存在。
 
   [% ELSIF error == "chart_data_not_generated" %]
-    [% admindocslinks = {'extraconfig.html' => '設定圖表'} %]
+    [% docslinks = {'using/reports-and-charts.html' => '設定圖表'} %]
     [% IF product.id %]
       因為自建立產品以來尚未收集產生圖表用的資料，所以目前尚未有產品 <em>[% product.name FILTER html %]</em> 的圖表。
     [% ELSE %]
@@ -263,6 +263,11 @@
     發生迴圈。以下是我們考慮的欄位：
     [%+ considered.join(', ') FILTER html %] 。
 
+  [% ELSIF error == "param_integer_required" %]
+    功能 <code>[% function FILTER html %]</code>
+    的參數 <code>[% param FILTER html %]</code>
+    必須是整數。
+
   [% ELSIF error == "param_invalid" %]
     [% title = "無效的參數。" %]
     對 [% function FILTER html %] 而言，
@@ -277,6 +282,10 @@
     [% title = "未輸入參數" %]
     功能 <code>[% function FILTER html %]</code> 需要參數
     <code>[% param FILTER html %]</code> ，但並未設定該參數。
+
+  [% ELSIF error == "param_scalar_array_required" %]
+    參數 <code>[% param FILTER html %]</code>
+    必須是一個純量陣列 (an array of scalars) （整數及／或字串）。
 
   [% ELSIF error == "params_required" %]
     [% title = "未輸入參數" %]
