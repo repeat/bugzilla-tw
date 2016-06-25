@@ -1,0 +1,39 @@
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  #
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
+  #%]
+
+[% PROCESS global/header.html.tmpl
+   title = "請求認證授權" %]
+
+<h1>[% title FILTER html %] </h1>
+<p>
+  第三方網站 (<a href="[% callback_base FILTER html %]">[% callback_base FILTER html %]</a>)
+  想要獲得你的 [% terms.Bugzilla %] 帳號的<strong>完整</strong>存取權限。
+</p>
+
+<p>網站的描述如下：
+  <blockquote>
+    [% description FILTER html %]
+  </blockquote>
+</p>
+
+<p>
+  你確定要讓此網站擁有你的 [% terms.Bugzilla %]
+  帳號的<strong>完整</strong>存取權限嗎？
+</p>
+
+<div>
+  <form action="auth.cgi" method="post">
+    <input type="hidden" name="confirm"     value="1">
+    <input type="hidden" name="callback"    value="[% callback FILTER html %]">
+    <input type="hidden" name="description" value="[% description FILTER html %]">
+    <input type="hidden" name="token"       value="[% token FILTER html %]">
+    <input type="submit" name="submit"      value="同意">
+  </form>
+</div>
+
+[% PROCESS global/footer.html.tmpl %]
