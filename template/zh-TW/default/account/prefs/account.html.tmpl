@@ -7,91 +7,116 @@
   #%]
 
 [%# INTERFACE:
-  # realname: string. The user's real name, if any.
-  # login_change_date: string. The date the email change will be complete. (optional)
-  # new_login_name:    string. The user's new Bugzilla login whilst not confirmed. (optional)
+  # email_change_date: string. The date the email change will be complete. (optional)
+  # new_email:         string. The user's new email address whilst not confirmed. (optional)
   #%]
 
 <table>
 [% IF user.authorizer.can_change_password
-        || (user.authorizer.can_change_email && Param('allowemailchange')) %]
+        || (user.authorizer.can_change_email && Param('allowemailchange'))
+        ||  user.authorizer.can_change_login %]
     <tr>
-      <td colspan="3">
-        請輸入你的密碼以確認帳號設定的變更。
+      <td colspan="2">
+        請輸入你目前的密碼以確認此階段帳號設定的任何變更。
       </td>
     </tr>
     <tr>
-      <th>密碼：</th>
+      <th><label for="old_password">密碼：</label></th>
       <td>
         <input type="hidden" name="old_login" value="[% user.login FILTER html %]">
-        <input type="password" name="old_password">
+        <input type="password" name="old_password" id="old_password">
       </td>
-    </tr>
-    <tr>
-      <td colspan="2"><hr></td>
     </tr>
   [% END %]
 
   [% IF user.authorizer.can_change_password %]
     <tr>
-      <th>新的密碼：</th>
+      <th><label for="new_password1">新的密碼：</label></th>
       <td>
-        <input type="password" name="new_password1">
+        <input type="password" name="new_password1" id="new_password1">
+        <span class="bz_info">
+          （若無需變更目前密碼，此欄留空）
+        </span>
       </td>
     </tr>
 
     <tr>
-      <th>確認新的密碼：</th>
+      <th><label for="new_password2">確認新的密碼：</label></th>
       <td>
-        <input type="password" name="new_password2">
+        <input type="password" name="new_password2" id="new_password2">
       </td>
     </tr>
   [% END %]
 
-  <tr>
-    <th>真實姓名（選填，但鼓勵填寫）：</th>
-    <td>
-      <input size="35" name="realname" value="[% realname FILTER html %]">
-    </td>
-  </tr>
+  [% UNLESS Param('use_email_as_login') %]
+    <tr>
+      <th><label for="new_login">登入帳號：</label></th>
+      <td>
+        [% IF user.authorizer.can_change_login %]
+          <input size="35" name="new_login" id="new_login"
+                 value="[% user.login FILTER html %]">
+        [% ELSE %]
+          [% user.login FILTER html %]
+        [% END %]
+      </td>
+    </tr>
+  [% END %]
 
-  [% IF user.authorizer.can_change_email && Param('allowemailchange') %]
-    [% IF login_change_date %]
-      [% IF new_login_name %]
-        <tr>
-          <th>未決定的電子郵件地址：</th>
-          <td>[% new_login_name FILTER html %]</td>
-        </tr>
-        <tr>
-          <th>變更的要求將在此時間過期：</th>
-          <td>[% login_change_date FILTER time %]</td>
-        </tr>
-      [% ELSE %]
-        <tr>
-          <th>確認的電子郵件地址：</th>
-          <td>[% user.login FILTER html %]</td>
-        </tr>
-        <tr>
-          <th>完成日期：</th>
-          <td>[% login_change_date FILTER time %]</td>
-        </tr>
-      [% END %]
+  [% IF user.authorizer.can_change_email
+        && Param('allowemailchange')
+        && email_change_date %]
+    [% IF new_email %]
+      <tr>
+        <th><label>未確認的電子郵件地址：</label></th>
+        <td>[% new_email FILTER html %]</td>
+      </tr>
+      <tr>
+        <th><label>變更的要求將在此時間過期：</label></th>
+        <td>[% email_change_date FILTER time %]</td>
+      </tr>
     [% ELSE %]
       <tr>
-        <th>
-          [% IF Param('emailsuffix') %]
-            新的帳號：
-          [% ELSE %]
-            新的電子郵件地址：
-          [% END %]
-        </th>
-        <td>
-          <input size="35" id="new_login_name" name="new_login_name"
-                 [%- ' type="email"' UNLESS Param('emailsuffix') %]>
-        </td>
+        <th><label>確認的電子郵件地址：</label></th>
+        <td>[% user.email FILTER html %]</td>
+      </tr>
+      <tr>
+        <th><label>完成日期：</label></th>
+        <td>[% email_change_date FILTER time %]</td>
       </tr>
     [% END %]
+  [% ELSE %]
+    <tr>
+      <th>
+        <label for="new_email">
+          你的電子郵件地址[% "／帳號" IF Param('use_email_as_login') %]：
+        </label>
+      </th>
+      <td>
+        [% IF user.authorizer.can_change_email && Param('allowemailchange') %]
+          <input size="35" name="new_email" id="new_email"
+                 value="[% user.email FILTER html %]"
+                 [%~ ' type="email"' IF Param('use_email_as_login') %]>
+        [% ELSE %]
+          [% user.email FILTER html %]
+        [% END %]
+      </td>
+    </tr>
   [% END %]
+
+
+  <tr>
+    <td colspan="2"><hr></td>
+  </tr>
+
+  <tr>
+    <th>
+      <label for="realname">真實姓名（選填，但鼓勵填寫）：</label>
+    </th>
+    <td>
+      <input size="35" name="realname" id="realname"
+             value="[% user.name FILTER html %]">
+    </td>
+  </tr>
 
   [% Hook.process('field') %]
 
