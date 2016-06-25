@@ -27,15 +27,15 @@
   </div>
 [% END %]
 
-<p>
-如果你不想要收到 [% terms.bug %] 變更狀態的通知信，你可以用以下設定來過濾部份或全部的通知信。
-</p>
-
 [% IF user.authorizer.can_change_email && Param('allowemailchange') %]
-  <p>
+  <p id="change_email">
     如果想要變更 [% terms.Bugzilla %] 發送通知信的電子郵件 <b>[% user.email FILTER html %]</b> ，點擊上方的「帳號資訊」頁籤。
   </p>
 [% END %]
+
+<p id="trivial_email">
+  如果你不想要收到 [% terms.bug %] 變更狀態的通知信，你可以用以下設定來過濾部份或全部的通知信。
+</p>
 
 <script type="text/javascript">
 <!--
@@ -64,6 +64,7 @@ function SetCheckboxes(setting) {
 
 <hr>
 
+<div id="global_options">
 <h3>整體設定選項</h3>
 
 [% prefname = "email-$constants.REL_ANY-$constants.EVT_FLAG_REQUESTED" %]
@@ -84,6 +85,9 @@ function SetCheckboxes(setting) {
 [% END %]
 
 <hr>
+</div>
+
+<div id="field_recipient_options">
 <h3>欄位及收信人個別設定選項：</h3>
 
 [% events = [
@@ -118,6 +122,8 @@ function SetCheckboxes(setting) {
       description = " $terms.bug 仍然處於未確認 (UNCONFIRMED)狀態" },
     { id = constants.EVT_CHANGED_BY_ME,
       description = "我做的變更" },
+    { id = constants.EVT_MINOR_UPDATE,
+      description = "被標記為小型更新的變更" },
 ] %]
 
 [% relationships = [
@@ -200,7 +206,9 @@ function SetCheckboxes(setting) {
 </table>
 
 <hr>
+</div>
 
+<div id="user_watching">
 <h3>監控使用者</h3>
 
 <p>
@@ -209,7 +217,9 @@ function SetCheckboxes(setting) {
 
 
 [% IF watchedusers.size %]
-  <p>你正在監控以下使用者：</p>
+  <p>
+    <label for="watched_by_you">你正在監控以下使用者：</label>
+  </p>
   <p>
     <select id="watched_by_you" name="watched_by_you" multiple="multiple" size="5">
         [% FOREACH w = watchedusers %]
@@ -225,7 +235,8 @@ function SetCheckboxes(setting) {
 [% END %]
 
 
-<p id="new_watched_by_you">將使用者加入監控清單〔以半形逗號 (,) 分隔多個使用者〕：
+<p id="new_watched_by_you">
+  <label for="new_watchedusers">將使用者加入監控清單〔以半形逗號 (,) 分隔多個使用者〕：</label>
   [% INCLUDE global/userselect.html.tmpl
      id => "new_watchedusers"
      name => "new_watchedusers"
@@ -246,7 +257,9 @@ function SetCheckboxes(setting) {
 </p>
 
 <hr>
+</div>
 
+<div id="ignore_bugs">
 <h3>忽略 [% terms.Bugs %]</h3>
 
 <p>
@@ -281,7 +294,8 @@ function SetCheckboxes(setting) {
 [% END %]
 
 <p>
-  新增 [% terms.bug %] ：<br>
+  <label for="add_ignored_bugs">新增 [% terms.bug %] ：</label>
   <input type="text" id="add_ignored_bugs"
          name="add_ignored_bugs" size="60">
 </p>
+</div>
