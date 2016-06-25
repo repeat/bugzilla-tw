@@ -10,6 +10,7 @@
   # token: random string used to authenticate the transaction.
   # expiration_ts: expiration date of the token.
   # email: email address of the new account.
+  # login: login name of the new account.
   #%]
 
 From: [% Param('mailfrom') %]
@@ -17,7 +18,7 @@ To: [% email %]
 Subject: [% terms.Bugzilla %]：確認建立新帳號
 X-Bugzilla-Type: admin
 
-[%+ terms.Bugzilla %] 收到以你的電子郵件 ([% email %]) 建立一個新的使用者帳號的要求。
+[%+ terms.Bugzilla %] 收到以你的電子郵件 ([% email %]) 建立一個新的使用者帳號[%+ " ($login) " IF !Param('use_email_as_login') %]的要求。
 
 如要繼續以此一電子郵件建立帳號，請於 [% expiration_ts FILTER time("%Y-%m-%d %H:%M %Z") %] 前點選以下連結：
 
@@ -28,12 +29,15 @@ X-Bugzilla-Type: admin
 
 [%+ urlbase %]createaccount.cgi
 
-[% IF Param('createemailregexp') == '.*' && Param('emailsuffix') == '' %]
+[% IF Param('createemailregexp') == '.*' %]
 隱私權提醒：
 [% terms.Bugzilla %] 是一個開放的 [% terms.bug %] 追蹤系統。
-在大多數 [% terms.bugs %] 的活動，包括電子郵件地址，都是公眾可瀏覽的。
+在大多數 [% terms.bugs %] 的活動，都是公眾可瀏覽的。
+[% IF Param('use_email_as_login') %]
+包括電子郵件地址。
 我們建議使用次要的電子郵件，或者使用免費的網路電子郵件服務（例如 Gmail、Yahoo、Hotmail 等等），
 以避免你的主要電子郵件收到垃圾郵件。
+[% END %]
 [% END %]
 
 如果你不想要建立帳號，或者此一要求是錯誤的，你可以什麼也不做，或是點選以下連結：
