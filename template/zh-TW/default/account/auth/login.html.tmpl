@@ -20,12 +20,12 @@
 
 [% USE Bugzilla %]
 
-<p>
-[% terms.Bugzilla %] 需要一組有效的帳號及密碼才能繼續。
-</p>
+<h2 class="center">
+  [% terms.Bugzilla %] 需要一組有效的帳號及密碼才能繼續
+</h2>
 
-<form name="login" action="[% urlbase FILTER html %][% target FILTER html %]" method="POST"
-[%- IF Bugzilla.cgi.param("data") %] enctype="multipart/form-data"[% END %]>
+<form id="login_form" name="login" action="[% urlbase FILTER html %][% target FILTER html %]"
+      method="POST" [% IF cgi_param("data") %] enctype="multipart/form-data"[% END %]>
   <table>
     <tr>
       <th>
@@ -33,42 +33,51 @@
            [% IF login_not_email %]
              帳號：
            [% ELSE %]
-             你的電子郵件地址：
+             電子郵件地址：
            [% END %]
          </label>
        </th>
       <td>
-        <input size="35" id="Bugzilla_login" name="Bugzilla_login"
+        <input id="Bugzilla_login" name="Bugzilla_login"
                [%- ' type="email"' UNLESS login_not_email %] autofocus required>
-        [% Param('emailsuffix') FILTER html %]
       </td>
     </tr>
+
     <tr>
       <th><label for="Bugzilla_password">密碼：</label></th>
       <td>
-        <input type="password" size="35" id="Bugzilla_password" name="Bugzilla_password" required>
+        <input type="password" id="Bugzilla_password" name="Bugzilla_password" required>
       </td>
     </tr>
 
     [% IF Param('rememberlogin') == 'defaulton' ||
           Param('rememberlogin') == 'defaultoff' %]
       <tr>
-        <th>&nbsp;</th>
-        <td>
+        <th>
           <input type="checkbox" id="Bugzilla_remember" name="Bugzilla_remember" value="on"
                  [%+ "checked" IF Param('rememberlogin') == "defaulton" %]>
+        </th>
+        <td>
           <label for="Bugzilla_remember">記住登入資訊</label>
         </td>
       </tr>
     [% END %]
 
     <tr>
-      <th>&nbsp;</th>
-      <td>
+      <th>
         <input type="checkbox" id="Bugzilla_restrictlogin" name="Bugzilla_restrictlogin"
                checked="checked">
+      </th>
+      <td>
         <label for="Bugzilla_restrictlogin">限制此次登入期間僅能使用此IP
         （使用此一選項以增強安全性）</label>
+      </td>
+    </tr>
+
+    <tr>
+      <th>&nbsp;</th>
+      <td>
+        <input type="submit" name="GoAheadAndLogIn" value="登入" id="log_in">
       </td>
     </tr>
   </table>
@@ -78,43 +87,39 @@
 
   <input type="hidden" name="Bugzilla_login_token"
          value="[% get_login_request_token() FILTER html %]">
-  <input type="submit" name="GoAheadAndLogIn" value="登入" id="log_in">
 
-  <p>
-    （注意：你應該確認瀏覽器已允許來自此站台的 cookie ，否則會需要經常登入。）
-  </p>
-</form>
+  [% Hook.process('additional_methods') %]
 
-[% Hook.process('additional_methods') %]
+  <div class="links">
+    [% can_create_account = 0 %]
+    [% IF Param("createemailregexp") && user.authorizer.user_can_create_account %]
+      <span><a href="createaccount.cgi">建立新帳號</a></span>
+      [% can_create_account = 1 %]
+    [% END %]
 
-[%# Allow the user to create a new account, or request a token to change
-  # their password, assuming that our auth method allows that.
-  #%]
-
-  [% IF Param("createemailregexp") && user.authorizer.user_can_create_account %]
-    <hr>
-
+   [% IF user.authorizer.can_change_password %]
+      [% "|" IF can_create_account %]
+      <span><a href="createaccount.cgi?request_new_password=1">忘記密碼</a></span>
+    [% END %]
+  </div>
+ 
+  <hr>
+  <div class="info">
     <p>
-      如果你沒有 [% terms.Bugzilla %] 帳號，你可以<a href="createaccount.cgi">建立新帳號</a>。
-      [% IF Param("requirelogin") %]
-        此一 Bugzilla 僅允許獲得授權的使用者登入瀏覽，因此需要有帳號。
-      [% ELSIF target.match("_bug\.cgi$") %]
-        當需要回報一個新的 [% terms.bug %] ，或者對現有的 [% terms.bug %] 留下意見時，需要一個帳號。
-        當後續有需要更多資訊時，可以聯絡上你。
-      [% END %]
+      注意：你應該確認瀏覽器已允許來自此站台的 cookie ，否則會需要經常登入。
     </p>
-  [% END %]
 
-  [% IF user.authorizer.can_change_password %]
-    <hr>
-
-    <form id="forgot" method="get" action="token.cgi">
-      <input type="hidden" name="a" value="reqpw">
-      如果你有帳號，但是忘記密碼的話，在下方輸入你的帳號並按「重設密碼」鍵來變更密碼。<br>
-      <input size="35" name="loginname" required>
-      <input type="hidden" id="token" name="token" value="[% issue_hash_token(['reqpw']) FILTER html %]">
-      <input type="submit" id="request" value="重設密碼">
-    </form>
-  [% END %]
+    [% IF can_create_account %]
+      <p>
+        [% IF Param("requirelogin") %]
+          此一 Bugzilla 僅允許獲得授權的使用者登入瀏覽，因此需要有帳號。
+        [% ELSIF target.match("_bug\.cgi$") %]
+          當需要回報一個新的 [% terms.bug %] ，或者對現有的 [% terms.bug %] 留下意見時，需要一個帳號。
+          當後續有需要更多資訊時，可以聯絡上你。
+        [% END %]
+      </p>
+    [% END %]
+  </div>
+</form>
 
 [% PROCESS global/footer.html.tmpl %]
