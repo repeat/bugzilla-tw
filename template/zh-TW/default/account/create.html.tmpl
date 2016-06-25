@@ -6,75 +6,79 @@
   # defined by the Mozilla Public License, v. 2.0.
   #%]
 
-[%# INTERFACE
-  # none
-  #
-  # Param("maintainer") is used to display the maintainer's email.
-  # Param("emailsuffix") is used to pre-fill the email field.
-  #%]
-
-[% title = BLOCK %]
-  
-[% END %]
-
 [% PROCESS global/header.html.tmpl
            title = "建立一個新的 $terms.Bugzilla 帳號"
 %]
 
 <p>
-  要建立一個[% terms.Bugzilla %]帳號，你只要輸入：<br>
-[% IF Param('emailsuffix') == '' %]
+  要建立一個[% terms.Bugzilla %]帳號，你只要輸入
+  [% IF !Param('use_email_as_login') %]
+    你想要用的帳號以及
+  [% END %]
   一個有效的電子郵件地址。
-[% ELSE %]
-  一個帳號名稱。此一帳號名稱後面加上 [% Param('emailsuffix') %] 時可以對應到你的電子郵件地址。
-[% END %]
   會寄一封用來建立帳號的認證信到此一電子郵件地址。
-  <br><b>在你收到電子郵件之前，你將無法登入。</b>
-  <br>如果沒有在合理的時間範圍內收到，你可以用電子郵件連絡此一  Bugzilla 的管理者： <a
-  href="mailto:[% Param("maintainer") %]">[% Param("maintainer") %]</a> 。
+  <b>在你收到電子郵件之前，你將無法登入。</b>
+  如果沒有在合理的時間範圍內收到，你可以用電子郵件連絡此一 Bugzilla 的管理者：
+  <a href="mailto:[% Param("maintainer") %]">[% Param("maintainer") %]</a>
 </p>
 
-[% IF Param('allowemailchange') %]
 <p>
   如果你已經有帳號了，並且想要改變你的
-  [% IF Param('emailsuffix') == '' %]
-    電子郵件地址，
-  [% ELSE %]
-    帳號，
+  [% IF Param('allowemailchange') %]
+    電子郵件地址或是
   [% END %]
-  可以在登入後在「偏好設定」頁面變更。
+  帳號，可以在登入後在「偏好設定」頁面變更。
 </p>
-[% END %]
 
 <p>
   當需要回報一個新的 [% terms.bug %] ，或者對現有的 [% terms.bug %] 留下意見時，需要一個帳號。
   當後續有需要更多資訊時，可以聯絡上你。
   這也讓其他使用者可以清楚了解是誰對 [%terms.bug %] 做了改變或留下意見。
-  <b>注意：你的電子郵件地址將<em>不會</em>顯示給訪客。只有註冊使用者才能看見它。</b>
+  <b>注意：你的電子郵件地址將<em>不會</em>顯示給
+  [% IF Param('use_email_as_login') %]
+    訪客。只有註冊使用者才能看見它。
+  [% ELSE %]
+    其他使用者，除非你決定以電子郵件做為登入帳號。
+    其他使用者只能看見你的帳號。
+  [% END %]
+  </b>
 </p>
 
-[% IF Param('createemailregexp') == '.*' && Param('emailsuffix') == '' %]
+[% IF Param('createemailregexp') == '.*' %]
 <p>
-  <b>隱私權提醒：</b>
-  <br>[% terms.Bugzilla %] 是一個開放的 [% terms.bug %] 追蹤系統。
-  <br>在大多數 [% terms.bugs %] 的活動，包括電子郵件地址，都是可被註冊使用者瀏覽的。
-  <br>我們<b>建議</b>使用次要的電子郵件，或者使用免費的網路電子郵件服務（例如 Gmail、Yahoo、Hotmail 等等），以避免你的主要電子郵件收到垃圾郵件。
+  <b>隱私權提醒：</b> [% terms.Bugzilla %] 是一個開放的 [% terms.bug %] 追蹤系統。在大多數 [% terms.bugs %] 的活動，都是可被註冊使用者瀏覽的。
+  [% IF Param('use_email_as_login') %]
+    包括電子郵件地址。我們<b>建議</b>使用次要的電子郵件，或者使用免費的網路電子郵件服務（例如 Gmail、Yahoo、Hotmail 等等），以避免你的主要電子郵件收到垃圾郵件。
+  [% END %]
 </p>
 [% END %]
 
-<form id="account_creation_form" method="get" action="createaccount.cgi">
-  <span class="label">
-    [% IF Param('emailsuffix') %]
-      帳號：
-    [% ELSE %]
-      電子郵件地址：
-    [% END %]
-  </span>
-  <input size="35" id="login" name="login" autofocus
-         [%- ' type="email"' UNLESS Param('emailsuffix') %] required>
-  [% Param('emailsuffix') FILTER html %]
-  <input type="hidden" id="token" name="token" value="[% issue_hash_token(['create_account']) FILTER html %]">
-  <input type="submit" id="send" value="送出">
+<form id="account_creation_form" action="createaccount.cgi" class="table_layout">
+  [% IF !Param('use_email_as_login') %]
+    <div>
+      <label for="login">帳號</label>
+      <div class="flex">
+        <input size="35" id="login" name="login" autofocus required>
+        <span class="bz_info">
+          （除非和你的電子郵件地址相符，否則請勿使用空白和 @ 字元）
+        </span>
+      </div>
+    </div>
+  [% END %]
+
+  <div>
+    <label for="email">電子郵件地址</label>
+    <input size="35" id="email" name="email" type="email"
+           [%~ " autofocus" IF Param('use_email_as_login') %] required>
+  </div>
+
+  <div>
+    <label>&nbsp;</label>
+    <input type="hidden" id="token" name="token"
+           value="[% issue_hash_token(['create_account']) FILTER html %]">
+    <input type="submit" id="send" value="送出">
+  </div>
+
 </form>
 
 [% PROCESS global/footer.html.tmpl %]
