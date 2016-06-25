@@ -27,7 +27,7 @@
 [% tabs = [{ name => "settings", label => "一般設定",
               link => "userprefs.cgi?tab=settings", saveable => "1",
               doc_section => "using/preferences.html#general-preferences" },
-            { name => "email", label => "電子郵件設定",
+            { name => "email", label => "電子郵件通知",
               link => "userprefs.cgi?tab=email", saveable => "1",
               doc_section => "using/preferences.html#email-preferences" },
             { name => "saved-searches", label => "已儲存的搜尋",
@@ -59,7 +59,6 @@
    style_urls = ['skins/standard/admin.css']
    javascript_urls = ['js/util.js', 'js/field.js', 'js/TUI.js']
    doc_section = current_tab.doc_section
-   yui = ['autocomplete']
  %]
 
 [% WRAPPER global/tabs.html.tmpl
@@ -69,7 +68,7 @@
 
 [% IF changes_saved %]
   <div id="message">
-    對[% current_tab.label FILTER lower %]所做的變更已經儲存。
+    對[% current_tab.label FILTER lower FILTER html %]所做的變更已經儲存。
 
     [% IF email_changes_saved %]
       <p>
