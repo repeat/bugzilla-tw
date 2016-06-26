@@ -12,9 +12,9 @@
   #%]
 
 [% IF regexp %]
-  [% title = "確認：刪除符合正規表達式的指定成員嗎？" %]
+  [% title = "確認：使用正規表達式刪除符合的指定成員嗎？" %]
 [% ELSE %]
-  [% title = "確認：刪除指定的成員嗎？" %]
+  [% title = "確認：刪除所有指定的成員嗎？" %]
 [% END %]
 
 [% PROCESS global/header.html.tmpl
@@ -23,11 +23,11 @@
 %]
 
 [% IF regexp %]
-  <p>此選項將會把符合下列正規表達式的所有使用者從
+  <p>此選項將會把電子郵件地址符合下列正規表達式的所有使用者從
      '[% group.name FILTER html %]' 群組中移除：<br>
      '[% regexp FILTER html %]'</p>
 [% ELSE %]
-  <p>此選項將會自 '[% group.name FILTER html %]' 群組中移除所有指定的使用者。</p>
+  <p>此選項將會自 '[% group.name FILTER html %]' 群組中移除所有指定加入 (explicitly-added) 的使用者。</p>
 [% END %]
 
 <p>
