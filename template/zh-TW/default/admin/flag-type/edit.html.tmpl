@@ -157,10 +157,7 @@
       <td>
         如果可以要求此類型旗標的話，誰應該收到關於要求的電子郵件通知。此一清單應以半形逗號 (,)
         分隔多位收信人。收信人不一定要擁有 [% terms.Bugzilla %] 的帳號。
-        [% IF Param('emailsuffix') %]
-          <br>注意：預設的電子郵件地址的後半段 (<kbd>[% Param('emailsuffix') %]</kbd>)
-          並<em>不會</em>被自動加在這些地址中，因此你應該完整填寫每個電子郵件地址。
-        [% END %]<br>
+        <br>
         <input type="text" name="cc_list" value="[% type.cc_list FILTER html %]" size="80"
                maxlength="200" [%- ' disabled="disabled"' UNLESS can_fully_edit %]>
       </td>
