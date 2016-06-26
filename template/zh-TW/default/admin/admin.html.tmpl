@@ -68,7 +68,7 @@
         <dd class="[% class %]">旗標是對 [% terms.bugs %] 和／或附件所做出的四種自訂狀態：同意、否定、要求和未定義。
         <br>你可以對每個 [% terms.bug %] 設定多種旗標，並定義哪些使用者可以編輯旗標。</dd>
 
-	[% Hook.process('end_links_left') %]
+    [% Hook.process('end_links_left') %]
       </dl>
     </td>
 
@@ -101,6 +101,12 @@
         <dt id="whining" class="[% class %]"><a href="editwhines.cgi">訂閱</a></dt>
         <dd class="[% class %]">設定在特定日期及時間執行的查詢，並將結果以電子郵件寄發。
         <br>這是種建立提醒，以及追蹤活動的好方式。</dd>
+
+        [% IF Param('use_mailer_queue') %]
+          [% class = user.in_group('admin') ? "" : "forbidden" %]
+          <dt id="view_job_queue" class="[% class %]"><a href="view_job_queue.cgi">工作佇列</a></dt>
+          <dd class="[% class %]">檢視關於未遞送／延遲 (deferred) 的工作／電子郵件佇列。</dd>
+        [% END %]
 
         <dt id="release_notes">
           <a href="page.cgi?id=release-notes.html">版本資訊</a></dt>
