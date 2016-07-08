@@ -14,14 +14,6 @@
 [% param_descs = {
   maintainer => "安裝 Bugzilla 機器的維護者的電子郵件地址。",
 
-  utf8 =>
-    "在 $terms.Bugzilla 裡所有的文字均使用 UTF-8 (Unicode) 編碼。"
-    _ "新安裝的 $terms.Bugzilla 應該設為「開」，以避免字元編碼問題。<br>"
-    _ "<strong>已存在的資料庫只有在資料從現有編碼執行 "
-    _ "<kbd>contrib/recode.pl</kbd> 轉換為 UTF-8 之後，"
-    _ "才可以設為「開」。</strong>"
-    _ "<p>注意：若你將此參數從「關」設為「開」，則設定完後必須立刻執行 <kbd>checksetup.pl</kbd> 。</p>",
-
   shutdownhtml =>
     "如果此欄位並非空白，那麼將會完全停用 Bugzilla ，"
     _ "並在每一個 $terms.Bugzilla 頁面顯示以下的訊息。",
