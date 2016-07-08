@@ -35,15 +35,39 @@
 
   allow_attachment_deletion => "設定為「開」時，管理者可以刪除附件內容。",
 
-  maxattachmentsize => "允許儲存於資料庫的附件檔案大小的最大值 (KB) 。<br>"  _
-                       "如果所附加的檔案大小比指定的值大， Bugzilla 會看" _
-                       "<a href=\"#maxlocalattachment\"><var>maxlocalattachment</var>" _
-                       "的設定值，決定檔案是否可以儲存於本地伺服器中。" _
-                       "如果檔案大小超過這兩個設定值時，該附件會被拒絕。" _
-                       "若將兩個設定值均設定為 0 ，則不允許附加附件。",
+  maxattachmentsize => 
+    "允許儲存於資料庫的附件檔案大小的最大值 (KB) 。<br>"  _
+    "如果所附加的檔案大小比指定的值大， Bugzilla 會看" _
+    "<a href=\"#maxlocalattachment\"><var>maxlocalattachment</var>" _
+    "的設定值，決定檔案是否可以儲存於本地伺服器中。" _
+    "如果檔案大小超過這兩個設定值時，該附件會被拒絕。" _
+    "若將兩個設定值均設定為 0 ，則不允許附加附件。",
 
-  maxlocalattachment => "允許儲存於本地伺服器的附件檔案大小的最大值 (MB) 。<br>" _
-                        "如果設定的比" _
-                        "<a href=\"#maxattachmentsize\"><var>maxattachmentsize</var> 還小，" _
-                        "那麼附件將永遠不會被儲存在本地檔案系統中。" }
+  maxlocalattachment =>
+    "允許儲存於本地伺服器的附件檔案大小的最大值 (MB) 。<br>" _
+    "如果設定的比 " _
+    "<a href=\"#maxattachmentsize\"><var>maxattachmentsize</var> 還小，" _
+    "那麼附件將永遠不會被儲存在本地檔案系統中。" _
+    "如果你想要把所有附件都存在本地檔案系統，而不是資料庫中時，" _
+    "將 <a href=\"#maxattachmentsize\"><var>maxattachmentsize</var> 參數</a>" _
+    "設定為 0 。",
+
+  xsendfile_header =>
+    "附件預設以 CGI 程式處理。" _
+    "如果你使用 <a href=\"#maxlocalattachment\"><var>maxlocalattachment</var> 參數" _
+    "啟用了大型檔案的檔案系統儲存空間時，" _
+    "你可以利用網頁伺服器直接處理附件。" _
+    "這麼做可以避免將附件整個複製到記憶體中，且可能帶來效能的改善。" _
+    "若確定要這麼做時，正確設定好你的網頁伺服器，並設定正確的標頭，如下：" _
+    "<ul>" _
+    "<li>Apache: <code>X-Sendfile</code> 標頭；參考 " _
+    "<code><a href=\"https://tn123.org/mod_xsendfile/\">mod_xsendfile</a></code> 模組</li>" _
+    "<li>nginx: <code>X-Accel-Redirect</code> 標頭；參考"_
+    "<a href=\"http://wiki.nginx.org/X-accel\">文件</a>以獲得更多資訊</li>" _
+    "<li>lighttpd: <code>X-LIGHTTPD-send-file</code> 標頭；參考 " _
+    "<a href=\"http://redmine.lighttpd.net/projects/1/wiki/X-LIGHTTPD-send-file\">文件</a>以獲得更多資訊</li>" _
+    "</ul><br>" _
+    "請注意，所有儲存在資料庫的附件無法透過 " _
+    "apache/nginx/lighttpd 載入，並且永遠以 CGI 程式處理。"
+  }
 %]
