@@ -135,7 +135,9 @@
 
 [% BLOCK buglink %]
   [% isclosed = !bug.isopened %]
-  [% FILTER closed(isclosed) -%]
+  [% IF isclosed %]
+    <span class="bz_closed">
+  [% END %]
     <a title="[% INCLUDE buginfo bug=bug %]"
        href="show_bug.cgi?id=[% bugid %]">
       <b>[%- bugid %]:</b>
@@ -147,6 +149,8 @@
       <img src="skins/standard/dependency-tree/tree.png"
            title="顯示 [% terms.bug %] [%+ bugid FILTER html %] 的依賴關係樹">
     </a>
+  [% IF isclosed %]
+    </span>
   [% END %]
 [% END %]
 
