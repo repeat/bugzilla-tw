@@ -27,35 +27,44 @@
 [% listselectionurlparams = INCLUDE listselectionurlparams %]
 
 [% columns =
-  [{name               => 'login_name'
-    heading            => '編輯使用者…'
-    contentlink        => 'editusers.cgi?action=edit&amp;userid=%%userid%%' _
-                          listselectionurlparams
-   }
-   {name               => 'realname'
-    heading            => '真實姓名'
-   }
-   {name               => 'last_seen_date'
-    heading            => '上次登入'
-   }
-   {heading            => '帳號歷史'
-    content            => '瀏覽'
-    contentlink        => 'editusers.cgi?action=activity' _
-                                  '&amp;userid=%%userid%%' _
-                                  listselectionurlparams
+  [{name        => 'login_name'
+    heading     => '編輯使用者…'
+    contentlink => 'editusers.cgi?action=edit&amp;userid=%%userid%%' _
+                   listselectionurlparams
+   },
+   {name        => 'email'
+    heading     => '電子郵件地址'
+   },
+   {name        => 'realname'
+    heading     => '真實姓名'
+   },
+   {name        => 'last_seen_date'
+    heading     => '上次登入'
+   },
+   {name        => 'view_history_link',
+    heading     => '帳號歷史'
+    content     => '瀏覽'
+    contentlink => 'editusers.cgi?action=activity' _
+                    '&amp;userid=%%userid%%' _
+                    listselectionurlparams
+   },
+   {name        => 'action_link',
+    heading     => '動作'
+    content     => '刪除'
+    contentlink => 'editusers.cgi?action=del' _
+                      '&amp;userid=%%userid%%' _
+                      listselectionurlparams
    }
   ]
-%]
+ %]
 
-[% IF Param('allowuserdeletion') && editusers %]
-  [% columns.push({heading     => '動作'
-                   content     => '刪除'
-                   contentlink => 'editusers.cgi?action=del' _
-                                  '&amp;userid=%%userid%%' _
-                                  listselectionurlparams
-                  }
-                 )
-  %]
+[%# Eliminate inappropriate columns, starting at the end %]
+[% IF NOT (Param('allowuserdeletion') && editusers) %]
+  [% CALL columns.splice(5, 1) %]
+[% END %]
+
+[% IF Param('use_email_as_login') %]
+  [% CALL columns.splice(1, 1) %]
 [% END %]
 
 [%# Disabled users are crossed out. Missing realnames are noticed in red. %]
