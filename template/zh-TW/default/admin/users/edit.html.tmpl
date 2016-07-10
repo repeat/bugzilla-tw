@@ -147,12 +147,17 @@
 [% END %]
 
 <p>
-  你也可以[% IF editusers %]<a
-  href="editusers.cgi?action=add[% INCLUDE listselectionurlparams %]">新增使用者</a>，[% END %]
-  [% IF listselectionvalues.matchtype != 'exact' %]回到<a
-  href="editusers.cgi?action=list[% INCLUDE listselectionurlparams %]">使用者列表</a>，[% END %]
-  [% IF editusers OR listselectionvalues %]或是[% END %]<a
-  href="editusers.cgi">搜尋其他使用者</a>。
+  你也可以
+  [% IF editusers %]
+    <a href="editusers.cgi?action=add[% INCLUDE listselectionurlparams %]">新增使用者</a>，
+  [% END %]
+  [% IF listselectionvalues && listselectionvalues.matchtype != 'exact' %]
+    回到<a href="editusers.cgi?action=list[% INCLUDE listselectionurlparams %]">使用者列表</a>，
+  [% END %]
+  [% IF editusers OR listselectionvalues %]
+    或是
+  [% END %]
+  <a href="editusers.cgi">搜尋其他使用者</a>。
 </p>
 
 [% PROCESS global/footer.html.tmpl %]
