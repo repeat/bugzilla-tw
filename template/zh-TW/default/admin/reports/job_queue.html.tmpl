@@ -1,0 +1,74 @@
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  #
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
+  #%]
+
+[% INCLUDE global/header.html.tmpl
+  title = "工作佇列狀態"
+  style_urls = [ "skins/standard/admin.css" ]
+%]
+
+[% IF jobs.size %]
+
+  <p class="report_information">
+    [% IF too_many_jobs %]
+      找到 [% job_count FILTER html %] 筆工作，
+      只顯示 [% constants.JOB_QUEUE_VIEW_MAX_JOBS FILTER html %] 筆工作。
+    [% ELSE %]
+      佇列中有 [% jobs.size FILTER none %] 筆工作。
+    [% END %]
+  </p>
+
+  <table id="report" class="hover" cellspacing="0" border="0" width="100%">
+  <tr id="report-header">
+    <th>下次嘗試於…之後</th>
+    <th>錯誤數量</th>
+    <th>錯誤發生時間</th>
+    <th>錯誤訊息</th>
+    <th>工作</th>
+  </tr>
+  [% FOREACH job IN jobs %]
+    <tr class="report item [% loop.count % 2 == 1 ? "report_row_odd" : "report_row_even" %]">
+      <td nowrap>
+        [% IF job.grabbed_until %]
+          [% time2str("%Y-%m-%d %H:%M:%S %Z", job.grabbed_until) FILTER html %]
+        [% ELSE %]
+          [% time2str("%Y-%m-%d %H:%M:%S %Z", job.run_time) FILTER html %]
+        [% END %]
+      </td>
+      <td>
+        [% job.error_count || "-" FILTER html %]
+      </td>
+      <td nowrap>
+        [% IF job.error_count %]
+          [% time2str("%Y-%m-%d %H:%M:%S %Z", job.error_time) FILTER html %]
+        [% ELSE %]
+          -
+        [% END %]
+      </td>
+      <td>
+        [% IF job.grabbed_until %]
+          延遲 (Deferred)
+        [% ELSIF job.error_count %]
+          [% job.error_message FILTER html %]
+        [% ELSE %]
+          -
+        [% END %]
+      </td>
+      <td>[% job.subject || '-' FILTER html %]</td>
+    </tr>
+  [% END %]
+  </table>
+
+[% ELSE %]
+
+  <p class="report_information">
+    工作佇列為空。
+  </p>
+
+[% END %]
+
+[% INCLUDE global/footer.html.tmpl %]
