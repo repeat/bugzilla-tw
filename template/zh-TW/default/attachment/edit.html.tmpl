@@ -23,9 +23,9 @@
   subheader = subheader
   generate_api_token = 1
   doc_section = "using/editing.html#attachments"
+  yui = ['json', 'connection']
   javascript_urls = ['js/attachment.js', 'js/field.js']
   style_urls = ['skins/standard/bug.css']
-  yui = [ 'autocomplete' ]
   bodyclasses = "no_javascript"
 %]
 
@@ -47,9 +47,9 @@
     <div id="attachment_attributes">
       <div id="attachment_information_read_only" class="[% "bz_private" IF attachment.isprivate %]">
         <div class="title">
-          [% "[patch]" IF attachment.ispatch%]
-          <span class="[% "bz_obsolete" IF attachment.isobsolete %]" title="[% "obsolete" IF attachment.isobsolete %]">
-            [% attachment.description FILTER html %]
+          [% IF attachment.ispatch %][patch][% END %]
+          <span [% IF attachment.isobsolete %]class="bz_obsolete" title="已廢棄"[% END %]>
+            [%~ attachment.description FILTER html ~%]
           </span>
           [% IF can_edit %]
             <span class="bz_edit">(<a href="javascript:toggle_attachment_details_visibility()">編輯細節</a>)</span>
@@ -95,6 +95,8 @@
             <label for="contenttypeentry">MIME 類別：</label>
             <input type="text" size="20" class="text block[% editable_or_hide %]"
                    id="contenttypeentry" name="contenttypeentry"
+                   pattern="([% constants.LEGAL_CONTENT_TYPES.join('|') FILTER html %])/.+"
+                   title="內容類型 (content type) 必須是 'type/subtype' 的型式，而 'type' 必須是下列其中之一： [% constants.LEGAL_CONTENT_TYPES.join(', ') FILTER html %]"
                    value="[% attachment.contenttype FILTER html %]">
           </div>
 
@@ -186,9 +188,12 @@
                   [% END %]
                 </a>
               </p>
-            [% ELSIF attachment.contenttype == "text/html" %]
+            [% ELSIF attachment.contenttype.match('^text/') %]
               [%# For security reasons (clickjacking, embedded scripts), we never
-                # render HTML pages from here. The source code is displayed instead. %]
+                # render HTML, XML or SVG pages directly. The source code for all
+                # text/* MIME types is displayed instead. If someone tries to abuse
+                # Bugzilla by manually editing the MIME type, it will be caught
+                # by the iframe below, thanks to its 'sandbox' attribute. %]
               [% INCLUDE global/textarea.html.tmpl
                  id      = 'viewFrame'
                  minrows = 10
@@ -197,6 +202,8 @@
                  readonly = 'readonly'
               %]
             [% ELSE %]
+              [%# The 'sandbox' attribute causes all scripts and form submissions
+                # embedded in the attachment to be disabled, for security reasons. %]
               <iframe id="viewFrame" src="attachment.cgi?id=[% attachment.id %]" sandbox>
                 <b>你無法在瀏覽附件的詳細資料時同時瀏覽附件，因為你的瀏覽器並不支援 IFRAME 屬性。
                <a href="attachment.cgi?id=[% attachment.id %]">另開新視窗瀏覽</a>。</b>
@@ -280,6 +287,12 @@
 
         [% IF user.id %]
           <div id="update_container">
+            [% IF Param('minor_update_group') && user.in_group(Param('minor_update_group')) %]
+              <input type="checkbox" name="minor_update" value="1">
+              <label class="" for="minor_update">
+                這是小型更新（不要送出電子郵件）
+              </label><br>
+            [% END %]
             <input type="submit" value="送出" id="update">
           </div>
         [% END %]
@@ -288,19 +301,21 @@
   </div>
 </form>
 
-<div id="attachment_actions">
-  <span class="label">動作：</span>
-  <a href="attachment.cgi?id=[% attachment.id %]">檢視</a>
-  [% IF use_patchviewer %]
-    | <a href="attachment.cgi?id=[% attachment.id %]&amp;action=diff">比較差異 (Diff)</a>
-  [% END %]
-  [% IF Param("allow_attachment_deletion")
-        && user.in_group('admin')
-        && attachment.datasize > 0 %]
-    | <a href="attachment.cgi?id=[% attachment.id %]&amp;action=delete">刪除</a>
-  [% END %]
-  [% Hook.process('action') %]
-</div>
+[% IF attachment.datasize %]
+  <div id="attachment_actions">
+    <span class="label">動作：</span>
+    <a href="attachment.cgi?id=[% attachment.id %]">
+      [% IF attachment.is_viewable %]檢視[% ELSE %]下載[% END %]
+    </a>
+    [% IF use_patchviewer %]
+      | <a href="attachment.cgi?id=[% attachment.id %]&amp;action=diff">比較差異 (Diff)</a>
+    [% END %]
+    [% IF Param("allow_attachment_deletion") && user.in_group('admin') %]
+      | <a href="attachment.cgi?id=[% attachment.id %]&amp;action=delete">刪除</a>
+    [% END %]
+    [% Hook.process('action') %]
+  </div>
+[% END %]
 
 <div id="attachment_list">
   在 [% "$terms.bug ${attachment.bug_id}" FILTER bug_link(attachment.bug_id) FILTER none %] 裡的附件：
