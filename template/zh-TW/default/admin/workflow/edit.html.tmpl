@@ -62,7 +62,7 @@
           [% checked = workflow.${status.id}.${new_status.id}.defined ? 1 : 0 %]
           [% mandatory = (status.id && new_status.name == Param("duplicate_or_move_bug_status")) ? 1 : 0 %]
           <td class="[% "checked" IF checked || mandatory %]"
-              title="從 [% status.name FILTER html %] 到 [% new_status.name FILTER html %]">
+              title="從 [% display_value("bug_status", status.name) FILTER html %] 到 [% display_value("bug_status", new_status.name) FILTER html %]">
             <input type="checkbox" name="w_[% status.id %]_[% new_status.id %]"
                    id="w_[% status.id %]_[% new_status.id %]" onclick="toggle_cell(this)"
                    [%+ "checked='checked'" IF checked || mandatory %]
@@ -81,7 +81,7 @@
   [% terms.bug %] 的狀態將自動設定為 <b>[% display_value("bug_status", Param("duplicate_or_move_bug_status")) FILTER html %]</b> 。
   所有對這個 [% terms.bug %] 狀態所做的變更都必須是有效的。（這也是你為什麼無法在上面編輯的原因。）<br>
   注意：你可以瀏覽<a
-  href="editparams.cgi?section=bugchange#duplicate_or_move_bug_status">參數設定</a>頁，並編輯
+  href="editparams.cgi?section=bugchange#duplicate_or_move_bug_status_desc">參數設定</a>頁，並編輯
   <i>duplicate_or_move_bug_status</i> 參數來變更此設定。
 </p>
 
