@@ -6,17 +6,18 @@
   # defined by the Mozilla Public License, v. 2.0.
   #%]
 
+[% USE Bugzilla %]
 [% PROCESS bug/time.html.tmpl %]
 
 [% IF Param('comment_taggers_group') %]
   [% IF user.can_tag_comments %]
     <div id="bz_ctag_div" class="bz_default_hidden">
       <a href="javascript:void(0)" onclick="YAHOO.bugzilla.commentTagging.hideInput()">x</a>
-      <div>
+      <span>
         <input id="bz_ctag_add" size="10" placeholder="add tag"
               maxlength="[% constants.MAX_COMMENT_TAG_LENGTH FILTER html %]">
         <span id="bz_ctag_autocomp"></span>
-      </div>
+      </span>
       &nbsp;
     </div>
     <div id="bz_ctag_error" class="bz_default_hidden">
@@ -207,7 +208,7 @@
         accesskey = "s"
         tag_name = 'span'
       %]
-      [% PROCESS input inputname => "short_desc" size => "80"
+      [% INCLUDE input inputname => "short_desc" size => "80"
                        maxlength => 255 spellcheck => "true" no_td => 1 %]
     </div>
   </div>
@@ -229,7 +230,7 @@
     [%#############%]
     [%#  PRODUCT  #%]
     [%#############%]
-    <tr>
+    <tr id="field_tablerow_product">
       [% INCLUDE bug/field.html.tmpl
           bug = bug, field = bug_fields.product, value = bug.product
           override_legal_values = bug.choices.product
@@ -243,7 +244,7 @@
       # it uses some javascript that depends on the existence of the
       # product field.
       #%]
-    <tr class="bz_default_hidden">
+    <tr id="field_tablerow_classification" class="bz_default_hidden">
        [% INCLUDE bug/field.html.tmpl
             bug = bug field = bug_fields.classification
             override_legal_values = bug.choices.classification
@@ -253,7 +254,7 @@
     [%###############%]
     [%#  Component  #%]
     [%###############%]
-    <tr>
+    <tr id="field_tablerow_component">
       [% INCLUDE bug/field.html.tmpl
           bug = bug, field = bug_fields.component, value = bug.component
           override_legal_values = bug.choices.component
@@ -261,7 +262,7 @@
           editable = bug.check_can_change_field('component', 0, 1)
       %]
     </tr>
-    <tr>
+    <tr id="field_tablerow_version">
       [% INCLUDE "bug/field-label.html.tmpl"
           field = bug_fields.version
           editable = bug.check_can_change_field('version', 0, 1) %]
@@ -271,7 +272,7 @@
     [%############%]
     [%# PLATFORM #%]
     [%############%]
-    <tr>
+    <tr id="field_tablerow_rep_platform">
       [% can_edit_rep_platform = bug.check_can_change_field('rep_platform', 0, 1) %]
       [% INCLUDE "bug/field-label.html.tmpl"
            field = bug_fields.rep_platform,
@@ -298,7 +299,7 @@
 [%############################################################################%]
 
 [% BLOCK section_status %]
-  <tr>
+  <tr id="field_tablerow_status">
     <th class="field_label">
       <a href="page.cgi?id=fields.html#bug_status">狀態</a>：
     </th>
@@ -329,7 +330,7 @@
  [%###############################################################%]
  [%# Importance (priority and severity) #%]
  [%###############################################################%]
-    <tr>
+    <tr id="field_tablerow_importance">
       <th class="field_label">
         [% can_edit_priority = bug.check_can_change_field('priority', 0, 1) %]
         <label [% IF can_edit_priority %]for="priority"[% END %] accesskey="i">
@@ -349,7 +350,7 @@
     </tr>
 
     [% IF Param("usetargetmilestone") && bug.target_milestone %]
-      <tr>
+      <tr id="field_tablerow_target_milestone">
         [% INCLUDE "bug/field-label.html.tmpl"
           field = bug_fields.target_milestone
           editable = bug.check_can_change_field('target_milestone', 0, 1)
@@ -374,7 +375,7 @@
 
 [% BLOCK section_people %]
 
-    <tr>
+    <tr id="field_tablerow_assigned_to">
       [% can_edit_assigned_to = bug.check_can_change_field("assigned_to", 0, 1) %]
       [% INCLUDE "bug/field-label.html.tmpl"
           field = bug_fields.assigned_to
@@ -425,7 +426,7 @@
     </tr>
 
     [% IF Param('useqacontact') %]
-    <tr>
+    <tr id="field_tablerow_qa_contact">
       [% can_edit_qa_contact = bug.check_can_change_field("qa_contact", 0, 1) %]
       [% INCLUDE "bug/field-label.html.tmpl"
         field = bug_fields.qa_contact
@@ -488,7 +489,7 @@
 [%# Block for URL Keyword and Whiteboard                                     #%]
 [%############################################################################%]
 [% BLOCK section_url_keyword_whiteboard %]
-  <tr>
+  <tr id="field_tablerow_bug_file_loc">
     [% can_edit_bug_file_loc = bug.check_can_change_field("bug_file_loc", 0, 1) %]
     [% INCLUDE "bug/field-label.html.tmpl"
       field = bug_fields.bug_file_loc
@@ -530,7 +531,7 @@
   </tr>
 
   [% IF Param('usestatuswhiteboard') %]
-    <tr>
+    <tr id="field_tablerow_status_whiteboard">
       [% INCLUDE "bug/field-label.html.tmpl"
         field = bug_fields.status_whiteboard
         editable = bug.check_can_change_field("status_whiteboard", 0, 1)
@@ -541,18 +542,18 @@
   [% END %]
 
   [% IF use_keywords %]
-    <tr>
+    <tr id="field_tablerow_keywords">
         [% INCLUDE bug/field.html.tmpl
           bug = bug, field = bug_fields.keywords, value = bug.keywords
           editable = bug.check_can_change_field("keywords", 0, 1),
-          desc_url = "describekeywords.cgi", possible_values = all_keywords
+          desc_url = "describekeywords.cgi", possible_values = active_keywords
         %]
     </tr>
   [% END %]
 [% END %]
 
   [% IF user.id %]
-    <tr>
+    <tr id="field_tablerow_tag">
       [% INCLUDE bug/field.html.tmpl
          bug = bug, field = bug_fields.tag, value = bug.tags.join(", "),
          editable = 1, possible_values = user.tags.keys
@@ -566,7 +567,7 @@
 
 [% BLOCK section_duplicates %]
   [% RETURN UNLESS bug.duplicates.size %]
-  <tr>
+  <tr id="field_tablerow_duplicates">
     <th class="field_label">
       <label>重複的 ([% bug.duplicates.size %])</label>：
     </th>
@@ -587,7 +588,7 @@
 [%############################################################################%]
 
 [% BLOCK section_dependson_blocks %]
-  <tr>
+  <tr id="field_tablerow_dependson">
     [% INCLUDE dependencies
          field = bug_fields.dependson deps = bug.depends_on_obj %]
   </tr>
@@ -598,13 +599,13 @@
   </tr>
 
   [% IF bug.dependson.size || bug.blocked.size %]
-    <tr>
+    <tr id="field_tablerow_blocked">
       <th>&nbsp;</th>
 
       <td id="show_dependency_tree_or_graph">
         顯示依賴關係<a href="showdependencytree.cgi?id=[% bug.bug_id %]&amp;hide_resolved=1">樹</a>
 
-        [% IF Param('webdotbase') %]
+        [% IF Bugzilla.localconfig.webdotbase %]
           ／<a href="showdependencygraph.cgi?id=[% bug.bug_id %]">圖表</a>
         [% END %]
       </td>
@@ -719,7 +720,7 @@
 [%############################################################################%]
 
 [% BLOCK section_dates %]
-  <tr>
+  <tr id="field_tablerow_reported">
     <th class="field_label">
       回報於：
     </th>
@@ -745,7 +746,7 @@
 [%# Block for CC LIST                                                        #%]
 [%############################################################################%]
 [% BLOCK section_cclist %]
-    <tr>
+    <tr id="field_tablerow_cclist">
       <th class="field_label">
         <label [% IF user.id %]for="newcc"[% END %] accesskey="a">
           寄件副本清單：
@@ -765,7 +766,7 @@
         [% END %]
         [% bug.cc.size FILTER html %] 位使用者
         [% IF user.id %]
-          [% IF bug.cc.contains( user.email ) %]，包括你
+          [% IF bug.cc.contains( user.login ) %]，包括你
           [% END %]
         [% END %]
         [% IF user.id || bug.cc.size %]
@@ -830,7 +831,7 @@
 [%############################################################################%]
 [% BLOCK section_bug_ignored %]
   [% IF user.id %]
-    <tr>
+    <tr id="field_tablerow_bug_ignored">
       <th class="field_label">
         <label for="bug_ignored" title="Ignore all email for this [% terms.bug %]">
           忽略 [% terms.Bug %] 通知信：
@@ -853,7 +854,7 @@
 [%############################################################################%]
 [% BLOCK section_see_also %]
 [% IF Param('use_see_also') || bug.see_also.size %]
-    <tr>
+    <tr id="field_tablerow_see_also">
       [% INCLUDE bug/field.html.tmpl
            field    = bug_fields.see_also
            value    = bug.see_also
@@ -864,7 +865,7 @@
 [% END %]
 
 [% BLOCK section_aliases %]
-  <tr>
+  <tr id="field_tablerow_alias">
     [% INCLUDE "bug/field-label.html.tmpl" field = bug_fields.alias %]
     <td>
       [% IF bug.alias.size %]
@@ -929,7 +930,7 @@
     [% LAST IF show_bug_flags && show_more_flags && bug_flags_set %]
   [% END %]
   [% IF show_bug_flags %]
-    <tr>
+    <tr id="field_tablerow_flags">
       <th class="field_label">
         <label>旗標：</label>
       </th>
@@ -971,7 +972,6 @@
 
 [% BLOCK section_customfields %]
 [%# *** Custom Fields *** %]
-  [% USE Bugzilla %]
   [% FOREACH field = Bugzilla.active_custom_fields %]
     <tr>
       [%# Use PROCESS instead of INCLUDE, because extra_field_item is defined
@@ -1216,7 +1216,7 @@
   [% IF no_td != 1 %]
   <td[% " colspan=\"$colspan\"" IF colspan %]>
   [% END %]
-    [% val = value ? value : bug.$inputname %]
+    [% val = bug.$inputname %]
     [% IF bug.check_can_change_field(inputname, 0, 1) %]
        <input id="[% inputname %]" name="[% inputname %]" class="text_input"
               value="[% val FILTER html %]"[% " size=\"$size\"" IF size %]
@@ -1234,18 +1234,20 @@
   [% IF no_td != 1 %]
   </td>
   [% END %]
-  [% no_td = 0 %]
-  [% maxlength = 0 %]
-  [% colspan = 0 %]
-  [% size = 0 %]
-  [% value = undef %]
-  [% spellcheck = undef %]
 [% END %]
+
 [% BLOCK commit_button %]
   [% IF user.id %]
     <div class="knob-buttons">
       <input type="submit" value="儲存變更"
              id="commit[% id FILTER css_class_quote %]">
+      [% IF Param('minor_update_group') && user.in_group(Param('minor_update_group')) %]
+        <br>
+        <label class="" for="minor_update">
+          這是小型更新（不要送出電子郵件）
+        </label>
+        <input type="checkbox" name="minor_update" value="1">
+      [% END %]
     </div>
   [% END %]
 [% END %]
