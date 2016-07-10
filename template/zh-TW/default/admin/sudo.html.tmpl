@@ -56,11 +56,8 @@
 
   [% IF user.authorizer.can_login %]
     <p>
-      最後，輸入<label for="Bugzilla_password">你的 [% terms.Bugzilla %] 密碼</label>：
-      <input type="hidden" name="Bugzilla_login" value="[% user.login FILTER html %]">
-      <input type="password" id="Bugzilla_password" name="Bugzilla_password" size="20" required>
-      <input type="hidden" name="Bugzilla_login_token"
-             value="[% login_request_token FILTER html %]">
+      最後，輸入<label for="password">你的 [% terms.Bugzilla %] 密碼</label>：
+      <input type="password" id="password" name="password" size="20" required>
       <br>
       這麼做有兩個原因。<br>
       第一，這可以減少其他人使用你已經登入的帳號做壞事的機會。<br>
@@ -69,7 +66,6 @@
   [% END %]
 
   <p>
-    點選以下按鍵開始 sudo ：
     <input type="submit" id="begin_sudo" value="開始 sudo">
     <input type="hidden" name="action" value="begin-sudo">
     <input type="hidden" name="token" value="[% token FILTER html %]">
