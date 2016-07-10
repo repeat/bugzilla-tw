@@ -12,18 +12,16 @@
   #%]
 
 [% PROCESS global/header.html.tmpl
-  title = "$terms.bug 清單的書籤"
+  title = "$terms.bug 清單的模版"
   header = "已建立模版"
 %]
 
 <p>
-  你可以將此連結加入書籤：
-  &ldquo;<a href="enter_bug.cgi?[% url FILTER html %]">
-  [% IF short_desc %]
-    [% short_desc FILTER html %]
-  [% ELSE %]
-    [% terms.Bug %] 輸入模版
-  [% END %]</a>&rdquo;。此書籤將會以你要求的初始化欄位，載入<em>輸入 [% terms.Bug %] </em>的頁面。
+  如果你將此連結加入書籤，
+  或是在 $terms.bug 輸入頁面<a href="enter_bug.cgi?[% url FILTER html %]">對此連結</a>按滑鼠右鍵，
+  並且在新視窗重覆開啟時，
+  你將會得到數個<em>輸入 [% terms.bug %]</em>的頁面，而這些頁面的欄位已預先初始化為你剛剛完成的樣子。
+  你可以依照需求進行自訂。
 </p>
 
 [% PROCESS global/footer.html.tmpl %]
