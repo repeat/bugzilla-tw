@@ -11,7 +11,7 @@
 <tr class="attachment_data">
   <th><label for="data">檔案</label>：</th>
   <td>
-    <em>輸入該檔案在你的電腦的路徑位址</em>（或者
+    （或者
     <a id="attachment_data_controller" href="javascript:TUI_toggle_class('attachment_text_field');
                                              javascript:TUI_toggle_class('attachment_data')"
     >把文字貼上做為附件</a>）。<br>
@@ -30,9 +30,8 @@
   </td>
 </tr>
 <tr>
-  <th class="required"><label for="description">描述</label>：</th>
+  <th class="required"><label for="description">簡要描述</label>：</th>
   <td>
-    <em>簡要描述該附件。</em><br>
     <input type="text" id="description" name="description" class="required"
            size="60" maxlength="200">
   </td>
@@ -67,6 +66,8 @@
       <label for="manual">手動輸入</label>：
       <input type="text" name="contenttypeentry" id="contenttypeentry"
              size="30" maxlength="200"
+             pattern="([% constants.LEGAL_CONTENT_TYPES.join('|') FILTER html %])/.+"
+             title="內容類型 (content type) 必須是 'type/subtype' 的型式，而 'type' 必須是下列其中之一： [% constants.LEGAL_CONTENT_TYPES.join(', ') FILTER html %]"
              onchange="if (this.value) this.form.contenttypemethod[2].checked = true;">
   </td>
 </tr>
