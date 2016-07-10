@@ -51,9 +51,15 @@
     <th>欄位</th>
     <th>值</th>
   </tr>
+  [% IF !Param('use_email_as_login') %]
+    <tr>
+      <th>帳號：</th>
+      <td>[% otheruser.login FILTER html %]</td>
+    </tr>
+  [% END %]
   <tr>
-    <th>帳號：</th>
-    <td>[% otheruser.login FILTER html %]</td>
+    <th>電子郵件地址：</th>
+    <td>[% otheruser.email FILTER html %]</td>
   </tr>
   <tr>
     <th>真實姓名：</th>
