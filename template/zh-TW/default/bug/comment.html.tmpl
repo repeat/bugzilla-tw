@@ -30,8 +30,18 @@
 
 [% IF feature_enabled('jsonrpc') %]
   <div id="comment_preview" class="bz_default_hidden bz_comment">
-    <div id="comment_preview_loading" class="bz_default_hidden">產生預覽中...</div>
+    <div id="comment_preview_loading" class="bz_default_hidden">產生預覽中…</div>
     <div id="comment_preview_error" class="bz_default_hidden"></div>
-    <pre id="comment_preview_text" class="bz_comment_text"></pre>
+    <div id="comment_preview_text" class="bz_comment_text"></div>
+  </div>
+[% END %]
+
+[% IF user.use_markdown %]
+  <div id="comment_markdown">
+    <input type="checkbox" name="use_markdown"
+           id="use_markdown" value="1" checked="checked"
+           onchange="refresh_markdown_preview([% bug.id FILTER none %])">
+    <label id="use_markdown_label" for="use_markdown">此[% terms.comment %]使用 Markdown</label>
+    (<a href="page.cgi?id=markdown.html" target="_blank" title="瀏覽 Markdown 語法指南">help</a>)
   </div>
 [% END %]
