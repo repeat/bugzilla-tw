@@ -12,7 +12,7 @@
 [% PROCESS global/header.html.tmpl
   title = title
   generate_api_token = 1
-  yui = [ 'autocomplete', 'calendar', 'datatable', 'button' ]
+  yui = ['datatable', 'button']
   style_urls = ['skins/standard/bug.css']
   javascript_urls = [ "js/attachment.js", "js/util.js",
                       "js/field.js", "js/TUI.js", "js/bug.js" ]
@@ -268,8 +268,9 @@ TUI_hide_default('attachment_text_field');
 
     <td>&nbsp;</td>
     [%# Calculate the number of rows we can use for flags %]
-    [% num_rows = 6 + (Param("useqacontact") ? 1 : 0) +
-                      (user.is_timetracker ? 3 : 0)
+    [% num_rows = 5 + (Param("useqacontact") ? 1 : 0) +
+                      (user.is_timetracker ? 3 : 0) +
+                      (user.in_group('editbugs', product.id) ? 1 : 0)
     %]
 
     <td rowspan="[% num_rows FILTER html %]">
@@ -379,6 +380,7 @@ TUI_hide_default('attachment_text_field');
   </tr>
 [% END %]
 
+[% IF user.in_group('editbugs', product.id) %]
   <tr>
     [% INCLUDE "bug/field-label.html.tmpl"
       field = bug_fields.alias editable = 1
@@ -387,6 +389,7 @@ TUI_hide_default('attachment_text_field');
       <input name="alias" size="20" value="[% alias FILTER html %]">
     </td>
   </tr>
+[% END %]
 
   <tr>
     [% INCLUDE "bug/field-label.html.tmpl"
@@ -537,7 +540,7 @@ TUI_hide_default('attachment_text_field');
     <tr>
       [% INCLUDE bug/field.html.tmpl
          bug = default, field = bug_fields.keywords, editable = 1,
-         value = keywords, possible_values = all_keywords,
+         value = keywords, possible_values = active_keywords,
          desc_url = "describekeywords.cgi", value_span = 3
       %]
     </tr>
@@ -623,8 +626,11 @@ TUI_hide_default('attachment_text_field');
       <input type="submit" id="commit" value="送出 [% terms.Bug %]">
       &nbsp;&nbsp;&nbsp;&nbsp;
       <input type="submit" name="maketemplate" id="maketemplate"
-             value="將所有的值儲存為書籤模版"
+             value="儲存為模版"
              onclick="bz_no_validate_enter_bug=true" class="expert_fields">
+      <span class="expert_fields">
+        （對於尋找數個類似的 bug 有幫助）
+      </span>
     </td>
   </tr>
 </tbody>
