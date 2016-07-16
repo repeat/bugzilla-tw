@@ -1,0 +1,116 @@
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  #
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
+  #%]
+
+[% flagtype_name = flag ? flag.type.name : old_flag.type.name %]
+[% statuses = { '+' => "同意" , '-' => "拒絕" , 'X' => "取消" ,
+                '?' => "要求" } %]
+
+[% action = flag.status || 'X' %]
+
+[% pending_request = (flag && flag.status == '?') %]
+[% reassigned = (pending_request && flag.setter_id != user.id) %]
+[% was_pending_request = (old_flag && old_flag.status == '?') %]
+
+<html>
+  <head>
+    <base href="[% urlbase FILTER html %]">
+  </head>
+  <body>
+    <p>
+    [%# 譯註：加了角色說明，以方便翻譯及理解。 #%]
+      [% IF reassigned =%]
+        [%# 譯註：
+          # user has reassigned flag.setter's request for (old_flag.requestee's) flagtype_name (to flag.requestee)
+          #%]
+        使用者 [% INCLUDE global/user.html.tmpl user = to_user, who = user %]
+        已重新分配旗標設定者 [% INCLUDE global/user.html.tmpl user = to_user, who = flag.setter %] 對
+        [% IF old_flag.requestee.defined %]
+          原旗標請求者 [%= INCLUDE global/user.html.tmpl user = to_user, who = old_flag.requestee %] 的
+        [% END %]
+        旗標 [%= flagtype_name FILTER html %] 的要求
+        [% IF flag.requestee.defined =%]
+          給新旗標請求者 [% INCLUDE global/user.html.tmpl user = to_user, who = flag.requestee %]
+        [% END %]
+      [% ELSE %]
+        [%# 譯註：
+          # user has granted/denied/canceled/asked
+          # (flag.requestee for / old.flag_setter's request for (old_flag.requestee's)) 
+          # flagtype_name
+          #%]
+        [% IF pending_request %]
+          使用者 [% INCLUDE global/user.html.tmpl user = to_user, who = user %]
+          已[%= statuses.$action FILTER html %][%# 同意/拒絕/取消/要求 #%]
+          旗標請求者 [%= INCLUDE global/user.html.tmpl user = to_user, who = flag.requestee %] 
+          對於旗標 <b>[% flagtype_name FILTER html %]</b> 的要求
+        [% ELSIF was_pending_request %]
+          使用者[% INCLUDE global/user.html.tmpl user = to_user, who = user %]
+          已[%= statuses.$action FILTER html %][%# 同意/拒絕/取消/要求 #%]
+          旗標設定者 [%= INCLUDE global/user.html.tmpl user = to_user, who = old_flag.setter %]
+          對於
+          [% IF old_flag.requestee.defined %]
+            原旗標請求者 [%= INCLUDE global/user.html.tmpl user = to_user, who = old_flag.requestee %] 的
+          [% END %]
+          旗標 <b>[% flagtype_name FILTER html %]</b> 的要求
+        [% ELSE %]
+          [%# 譯註：原本條件 #%]
+          使用者 [% INCLUDE global/user.html.tmpl user = to_user, who = user %]
+          已[%= statuses.$action FILTER html %][%# 同意/拒絕/取消/要求 #%]
+          旗標 <b>[% flagtype_name FILTER html %]</b>
+        [% END %]
+      [% END %]
+      ：
+    </p>
+
+    <p>
+      [% INCLUDE bug/link.html.tmpl bug = bug, link_text = "$terms.Bug $bug.id", full_url = 1, user = to_user %]：
+      [%= bug.short_desc FILTER html %]
+    </p>
+
+    [% IF attachment %]
+      <p>
+        <a href="[% urlbase FILTER html %]attachment.cgi?id=[% attachment.id FILTER html ~%]
+                 &action=edit">附件 [% attachment.id FILTER html %]</a>：
+        [%= attachment.description FILTER html %]
+      </p>
+    [% END %]
+
+    [% Hook.process('after_summary') %]
+
+    <p>
+      [% comment_anchor = '' %]
+      [% FOREACH comment = new_comments.reverse %]
+        <div>
+          [% IF comment.count %]
+            [% comment_anchor = "#c$comment.count" %]
+            <b>
+              對於 [% "$terms.bug $bug.id" FILTER bug_link(bug, { full_url => 1, user => to_user }) FILTER none =%]
+              來自 [% INCLUDE global/user.html.tmpl user = to_user, who = comment.author %]
+              的
+              [% "意見 # ${comment.count}" FILTER bug_link(bug,
+                {comment_num => comment.count, full_url => 1, user => to_user}) FILTER none =%]
+            </b>
+          [% ELSE %]
+            <b>描述：</b>
+          [% END %]
+          [% comment_div = comment.is_markdown ? "div" : "pre" %]
+          [% wrap = comment.is_markdown ? 0 : 1 %]
+          <[% comment_div FILTER none %] class="bz_comment_text">[% comment.body_full({ wrap => wrap }) FILTER markdown(bug, comment, to_user) %]</[% comment_div FILTER none %]>
+        </div>
+      [% END %]
+    </p>
+
+    <div itemscope itemtype="http://schema.org/EmailMessage">
+      <div itemprop="action" itemscope itemtype="http://schema.org/ViewAction">
+        [%# Filtering of the URL param is not required & would break the URL when the comment anchor is set %]
+        <link itemprop="url" href="[% urlbase FILTER html %]show_bug.cgi?id=[% "$bug.id$comment_anchor" FILTER none %]">
+        <meta itemprop="name" content="瀏覽 [% terms.bug %]">
+      </div>
+      <meta itemprop="description" content="[% terms.Bugzilla %] [%+ terms.bug %] 更新通知">
+    </div>
+  </body>
+</html>
