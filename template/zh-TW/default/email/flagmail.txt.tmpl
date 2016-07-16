@@ -17,7 +17,6 @@
 [% action = flag.status || 'X' %]
 
 [% IF flag && flag.status == '?' %]
-  [% subject_status = "已要求" %]
   [% IF flag.setter_id == user.id %]
     [% to_identity = flag.requestee.identity _ "所要求的" %]
   [% ELSE %]
@@ -31,16 +30,7 @@
         [% requestee_identity = old_flag.requestee.identity _ "的" %]
     [% END %]
   [% END %]
-  [% subject_status = statuses.$action %]
 [% END %]
-From: [% Param('mailfrom') %]
-To: [% to %]
-Subject: [% flagtype_name %] [%+ subject_status %] ： [[% terms.Bug %] [%+ bug.bug_id %]] [% bug.short_desc %]
-[%- IF attachment %]：[附件 [% attachment.id %]] [% attachment.description FILTER clean_text %][% END %]
-Date: [% date %]
-X-Bugzilla-Type: request
-[%+ INCLUDE "email/header-common.txt.tmpl" %]
-[%+ threadingmarker %]
 
 [%+ USE wrap -%]
 [%- FILTER bullet = wrap(80) -%]
