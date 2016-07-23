@@ -13,7 +13,7 @@
 [% message_tag = message %]
 
 [% message = BLOCK %]
-  [% IF    message_tag == "account_created" %]
+  [% IF message_tag == "account_created" %]
     已成功建立帳號 [% otheruser.login FILTER html %] 。
     [% IF groups.size %]
       若要編輯群組設定，使用以下的表單。
@@ -21,7 +21,7 @@
 
   [% ELSIF message_tag == "account_creation_canceled" %]
     [% title = "取消建立帳號" %]
-    已取消建立使用者帳號 [% account FILTER html %] 。
+    已取消建立使用者帳號 '[% login FILTER html %]' 。
 
   [% ELSIF message_tag == "account_updated" %]
     [% IF changes.size %]
@@ -30,8 +30,10 @@
       <ul>
         [% FOREACH field = changes.keys %]
           <li>
-            [% IF    field == 'login_name' %]
+            [% IF field == 'login_name' %]
               帳號已變更為 [% otheruser.login FILTER html %] 。
+            [% ELSIF field == 'email' %]
+              電子郵件地址已變更為 [% otheruser.email FILTER html %] 。
             [% ELSIF field == 'realname' %]
               真實姓名已更新。
             [% ELSIF field == 'cryptpassword' %]
@@ -82,7 +84,8 @@
     已成功刪除使用者 [% otheruser.login FILTER html %] 。
 
   [% ELSIF message_tag == "account_disabled" %]
-    已無法使用 [% account FILTER html %] 此帳號登入，所以你無法變更他的密碼。
+    已無法登入使用電子郵件地址是 [% email FILTER html %]
+    的帳號，所以你無法變更他的密碼。
 
   [% ELSIF message_tag == "attachment_creation_failed" %]
     成功建立 [% terms.bug %] ，但無法建立附件。
@@ -239,6 +242,10 @@
     已取消將帳號 [%+ old_email FILTER html %] 的電子郵件地址變更為
     [%+ new_email FILTER html %] 的要求。<br>
     已回復原有帳號的設定。
+
+    [% ELSIF message_tag == "email_changed" %]
+    [% title = "電子郵件已變更" %]
+    已更新你的電子郵件地址。
 
   [% ELSIF message_tag == "extension_created" %]
     已在 [% path FILTER html %] 新增名為 [% name FILTER html %] 的附加元件。
@@ -475,7 +482,7 @@
     [%+ terms.Bugzilla %] 中…
 
   [% ELSIF message_tag == "migrate_user_created" %]
-    已建立使用者： [% created.email FILTER html %]
+    已建立使用者： [% created.login FILTER html %]
     [% IF password %] 密碼： [% password FILTER html %][% END %]
 
   [% ELSIF message_tag == "migrate_value_created" %]
@@ -518,9 +525,6 @@
     [% IF param_changed.size > 0 %]
       [% FOREACH param = param_changed %]
         已更新 <em>[% param FILTER html %]</em> 。<br>
-        [% IF param == 'utf8' && Param('utf8') %]
-          <strong>你必須重新執行 <kbd>checksetup.pl</kbd> 。</strong><br>
-        [% END %]
       [% END %]
     [% ELSE %]
       並未做出任何變更。
@@ -538,7 +542,7 @@
 
   [% ELSIF message_tag == "password_change_request" %]
     [% title = "要求變更密碼" %]
-    已將內含有認證碼的變更密碼用信件寄到 [% login_name FILTER html %] 。
+    已將內含有認證碼的變更密碼用信件寄到 <em>[% email FILTER html %]</em> 。
     依照信件內的指示來變更密碼。
 
   [% ELSIF message_tag == "password_changed" %]
@@ -617,6 +621,9 @@
 
   [% ELSIF message_tag == "install_admin_get_email" %]
     輸入管理者的電子郵件地址：
+
+  [% ELSIF message_tag == "install_admin_get_login" %]
+    輸入管理者的登入用帳號：
 
   [% ELSIF message_tag == "install_admin_get_name" %]
     輸入管理者的真實姓名：
