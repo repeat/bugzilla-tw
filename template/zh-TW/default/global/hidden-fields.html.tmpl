@@ -16,25 +16,22 @@
 [% cgi = Bugzilla.cgi %]
 
 [%# Generate hidden form fields for non-excluded fields. %]
-[% FOREACH field = cgi.param() %]
+[% FOREACH field = cgi.multi_param() %]
   [% NEXT IF exclude && field.search(exclude) %]
-  [%# The '.slice(0)' bit is here to force the 'param(field)' to be evaluated
-      in a list context, so we can avoid extra code checking for single valued or
-      empty fields %]
-  [% IF field == "data" && cgi.param("data") %]
+  [% IF field == "data" && cgi_param("data") %]
     <div class="box">
       <p>
         由於在表單中你所送出的資訊不足，所以我們無法儲存你上傳的檔案。因為無法在傳輸過程中保留檔案，因此，你必須重新附加檔案，並且填妥前述不足的資訊。
       </p>
       <p>
-        請以下列表單重新附加檔案 <b>[% cgi.param(field) FILTER html %] </b>：
+        請以下列表單重新附加檔案 <b>[% cgi_param(field) FILTER html %]</b>：
       </p>
       <p>
         <input type="file" id="data" name="data" size="50">
       </p>
     </div>
   [% ELSE %]
-    [% FOREACH mvalue = cgi.param(field).slice(0) %]
+    [% FOREACH mvalue = cgi.multi_param(field) %]
       <input type="hidden" name="[% field FILTER html %]"
              value="[% mvalue FILTER html_linebreak %]">
     [% END %]
