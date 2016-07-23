@@ -98,6 +98,13 @@
   [% ELSIF error == "cookies_need_value" %]
     每個 cookie 都必須要有一個數值。
 
+  [% ELSIF error == "cpan_meta_missing" %]
+    META.json/MYMETA.json 檔案不存在。
+
+  [% ELSIF error == "db_error" %]
+    在執行資料庫操作時，發生以下錯誤：
+    <pre>[% err_message FILTER html %]</pre>
+
   [% ELSIF error == "db_rename_conflict" %]
     名稱衝突：無法將 [% old FILTER html %] 更名為 [% new FILTER html %] ，因為 [% new FILTER html %] 已存在。
 
