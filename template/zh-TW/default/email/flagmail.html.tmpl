@@ -39,13 +39,13 @@
       [% ELSE %]
         [%# 譯註：
           # user has granted/denied/canceled/asked
-          # (flag.requestee for / old.flag_setter's request for (old_flag.requestee's)) 
+          # (flag.requestee for / old.flag_setter's request for (old_flag.requestee's))
           # flagtype_name
           #%]
         [% IF pending_request %]
           使用者 [% INCLUDE global/user.html.tmpl user = to_user, who = user %]
           已[%= statuses.$action FILTER html %][%# 同意/拒絕/取消/要求 #%]
-          旗標請求者 [%= INCLUDE global/user.html.tmpl user = to_user, who = flag.requestee %] 
+          旗標請求者 [%= INCLUDE global/user.html.tmpl user = to_user, who = flag.requestee %]
           對於旗標 <b>[% flagtype_name FILTER html %]</b> 的要求
         [% ELSIF was_pending_request %]
           使用者[% INCLUDE global/user.html.tmpl user = to_user, who = user %]

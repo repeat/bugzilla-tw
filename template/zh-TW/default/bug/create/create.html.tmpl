@@ -206,7 +206,7 @@ TUI_hide_default('attachment_text_field');
   <tr class="expert_fields">
     [% IF Param('letsubmitterchoosepriority') %]
       [% INCLUDE bug/field.html.tmpl
-        bug = default, field = bug_fields.priority, editable = 1, 
+        bug = default, field = bug_fields.priority, editable = 1,
         value = default.priority %]
     [% ELSE %]
       <td colspan="2">&nbsp;</td>

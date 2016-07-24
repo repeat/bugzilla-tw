@@ -108,7 +108,7 @@
         [% FOREACH sel_field = Bugzilla.fields({ is_select => 1 }) %]
           [% NEXT IF field && sel_field.id == field.id %]
           <option value="[% sel_field.id FILTER html %]"
-           [% ' selected="selected"' 
+           [% ' selected="selected"'
               IF field && sel_field.id == field.visibility_field.id %]>
             [% sel_field.description FILTER html %]
             ([% sel_field.name FILTER html %])
@@ -120,7 +120,7 @@
         <strong>設定為以下其中任何一個：</strong>
       </label>
       <br>
-      <select multiple="multiple" size="5" name="visibility_values" 
+      <select multiple="multiple" size="5" name="visibility_values"
               id="visibility_values" class="field_value">
         [% IF field %]
           [% FOREACH value = field.visibility_field.legal_values %]

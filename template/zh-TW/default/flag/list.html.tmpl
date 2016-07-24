@@ -40,7 +40,7 @@
     [% FOREACH flag = type.flags %]
       [% PROCESS flag_row flag = flag type = type %]
     [% END -%]
-    
+
     [% SET flag = "" %]
     [% NEXT IF read_only_flags %]
 

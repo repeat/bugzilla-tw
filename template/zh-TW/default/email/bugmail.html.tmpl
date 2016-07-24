@@ -61,7 +61,7 @@
           <ul>
             [% FOREACH ref_bug = referenced_bugs %]
               <li>
-                [[% "${terms.Bug} ${ref_bug.id}" FILTER bug_link(ref_bug, {full_url => 1, user => to_user}) FILTER none %]] 
+                [[% "${terms.Bug} ${ref_bug.id}" FILTER bug_link(ref_bug, {full_url => 1, user => to_user}) FILTER none %]]
                 [% ref_bug.short_desc FILTER html %]
               </li>
             [% END %]

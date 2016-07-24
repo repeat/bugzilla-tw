@@ -91,7 +91,7 @@
 
 [%# Add our required jQuery plugins %]
 [% jquery.push("cookie", "devbridgeAutocomplete") %]
- 
+
 [%# We should be able to set the default value of the header variable
   # to the value of the title variable using the DEFAULT directive,
   # but that doesn't work if a caller sets header to the empty string
@@ -250,7 +250,7 @@
             [% END %]
           [% END %]
         [% END %]
-        
+
         [% IF javascript %]
           [% javascript %]
         [% END %]
@@ -270,7 +270,7 @@
         document.createElement('footer');
       </script>
     <![endif]-->
- 
+
     [%# this puts the live bookmark up on firefox for the Atom feed %]
     [% IF atomlink %]
        <link rel="alternate"

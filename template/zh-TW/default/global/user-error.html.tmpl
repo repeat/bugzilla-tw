@@ -279,7 +279,7 @@
 
   [% ELSIF error == "auth_untrusted_request" %]
     [% title = "不受信任的認證要求" %]
-    你試圖用 
+    你試圖用
     <em>[% login FILTER html %]</em>
     帳號登入，但
     [% terms.Bugzilla %] 無法信任你的要求。
@@ -504,14 +504,14 @@
   [% ELSIF error == "email_change_in_progress" %]
     [% title = "變更電子郵件進行中" %]
     變更電子郵件進行中，請檢查你的電子郵件信箱。
-    
+
   [% ELSIF error == "email_needed_for_password_change" %]
     [% title = "電子郵件地址必填" %]
     變更密碼時，你必須輸入電子郵件地址。
 
   [% ELSIF error == "email_no_body" %]
     你的電子郵件並未包含任何文字，或者無法解析出文字。
-    
+
   [% ELSIF error == "email_required" %]
     [% title = "電子郵件地址必填" %]
     [% admindocslinks = {'useradmin.html' => '使用者管理'} %]
@@ -550,7 +550,7 @@
     [% END %]。
 
   [% ELSIF error == "feature_disabled" %]
-    這台機器上的 Bugzilla 並不允許 
+    這台機器上的 Bugzilla 並不允許
     [% feature_description(feature) FILTER html %]
     這項功能。
     [% IF user.in_group('admin') %]
@@ -1180,7 +1180,7 @@
   [% ELSIF error == "login_illegal_character" %]
     [% title = "帳號中含有不合法的字元" %]
     帳號中不能有空白字元。
-    
+
   [% ELSIF error == "login_required" %]
     [%# Used for non-web-based LOGIN_REQUIRED situations. %]
     你必須登入 [% terms.Bugzilla %] ，才能使用該部份功能。
@@ -1720,7 +1720,7 @@
       這個 [% terms.bug %]
     [% END %]
     還有 [% dep_count FILTER none %] 個未解決的依賴關係。在你將此
-    [% terms.bug %] 設定為 
+    [% terms.bug %] 設定為
     [% display_value("resolution",
               Param('resolution_forbidden_with_open_blockers')) FILTER html %]
     之前，必須解決這些 [% terms.bugs %] 或者把它們從 "[% field_descs.dependson FILTER html %]"
