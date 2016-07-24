@@ -50,7 +50,14 @@
 
   [% ELSIF error == "account_exists" %]
     [% title = "帳號已存在" %]
-    帳號名稱[% IF email %] [% email FILTER html %] [% END %]已存在。
+    [% IF login %]
+      名稱為 [% login FILTER html %] 的帳號
+    [% ELSIF email %]
+      電子郵件地址為 [% email FILTER html %] 的帳號
+    [% ELSE %]
+      該帳號或電子郵件地址
+    [% END %]
+    已存在。
 
   [% ELSIF error == "account_locked" %]
     [% title = "帳號已鎖住" %]
@@ -109,6 +116,45 @@
   [% ELSIF error == "auth_cant_create_account" %]
     [% title = "無法建立帳號" %]
     如要建立帳號，請洽管理者。
+
+  [% ELSIF error == "auth_delegation_disabled" %]
+    [% title = "無法使用請求認證授權" %]
+    此網站並未啟用認證授權功能。
+    如要使用此功能，請洽管理者。
+
+  [% ELSIF error == "auth_delegation_illegal_protocol" %]
+    [% title = "無效的協議" %]
+    callback URI 使用了無效的協議：
+    <em>[% protocol FILTER html %]</em> 。
+    只允許使用 <em>http</em> 和 <em>https</em> 。
+
+  [% ELSIF error == "auth_delegation_missing_callback" %]
+    [% title = "未指定 callback URI 無法使用請求認證授權" %]
+    某個站台嘗試請求了認證授權，但是未指定 callback URI ，所以無法繼續。
+    你會來到這裡是因為其他站台的請求，所以請洽原站台以尋求支援。
+
+  [% ELSIF error == "auth_delegation_missing_description" %]
+    [% title = "未指定描述無法使用請求認證授權" %]
+    某個站台嘗試請求了認證授權，但是未指定描述，所以無法繼續。
+    你會來到這裡是因為其他站台的請求，所以請洽原站台以尋求支援。
+
+  [% ELSIF error == "auth_delegation_missing_token" %]
+    [% title = "無法確認請求認證授權" %]
+    因為缺少 token 或者 token 無效，無法確認請求認證授權。
+
+  [% ELSIF error == "auth_delegation_invalid_token" %]
+    [% title = "無法確認請求認證授權" %]
+    因為缺少 token 或者 token 無效，無法確認請求認證授權。
+
+  [% ELSIF error == "auth_delegation_json_error" %]
+    [% title = "請求認證授權接收到了無效的 JSON" %]
+    請求認證授權接收到了無效的 JSON 回傳：
+    <pre>[% json_text FILTER html %]</pre>
+
+  [% ELSIF error == "auth_delegation_post_error" %]
+    [% title = "請求認證授權接收到了無效的 HTTP 狀態碼" %]
+    請求認證授權接收到了不是 200 OK 的 HTTP 狀態碼：
+    [% code FILTER html %]
 
   [% ELSIF error == "auth_failure" %]
     [% title = "需要授權" %]
@@ -184,6 +230,8 @@
       瀏覽群組
     [% ELSIF object == "groups" %]
       群組
+    [% ELSIF object == "job_queue" %]
+      工作佇列
     [% ELSIF object == "keywords" %]
       關鍵字
     [% ELSIF object == "milestones" %]
@@ -270,11 +318,11 @@
         <li>已安裝的 Bugzilla 中的 <code>show_bug.cgi</code> 。</li>
         <li>在 launchpad.net 的 b[% %]ug 。</li>
         <li>在 code.google.com 的 issue 。</li>
-        <li>在 b[% %]ugs.debian.org 的 b[% %]ug 。</li>
+        <li>在 b[% %]ugs.debian.org 或 deb[% %]ugs.gnu.org 的 b[% %]ug 。</li>
         <li>已安裝 JIRA 中的 issue 。</li>
         <li>已安裝 Trac 中的 ticket 。</li>
         <li>已安裝 MantisBT 中的 b[% %]ug 。</li>
-        <li>在 sourceforge.net 的 b[% %]ug 。</li>
+        <li>在 sourceforge.net 的 b[% %]ug 或 ticket 。</li>
         <li>在 github.com 中的 issue 或 pull request 。</li>
         [% Hook.process('bug_url_invalid_tracker') %]
       </ul>
@@ -456,9 +504,18 @@
   [% ELSIF error == "email_change_in_progress" %]
     [% title = "變更電子郵件進行中" %]
     變更電子郵件進行中，請檢查你的電子郵件信箱。
+    
+  [% ELSIF error == "email_needed_for_password_change" %]
+    [% title = "電子郵件地址必填" %]
+    變更密碼時，你必須輸入電子郵件地址。
 
   [% ELSIF error == "email_no_body" %]
     你的電子郵件並未包含任何文字，或者無法解析出文字。
+    
+  [% ELSIF error == "email_required" %]
+    [% title = "電子郵件地址必填" %]
+    [% admindocslinks = {'useradmin.html' => '使用者管理'} %]
+    你必須為新使用者指定電子郵件地址。
 
   [% ELSIF error == "empty_group_description" %]
     [% title = "不允許群組描述空白" %]
@@ -493,11 +550,13 @@
     [% END %]。
 
   [% ELSIF error == "feature_disabled" %]
-    這台機器上的 Bugzilla 並不允許 [% install_string("feature_$feature") FILTER html %]
+    這台機器上的 Bugzilla 並不允許 
+    [% feature_description(feature) FILTER html %]
     這項功能。
     [% IF user.in_group('admin') %]
       如果你想要啟用此項功能，請執行
-      <kbd>checksetup.pl</kbd> 以確認啟用此功能所必須要的最低需求。
+      <kbd>cpanm -l local --installdeps --with-feature [% feature FILTER html %] "."</kbd>
+      。
     [% END %]
 
   [% ELSIF error == "field_already_exists" %]
@@ -846,13 +905,20 @@
 
   [% ELSIF error == "illegal_change" %]
     [% title = "不被允許" %]
-    你試著將
+    你試著把
     <strong>[% field_descs.$field FILTER html %]</strong> 欄位
     [% IF oldvalue.defined AND oldvalue != "" %]
       自 <em>[% oldvalue.join(', ') FILTER html %]</em>
     [% END %]
+    [% IF action == "set" %]
+      設定
+    [% ELSIF action == "unset" %]
+      解除設定
+    [% ELSE %]
+      變更
+    [% END %]
     [% IF newvalue.defined AND newvalue != "" %]
-      變更為 <em>[% newvalue.join(', ') FILTER html %]</em>
+      為 <em>[% newvalue.join(', ') FILTER html %]</em>
     [% END %]
     ，但是只有
     [% IF privs < constants.PRIVILEGES_REQUIRED_EMPOWERED %]
@@ -885,7 +951,7 @@
 
   [% ELSIF error == "illegal_email_address" %]
     [% title = "無效的電子郵件地址" %]
-    你輸入的電子郵件地址 (<b>[% addr FILTER html %]</b>)
+    你輸入的電子郵件地址 (<b>[% email FILTER html %]</b>)
     並未通過有效的電子郵件地址測試。
     [% IF default %]
       一個有效的電子郵件地址必須要有一個 @ 符號，以及在 @ 之後至少有一個 . 符號。
@@ -982,6 +1048,12 @@
   [% ELSIF error == "invalid_dimensions" %]
     [% title = "無效的維度" %]
     所指定的寬度或高度並非正整數。
+
+  [% ELSIF error == "invalid_email" %]
+    [% title = "無效的電子郵件地址" %]
+    <tt>[% email FILTER html %]</tt> 是個無效的電子郵件地址。
+    可能是你拼錯字了，也可能是沒有人以此電子郵件註冊過
+    [% terms.Bugzilla %] 帳號。
 
   [% ELSIF error == "invalid_format" %]
     [% title = "無效的格式" %]
@@ -1097,10 +1169,18 @@
     [% title = "無效的關鍵字名稱" %]
     不允許在關鍵字名稱中使用逗號 (,) 或空白。
 
-  [% ELSIF error == "login_needed_for_password_change" %]
-    [% title = "必須輸入帳號" %]
-    如要變更你的密碼，你必須輸入你的帳號。
+  [% ELSIF error == "login_at_sign_disallowed" %]
+    [% title = "帳號中含有不合法的字元" %]
+    除非你要把帳號設為和你的電子郵件地址相同，否則不能夠設定含有 "@" 字元的帳號。
 
+  [% ELSIF error == "login_change_during_email_change" %]
+    [% title = "不允許更換帳號" %]
+    在更換電子郵件地址的過程中，不允許更換帳號名稱。
+
+  [% ELSIF error == "login_illegal_character" %]
+    [% title = "帳號中含有不合法的字元" %]
+    帳號中不能有空白字元。
+    
   [% ELSIF error == "login_required" %]
     [%# Used for non-web-based LOGIN_REQUIRED situations. %]
     你必須登入 [% terms.Bugzilla %] ，才能使用該部份功能。
@@ -1108,6 +1188,13 @@
   [% ELSIF error == "login_required_for_pronoun" %]
     [% title = "必須輸入帳號" %]
     你不能在未登入狀態下使用 %user% ，因為 %user% 代表你的帳號，但系統並不知道你的帳號是什麼。
+
+  [% ELSIF error == "login_too_long" %]
+    [% title = "帳號過長" %]
+    帳號太長了。不能超過 127 字元。
+
+  [% ELSIF error == "markdown_disabled" %]
+    Markdown feature is not enabled.
 
   [% ELSIF error == "migrate_config_created" %]
     檔案 <kbd>[% file FILTER html %]</kbd> 包含了必須在合併前設定的變數設定。
@@ -1138,12 +1225,6 @@
     [% title = "里程碑名稱過長" %]
     里程碑名稱限制為 [% constants.MAX_MILESTONE_SIZE FILTER html %]
     字元。 '[% name FILTER html %]' 太長了（ [% name.length %] 字元）。
-
-  [% ELSIF error == "milestone_required" %]
-    [% title = "需要輸入里程碑" %]
-    如果你決定要負責 [% terms.bug %] [% bug.id FILTER html %]
-    的話，你必須選擇一個目標里程碑。
-    訂出修復 [% terms.bug %] 的大概期限，也是負責的一部份。
 
   [% ELSIF error == "milestone_sortkey_invalid" %]
     [% title = "無效的里程碑排序鍵" %]
@@ -1238,6 +1319,10 @@
 
   [% ELSIF error == "multiple_alias_not_allowed" %]
     你無法在修改多個 [% terms.bugs %] 時設定別名。
+
+  [% ELSIF error == "multiple_components_update_not_allowed" %]
+    [% title = "不允許更新多個子產品" %]
+    你無法一次更新同一產品的多個子產品名稱。
 
   [% ELSIF error == "need_quip" %]
     [% title = "需要智語" %]
@@ -1344,16 +1429,16 @@
     [%- IF class == "Bugzilla::User" %]
       可能是你輸入了錯誤的名稱，或者該使用者尚未建立 [% terms.Bugzilla %] 帳號。
     [% ELSIF class == "Bugzilla::Keyword" %]
-      參考可用的<a href="describekeywords.cgi">關鍵字</a>列表。
+      參考可用的<a href="describekeywords.cgi?show_inactive_keywords=1">關鍵字</a>列表。
     [% END %]
 
-  [% ELSIF error == "old_password_incorrect" %]
+  [% ELSIF error == "current_password_incorrect" %]
     [% title = "不正確的密碼" %]
     你並未正確地輸入密碼。
 
-  [% ELSIF error == "old_password_required" %]
-    [% title = "需要輸入舊密碼" %]
-    你必須輸入舊的密碼，才能變更你的電子郵件地址。
+  [% ELSIF error == "current_password_required" %]
+    [% title = "需要輸入目前密碼" %]
+    你必須輸入目前的密碼，才能編輯你的帳號資訊。
 
   [% ELSIF error == "password_change_requests_not_allowed" %]
     [% title = "不允許修改密碼" %]
@@ -1368,7 +1453,7 @@
     密碼不得短於 [% constants.USER_PASSWORD_MIN_LENGTH FILTER html %] 字元。
     [% IF locked_user %]
       你必須
-      <a href="token.cgi?a=reqpw&amp;loginname=[% locked_user.email FILTER uri %]&amp;token=[% issue_hash_token(['reqpw']) FILTER uri %]">
+      <a href="token.cgi?a=reqpw&amp;email=[% locked_user.email FILTER uri %]&amp;token=[% issue_hash_token(['reqpw']) FILTER uri %]">
       申請新的密碼</a>才能再度登入。
     [% END %]
 
@@ -1390,7 +1475,7 @@
     </ul>
     [% IF locked_user %]
       你必須
-      <a href="token.cgi?a=reqpw&amp;loginname=[% locked_user.email FILTER uri %]&amp;token=[% issue_hash_token(['reqpw']) FILTER uri %]">
+      <a href="token.cgi?a=reqpw&amp;email=[% locked_user.email FILTER uri %]&amp;token=[% issue_hash_token(['reqpw']) FILTER uri %]">
       申請新的密碼</a>才能再度登入。
     [% END %]
 
@@ -1635,7 +1720,9 @@
       這個 [% terms.bug %]
     [% END %]
     還有 [% dep_count FILTER none %] 個未解決的依賴關係。在你將此
-    [% terms.bug %] 設定為 [% display_value("resolution", "FIXED") FILTER html %]
+    [% terms.bug %] 設定為 
+    [% display_value("resolution",
+              Param('resolution_forbidden_with_open_blockers')) FILTER html %]
     之前，必須解決這些 [% terms.bugs %] 或者把它們從 "[% field_descs.dependson FILTER html %]"
     欄位中移除。
 
@@ -1710,6 +1797,16 @@
     [% ELSE %]
       無法理解你想要做什麼事。
     [% END %]
+
+  [% ELSIF error == "unknown_api_namespace" %]
+    找不到名稱是 '[% api_namespace FILTER html +%]
+    的 REST API 命名空間 (namespace) 。
+
+  [% ELSIF error == "unknown_api_version" %]
+    [%- IF api_namespace %]
+      在命名空間 (namespace) '[% api_namespace FILTER html %]' 中，
+    [% END %]
+    找不到 REST API 版本 '[% api_version FILTER html +%]' 。
 
   [% ELSIF error == "unknown_tab" %]
     [% title = "未知的 tab" %]
@@ -1866,11 +1963,10 @@
   # This is the best way of getting information about that possible saved
   # search from any error call location. %]
 
-[% namedcmd = Bugzilla.cgi.param("namedcmd") %]
-[% sharer_id = Bugzilla.cgi.param("sharer_id") %]
+[% namedcmd = cgi_param("namedcmd") %]
 [% IF namedcmd AND error != "missing_query"
                AND error != "saved_search_used_by_whines"
-               AND !sharer_id %]
+               AND !cgi_param("sharer_id") %]
   <p>
     你也可以<a href="buglist.cgi?cmdtype=dorem&amp;remaction=forget&amp;namedcmd=
                   [% namedcmd FILTER uri %]">刪除</a>
