@@ -21,8 +21,7 @@
 </p>
 <p>
   [% IF series.creator %]
-    此系列由 <a href="mailto:[% series.creator.email FILTER html %]">
-    [% series.creator.email FILTER html %]</a> 建立
+    此系列由 [% series.creator.login FILTER html %] 建立
   [% ELSE %]
     此系列由 Bugzilla 自動建立
   [% END %]
