@@ -16,6 +16,7 @@
 # Please keep the strings in alphabetical order by their name.
 
 %strings = (
+    all_optional_features_require => '所有上述選加的功能需要找到以下模組：',
     any => '任何',
     apachectl_failed => <<END,
 警告：無法檢查 Apache 的設定。當你並非以 ##root## 執行
@@ -23,6 +24,13 @@ checksetup.pl 時，這有可能會發生。若要查看所遭遇到的問題，
 執行： ##command##
 END
     bad_executable => '並非有效的執行檔： ##bin##',
+    bad_font_file => <<'END',
+找不到檔案 ##file## 。確認路徑是否輸入完整
+END
+    bad_font_file_name => <<'END',
+檔案 ##file## 必須指向一個 TrueType 或 OpenType 字型檔
+（副檔名必須是 .ttf 或 .otf ）。
+END
     blacklisted => '(被列入黑名單)',
     bz_schema_exists_before_220 => <<'END',
 你正從 2.20 以前的版本升級，但是 bz_schema table 已經存在。
@@ -35,9 +43,6 @@ END
 資料庫後， drop bz_schema table 。
 END
     checking_for => '檢查',
-    checking_dbd => '檢查可用的 perl DBD 模組...',
-    checking_optional => '下列 perl 模組是選用的：',
-    checking_modules => '檢查 perl 模組中...',
     chmod_failed => '##path##: 變更權限失敗： ##error##',
     chown_failed => '##path##: 變更擁有者失敗： ##error##',
     commands_dbd => <<EOT,
@@ -52,6 +57,7 @@ EOT
 在互動模式（不會有一個 'answers' 檔案）重新執行 checksetup.pl
 以繼續。
 END
+    cpanfile_created => "##file## 已建立",
     cpan_bugzilla_home =>
         "警告：使用 Bugzilla 的目錄做為 CPAN home 資料夾。",
     db_enum_setup  => "設定標準的下拉式欄位選項：",
@@ -77,55 +83,17 @@ END
 附加元件必須要回傳它們的名稱，而不是 <code>1</code> 或數字。
 詳情請參閱 Bugzilla::Extension 。
 END
-    feature_auth_ldap => 'LDAP 認證',
-    feature_auth_radius => 'RADIUS 認證',
-    feature_documentation => '說明文件',
-    feature_graphical_reports => '圖表式報告',
-    feature_html_desc => '在產品／群組描述中使用較多的 HTML',
-    feature_inbound_email => 'Inbound Email',
-    feature_jobqueue => '信件佇列',
-    feature_jsonrpc => 'JSON-RPC 介面',
-    feature_new_charts => '新圖表',
-    feature_old_charts => '舊圖表',
-    feature_memcached => '支援 Memcached',
-    feature_mod_perl => 'mod_perl',
-    feature_moving => '在不同機器間搬移 Bugs',
-    feature_patch_viewer => 'Patch Viewer',
-    feature_rest => 'REST 介面',
-    feature_smtp_auth => 'SMTP 認證',
-    feature_smtp_ssl => 'SMTP 的 SSL 支援',
-    feature_updates => '自動更新通知',
-    feature_xmlrpc => 'XML-RPC 介面',
-    feature_detect_charset    => '自動偵測文字附件的字元編碼',
-    feature_typesniffer       => '對附件的 MIME 類別做探測(sniff)',
-
     file_remove => '移除 ##name## 中...',
     file_rename => '將 ##from## 更名為 ##to## 中...',
     header => "* 這是在 ##os_name## ##os_ver## ，\n"
             . "* Perl ##perl_ver## 上執行的 Bugzilla ##bz_ver## 。",
-    install_all => <<EOT,
-
-如要試著使用單一指令自動安裝所有必備及選用的模組，執行：
-
-  ##perl## install-module.pl --all
-
-EOT
+    installation_failed => '*** 安裝已中止。請閱讀上述訊息。 ***',
     install_data_too_long => <<EOT,
 警告：在 ##table##.##column## 欄位中的某些資料比新的長度限制 ##max_length## 字元還要長。
 需要修正的資料，以欄位名稱 ##id_column## 以及需要修正的欄位值 ##column## 的格式，
 列出如下：
 
 EOT
-    install_module => '安裝 ##module## 版本 ##version## 中...',
-    installation_failed => '*** 安裝已中止。請閱讀上述訊息。 ***',
-    install_no_compiler => <<END,
-錯誤：
-錯誤：使用 install-module.pl 必須先安裝一種編譯器，例如
-gcc 。
-END
-    install_no_make => <<END,
-錯誤：使用 install-module.pl 必須先安裝 "make" 。
-END
     lc_new_vars => <<'END',
 此版本的 Buzilla 包含一些你也許想要改變及套用到本地設定的參數。
 自從你上次執行 checksetup.pl 以後，以下參數對 ##localconfig##
@@ -203,6 +171,16 @@ END
 如果要讓「兩個 patch 之間的 diff 」功能有效，需要知道 "diff" bin
 在哪個目錄。（只有在使用 Patch Viewer 功能時才需要設定。）
 END
+    localconfig_font_file => <<'END',
+你可以指定 TrueType 或 OpenType 的字型檔。
+此字型檔將會用來顯示圖表和報告中的文字（標籤、圖例、…）。
+為了儘可能支援多種語言，我們建議指定類似
+Unifont (http://unifoundry.com/unifont.html)
+的字型，它可以支援所有在「基本多文種平面」
+(Basic Multilingual Plane) 中的可印出字元。
+如果此參數留空，將會使用預設字型，
+但可能只能支援英文字母，其他字元將不會正常顯示。
+END
     localconfig_index_html => <<'END',
 大部份的網頁伺服器允許你使用 index.cgi 做為目錄索引，並且也已經
 事先設定好了。如果你的沒有，那麼你會需要一個 index.html 檔案，
@@ -237,6 +215,22 @@ Apache SuexecUserGroup 環境下。
 如果設定為 1 ， checksetup.p 會設定適合的檔案權限，讓 Bugzilla 在
 SuexecUserGroup 環境下可以正常運作。
 END
+    localconfig_webdotbase => <<'END',
+顯示 bug 之間的關係圖是可能的。
+你可以將此參數設定為以下任何一種：
+
+- 指到 'dot' （GraphViz http://www.graphviz.org/的一部份）的完整路徑
+  將會在本地產生圖表。
+- 指到安裝有 webdot 的網址前綴將會在遠端產生圖表。
+  （在網址前綴加上 "/%urlbase%" ）
+- 留空會停用此功能。
+
+如果你使用了 webdot 的網址前綴，確認該 webdot
+伺服器可以自你的 webdot 目錄讀取檔案。
+在 Apache 上你可以編輯 .htaccess 檔案來達成；其他系統方法各不相同。
+如果找不到 .htaccess 檔案，可以執行
+checksetup.pl 重建它。
+END
     localconfig_webservergroup => <<'END',
 執行網頁伺服器的群組名稱。在 Red Hat 下通常是 "apache" 。在
 Debian/Ubuntu 下通常是 "www-data" 。
@@ -255,6 +249,11 @@ Debian/Ubuntu 下通常是 "www-data" 。
 如果設定為 "" 以外的值，你必須要以該指定群組中的成員，或是
 ##root## ，才能執行 checksetup.pl 。
 END
+    localconfig_apache_size_limit => <<EOT,
+這是 apache 在
+Apache::SizeLimit 砍掉之前，可以使用未共享記憶體的最大值。
+只有在 mod_perl 下執行時適用。
+EOT
     max_allowed_packet => <<EOT,
 警告：你必須在你的 MySQL 設定裡將 max_allowed_packet 參數設定為
 ##needed## 。現在它設定為 ##current## 。
