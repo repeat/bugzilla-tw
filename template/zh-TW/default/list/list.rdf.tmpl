@@ -6,7 +6,7 @@
   # defined by the Mozilla Public License, v. 2.0.
   #%]
 
-<?xml version="1.0"[% IF Param('utf8') %] encoding="UTF-8"[% END %]?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- [% template_version %] -->
 <RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -15,7 +15,7 @@
 
 <bz:result rdf:about="[% urlbase FILTER xml %]buglist.cgi?[% urlquerypart FILTER html %]">
   <bz:installation rdf:resource="[% urlbase FILTER xml %]" />
-  <bz:query_timestamp>[% currenttime FILTER time('%Y-%m-%d %T %Z') FILTER html %]</bz:query_timestamp>
+  <bz:query_timestamp>[% currenttime FILTER time('%Y-%m-%d %T %z') FILTER html %]</bz:query_timestamp>
   <bz:bugs>
     <Seq>
     [% FOREACH bug = bugs %]
