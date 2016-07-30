@@ -33,8 +33,7 @@
 <p>
   <b>建立者</b>：
   [% IF default.creator %]
-    <a href="mailto:[% default.creator.email FILTER html %]">
-    [% default.creator.email FILTER html %]</a>
+    [% default.creator.login FILTER html %]
   [% ELSE %]
     (由 Bugzilla 自動建立)
   [% END %]
