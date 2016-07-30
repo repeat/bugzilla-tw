@@ -7,8 +7,6 @@
   #%]
 
 [% INCLUDE global/header.html.tmpl title = "已連結化的文字" %]
-[% USE Bugzilla %]
-[% cgi = Bugzilla.cgi %]
 
 <p>
   複製並貼上下方的文字：
@@ -18,7 +16,7 @@
 
 <p>
 <pre class="bz_comment_text">
-[%- cgi.param("text") FILTER quoteUrls FILTER html -%]
+[%- cgi_param("text") FILTER markdown FILTER html -%]
 </pre>
 </p>
 
@@ -32,7 +30,7 @@
 
 <p>
 <pre class="bz_comment_text">
-[%- cgi.param("text") FILTER quoteUrls -%]
+[%- cgi_param("text") FILTER markdown -%]
 </pre>
 </p>
 
