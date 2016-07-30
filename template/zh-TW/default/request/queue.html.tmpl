@@ -6,9 +6,6 @@
   # defined by the Mozilla Public License, v. 2.0.
   #%]
 
-[% USE Bugzilla %]
-[% cgi = Bugzilla.cgi %]
-
 [% PROCESS "global/js-products.html.tmpl" %]
 
 [% PROCESS global/header.html.tmpl
@@ -17,7 +14,6 @@
   onload="var f = document.request_form; selectProduct(f.product, f.component, '任何');"
   javascript_urls=["js/productform.js", "js/field.js"]
   style_urls = ['skins/standard/buglist.css']
-  yui = ['autocomplete']
 %]
 
 <p>
@@ -35,7 +31,7 @@
         [% INCLUDE global/userselect.html.tmpl
            id => "requester"
            name => "requester"
-           value => cgi.param('requester')
+           value => cgi_param('requester')
            size => 20
            emptyok => 1
            field_title => "要求者的電子郵件地址"
@@ -55,7 +51,7 @@
         [% PROCESS "global/select-menu.html.tmpl"
                     name="type"
                     options=types
-                    default=cgi.param('type') %]
+                    default=cgi_param('type') %]
       </td>
 
       [%# We could let people see a "queue" of non-pending requests. %]
@@ -65,7 +61,7 @@
         [%# PROCESS "global/select-menu.html.tmpl"
                     name="status"
                     options=["全部", "?", "+-", "+", "-"]
-                    default=cgi.param('status') %]
+                    default=cgi_param('status') %]
       </td>
       -->
 
@@ -76,7 +72,7 @@
         [% INCLUDE global/userselect.html.tmpl
            id => "requestee"
            name => "requestee"
-           value => cgi.param('requestee')
+           value => cgi_param('requestee')
            size => 20
            emptyok => 1
            hyphenok => 1
@@ -88,7 +84,7 @@
         <select name="component">
           <option value="">任何</option>
           [% FOREACH comp = components %]
-           <option value="[% comp FILTER html %]" [% "selected" IF cgi.param('component') == comp %]>
+           <option value="[% comp FILTER html %]" [% "selected" IF cgi_param('component') == comp %]>
              [% comp FILTER html %]</option>
           [% END %]
         </select>
@@ -101,20 +97,17 @@
             "旗標" => 'type' ,
             "產品／子產品" => 'category'
           } %]
-        [% PROCESS "global/select-menu.html.tmpl" name="group" options=groups default=cgi.param('group') %]
+        [% PROCESS "global/select-menu.html.tmpl"
+                   name = "group", options = groups, default = cgi_param('group') %]
     </tr>
     <tr>
       <th></th>
       <td>
         <select id="do_union" name="do_union">
           <option value="0">符合要求者以及被要求者</option>
-          <option value="1" [% 'selected="selected"' IF cgi.param('do_union') %]>
+          <option value="1" [% 'selected="selected"' IF cgi_param('do_union') %]>
             符合要求者或被要求者</option>
         </select>
-        <label><input type="radio" name="do_union" value="0"
-            [% 'checked="checked"' IF !cgi.param('do_union') %]>AND *</label>
-        <label><input type="radio" name="do_union" value="1"
-            [% 'checked="checked"' IF cgi.param('do_union') %]>OR *</label>
       </td>
       <td colspan="3"></td>
       </td>
@@ -201,8 +194,9 @@
 
 [% BLOCK display_attachment %]
   [% IF request.attach_id %]
-    <a href="attachment.cgi?id=[% request.attach_id %]&amp;action=edit">
+    <a href="attachment.cgi?id=[% request.attach_id %]">
       [% request.attach_id %]：[%+ request.attach_summary FILTER html %]</a>
+    [<a href="attachment.cgi?id=[% request.attach_id %]&amp;action=edit">細節</a>]
   [% ELSE %]
     不適用
   [% END %]
