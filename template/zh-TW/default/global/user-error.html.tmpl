@@ -288,7 +288,7 @@
 
   [% ELSIF error == "buglist_parameters_required" %]
     [% title = "需要輸入字串" %]
-    [% docslinks = {'using/finding.html' "搜尋 $terms.bugs",
+    [% docslinks = {'using/finding.html' => "搜尋 $terms.bugs",
                     'using/finding.html#bug-lists' => "$terms.Bug 清單"} %]
     在未輸入搜尋字串時，你無法搜尋，或儲存搜尋結果。
 
