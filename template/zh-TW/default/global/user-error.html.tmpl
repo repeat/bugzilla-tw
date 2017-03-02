@@ -739,7 +739,7 @@
     [% title = "拒絕變更旗標" %]
     [% admindocslinks = {'flags.html' => '管理旗標',
                          'categorization.html#assigning-group-controls-to-products' => '群組安全性'} %]
-    [% docslinks = {'using/understanding.html#flags' '使用旗標'} %]
+    [% docslinks = {'using/understanding.html#flags' => '使用旗標'} %]
     你試著[% IF status == "+" %]同意[% ELSIF status == "-" %]拒絕
     [% ELSIF status == "X" %]清除[% ELSE %]要求[% END %]
     <code>[% name FILTER html %]
