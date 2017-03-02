@@ -658,7 +658,7 @@
     [% title = "你要求設定旗標的人未經授權" %]
     [% admindocslinks = [% admindocslinks = {'flags.html' => '管理旗標',
                          'categorization.html#assigning-group-controls-to-products' => '群組安全性'} %]
-    [% docslinks = {'using/understanding.html#flags' => => '使用旗標'} %]
+    [% docslinks = {'using/understanding.html#flags' => '使用旗標'} %]
 
     你要求 [% requestee.identity FILTER html %] 對[% terms.bug %] [% bug_id FILTER html -%]
     [% IF attach_id && attach_id > 0 %]的附件 [% attach_id FILTER html %] [% END %]設定旗標
