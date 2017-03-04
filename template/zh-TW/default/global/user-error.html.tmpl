@@ -288,7 +288,7 @@
 
   [% ELSIF error == "buglist_parameters_required" %]
     [% title = "需要輸入字串" %]
-    [% docslinks = {'using/finding.html' "搜尋 $terms.bugs",
+    [% docslinks = {'using/finding.html' => "搜尋 $terms.bugs",
                     'using/finding.html#bug-lists' => "$terms.Bug 清單"} %]
     在未輸入搜尋字串時，你無法搜尋，或儲存搜尋結果。
 
@@ -656,9 +656,9 @@
 
   [% ELSIF error == "flag_requestee_unauthorized" %]
     [% title = "你要求設定旗標的人未經授權" %]
-    [% admindocslinks = [% admindocslinks = {'flags.html' =>  => '管理旗標',
+    [% admindocslinks = [% admindocslinks = {'flags.html' => '管理旗標',
                          'categorization.html#assigning-group-controls-to-products' => '群組安全性'} %]
-    [% docslinks = {'using/understanding.html#flags' => => '使用旗標'} %]
+    [% docslinks = {'using/understanding.html#flags' => '使用旗標'} %]
 
     你要求 [% requestee.identity FILTER html %] 對[% terms.bug %] [% bug_id FILTER html -%]
     [% IF attach_id && attach_id > 0 %]的附件 [% attach_id FILTER html %] [% END %]設定旗標
@@ -739,7 +739,7 @@
     [% title = "拒絕變更旗標" %]
     [% admindocslinks = {'flags.html' => '管理旗標',
                          'categorization.html#assigning-group-controls-to-products' => '群組安全性'} %]
-    [% docslinks = {'using/understanding.html#flags' '使用旗標'} %]
+    [% docslinks = {'using/understanding.html#flags' => '使用旗標'} %]
     你試著[% IF status == "+" %]同意[% ELSIF status == "-" %]拒絕
     [% ELSIF status == "X" %]清除[% ELSE %]要求[% END %]
     <code>[% name FILTER html %]
