@@ -326,7 +326,7 @@
 
   [% ELSIF message_tag == "flag_creation_failed" %]
     [% title = "Flag Creation Failure" %]
-    An error occured while validating flags:
+    An error occurred while validating flags:
     [%+ flag_creation_error FILTER none %]
 
   [% ELSIF message_tag == "get_field_desc" %]
@@ -520,7 +520,7 @@
     [% title = "Milestone Deleted" %]
     The milestone <em>[% milestone.name FILTER html %]</em> has been deleted.
     [% IF milestone.bug_count %]
-      [%+ terms.Bugs %] targetted to this milestone have been retargetted to
+      [%+ terms.Bugs %] targeted to this milestone have been retargetted to
       the default milestone <em>[% product.default_milestone FILTER html %]</em>.
     [% END %]
 
@@ -543,6 +543,16 @@
     [% ELSE %]
       No changes made to milestone <em>[% milestone.name FILTER html %]</em>.
     [% END %]
+
+  [% ELSIF message_tag == "mta_param_tests_run" %]
+    [% title = "Parameters Updated And Test Email Sent" %]
+    [% IF param_changed.size > 0 %]
+      [% FOREACH param = param_changed %]
+        Changed <em>[% param FILTER html %]</em>.<br>
+      [% END %]
+      <br>
+    [% END %]
+    Test mail sent to [% user.email FILTER html %].
 
   [% ELSIF message_tag == "parameters_updated" %]
     [% title = "Parameters Updated" %]

@@ -129,6 +129,11 @@ With some combinations of database servers/Perl modules/moonphase this
 doesn't work, and so you can try setting this to 0 to make checksetup.pl
 run.
 END
+    localconfig_db_from_env => <<'END',
+If this is set, the other db_* values will be ignored and instead the $DATABASE_URL
+will be used to provide the database connection information.
+Note this requires the 'db_from_env' feature to be enabled.
+END
     localconfig_db_driver => <<'END',
 What SQL database to use. Default is mysql. List of supported databases
 can be obtained by listing Bugzilla/DB directory - every module corresponds
@@ -141,6 +146,7 @@ END
     localconfig_db_name => <<'END',
 The name of the database. For Oracle, this is the database's SID. For
 SQLite, this is a name (or path) for the DB file.
+For postgres, this database must already exist and be writable by $db_user.
 END
     localconfig_db_pass => <<'END',
 Enter your database password here. It's normally advisable to specify
