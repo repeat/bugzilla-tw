@@ -36,18 +36,13 @@
 [% END %]
 
 [% param_descs = {
-  cookiedomain =>
-    "如果你的網站是 'www.foo.com' ，則把此參數設定為"
-    _ " '.foo.com' 時，將會允許 'bar.foo.com' 存取 Bugzilla"
-    _ " 的 cookie 。這對於同一個網站伺服器有多個域名，且希望共享"
-    _ " Bugzilla 的 cookie 時很有用。",
-
   inbound_proxies =>
     "當透過代理伺服器連線至 Bugzilla 時，"
     _ " Bugzilla 將每個使用者都認定為該代理伺服器的 IP 位址。"
     _ "如果在參數中輸入以逗號 (,) 分隔的 IP 列表，"
     _ "那麼 Bugzilla 將會信任來自這些 IP 的 <code>X-Forwarded-For</code> Header ，"
-    _ "並使用 Header 的值來做為使用者的 IP 位址。",
+    _ "並使用 Header 的值來做為使用者的 IP 位址。"
+    _ "如果設為星號 (*) $terms.Bugzilla 將會信任 X-Forwarded-For Header 中的第一個值。" ,
 
   proxy_url =>
     "Bugzilla 可以自動連線到網路並擷取關於最新版的版本資訊，參考"
