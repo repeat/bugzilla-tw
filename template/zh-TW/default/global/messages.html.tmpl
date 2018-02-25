@@ -520,6 +520,16 @@
       並未對里程碑 <em>[% milestone.name FILTER html %]</em> 做出變更。
     [% END %]
 
+  [% ELSIF message_tag == "mta_param_tests_run" %]
+    [% title = "參數已更新，並且測試電子郵件已寄出" %]
+    [% IF param_changed.size > 0 %]
+      [% FOREACH param = param_changed %]
+        變更了 <em>[% param FILTER html %]</em> 。<br>
+      [% END %]
+      <br>
+    [% END %]
+    測試電子郵件已寄給 [% user.email FILTER html %] 。
+
   [% ELSIF message_tag == "parameters_updated" %]
     [% title = "參數已更新" %]
     [% IF param_changed.size > 0 %]
