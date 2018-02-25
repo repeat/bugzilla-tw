@@ -122,6 +122,11 @@ checksetup.pl 是否應該嘗試檢查你的資料庫設定是否正確？
 有些資料庫伺服器/Perl 模組/moonphase 的組合會讓此功能無法運作，
 因此你可以嘗試設定此參數為 0 ，讓 checksetup.pl 可以執行。
 END
+    localconfig_db_from_env => <<'END',
+設定此選項時，其他的 db_* 值會被忽略，而使用 $DATABASE_URL
+做為資料庫連線資訊。
+注意此選項需要啟用 'db_from_env' 功能。
+END
     localconfig_db_driver => <<'END',
 使用哪一種 SQL 資料庫。預設值是 mysql 。
 支援的資料庫列表可以藉由列出 Bugzilla/DB 目錄維護 －－
@@ -132,8 +137,10 @@ END
 此資料庫伺服器所在的 DNS hostname 或 IP 位址。
 END
     localconfig_db_name => <<'END',
-資料庫的名稱。對 Oracle 而言，是資料庫的 SID 。對 SQLite 而言，
-是 DB 檔案的名稱（或路徑）。
+資料庫的名稱。
+對 Oracle 而言，是資料庫的 SID 。
+對 SQLite 而言，是 DB 檔案的名稱（或路徑）。
+對 postgre 而言，此資料庫必須已經存在，而且可被 $db_user 寫入。
 END
     localconfig_db_pass => <<'END',
 在此輸入資料庫的密碼。通常建議對你的 bugailla 資料庫使用者指定密碼。
