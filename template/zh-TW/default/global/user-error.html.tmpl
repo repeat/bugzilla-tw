@@ -75,11 +75,17 @@
     [% title = "別名使用中" %]
     [% IF user.can_see_bug(bug_id) %]
       [% terms.Bug %] [%+ bug_id FILTER bug_link(bug_id) FILTER none %]
+    [% IF user.can_see_bug(other_bug.id) %]
+      [% terms.Bug %] [%+ other_bug.id FILTER bug_link(other_bug.bug_id) FILTER none %]
+      正在使用別名 <em>[% alias FILTER html %]</em> 。
+      請選擇其他的別名
+      [% IF other_bug.check_can_change_field('alias', 0, 1) %]
+        ，或是把使用那個別名的 [% terms.bug %] 的別名改掉
+      [% END %]。
     [% ELSE %]
-      另一個 [% terms.bug %]
+      別名 <em>[% alias FILTER html %]</em> 已被另一個你沒有權限可以檢視的
+      [% terms.bug %] 使用了。請選擇其他的別名。
     [% END %]
-    已使用別名 <em>[% alias FILTER html %]</em> 。
-    請選擇其他的別名。
 
   [% ELSIF error == "alias_is_numeric" %]
     [% title = "別名不能全為數字" %]
@@ -553,7 +559,7 @@
     這台機器上的 Bugzilla 並不允許
     [% feature_description(feature) FILTER html %]
     這項功能。
-    [% IF user.in_group('admin') %]
+    [% IF user.in_group('admin') || Bugzilla.usage_mode != constants.USAGE_MODE_BROWSER %]
       如果你想要啟用此項功能，請執行
       <kbd>cpanm -l local --installdeps --with-feature [% feature FILTER html %] "."</kbd>
       。
@@ -867,6 +873,12 @@
     [% terms.bug %] [%+ bug_id FILTER html %] ，但是該群組並不存在，
     或是你在產品 '[% product FILTER html %]' 中不被允許從該群組移除
     [% terms.bugs %] 。
+
+  [% ELSIF error == "group_regexp_too_long" %]
+    [% title = "群組的正規表示式太長" %]
+    你輸入在正規表示式欄位的文字太長了
+    （[% text.length FILTER html %] 個字元，
+    允許的最大值是 [%+ max_length FILTER none %] 字元）。
 
   [% ELSIF error == "group_restriction_not_allowed" %]
     [% title = "不被允許的群組限制" %]
@@ -1271,6 +1283,10 @@
   [% ELSIF error == "missing_cookie" %]
     [% title = "缺少 cookie" %]
     很抱歉，系統遺失了記錄你前次搜尋結果的 cookie 。你必須到<a href="query.cgi">搜尋頁</a>重新來過。
+
+  [% ELSIF error == "missing_database_url" %]
+    [% title = "缺少 \$DATABASE_URL" %]
+    當 localconfig "db_from_env" 選項開啟時，必須定義 $DATABASE_URL 。
 
   [% ELSIF error == "missing_datasets" %]
     [% title = "並未選擇資料組" %]
