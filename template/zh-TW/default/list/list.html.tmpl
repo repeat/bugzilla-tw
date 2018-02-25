@@ -24,6 +24,8 @@
 [% unfiltered_title = "$terms.Bug 清單" %]
 [% IF searchname || defaultsavename %]
   [% unfiltered_title = unfiltered_title _ ": " _ (searchname OR defaultsavename) %]
+[% ELSIF quicksearch %]
+  [% unfiltered_title = unfiltered_title _ ": " _ quicksearch %]
 [% END %]
 [% title = unfiltered_title FILTER html %]
 
@@ -104,7 +106,8 @@
   'notequals', 'regexp', 'notregexp', 'lessthan', 'lessthaneq',
   'greaterthan', 'greaterthaneq', 'changedbefore', 'changedafter',
   'changedfrom', 'changedto', 'changedby', 'notsubstring', 'nowords',
-  'nowordssubstr', 'notmatches', 'isempty', 'isnotempty'
+  'nowordssubstr', 'notmatches', 'isempty', 'isnotempty', 'isactive',
+  'isnotactive'
 ] %]
 <a id="search_description_controller" class="bz_default_hidden"
    href="javascript:TUI_toggle_class('search_description')">隱藏搜尋描述</a>
