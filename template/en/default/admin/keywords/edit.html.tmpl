@@ -18,19 +18,14 @@
 <form method="post" action="editkeywords.cgi">
   <table id="admin_table_edit">
     <tr>
-      <th><label for="name">Name:</label></th>
-      <td><input size="64" maxlength="64" name="name" id="name"
+      <th>Name:</th>
+      <td><input size="64" maxlength="64" name="name" 
                  value="[% keyword.name FILTER html %]" required></td>
     </tr>
     <tr>
-      <th><label for="is_active">Enabled For [% terms.Bugs %]</label></th>
-      <td><input id="is_active" name="is_active" type="checkbox" [% "checked" IF keyword.is_active %]></td>
-    </tr>
-    <tr>
-      <th><label for="description">Description:</label></th>
+      <th>Description:</th>
       <td>
         [% INCLUDE global/textarea.html.tmpl
-          id             = 'description'
           name           = 'description'
           minrows        = 4
           cols           = 64

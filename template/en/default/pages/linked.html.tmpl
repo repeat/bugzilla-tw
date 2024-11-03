@@ -7,6 +7,8 @@
   #%]
 
 [% INCLUDE global/header.html.tmpl title = "Your Linkified Text" %]
+[% USE Bugzilla %]
+[% cgi = Bugzilla.cgi %]
 
 <p>
   Copy and paste the text below:
@@ -16,7 +18,7 @@
 
 <p>
 <pre class="bz_comment_text">
-[%- cgi_param("text") FILTER markdown FILTER html -%]
+[%- cgi.param("text") FILTER quoteUrls FILTER html -%]
 </pre>
 </p>
 
@@ -31,7 +33,7 @@
 
 <p>
 <pre class="bz_comment_text">
-[%- cgi_param("text") FILTER markdown -%]
+[%- cgi.param("text") FILTER quoteUrls -%]
 </pre>
 </p>
 

@@ -10,11 +10,13 @@
   # As global/header.html.tmpl.
   #%]
 
+[% USE Bugzilla %]
+
 [% PROCESS "bug/show-header.html.tmpl" %]
 
-[% IF title_tag == "bug_processed" %]
+[% IF    title_tag == "bug_processed" %]
   [% title = BLOCK %]
-    [% IF cgi_param('id') %]
+    [% IF Bugzilla.cgi.param('id') %]
       [%+ id FILTER html %]
     [% ELSE %]
       [% terms.Bugs %]

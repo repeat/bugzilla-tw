@@ -8,27 +8,27 @@
 [% USE Bugzilla %]
 [% cgi = Bugzilla.cgi %]
 User-Agent:       [%+ cgi.user_agent() %]
-Build Identifier: [%+ cgi_param("buildid") %]
+Build Identifier: [%+ cgi.param("buildid") %]
 
-[%+ cgi_param("comment") IF cgi_param("comment") %]
+[%+ cgi.param("comment") IF cgi.param("comment") %]
 
-[%+ IF cgi_param("reproducible") != "Choose one..." -%]
-Reproducible: [%+ cgi_param("reproducible") %]
+[%+ IF cgi.param("reproducible") != "Choose one..." -%]
+Reproducible: [%+ cgi.param("reproducible") %]
 [% END %]
 
-[% IF !(cgi_param("reproduce_steps").match('^1\.\s*2\.\s*3\.\s*$') || cgi_param("reproduce_steps").match('^\s*$')) %]
+[% IF !(cgi.param("reproduce_steps").match('^1\.\s*2\.\s*3\.\s*$') || cgi.param("reproduce_steps").match('^\s*$')) %]
 Steps to Reproduce:
-[%+ cgi_param("reproduce_steps") %]
+[%+ cgi.param("reproduce_steps") %]
 [% END %]
 
-[% IF cgi_param("actual_results") -%]
+[% IF cgi.param("actual_results") -%]
 Actual Results:  
-[%+ cgi_param("actual_results") %]
+[%+ cgi.param("actual_results") %]
 [% END %]
 
-[% IF cgi_param("expected_results") %]
+[% IF cgi.param("expected_results") %]
 Expected Results:  
-[%+ cgi_param("expected_results") %]
+[%+ cgi.param("expected_results") %]
 [% END %]
 
-[%+ cgi_param("additional_info") %]
+[%+ cgi.param("additional_info") %]

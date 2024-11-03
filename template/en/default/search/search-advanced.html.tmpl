@@ -26,12 +26,11 @@ function remove_token() {
 
 [% PROCESS global/header.html.tmpl
   title = "Search for $terms.bugs"
-  generate_api_token = 1
+  yui = [ 'autocomplete', 'calendar' ]
   javascript = javascript
   javascript_urls = [ "js/util.js", "js/TUI.js", "js/field.js"]
   style_urls = ['skins/standard/buglist.css']
   doc_section = "using/finding.html"
-  yui = ['connection']
 %]
 
 [% WRAPPER search/tabs.html.tmpl %]

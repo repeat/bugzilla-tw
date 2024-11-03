@@ -6,18 +6,17 @@
   # defined by the Mozilla Public License, v. 2.0.
   #%]
 
-[% USE Bugzilla %]
 [% PROCESS bug/time.html.tmpl %]
 
 [% IF Param('comment_taggers_group') %]
   [% IF user.can_tag_comments %]
     <div id="bz_ctag_div" class="bz_default_hidden">
       <a href="javascript:void(0)" onclick="YAHOO.bugzilla.commentTagging.hideInput()">x</a>
-      <span>
+      <div>
         <input id="bz_ctag_add" size="10" placeholder="add tag"
               maxlength="[% constants.MAX_COMMENT_TAG_LENGTH FILTER html %]">
         <span id="bz_ctag_autocomp"></span>
-      </span>
+      </div>
       &nbsp;
     </div>
     <div id="bz_ctag_error" class="bz_default_hidden">
@@ -207,7 +206,7 @@
         accesskey = "s"
         tag_name = 'span'
       %]
-      [% INCLUDE input inputname => "short_desc" size => "80"
+      [% PROCESS input inputname => "short_desc" size => "80"
                        maxlength => 255 spellcheck => "true" no_td => 1 %]
     </div>
   </div>
@@ -229,7 +228,7 @@
     [%#############%]
     [%#  PRODUCT  #%]
     [%#############%]
-    <tr id="field_tablerow_product">
+    <tr>
       [% INCLUDE bug/field.html.tmpl
           bug = bug, field = bug_fields.product, value = bug.product
           override_legal_values = bug.choices.product
@@ -243,7 +242,7 @@
       # it uses some javascript that depends on the existence of the
       # product field.
       #%]
-    <tr id="field_tablerow_classification" class="bz_default_hidden">
+    <tr class="bz_default_hidden">
        [% INCLUDE bug/field.html.tmpl
             bug = bug field = bug_fields.classification
             override_legal_values = bug.choices.classification
@@ -253,7 +252,7 @@
     [%###############%]    
     [%#  Component  #%]
     [%###############%]
-    <tr id="field_tablerow_component">
+    <tr>
       [% INCLUDE bug/field.html.tmpl
           bug = bug, field = bug_fields.component, value = bug.component
           override_legal_values = bug.choices.component
@@ -261,7 +260,7 @@
           editable = bug.check_can_change_field('component', 0, 1)
       %]
     </tr>
-    <tr id="field_tablerow_version">
+    <tr>
       [% INCLUDE "bug/field-label.html.tmpl"
           field = bug_fields.version
           editable = bug.check_can_change_field('version', 0, 1) %]
@@ -271,7 +270,7 @@
     [%############%]    
     [%# PLATFORM #%]
     [%############%]    
-    <tr id="field_tablerow_rep_platform">
+    <tr>
       [% can_edit_rep_platform = bug.check_can_change_field('rep_platform', 0, 1) %]
       [% INCLUDE "bug/field-label.html.tmpl"
            field = bug_fields.rep_platform,
@@ -298,7 +297,7 @@
 [%############################################################################%]
 
 [% BLOCK section_status %]
-  <tr id="field_tablerow_status">
+  <tr>
     <th class="field_label">
       <a href="page.cgi?id=fields.html#bug_status">Status</a>:
     </th>
@@ -329,7 +328,7 @@
  [%###############################################################%]
  [%# Importance (priority and severity) #%]
  [%###############################################################%]
-    <tr id="field_tablerow_importance">
+    <tr>
       <th class="field_label">
         [% can_edit_priority = bug.check_can_change_field('priority', 0, 1) %]
         <label [% IF can_edit_priority %]for="priority"[% END %] accesskey="i">
@@ -349,7 +348,7 @@
     </tr>
 
     [% IF Param("usetargetmilestone") && bug.target_milestone %]
-      <tr id="field_tablerow_target_milestone">
+      <tr>
         [% INCLUDE "bug/field-label.html.tmpl"
           field = bug_fields.target_milestone
           editable = bug.check_can_change_field('target_milestone', 0, 1)
@@ -374,7 +373,7 @@
 
 [% BLOCK section_people %]
 
-    <tr id="field_tablerow_assigned_to">
+    <tr>
       [% can_edit_assigned_to = bug.check_can_change_field("assigned_to", 0, 1) %]
       [% INCLUDE "bug/field-label.html.tmpl"
           field = bug_fields.assigned_to
@@ -425,7 +424,7 @@
     </tr>
 
     [% IF Param('useqacontact') %]
-    <tr id="field_tablerow_qa_contact">
+    <tr>
       [% can_edit_qa_contact = bug.check_can_change_field("qa_contact", 0, 1) %]
       [% INCLUDE "bug/field-label.html.tmpl"
         field = bug_fields.qa_contact
@@ -488,7 +487,7 @@
 [%# Block for URL Keyword and Whiteboard                                     #%]
 [%############################################################################%]
 [% BLOCK section_url_keyword_whiteboard %]
-  <tr id="field_tablerow_bug_file_loc">
+  <tr>
     [% can_edit_bug_file_loc = bug.check_can_change_field("bug_file_loc", 0, 1) %]
     [% INCLUDE "bug/field-label.html.tmpl"
       field = bug_fields.bug_file_loc
@@ -530,7 +529,7 @@
   </tr>
 
   [% IF Param('usestatuswhiteboard') %]
-    <tr id="field_tablerow_status_whiteboard">
+    <tr>
       [% INCLUDE "bug/field-label.html.tmpl"
         field = bug_fields.status_whiteboard
         editable = bug.check_can_change_field("status_whiteboard", 0, 1)
@@ -541,17 +540,17 @@
   [% END %]
 
   [% IF use_keywords %]
-    <tr id="field_tablerow_keywords">
+    <tr>
         [% INCLUDE bug/field.html.tmpl
           bug = bug, field = bug_fields.keywords, value = bug.keywords
           editable = bug.check_can_change_field("keywords", 0, 1),
-          desc_url = "describekeywords.cgi", possible_values = active_keywords
+          desc_url = "describekeywords.cgi", possible_values = all_keywords
         %]
     </tr>
   [% END %]
 
   [% IF user.id %]
-    <tr id="field_tablerow_tag">
+    <tr>
       [% INCLUDE bug/field.html.tmpl
          bug = bug, field = bug_fields.tag, value = bug.tags.join(", "),
          editable = 1, possible_values = user.tags.keys
@@ -566,7 +565,7 @@
 
 [% BLOCK section_duplicates %]
   [% RETURN UNLESS bug.duplicates.size %]
-  <tr id="field_tablerow_duplicates">
+  <tr>
     <th class="field_label">
       <label>Duplicates ([% bug.duplicates.size %])</label>:
     </th>
@@ -587,7 +586,7 @@
 [%############################################################################%]
 
 [% BLOCK section_dependson_blocks %]
-  <tr id="field_tablerow_dependson">
+  <tr>
     [% INCLUDE dependencies 
          field = bug_fields.dependson deps = bug.depends_on_obj %]
   </tr>
@@ -598,13 +597,13 @@
   </tr>
 
   [% IF bug.dependson.size || bug.blocked.size %]
-    <tr id="field_tablerow_blocked">
+    <tr>
       <th>&nbsp;</th>
 
       <td id="show_dependency_tree_or_graph">
         Show dependency <a href="showdependencytree.cgi?id=[% bug.bug_id %]&amp;hide_resolved=1">tree</a>
 
-        [% IF Bugzilla.localconfig.webdotbase %]
+        [% IF Param('webdotbase') %]
           /&nbsp;<a href="showdependencygraph.cgi?id=[% bug.bug_id %]">graph</a>
         [% END %]
       </td>
@@ -715,7 +714,7 @@
 [%############################################################################%]
 
 [% BLOCK section_dates %]
-  <tr id="field_tablerow_reported">
+  <tr>
     <th class="field_label">
       Reported:
     </th>
@@ -724,7 +723,7 @@
     </td>
   </tr>
   
-  <tr id="field_tablerow_modified">
+  <tr>
     <th class="field_label">
       Modified:
     </th>
@@ -740,7 +739,7 @@
 [%# Block for CC LIST                                                        #%]
 [%############################################################################%]
 [% BLOCK section_cclist %]
-    <tr id="field_tablerow_cclist">
+    <tr>
       <th class="field_label">
         <label [% IF user.id %]for="newcc"[% END %] accesskey="a">
           CC List:
@@ -765,7 +764,7 @@
           users
         [% END %]
         [% IF user.id %]
-          [% IF bug.cc.contains( user.login ) %]
+          [% IF bug.cc.contains( user.email ) %]
             including you
           [% END %]
         [% END %]
@@ -831,7 +830,7 @@
 [%############################################################################%]
 [% BLOCK section_bug_ignored %]
   [% IF user.id %]
-    <tr id="field_tablerow_bug_ignored">
+    <tr>
       <th class="field_label">
         <label for="bug_ignored" title="Ignore all email for this [% terms.bug %]">
           Ignore [% terms.Bug %] Mail:
@@ -854,7 +853,7 @@
 [%############################################################################%]
 [% BLOCK section_see_also %]
   [% IF Param('use_see_also') || bug.see_also.size %]
-    <tr id="field_tablerow_see_also">
+    <tr>
       [% INCLUDE bug/field.html.tmpl 
            field    = bug_fields.see_also
            value    = bug.see_also
@@ -865,7 +864,7 @@
 [% END %]
 
 [% BLOCK section_aliases %]
-  <tr id="field_tablerow_alias">
+  <tr>
     [% INCLUDE "bug/field-label.html.tmpl" field = bug_fields.alias %]
     <td>
       [% IF bug.alias.size %]
@@ -930,7 +929,7 @@
     [% LAST IF show_bug_flags && show_more_flags && bug_flags_set %]
   [% END %]
   [% IF show_bug_flags %]
-    <tr id="field_tablerow_flags">
+    <tr>
       <th class="field_label">
         <label>Flags:</label>
       </th>
@@ -972,6 +971,7 @@
 
 [% BLOCK section_customfields %]
 [%# *** Custom Fields *** %]
+  [% USE Bugzilla %]
   [% FOREACH field = Bugzilla.active_custom_fields %]
     <tr>
       [%# Use PROCESS instead of INCLUDE, because extra_field_item is defined
@@ -1217,7 +1217,7 @@
   [% IF no_td != 1 %]
   <td[% " colspan=\"$colspan\"" IF colspan %]>
   [% END %]
-    [% val = bug.$inputname %]
+    [% val = value ? value : bug.$inputname %]
     [% IF bug.check_can_change_field(inputname, 0, 1) %]
        <input id="[% inputname %]" name="[% inputname %]" class="text_input"
               value="[% val FILTER html %]"[% " size=\"$size\"" IF size %]
@@ -1235,20 +1235,18 @@
   [% IF no_td != 1 %]  
   </td>
   [% END %]
+  [% no_td = 0 %]
+  [% maxlength = 0 %]
+  [% colspan = 0 %]
+  [% size = 0 %]
+  [% value = undef %]
+  [% spellcheck = undef %]
 [% END %]
-
 [% BLOCK commit_button %]
   [% IF user.id %]
     <div class="knob-buttons">
       <input type="submit" value="Save Changes" 
              id="commit[% id FILTER css_class_quote %]">
-      [% IF Param('minor_update_group') && user.in_group(Param('minor_update_group')) %]
-        <br>
-        <label class="" for="minor_update">
-          This is a minor update (do not send email)
-        </label>
-        <input type="checkbox" name="minor_update" value="1">
-      [% END %]
     </div>
   [% END %]
 [% END %]

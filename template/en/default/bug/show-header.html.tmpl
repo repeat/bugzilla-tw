@@ -24,9 +24,9 @@
 [% END %]
 [% title = title _ filtered_desc %]
 [% generate_api_token = 1 %]
-[% DEFAULT yui = [] %]
-[% yui.push('json', 'connection', 'container') %]
-[% javascript_urls = [ "js/util.js", "js/field.js", "js/comments.js" ] %]
+[% yui = ['autocomplete', 'calendar'] %]
+[% yui.push('container') IF user.can_tag_comments %]
+[% javascript_urls = [ "js/util.js", "js/field.js" ] %]
 [% javascript_urls.push("js/bug.js") IF user.id  %]
 [% javascript_urls.push('js/comment-tagging.js')
      IF user.id && Param('comment_taggers_group') %]
@@ -70,12 +70,6 @@
                   "bz_component_$bug.component",
                   "bz_bug_$bug.bug_id",
                   ] %]
-[% markdown_enabled = feature_enabled('jsonrpc') AND user.settings.use_markdown.value == "on" %]
-[% IF markdown_enabled %]
-  [% javascript_urls.push("js/highlight.js/highlight.pack.js") %]
-  [% style_urls.push("js/highlight.js/styles/github.css") %]
-[% END %]
-
 [% FOREACH group = bug.groups_in %]
   [% bodyclasses.push("bz_group_$group.name") %]
 [% END %]

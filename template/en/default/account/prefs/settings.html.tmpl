@@ -35,9 +35,7 @@
       [% default_val = settings.${name}.default_value %]
       <tr>
         <td class="right">
-          <label for="[% name FILTER html %]">
-            [% setting_descs.$name OR name FILTER html %]
-          </label>
+          [% setting_descs.$name OR name FILTER html %]
         </td>
         <td>
           [% IF settings.${name}.is_enabled %]

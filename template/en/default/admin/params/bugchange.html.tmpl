@@ -19,14 +19,17 @@
   letsubmitterchoosepriority => "If this is on, then people submitting $terms.bugs can " _
                                 "choose an initial priority for that ${terms.bug}. " _
                                 "If off, then all $terms.bugs initially have the default " _
-                                "priority defined by the " _
-                                "<a href=\"editparams.cgi?section=bugfields#defaultpriority_desc\">defaultpriority</a> " _
-                                "parameter.",
+                                "priority selected below.",
 
   letsubmitterchoosemilestone => "If this is on, then people submitting $terms.bugs can " _
                                  "choose the Target Milestone for that ${terms.bug}. " _
                                  "If off, then all $terms.bugs initially have the default " _
                                  "milestone for the product being filed in.",
+
+  musthavemilestoneonaccept => 
+    "If you are using ${field_descs.target_milestone}, do you want to require"
+    _ " that the milestone be set in order for a user to set"
+    _ "  ${terms.abug}'s status to ${accept_status}?",
 
   commentonchange_resolution => "If this option is on, the user needs to enter a short " _
                                 "comment if the resolution of the $terms.bug changes.",
@@ -34,10 +37,6 @@
   commentonduplicate => "If this option is on, the user needs to enter a short comment " _
                         "if the $terms.bug is marked as duplicate.",
 
-  resolution_forbidden_with_open_blockers =>
-    "Set this parameter to a particular resolution, to prevent $terms.bugs " _
-    "from being resolved with this resolution if they have unresolved " _
-    "dependencies. FIXED, or its equivalent, is the most usual choice. " _
-    "Leaving this parameter empty disables this feature.",
-  }
+  noresolveonopenblockers => "Don\'t allow $terms.bugs to be resolved as fixed " _
+                             "if they have unresolved dependencies." }
 %]

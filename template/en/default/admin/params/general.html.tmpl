@@ -16,6 +16,20 @@
     "The email address of the person who maintains this installation "
     _ " of Bugzilla.",
 
+  utf8 => 
+    "Use UTF-8 (Unicode) encoding for all text in ${terms.Bugzilla}. New"
+    _ " installations should set this to true to avoid character encoding"
+    _ " problems. <strong>Existing databases should set this to true"
+    _ " only after the data has been converted from existing legacy"
+    _ " character encodings to UTF-8, using the <kbd>contrib/recode.pl</kbd>"
+    _ " script</strong>."
+    _ " <p>Note that if you change this parameter you must re-run"
+    _ " <kbd>checksetup.pl</kbd> immediately afterward.</p>",
+
+  utf8_collate =>
+    "The collation to use in database tables. This parameter is"
+    _ " automatically set by checksetup.pl.",
+
   shutdownhtml => 
     "If this field is non-empty, then Bugzilla will be completely"
     _ " disabled and this text will be displayed instead of all the"

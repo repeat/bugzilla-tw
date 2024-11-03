@@ -12,17 +12,15 @@
   #%]
 
       [% Hook.process('main-end') %]
-    </main>
+    </div>
 
-    <footer id="footer">
+    <div id="footer">
       <div class="intro">[% Hook.process('intro') %]</div>
 
-      <nav>
-        [% PROCESS "global/useful-links.html.tmpl" %]
-      </nav>
+      [% PROCESS "global/useful-links.html.tmpl" %]
 
       <div class="outro">[% Hook.process('outro') %]</div>
-    </footer>
+    </div>
 
     [% Hook.process("end") %]
   </body>

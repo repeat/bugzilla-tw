@@ -24,8 +24,6 @@
 [% unfiltered_title = "$terms.Bug List" %]
 [% IF searchname || defaultsavename %]
   [% unfiltered_title = unfiltered_title _ ": " _ (searchname OR defaultsavename) %]
-[% ELSIF quicksearch %]
-  [% unfiltered_title = unfiltered_title _ ": " _ quicksearch %]
 [% END %]
 [% title = unfiltered_title FILTER html %]
 
@@ -35,11 +33,11 @@
   [% IF quicksearch %]
     [% new_param = BLOCK ~%]
       quicksearch=[% quicksearch FILTER uri %]
-      [%~ IF cgi_param('list_id') ~%]
-        &list_id=[% cgi_param('list_id') FILTER uri %]
+      [%~ IF cgi.param('list_id') ~%]
+        &list_id=[% cgi.param('list_id') FILTER uri %]
       [%~ END %]
     [% END %]
-  [% ELSIF cgi_param('token') != '' %]
+  [% ELSIF cgi.param('token') != '' %]
     [% new_param = cgi.canonicalise_query('token', 'cmdtype', 'remtype') %]
   [% ELSE %]
     [% new_param = cgi.canonicalise_query %]
@@ -63,6 +61,7 @@
   title = title
   generate_api_token = dotweak
   atomlink = "buglist.cgi?$urlquerypart&title=$title&ctype=atom" 
+  yui = [ 'autocomplete', 'calendar' ]
   javascript_urls = [ "js/util.js", "js/field.js", "js/TUI.js" ]
   style_urls = [ "skins/standard/buglist.css" ]
   doc_section = "using/finding.html"
@@ -106,8 +105,7 @@
   'notequals', 'regexp', 'notregexp', 'lessthan', 'lessthaneq', 
   'greaterthan', 'greaterthaneq', 'changedbefore', 'changedafter', 
   'changedfrom', 'changedto', 'changedby', 'notsubstring', 'nowords',
-  'nowordssubstr', 'notmatches', 'isempty', 'isnotempty', 'isactive',
-  'isnotactive'
+  'nowordssubstr', 'notmatches', 'isempty', 'isnotempty'
 ] %]
 <a id="search_description_controller" class="bz_default_hidden"
    href="javascript:TUI_toggle_class('search_description')">Hide Search Description</a>
@@ -252,7 +250,7 @@
 
         [% IF bugowners && user.id %]
           <button type="button" id="email_assignees"
-                  onclick="document.location='mailto:[% bugowners FILTER html %]'">
+                  onclick="document.location='mailto:[% bugowners FILTER html FILTER js %]'">
             Send Mail to [% terms.Bug %] Assignees</button>
         [% END %]
 
