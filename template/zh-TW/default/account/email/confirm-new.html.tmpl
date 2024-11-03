@@ -20,28 +20,13 @@
 
 <p>
 要建立你的帳號，必須在下方的表單中輸入密碼。
-你的真實姓名是選填的，但建議填寫。
+你的電子郵件地址和真實姓名（如有提供）將會顯示在你所變更的項目中。
 </p>
 
 <form id="confirm_account_form" method="post" action="token.cgi">
   <input type="hidden" name="t" value="[% token FILTER html %]">
   <input type="hidden" name="a" value="confirm_new_account">
   <table>
-    [% IF !Param('use_email_as_login') %]
-      <tr>
-        <th>帳號：</th>
-        <td>
-          [% IF login_already_in_use %]
-            <input id="login" name="login" required value="[% login FILTER html %]">
-            <span class="warning">
-              帳號 '[% login FILTER html %]' 已被註冊。請選擇其他帳號。
-            </span>
-          [% ELSE %]
-            [% login FILTER html %]
-          [% END %]
-        </td>
-      </tr>
-    [% END %]
     <tr>
       <th>電子郵件地址：</th>
       <td>[% email FILTER html %]</td>
