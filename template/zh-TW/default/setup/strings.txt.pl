@@ -23,7 +23,7 @@ checksetup.pl 時，這有可能會發生。若要查看所遭遇到的問題，
 執行： ##command##
 END
     bad_executable => '並非有效的執行檔： ##bin##',
-    blacklisted => '(被列入黑名單)',
+    blocklisted => '(被列入黑名單)',
     bz_schema_exists_before_220 => <<'END',
 你正從 2.20 以前的版本升級，但是 bz_schema table 已經存在。
 這代表你並沒有先 drop 已經存在的 Bugzilla 資料庫，就把 mysqldump
