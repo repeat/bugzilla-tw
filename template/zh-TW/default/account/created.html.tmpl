@@ -7,8 +7,7 @@
   #%]
 
 [%# INTERFACE:
-  # login: string. The user's Bugzilla login.
-  # email: string. The user's Bugzilla email address.
+  # login: string. The user's Bugzilla login email address.
   #%]
 
 [% title = BLOCK %]
@@ -18,7 +17,7 @@
 [% PROCESS global/header.html.tmpl title = title %]
 
 <p>
-  已寄出一封確認信到 <em>[% email FILTER html %]</em> ，信件中含有繼續建立帳號用的連結。
+  已寄出一封確認信，信件中含有繼續建立帳號用的連結。
   如果帳號沒有被建立，該連結將會在
   [% constants.MAX_TOKEN_AGE FILTER html %] 天後失效。
 </p>
