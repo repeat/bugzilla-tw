@@ -248,7 +248,7 @@
 
         [% IF bugowners && user.id %]
           <button type="button" id="email_assignees"
-                  onclick="document.location='mailto:[% bugowners FILTER html %]'">
+                  onclick="document.location='mailto:[% bugowners FILTER html FILTER js %]'">
             寄信給 [% terms.Bug %] 負責人</button>
         [% END %]
 
