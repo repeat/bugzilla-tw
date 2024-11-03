@@ -19,6 +19,10 @@
 [% IF release %]
   <div id="new_release">
     [% IF release.data %]
+      [% IF release.eos_date %]
+        <p>在 [% release.eos_date FILTER html %] 之後，[% terms.Bugzilla %]
+        [%+ release.branch_version FILTER html %] 將不再收到安全性更新。建議你升級，以確保系統安全。</p>
+      [% END %]
       [% IF release.deprecated %]
         <p>已不再支援 Bugzilla [%+ release.deprecated FILTER html %] 。
         建議你升級，以確保系統安全。</p>
